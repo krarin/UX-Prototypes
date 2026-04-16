@@ -1,0 +1,9 @@
+# Figma MCP config — contains access token, never push this
+.mcp.json
+
+# Claude Code local settings
+.claude/
+
+# macOS system files
+.DS_Store
+**/.DS_Store

@@ -1,0 +1,115 @@
+/* ============================================
+   Shell.css — styles for Shell.jsx
+   LOCKED — do not modify without explicit instruction
+   ============================================ */
+
+/* ------------------------------------------
+   SHELL WRAPPER
+------------------------------------------ */
+
+.shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--shell-height);
+  padding: 0 var(--space-l);
+  background: var(--color-neutral-light-000);
+  border-bottom: 1px solid var(--color-border-secondary);
+  flex-shrink: 0;
+  gap: var(--space-l);
+}
+
+/* ------------------------------------------
+   CLIENT CONTEXT PILL
+------------------------------------------ */
+
+.shell-client-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-m);
+  border-radius: 20px;
+  background: var(--color-neutral-light-200);
+  border: 1px solid var(--color-border-secondary);
+  font-family: var(--font-family);
+  font-size: var(--body-regular-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-dark-900);
+  white-space: nowrap;
+  line-height: var(--body-regular-line-height);
+}
+
+/* ------------------------------------------
+   STEPPER
+------------------------------------------ */
+
+.shell-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shell-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  font-family: var(--font-family);
+  font-size: var(--body-regular-size);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--body-regular-line-height);
+}
+
+/* Step connector line between steps */
+.shell-step-connector {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--color-border-secondary);
+  margin: 0 var(--space-m);
+  flex-shrink: 0;
+}
+
+/* Step label color per status */
+.shell-step--active .shell-step-label {
+  color: var(--color-status-review);
+  font-weight: var(--font-weight-medium);
+}
+
+.shell-step--done .shell-step-label {
+  color: var(--color-status-success);
+  font-weight: var(--font-weight-medium);
+}
+
+.shell-step--idle .shell-step-label {
+  color: var(--color-neutral-dark-300);
+}
+
+/* ------------------------------------------
+   STEP INDICATOR (shape)
+   active  → diamond  (color-status-review)
+   done    → filled circle (color-status-success)
+   idle    → outlined circle (color-border-secondary)
+------------------------------------------ */
+
+.step-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.step-indicator--active {
+  color: var(--color-status-review);
+}
+
+.step-indicator--done {
+  color: var(--color-status-success);
+}
+
+.step-indicator--idle {
+  color: var(--color-border-secondary);
+}

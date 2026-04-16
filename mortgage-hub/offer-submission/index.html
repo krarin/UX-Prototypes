@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Hub – Angebotssuche</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/prototype.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="global-sidebar" aria-label="Hauptnavigation">
+      <ul class="sidebar-nav" role="list">
+
+        <li>
+          <button class="sidebar-item" data-nav="mein-tag" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">calendar_today</span>
+            <span class="sidebar-label">Mein Tag</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item active" data-nav="antraege" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">description</span>
+            <span class="sidebar-label">Anträge</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="leads" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">person_search</span>
+            <span class="sidebar-label">Leads</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="quellen" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">hub</span>
+            <span class="sidebar-label">Quellen</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="unternehmen" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">domain</span>
+            <span class="sidebar-label">Unternehmen</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="buchhaltung" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">account_balance</span>
+            <span class="sidebar-label">Buchhaltung</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="reporting" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">bar_chart</span>
+            <span class="sidebar-label">Reporting</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="lead-shop" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">storefront</span>
+            <span class="sidebar-label">Lead-Shop</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="email" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">mail</span>
+            <span class="sidebar-label">Email</span>
+          </button>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- MAIN AREA -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-actions">
+
+          <button class="topbar-icon-btn" aria-label="Hinzufügen">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Benachrichtigungen">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Hilfe">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Vollbild">
+            <span class="material-symbols-outlined">fullscreen</span>
+          </button>
+
+          <button class="topbar-lang" aria-label="Sprache wechseln">
+            DE
+            <span class="material-symbols-outlined">expand_more</span>
+          </button>
+
+          <div class="topbar-divider" role="separator"></div>
+
+          <div class="topbar-user" role="button" tabindex="0" aria-label="Benutzerprofil">
+            <div class="topbar-avatar" aria-hidden="true">JJ</div>
+            <div class="topbar-user-info">
+              <span class="topbar-user-name">Jan Joisten</span>
+              <span class="topbar-user-role">Advisor</span>
+            </div>
+            <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- SHELL BAR: client context pill + stepper — LOCKED -->
+      <div class="shell">
+
+        <!-- Client context pill -->
+        <div class="shell-client-pill">Müller, Thomas · € 350.000 · 15J</div>
+
+      </div><!-- /.shell -->
+
+      <!-- CASE SHELL: fixed 4-row sub-header -->
+      <div class="case-shell">
+
+        <!-- Row 1: Client name + actions -->
+        <div class="case-header">
+          <div class="case-header-left">
+            <span class="case-header-name">Frau Karina Hoffmann</span>
+            <span class="case-header-amount">296.280,00 €</span>
+            <span class="case-header-sep">|</span>
+            <span class="case-header-number">Antragsnummer: 592 317</span>
+          </div>
+          <div class="case-header-actions">
+            <button class="case-header-btn">
+              <span class="material-symbols-outlined">grid_view</span>
+              Finanzierungs-Assistent
+            </button>
+            <button class="case-header-btn">
+              <span class="material-symbols-outlined">open_in_new</span>
+              Kundensicht
+            </button>
+            <button class="topbar-icon-btn" aria-label="Mehr Optionen">
+              <span class="material-symbols-outlined">more_horiz</span>
+            </button>
+            <button class="topbar-icon-btn" aria-label="Vollbild">
+              <span class="material-symbols-outlined">open_in_full</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Tags -->
+        <div class="case-tags">
+          <span class="case-tag case-tag-blue">
+            <span class="material-symbols-outlined">home</span>
+            Immobilie gefunden
+          </span>
+          <span class="case-tag case-tag-outline">
+            <span class="material-symbols-outlined">monitor</span>
+            Antragsstrecke: LoanLink24 Mortgage GmbH
+          </span>
+          <span class="case-tag case-tag-removable case-tag-removable-blue">
+            blue card1
+            <button class="case-tag-remove" aria-label="Entfernen">×</button>
+          </span>
+          <span class="case-tag case-tag-removable case-tag-removable-red">
+            practice
+            <button class="case-tag-remove" aria-label="Entfernen">×</button>
+          </span>
+          <button class="case-tag-add">
+            <span class="material-symbols-outlined">add</span>
+            Tag hinzufügen
+          </button>
+        </div>
+
+        <!-- Row 3: Loan info -->
+        <div class="case-loan">
+          <span class="case-loan-label">Kauf einer bestehenden Immobilie, März 2026</span>
+          <div class="case-loan-center">
+            <span class="case-loan-pill">
+              Kauf einer bestehenden Immobilie, März 2026
+              <span class="material-symbols-outlined case-loan-pill-icon">edit</span>
+              <span class="material-symbols-outlined case-loan-pill-icon teal">visibility</span>
+            </span>
+          </div>
+          <button class="case-loan-link">+ Antrag kopieren</button>
+        </div>
+
+        <!-- Row 4: Tab bar -->
+        <div class="tab-nav">
+          <div class="tab-bar" role="tablist">
+            <button class="tab" role="tab" onclick="setTab(this)">Übersicht</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Antrag</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Kommunikation</button>
+            <button class="tab active" role="tab" onclick="setTab(this)">Angebotssuche</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Manuelles Angebot</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Objektbewertung</button>
+            <button class="tab" role="tab" onclick="setTab(this)">
+              Dokumente
+              <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">open_in_new</span>
+            </button>
+            <button class="tab" role="tab" onclick="setTab(this)">PDF</button>
+          </div>
+        </div>
+
+      </div><!-- /.case-shell -->
+
+      <!-- PAGE CONTENT GOES HERE -->
+      <div class="content">
+        <div class="content-inner">
+          <!-- IN-CONTENT STEPPER -->
+          <div class="step-bar" aria-label="Prozessschritte">
+
+            <div class="step-item step-item--active" id="stepper-step-1" onclick="goToStep(1)" aria-current="step">
+              <span class="step-num" aria-label="Schritt 1 aktiv">1</span>
+              <span class="step-item-label">Suche</span>
+            </div>
+
+            <span class="step-connector" aria-hidden="true"></span>
+
+            <div class="step-item step-item--idle" id="stepper-step-2" onclick="goToStep(2)">
+              <span class="step-num" aria-label="Schritt 2 ausstehend">2</span>
+              <span class="step-item-label">Angebote</span>
+            </div>
+
+            <span class="step-connector" aria-hidden="true"></span>
+
+            <div class="step-item step-item--idle" id="stepper-step-3" onclick="goToStep(3)">
+              <span class="step-num" aria-label="Schritt 3 ausstehend">3</span>
+              <span class="step-item-label">Einreichung</span>
+            </div>
+
+          </div><!-- /.step-bar -->
+
+          <!-- STEP SECTIONS -->
+          <section id="step-1" style="display:flex;">
+
+            <div class="s1-body">
+
+              <!-- LEFT: Parameters -->
+              <aside class="s1-left">
+
+                <div class="s1-left-header">
+                  <span class="s1-section-label">PARAMETER</span>
+                  <span class="s1-treffer" id="s1-treffer">12 Treffer</span>
+                </div>
+
+                <div class="s1-fields">
+                  <div class="s1-field">
+                    <label class="s1-field-label">Darlehensbetrag (€)</label>
+                    <input class="s1-field-input" type="text" value="350.000" />
+                  </div>
+                  <div class="s1-field">
+                    <label class="s1-field-label">Sollzinsbindung (J)</label>
+                    <input class="s1-field-input" type="text" value="15" />
+                  </div>
+                  <div class="s1-field">
+                    <label class="s1-field-label">Tilgungsrate (%)</label>
+                    <input class="s1-field-input" type="text" value="2,00" />
+                  </div>
+                  <div class="s1-field">
+                    <label class="s1-field-label">Sondertilgung min. (%)</label>
+                    <input class="s1-field-input" type="text" value="5,00" />
+                  </div>
+                  <div class="s1-field">
+                    <label class="s1-field-label">Bereitstellungszinsfrei</label>
+                    <input class="s1-field-input" type="text" value="6 Monate" />
+                  </div>
+                </div>
+
+                <button class="s1-search-btn" onclick="runSearch()">Suche aktualisieren →</button>
+
+                <div class="s1-history">
+                  <span class="s1-section-label">FRÜHERE SUCHEN</span>
+                  <div class="s1-history-list">
+                    <div class="s1-history-row s1-history-row--active">
+                      <span class="s1-history-summary">350.000 · 15J · 2%</span>
+                      <span class="s1-history-count">12</span>
+                    </div>
+                    <div class="s1-history-row">
+                      <span class="s1-history-summary">300.000 · 10J · 2%</span>
+                      <span class="s1-history-count">8</span>
+                    </div>
+                    <div class="s1-history-row">
+                      <span class="s1-history-summary">350.000 · 20J · 2%</span>
+                      <span class="s1-history-count">9</span>
+                    </div>
+                  </div>
+                </div>
+
+              </aside><!-- /.s1-left -->
+
+              <!-- RIGHT: Results -->
+              <main class="s1-right">
+
+                <div class="s1-result-body">
+                  <table class="results-table" id="results-table" style="display:none;">
+                    <thead>
+                      <tr>
+                        <th class="col-pin" aria-label="Auswahl"></th>
+                        <th class="col-machbarkeit">Machbarkeit</th>
+                        <th class="col-anbieter">Anbieter</th>
+                        <th class="col-zinsen">Soll- / Effektiv</th>
+                        <th class="col-rate">Mon. Rate</th>
+                        <th class="col-marktplatz">Marktplatz</th>
+                        <th class="col-actions" aria-label="Aktionen"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="row-machbar" data-row="0">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(0)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">Sparkasse</td>
+                        <td>2,85 / 2,91 %</td>
+                        <td>€ 1.240</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="1">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(1)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Prüfen</span></td>
+                        <td class="col-anbieter">ING</td>
+                        <td>3,10 / 3,18 %</td>
+                        <td>€ 1.310</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr class="row-machbar" data-row="2">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(2)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">DKB</td>
+                        <td>2,99 / 3,04 %</td>
+                        <td>€ 1.275</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="3">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(3)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-nicht-machbar"><span class="tag-dot dot-nicht-machbar"></span>Nicht machbar</span></td>
+                        <td class="col-anbieter">Commerzbank</td>
+                        <td>3,45 / 3,52 %</td>
+                        <td>€ 1.420</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr class="row-machbar" data-row="4">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(4)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">Postbank</td>
+                        <td>2,92 / 2,98 %</td>
+                        <td>€ 1.255</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="5">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(5)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Prüfen</span></td>
+                        <td class="col-anbieter">Volksbank</td>
+                        <td>3,05 / 3,12 %</td>
+                        <td>€ 1.295</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </main><!-- /.s1-right -->
+
+            </div><!-- /.s1-body -->
+
+          </section><!-- /#step-1 -->
+
+          <section id="step-2" style="display:none;">
+            <div id="angebote-empty" class="angebote-empty-state">
+              Noch keine Angebote erstellt. Klicken Sie in der Suche auf „Erstellen".
+            </div>
+            <div id="angebote-grid" class="angebote-grid"></div>
+          </section>
+
+          <section id="step-3" style="display:none;">
+
+            <!-- PAGE HEADER -->
+            <div class="ei-header">
+              <div class="ei-header-left">
+                <h2 class="ei-title">Einreichung</h2>
+                <span class="ei-subtitle">296.280,00 € · 15 Jahre · Musterstraße 12, 80331 München</span>
+              </div>
+              <div class="ei-header-right">
+                <button class="ei-back-link" onclick="goToStep(1)">← Angebotssuche</button>
+              </div>
+            </div>
+
+            <!-- TOP TAB BAR -->
+            <div class="ei-top-tabs" role="tablist">
+              <button class="ei-top-tab ei-top-tab--active ei-top-tab--success" role="tab" onclick="switchTopTab(0)">
+                <span class="ei-tab-dot ei-tab-dot--success"></span>Übersicht
+              </button>
+              <button class="ei-top-tab ei-top-tab--warning" role="tab" onclick="switchTopTab(1)">
+                <span class="ei-tab-dot ei-tab-dot--warning"></span>Angebotspaket 1 — Sparkasse
+              </button>
+              <button class="ei-top-tab ei-top-tab--idle" role="tab" onclick="switchTopTab(2)">
+                <span class="ei-tab-dot ei-tab-dot--idle"></span>Angebotspaket 2 — DKB
+              </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="ei-body">
+
+              <!-- PANEL 0: Übersicht -->
+              <div class="ei-panel" id="ei-panel-0">
+
+                <nav class="ei-sidenav" aria-label="Abschnitte">
+                  <button class="ei-nav-item ei-nav-item--success ei-nav-item--active" data-target="section-machbarkeit" onclick="scrollToSection('section-machbarkeit')">
+                    <span class="ei-nav-label">Machbarkeit</span>
+                    <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                  </button>
+                  <button class="ei-nav-item ei-nav-item--warning" data-target="section-finanzierung" onclick="scrollToSection('section-finanzierung')">
+                    <span class="ei-nav-label">Finanzierung</span>
+                    <span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Bedingt machbar</span>
+                  </button>
+                  <button class="ei-nav-item ei-nav-item--success" data-target="section-tilgungsplan" onclick="scrollToSection('section-tilgungsplan')">
+                    <span class="ei-nav-label">Tilgungsplan</span>
+                    <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                  </button>
+                  <button class="ei-nav-item ei-nav-item--warning" data-target="section-haushalt" onclick="scrollToSection('section-haushalt')">
+                    <span class="ei-nav-label">Haushaltsrechnung</span>
+                    <span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Bedingt machbar</span>
+                  </button>
+                </nav>
+
+                <div class="ei-content" id="ei-content-0">
+
+                  <!-- Card: Machbarkeit (starts expanded) -->
+                  <div class="ei-card ei-card--expanded" id="section-machbarkeit" data-ei-section="machbarkeit">
+                    <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="true">
+                      <span class="ei-card-title">Machbarkeit</span>
+                      <div class="ei-card-header-right">
+                        <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                        <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                      </div>
+                    </button>
+                    <div class="ei-card-body">
+                      <div class="ei-kv-grid">
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Darlehensbetrag</span><span class="ei-kv-value">296.280,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Beleihungswert</span><span class="ei-kv-value">320.000,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Beleihungsauslauf</span><span class="ei-kv-value">92,59 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Sollzinsbindung</span><span class="ei-kv-value">15 Jahre</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Tilgungsrate</span><span class="ei-kv-value">2,00 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Sondertilgung</span><span class="ei-kv-value">5,00 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Bereitstellungszinsfrei</span><span class="ei-kv-value">6 Monate</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Marktplatz</span><span class="ei-kv-value">EUROPACE</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Card: Finanzierung (collapsed) -->
+                  <div class="ei-card" id="section-finanzierung" data-ei-section="finanzierung">
+                    <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                      <span class="ei-card-title">Finanzierung</span>
+                      <div class="ei-card-header-right">
+                        <span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Bedingt machbar</span>
+                        <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                      </div>
+                    </button>
+                    <div class="ei-card-body" style="display:none;">
+                      <div class="ei-kv-grid">
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Kaufpreis</span><span class="ei-kv-value">360.000,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Eigenkapital</span><span class="ei-kv-value">63.720,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Notarkosten</span><span class="ei-kv-value">7.200,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Grunderwerbsteuer</span><span class="ei-kv-value">12.600,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Maklerprovision</span><span class="ei-kv-value">10.800,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Gesamtkosten</span><span class="ei-kv-value">390.600,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Finanzierungsquote</span><span class="ei-kv-value">75,84 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Monatliche Rate</span><span class="ei-kv-value">€ 1.240</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Card: Tilgungsplan (collapsed) -->
+                  <div class="ei-card" id="section-tilgungsplan" data-ei-section="tilgungsplan">
+                    <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                      <span class="ei-card-title">Tilgungsplan</span>
+                      <div class="ei-card-header-right">
+                        <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                        <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                      </div>
+                    </button>
+                    <div class="ei-card-body" style="display:none;">
+                      <div class="ei-kv-grid">
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Sollzins</span><span class="ei-kv-value">2,85 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Effektivzins</span><span class="ei-kv-value">2,91 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Anfangstilgung</span><span class="ei-kv-value">2,00 %</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Restschuld (15J)</span><span class="ei-kv-value">180.200,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Zinssumme</span><span class="ei-kv-value">38.680,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Tilgungssumme</span><span class="ei-kv-value">116.080,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Gesamtzahlung</span><span class="ei-kv-value">154.760,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Laufzeitende (geschätzt)</span><span class="ei-kv-value">2067</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Card: Haushaltsrechnung (collapsed) -->
+                  <div class="ei-card" id="section-haushalt" data-ei-section="haushalt">
+                    <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                      <span class="ei-card-title">Haushaltsrechnung</span>
+                      <div class="ei-card-header-right">
+                        <span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Bedingt machbar</span>
+                        <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                      </div>
+                    </button>
+                    <div class="ei-card-body" style="display:none;">
+                      <div class="ei-kv-grid">
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Nettoeinkommen</span><span class="ei-kv-value">5.800,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Sonstige Einnahmen</span><span class="ei-kv-value">200,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Lebenshaltungskosten</span><span class="ei-kv-value">2.100,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Bestehende Verbindlichkeiten</span><span class="ei-kv-value">350,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">KFZ-Kosten</span><span class="ei-kv-value">420,00 €</span></div>
+                        <div class="ei-kv-cell"><span class="ei-kv-label">Monatliche Rate</span><span class="ei-kv-value">€ 1.240</span></div>
+                      </div>
+                      <div class="ei-kv-summary-row">
+                        <span class="ei-kv-summary-label">Monatlicher Überschuss</span>
+                        <span class="ei-kv-summary-value">1.890,00 €</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div><!-- /.ei-content -->
+              </div><!-- /#ei-panel-0 -->
+
+              <!-- PANEL 1: Angebotspaket 1 -->
+              <div class="ei-panel ei-panel--placeholder" id="ei-panel-1" style="display:none;">
+                <span>Angebotspaket 1 — Sparkasse (Platzhalter)</span>
+              </div>
+
+              <!-- PANEL 2: Angebotspaket 2 -->
+              <div class="ei-panel ei-panel--placeholder" id="ei-panel-2" style="display:none;">
+                <span>Angebotspaket 2 — DKB (Platzhalter)</span>
+              </div>
+
+            </div><!-- /.ei-body -->
+
+          </section><!-- /#step-3 -->
+        </div>
+      </div>
+
+    </div><!-- /.main -->
+  </div><!-- /.app -->
+
+  <script>
+    /* ---- Row data ---- */
+    window.ANGEBOTE_DATA = [
+      { bank: 'Sparkasse',    machbarkeit: 'machbar',       sollzins: 2.85, effektivzins: 2.91, rate: 1240, restschuld: 180200, sollzinsStr: '2,85 %', effektivzinsStr: '2,91 %', rateStr: '\u20ac 1.240', restschuldStr: '\u20ac 180.200' },
+      { bank: 'ING',          machbarkeit: 'pruefen',       sollzins: 3.10, effektivzins: 3.18, rate: 1310, restschuld: 195400, sollzinsStr: '3,10 %', effektivzinsStr: '3,18 %', rateStr: '\u20ac 1.310', restschuldStr: '\u20ac 195.400' },
+      { bank: 'DKB',          machbarkeit: 'machbar',       sollzins: 2.99, effektivzins: 3.04, rate: 1275, restschuld: 182800, sollzinsStr: '2,99 %', effektivzinsStr: '3,04 %', rateStr: '\u20ac 1.275', restschuldStr: '\u20ac 182.800' },
+      { bank: 'Commerzbank',  machbarkeit: 'nicht-machbar', sollzins: 3.45, effektivzins: 3.52, rate: 1420, restschuld: 210500, sollzinsStr: '3,45 %', effektivzinsStr: '3,52 %', rateStr: '\u20ac 1.420', restschuldStr: '\u20ac 210.500' },
+      { bank: 'Postbank',     machbarkeit: 'machbar',       sollzins: 2.92, effektivzins: 2.98, rate: 1255, restschuld: 178600, sollzinsStr: '2,92 %', effektivzinsStr: '2,98 %', rateStr: '\u20ac 1.255', restschuldStr: '\u20ac 178.600' },
+      { bank: 'Volksbank',    machbarkeit: 'pruefen',       sollzins: 3.05, effektivzins: 3.12, rate: 1295, restschuld: 188900, sollzinsStr: '3,05 %', effektivzinsStr: '3,12 %', rateStr: '\u20ac 1.295', restschuldStr: '\u20ac 188.900' }
+    ];
+
+    /* ---- State ---- */
+    window.stepperState = { currentStep: 1, completed: [] };
+    window.appState     = { pinnedRows: [], erstellteAngebote: [], angefragt: new Set() };
+
+    /* ---- Stepper ---- */
+    function goToStep(n) {
+      if (n > 1 && window.stepperState.completed.indexOf(n - 1) === -1) return;
+      window.stepperState.currentStep = n;
+      document.getElementById('step-1').style.display = n === 1 ? 'flex'  : 'none';
+      document.getElementById('step-2').style.display = n === 2 ? 'block' : 'none';
+      document.getElementById('step-3').style.display = n === 3 ? 'block' : 'none';
+      renderStepper();
+    }
+
+    function unlockStep(n) {
+      if (window.stepperState.completed.indexOf(n) === -1) window.stepperState.completed.push(n);
+    }
+
+    function renderStepper() {
+      var current = window.stepperState.currentStep;
+      var done    = window.stepperState.completed;
+      [1, 2, 3].forEach(function(i) {
+        var el     = document.getElementById('stepper-step-' + i);
+        var status = done.indexOf(i) !== -1 ? 'done' : i === current ? 'active' : 'idle';
+        var ariaLabels = { active: 'aktiv', done: 'abgeschlossen', idle: 'ausstehend' };
+        el.className = 'step-item step-item--' + status;
+        el.setAttribute('aria-current', status === 'active' ? 'step' : '');
+        el.querySelector('.step-num').setAttribute('aria-label', 'Schritt ' + i + ' ' + ariaLabels[status]);
+      });
+    }
+
+    /* ---- Search table ---- */
+    function runSearch() {
+      document.getElementById('results-table').style.display = 'table';
+    }
+
+    function togglePin(rowIndex) {
+      var pinned = window.appState.pinnedRows;
+      var idx    = pinned.indexOf(rowIndex);
+      var row    = document.querySelector('[data-row="' + rowIndex + '"]');
+      var icon   = row.querySelector('.pin-icon');
+      if (idx === -1) {
+        pinned.push(rowIndex);
+        row.classList.add('row-pinned');
+        icon.classList.replace('pin-icon--off', 'pin-icon--on');
+      } else {
+        pinned.splice(idx, 1);
+        row.classList.remove('row-pinned');
+        icon.classList.replace('pin-icon--on', 'pin-icon--off');
+      }
+    }
+
+    /* ---- Angebote ---- */
+    function erstellenAngebot(btn) {
+      var rowIndex = parseInt(btn.closest('[data-row]').dataset.row);
+      if (window.appState.erstellteAngebote.indexOf(rowIndex) === -1) {
+        window.appState.erstellteAngebote.push(rowIndex);
+      }
+      unlockStep(1);
+      renderAngeboteCards();
+      updateAngeboteCounter();
+      goToStep(2);
+    }
+
+    function renderAngeboteCards() {
+      var container  = document.getElementById('angebote-grid');
+      var emptyState = document.getElementById('angebote-empty');
+      if (!container) return;
+      var cards = window.appState.erstellteAngebote;
+      if (cards.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+      if (emptyState) emptyState.style.display = 'none';
+
+      /* Compute per-metric best values (only meaningful with >1 card) */
+      var best = { sollzins: Infinity, effektivzins: Infinity, rate: Infinity, restschuld: Infinity };
+      var showBest = cards.length > 1;
+      if (showBest) {
+        cards.forEach(function(idx) {
+          var d = window.ANGEBOTE_DATA[idx];
+          if (d.sollzins     < best.sollzins)     best.sollzins     = d.sollzins;
+          if (d.effektivzins < best.effektivzins)  best.effektivzins = d.effektivzins;
+          if (d.rate         < best.rate)          best.rate         = d.rate;
+          if (d.restschuld   < best.restschuld)    best.restschuld   = d.restschuld;
+        });
+      }
+      container.innerHTML = cards.map(function(idx) { return buildCardHTML(idx, best, showBest); }).join('');
+    }
+
+    function buildCardHTML(rowIndex, best, showBest) {
+      var d           = window.ANGEBOTE_DATA[rowIndex];
+      var isAngefragt = window.appState.angefragt.has(rowIndex);
+      var state       = isAngefragt ? 'angefragt' : 'pinned';
+
+      var machLabel = { machbar: 'Machbar', pruefen: 'Pr\u00fcfen', 'nicht-machbar': 'Nicht machbar' }[d.machbarkeit];
+      var machTag   = '<span class="machbarkeit-tag tag-' + d.machbarkeit + '"><span class="tag-dot dot-' + d.machbarkeit + '"></span>' + machLabel + '</span>';
+      var einTag    = isAngefragt ? '<span class="card-einreichung-tag">In Einreichung</span>' : '';
+
+      function cell(label, key, str, num) {
+        var isBest = showBest && num === best[key];
+        return '<div class="card-data-cell">' +
+          '<span class="card-data-label">' + label + '</span>' +
+          '<span class="card-data-value' + (isBest ? ' card-data-value--best' : '') + '">' +
+            (isBest ? '\u2193\u202f' : '') + str +
+          '</span></div>';
+      }
+
+      var checkSVG = '<svg class="card-check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="7" fill="currentColor"/><path d="M4 7l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      var footerPinned = '<div class="card-footer-state card-footer-pinned"' + (isAngefragt ? ' style="display:none"' : '') + '>' +
+        '<button class="card-entfernen card-entfernen--footer" onclick="removePin(' + rowIndex + ')">entfernen</button>' +
+        '<button class="card-anfragen" onclick="anfragenOffer(' + rowIndex + ')">Anfragen \u2192</button>' +
+        '</div>';
+
+      var footerAngefragt = '<div class="card-footer-state card-footer-angefragt"' + (!isAngefragt ? ' style="display:none"' : '') + '>' +
+        '<span class="card-angefragt-info">' + checkSVG +
+          '\u00a0Wird in Einreichung angezeigt\u00a0' +
+          '<button class="card-rueckgaengig" onclick="removeAnfrage(' + rowIndex + ')">r\u00fckg\u00e4ngig</button>' +
+        '</span>' +
+        '<button class="card-anfragen card-anfragen--done" disabled>Angefragt \u2713</button>' +
+        '</div>';
+
+      var sideEntfernen = !isAngefragt
+        ? '<button class="card-entfernen card-entfernen--side" onclick="removePin(' + rowIndex + ')">entfernen</button>'
+        : '';
+
+      return [
+        '<div class="angebot-card" data-card="' + rowIndex + '" data-machbarkeit="' + d.machbarkeit + '" data-state="' + state + '">',
+          /* wide: left column */
+          '<div class="card-col-left">',
+            '<div class="card-col-left-top">',
+              '<span class="card-bank-name">' + d.bank + '</span>',
+              machTag, einTag,
+            '</div>',
+            sideEntfernen,
+          '</div>',
+          /* narrow + right column */
+          '<div class="card-col-right">',
+            '<div class="card-header">',
+              '<span class="card-bank-name">' + d.bank + '</span>',
+              '<div class="card-header-tags">' + machTag + einTag + '</div>',
+            '</div>',
+            '<div class="card-data-grid">',
+              cell('Sollzins',        'sollzins',     d.sollzinsStr,    d.sollzins),
+              cell('Monatliche Rate', 'rate',          d.rateStr,        d.rate),
+              cell('Effektivzins',    'effektivzins',  d.effektivzinsStr, d.effektivzins),
+              cell('Restschuld',      'restschuld',    d.restschuldStr,  d.restschuld),
+            '</div>',
+            '<div class="card-footer">' + footerPinned + footerAngefragt + '</div>',
+          '</div>',
+        '</div>'
+      ].join('');
+    }
+
+    function updateAngeboteCounter() {
+      var count = window.appState.erstellteAngebote.length;
+      var label = document.querySelector('#stepper-step-2 .step-item-label');
+      if (label) label.textContent = count > 0 ? 'Angebote (' + count + ')' : 'Angebote';
+    }
+
+    function anfragenOffer(rowIndex) {
+      window.appState.angefragt.add(rowIndex);
+      renderAngeboteCards();
+      addToEinreichung(window.ANGEBOTE_DATA[rowIndex].bank, rowIndex);
+      unlockStep(2);
+      renderStepper();
+    }
+
+    function removeAnfrage(rowIndex) {
+      window.appState.angefragt.delete(rowIndex);
+      renderAngeboteCards();
+      removeFromEinreichung(rowIndex);
+    }
+
+    function removePin(rowIndex) {
+      if (window.appState.angefragt.has(rowIndex)) {
+        window.appState.angefragt.delete(rowIndex);
+        removeFromEinreichung(rowIndex);
+      }
+      var idx = window.appState.erstellteAngebote.indexOf(rowIndex);
+      if (idx !== -1) window.appState.erstellteAngebote.splice(idx, 1);
+      updateAngeboteCounter();
+
+      var container = document.getElementById('angebote-grid');
+      var cardEl    = container.querySelector('[data-card="' + rowIndex + '"]');
+      if (!cardEl) return;
+
+      var undoEl = document.createElement('div');
+      undoEl.className = 'card-undo-row';
+      undoEl.innerHTML = 'Angebot entfernt\u2009\u2014\u2009<button class="card-undo-btn" onclick="undoRemovePin(' + rowIndex + ', this)">R\u00fckg\u00e4ngig</button>';
+      cardEl.parentNode.replaceChild(undoEl, cardEl);
+
+      setTimeout(function() {
+        if (undoEl.parentNode) undoEl.parentNode.removeChild(undoEl);
+        if (window.appState.erstellteAngebote.length === 0) {
+          var empty = document.getElementById('angebote-empty');
+          if (empty) empty.style.display = 'block';
+        }
+      }, 4000);
+    }
+
+    function undoRemovePin(rowIndex, btn) {
+      var undoEl = btn.closest('.card-undo-row');
+      if (undoEl && undoEl.parentNode) undoEl.parentNode.removeChild(undoEl);
+      window.appState.erstellteAngebote.push(rowIndex);
+      renderAngeboteCards();
+      updateAngeboteCounter();
+    }
+
+    function addToEinreichung(bankName, rowIndex) {
+      var list = document.getElementById('einreichung-list');
+      if (!list || list.querySelector('[data-einreichung="' + rowIndex + '"]')) return;
+      var slot = document.createElement('div');
+      slot.className = 'einreichung-slot';
+      slot.dataset.einreichung = rowIndex;
+      slot.innerHTML = '<span class="einreichung-slot-name">' + bankName + '</span>';
+      list.appendChild(slot);
+    }
+
+    function removeFromEinreichung(rowIndex) {
+      var list = document.getElementById('einreichung-list');
+      if (!list) return;
+      var slot = list.querySelector('[data-einreichung="' + rowIndex + '"]');
+      if (slot) slot.parentNode.removeChild(slot);
+    }
+
+    /* ---- Navigation ---- */
+    /* ---- Einreichung top tabs ---- */
+    function switchTopTab(n) {
+      var tabs   = document.querySelectorAll('.ei-top-tab');
+      var panels = document.querySelectorAll('.ei-panel');
+      tabs.forEach(function(t, i) { t.classList.toggle('ei-top-tab--active', i === n); });
+      panels.forEach(function(p, i) { p.style.display = i === n ? 'flex' : 'none'; });
+    }
+
+    /* ---- Einreichung card expand/collapse ---- */
+    function toggleCard(headerBtn) {
+      var card = headerBtn.closest('.ei-card');
+      var body = card.querySelector('.ei-card-body');
+      var expanded = headerBtn.getAttribute('aria-expanded') === 'true';
+      headerBtn.setAttribute('aria-expanded', !expanded);
+      card.classList.toggle('ei-card--expanded', !expanded);
+      body.style.display = !expanded ? 'block' : 'none';
+    }
+
+    /* ---- Einreichung side nav scroll ---- */
+    function scrollToSection(id) {
+      var el      = document.getElementById(id);
+      var content = document.getElementById('ei-content-0');
+      if (!el || !content) return;
+      var elTop      = el.offsetTop - content.offsetTop;
+      content.scrollTo({ top: elTop - 16, behavior: 'smooth' });
+    }
+
+    /* ---- Scroll-spy IntersectionObserver (init after DOM ready) ---- */
+    function initEinreichungScrollSpy() {
+      var content = document.getElementById('ei-content-0');
+      if (!content) return;
+      var cards = content.querySelectorAll('.ei-card');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          var sectionId = entry.target.id;
+          document.querySelectorAll('.ei-nav-item').forEach(function(item) {
+            var active = item.dataset.target === sectionId;
+            item.classList.toggle('ei-nav-item--active', active);
+          });
+        });
+      }, { root: content, threshold: 0.3 });
+      cards.forEach(function(card) { observer.observe(card); });
+    }
+
+    document.addEventListener('DOMContentLoaded', initEinreichungScrollSpy);
+
+    function setActive(btn) {
+      document.querySelectorAll('.sidebar-item').forEach(function(el) { el.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+
+    function setTab(btn) {
+      document.querySelectorAll('.tab-bar .tab').forEach(function(el) { el.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

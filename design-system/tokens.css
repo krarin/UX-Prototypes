@@ -1,0 +1,158 @@
+/* ============================================
+   DESIGN SYSTEM — FOUNDATION TOKENS
+   Source: Figma / ZeroHeight Style Guide
+   ============================================ */
+
+:root {
+
+  /* ------------------------------------------
+     PRIMARY COLOR
+  ------------------------------------------ */
+  --color-primary-700: #00796B;
+  --color-primary-600: #00877A;
+  --color-primary-500: #009688;
+  --color-primary-400: #33ABA0;
+  --color-primary-300: #99D5CF;
+  --color-primary-200: #CCEAE7;
+  --color-primary-100: #E6F5F3;
+
+  --color-primary: var(--color-primary-500);
+
+  /* ------------------------------------------
+     DARK NEUTRALS
+  ------------------------------------------ */
+  --color-neutral-dark-900: #37474F;
+  --color-neutral-dark-800: #4B5961;
+  --color-neutral-dark-600: #546E7A;
+  --color-neutral-dark-400: #607D8B;
+  --color-neutral-dark-300: #78909C;
+  --color-neutral-dark-200: #B0BEC5;
+
+  /* ------------------------------------------
+     LIGHT NEUTRALS
+  ------------------------------------------ */
+  --color-neutral-light-500: #CFD8DC;
+  --color-neutral-light-200: #F5F7F8;
+  --color-neutral-light-100: #FAFBFC;
+  --color-neutral-light-000: #FFFFFF;
+
+  /* ------------------------------------------
+     ERROR COLORS
+  ------------------------------------------ */
+  --color-error-700: #CC4545;
+  --color-error-600: #E64D4D;
+  --color-error-500: #FF5656;
+  --color-error-100: #FFEEEE;
+
+  /* ------------------------------------------
+     STATUS COLORS (step indicators)
+  ------------------------------------------ */
+  --color-status-success:       #20BF6B;
+  --color-status-success-light: #E9FCF2;
+  --color-status-review:        #4B7BEC;
+  --color-status-review-light:  #EBF0FB;
+  --color-border-secondary:     var(--color-neutral-light-500);
+
+  /* ------------------------------------------
+     SEMANTIC COLORS
+  ------------------------------------------ */
+  --color-success:              #20BF6B;
+  --color-success-light:        #E9FCF2;
+
+  --color-info:                 #4B7BEC;
+  --color-info-light:           #EBF0FB;
+
+  --color-notification:         #3DC1D3;
+  --color-notification-light:   #ECF9FB;
+
+  --color-warning-high:         #FF9F1A;
+  --color-warning-high-light:   #FFF5E8;
+
+  --color-warning-low:          #F5CD79;
+  --color-warning-low-light:    #FDF5E4;
+
+  --color-purple:               #E693F4;
+  --color-purple-light:         #FAE9FD;
+
+  /* ------------------------------------------
+     TYPOGRAPHY
+  ------------------------------------------ */
+  --font-family: 'Roboto', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+
+  /* Headings */
+  --h1-size: 24px;  --h1-line-height: 40px; --h1-weight: 400; --h1-spacing: 0px;
+  --h2-size: 20px;  --h2-line-height: 28px; --h2-weight: 500; --h2-spacing: 0px;
+  --h3-size: 16px;  --h3-line-height: 24px; --h3-weight: 500; --h3-spacing: 0.1px;
+  --h4-size: 14px;  --h4-line-height: 20px; --h4-weight: 500; --h4-spacing: 0px;
+  --h5-size: 11px;  --h5-line-height: 16px; --h5-weight: 500; --h5-spacing: 2px;
+  --h6-size: 12px;  --h6-line-height: 20px; --h6-weight: 500; --h6-spacing: 0px;
+
+  /* Body */
+  --body-regular-size: 14px;       --body-regular-line-height: 20px;  --body-regular-spacing: 0.3px;
+  --body-small-size: 12px;         --body-small-line-height: 16px;    --body-small-spacing: 0px;
+
+  /* Input */
+  --input-label-size: 14px;        --input-label-line-height: 20px;   --input-label-spacing: 0.1px;
+  --input-text-size: 16px;         --input-text-line-height: 24px;    --input-text-spacing: 0.3px;
+  --input-text-small-size: 14px;   --input-text-small-line-height: 20px; --input-text-small-spacing: 0.3px;
+
+  /* Microcopy */
+  --microcopy-size: 12px;          --microcopy-line-height: 16px;     --microcopy-spacing: 0px;
+
+  /* ------------------------------------------
+     SPACING
+  ------------------------------------------ */
+  --space-xs:  4px;
+  --space-s:   8px;
+  --space-m:   16px;
+  --space-l:   24px;
+  --space-xl:  40px;
+  --space-xxl: 64px;
+
+  /* ------------------------------------------
+     GRID
+  ------------------------------------------ */
+  --grid-columns: 12;
+  --grid-gutter:  16px;
+
+  /* ------------------------------------------
+     BORDER RADIUS
+  ------------------------------------------ */
+  --radius-xs:   2px;
+  --radius-s:    4px;
+  --radius-m:    8px;
+  --radius-l:    12px;
+  --radius-full: 9999px;
+
+  /* ------------------------------------------
+     ELEVATION / SHADOWS
+  ------------------------------------------ */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-s:  0 2px 4px rgba(0, 0, 0, 0.10);
+  --shadow-m:  0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-l:  0 8px 24px rgba(0, 0, 0, 0.14);
+
+  /* ------------------------------------------
+     Z-INDEX SCALE
+  ------------------------------------------ */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-overlay: 100;
+  --z-modal:   200;
+  --z-toast:   300;
+
+  /* ------------------------------------------
+     TRANSITIONS
+  ------------------------------------------ */
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.15s ease;
+  --transition-slow: 0.25s ease;
+
+  /* ------------------------------------------
+     FOCUS RING
+  ------------------------------------------ */
+  --focus-ring: 0 0 0 3px rgba(0, 150, 136, 0.30);
+
+}

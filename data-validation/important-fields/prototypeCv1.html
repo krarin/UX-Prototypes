@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototype C V1 – Tabelle ohne Drawer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+  <style>
+    .p2-banner-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-m);
+      margin-bottom: var(--space-m);
+    }
+    .p2-view-toggle {
+      display: inline-flex;
+      background: var(--color-neutral-light-500);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .p2-view-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-600);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+    .p2-view-btn.active {
+      background: var(--color-neutral-light-000);
+      color: var(--color-neutral-dark-900);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .p2-view-btn .material-symbols-outlined {
+      font-size: 16px;
+    }
+    .p2-fehler-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-error-100);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-error-700);
+    }
+    .p2-fehler-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-error-500);
+      flex-shrink: 0;
+    }
+    .val-table {
+      width: auto;
+      table-layout: auto;
+    }
+    .val-table th,
+    .val-table td {
+      white-space: nowrap;
+    }
+    /* Doc badge + popover */
+    .p2-doc-badge-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      vertical-align: middle;
+    }
+    .p2-doc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e8edf2;
+      border-radius: 20px;
+      padding: 3px 8px 3px 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #4a5d6e;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .p2-doc-badge .material-symbols-outlined {
+      font-size: 14px;
+      color: #4a5d6e;
+    }
+    .p2-doc-popover {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 0;
+      width: 320px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+      z-index: 200;
+      overflow: hidden;
+    }
+    .p2-doc-popover-title {
+      font-family: var(--font-family);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-neutral-dark-900);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      margin: 0;
+    }
+    .p2-doc-popover-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--color-neutral-light-500);
+    }
+    .p2-doc-popover-item:last-child { border-bottom: none; }
+    .p2-doc-popover-betrag {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: 500;
+      color: var(--color-neutral-dark-900);
+      min-width: 64px;
+    }
+    .p2-doc-popover-name {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-900);
+      flex: 1;
+      white-space: normal;
+    }
+    .p2-doc-popover-ext {
+      color: var(--color-primary-500);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .p2-doc-popover-ext .material-symbols-outlined { font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 0,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+
+        <!-- ====================================================
+             SectionNav
+        ==================================================== -->
+        <nav class="section-sidebar" id="section-nav" aria-label="Antragsabschnitte">
+
+          <div class="section-nav-client">
+            <span class="section-nav-client-dot" aria-hidden="true"></span>
+            <span class="section-nav-client-name">Maxs details</span>
+          </div>
+
+          <button class="section-nav-item indented active" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Persönliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kontakte und Adresse</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Berufliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">SCHUFA</span>
+          </button>
+
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Bonität</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Einnahmen (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Rentenansprüche (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Ausgaben (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Kredite</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Vermögen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienvermögen</span>
+          </button>
+
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Objekt</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilieninfos</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienmerkmale</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Darlehen des Finanzierungsobjekts</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Grundschulden</span>
+          </button>
+
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Finanzierung</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Anschaffungskosten</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Finanzierungswunsch</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Abweichende wirtschaftliche Berechtigter</span>
+          </button>
+
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Kundenhinweis</button>
+
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Zusätzliche Informationen</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">KWP Fragen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kundennummer</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Sonstiges</span>
+          </button>
+
+        </nav>
+
+        <!-- ====================================================
+             MainContentArea
+        ==================================================== -->
+        <div class="content-inner">
+
+          <!-- ── View Toggle ── -->
+          <div class="p2-banner-left">
+            <div class="p2-view-toggle">
+              <button class="p2-view-btn active" onclick="setView('antrag', this)">
+                <span class="material-symbols-outlined">view_column</span>
+                Antragsicht
+              </button>
+              <button class="p2-view-btn" onclick="setView('validierung', this)">
+                <span class="material-symbols-outlined">format_list_bulleted</span>
+                Tabellenansicht
+              </button>
+            </div>
+            <span class="p2-fehler-tag" id="p2-fehler-tag">
+              <span class="p2-fehler-dot"></span>
+              <span id="p2-fehler-count">9 Fehler</span>
+            </span>
+          </div>
+
+          <!-- ── Antragsansicht (placeholder) ── -->
+          <div id="antrag-view">
+            <div class="form-card">
+              <h2 class="form-card-heading">Persönliche Details</h2>
+              <p style="color:var(--color-neutral-dark-300);font-size:var(--body-small-size);">Antragsfelder werden hier angezeigt.</p>
+            </div>
+          </div>
+
+          <!-- ── Validierungsansicht ── -->
+          <div id="validation-view" style="display:none">
+
+            <!-- Completion banner -->
+            <div class="val-complete-banner" id="val-complete-banner">
+              Alle Felder geprüft. Antrag bereit zur Einreichung.
+              <button class="btn btn-secondary" disabled style="margin-left:auto;opacity:0.5;cursor:default;">Einreichungsbericht erstellen</button>
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="tab-bar val-filter-bar" id="val-filter-bar" role="tablist">
+              <button class="tab active" role="tab" aria-selected="true"  id="filter-alle"   onclick="setValFilter('alle', this)">Alle (12)</button>
+              <button class="tab"        role="tab" aria-selected="false" id="filter-fehler" onclick="setValFilter('fehler', this)">Fehler (9)</button>
+              <button class="tab"        role="tab" aria-selected="false" id="filter-bestaetigt" onclick="setValFilter('bestaetigt', this)">Bestätigt (3)</button>
+            </div>
+
+            <!-- Validation table -->
+            <div class="val-main">
+              <table class="val-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Feld</th>
+                    <th>Kundeneingabe</th>
+                    <th>Ausgelesener Wert</th>
+                    <th>Quelle</th>
+                  </tr>
+                </thead>
+                <tbody id="val-tbody"></tbody>
+              </table>
+            </div>
+
+          </div><!-- #validation-view -->
+
+        </div><!-- .content-inner -->
+
+      
+</div>
+
+<script>
+    /* ── Shell navigation ── */
+    function setActive(clickedBtn) {
+      document.querySelectorAll('#global-sidebar .sidebar-item').forEach(function(btn) {
+        btn.classList.remove('active');
+      });
+      clickedBtn.classList.add('active');
+    }
+
+    function setActiveSection(clicked) {
+      document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      clicked.classList.add('active');
+    }
+
+    function setActiveTab(clickedTab) {
+      document.querySelectorAll('.tab-nav .tab').forEach(function(tab) {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      });
+      clickedTab.classList.add('active');
+      clickedTab.setAttribute('aria-selected', 'true');
+    }
+
+    /* ── View toggle ── */
+    function setView(view, btn) {
+      document.querySelectorAll('.p2-view-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('antrag-view').style.display      = (view === 'antrag')     ? '' : 'none';
+      document.getElementById('validation-view').style.display  = (view === 'validierung') ? '' : 'none';
+    }
+
+    /* ── Validation data ── */
+    var validationData = [
+      { id:1,  status:'fehler',     abschnitt:'Einnahmen',   feld:'Gehalt (netto)',               kunde:'5.200 €',         system:'4.940 €',        quelle:'Gehaltsabrechnung',
+        quelleTitle:'Gehaltsnachweise',
+        quelleDocuments:[
+          { label:'Gehaltsabrechnung September 2025', betrag:'5.288 €', url:'#' },
+          { label:'Gehaltsabrechnung August 2025',    betrag:'5.055 €', url:'#' },
+          { label:'Gehaltsabrechnung Juli 2025',      betrag:'4.500 €', url:'#' }
+        ] },
+      { id:2,  status:'fehler',     abschnitt:'Identität',   feld:'Geburtsdatum',                 kunde:'15.03.1981',      system:'15.03.1978',     quelle:'Personalausweis'   },
+      { id:3,  status:'fehler',     abschnitt:'Dokumente',   feld:'Grundbuchauszug Datum',        kunde:'15.01.2025',      system:'20.11.2024',     quelle:'Grundbuchauszug'   },
+      { id:4,  status:'fehler',     abschnitt:'Dokumente',   feld:'Unterschrift',                 kunde:'Vorhanden',       system:'Fehlend',        quelle:'Selbstauskunft'    },
+      { id:5,  status:'fehler',     abschnitt:'Bonität',     feld:'Unterhaltsverpflichtungen',    kunde:'0 €',             system:'650 €',          quelle:'Kontoauszug'       },
+      { id:6,  status:'fehler',     abschnitt:'Einnahmen',   feld:'Variable Einkünfte',           kunde:'4.000 €',         system:'3.200 €',        quelle:'Gehaltsabrechnung' },
+      { id:7,  status:'fehler',     abschnitt:'Einnahmen',   feld:'Anzahl Monatsgehälter',        kunde:'12',              system:'13',             quelle:'Arbeitsvertrag'    },
+      { id:8,  status:'fehler',     abschnitt:'Dokumente',   feld:'Adresse Energieausweis',       kunde:'Musterstraße 12', system:'Musterstr. 12a', quelle:'Energieausweis'    },
+      { id:9,  status:'fehler',     abschnitt:'Bonität',     feld:'Private Krankenversicherung',  kunde:'380 €',           system:'420 €',          quelle:'Kontoauszug'       },
+      { id:10, status:'bestaetigt', abschnitt:'Identität',   feld:'Vorname',                      kunde:'Max',             system:'Max',            quelle:'Personalausweis'   },
+      { id:11, status:'bestaetigt', abschnitt:'Identität',   feld:'Nachname',                     kunde:'Mustermann',      system:'Mustermann',     quelle:'Personalausweis'   },
+      { id:12, status:'bestaetigt', abschnitt:'Finanzierung',feld:'Anschaffungskosten',            kunde:'440.000 €',       system:'440.000 €',      quelle:'Kaufvertrag'       }
+    ];
+
+    var currentFilter = 'alle';
+
+    function countByStatus(s) {
+      return validationData.filter(function(r) { return r.status === s; }).length;
+    }
+
+    /* ── Filter tabs ── */
+    function setValFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('#val-filter-bar .tab').forEach(function(b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      renderTable();
+    }
+
+    /* ── Update Fehler badge ── */
+    function updateFehlerBadge() {
+      var fehler = countByStatus('fehler');
+      var cnt = document.getElementById('p2-fehler-count');
+      if (cnt) cnt.textContent = fehler + ' Fehler';
+    }
+
+    /* ── Render table ── */
+    function renderTable() {
+      var tbody = document.getElementById('val-tbody');
+      tbody.innerHTML = '';
+
+      var sorted = validationData.slice().sort(function(a, b) {
+        var aConf = a.status === 'bestaetigt' ? 1 : 0;
+        var bConf = b.status === 'bestaetigt' ? 1 : 0;
+        return aConf - bConf;
+      });
+
+      var filtered = sorted.filter(function(r) {
+        if (currentFilter === 'alle')        return true;
+        if (currentFilter === 'fehler')      return r.status === 'fehler';
+        if (currentFilter === 'bestaetigt') return r.status === 'bestaetigt';
+        return true;
+      });
+
+      filtered.forEach(function(row) {
+        var tr = document.createElement('tr');
+        tr.id = 'row-' + row.id;
+
+        if (row.status === 'bestaetigt') tr.classList.add('row-confirmed');
+
+        var badgeClass = row.status === 'fehler' ? 'badge-error' : 'badge-ok';
+        var badgeText  = row.status === 'fehler' ? 'Fehler'      : 'Bestätigt';
+
+        tr.innerHTML =
+          '<td><span class="badge ' + badgeClass + '">' + badgeText + '</span></td>' +
+          '<td>' + row.feld + '</td>' +
+          '<td>' + row.kunde + '</td>' +
+          '<td>' + row.system + '</td>' +
+          (function() {
+            if (row.quelleDocuments) {
+              var docsHtml = row.quelleDocuments.map(function(d) {
+                return '<div class="p2-doc-popover-item">' +
+                  '<span class="p2-doc-popover-betrag">' + d.betrag + '</span>' +
+                  '<span class="p2-doc-popover-name">' + d.label + '</span>' +
+                  '<a href="' + d.url + '" class="p2-doc-popover-ext" target="_blank">' +
+                    '<span class="material-symbols-outlined">open_in_new</span>' +
+                  '</a></div>';
+              }).join('');
+              return '<td><span class="p2-doc-badge-wrap">' +
+                '<a href="#" class="val-source-link">' + row.quelle + '</a>' +
+                '<span class="p2-doc-badge">' +
+                  '<span class="material-symbols-outlined">description</span>' +
+                  row.quelleDocuments.length +
+                '</span>' +
+                '<div class="p2-doc-popover">' +
+                  '<p class="p2-doc-popover-title">' + (row.quelleTitle || row.quelle) + '</p>' +
+                  docsHtml +
+                '</div></span></td>';
+            }
+            return '<td><a href="#" class="val-source-link">' + row.quelle + '</a></td>';
+          })();
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateFilterCounts() {
+      var total      = validationData.length;
+      var fehler     = countByStatus('fehler');
+      var bestaetigt = countByStatus('bestaetigt');
+      document.getElementById('filter-alle').textContent        = 'Alle (' + total + ')';
+      document.getElementById('filter-fehler').textContent      = 'Fehler (' + fehler + ')';
+      document.getElementById('filter-bestaetigt').textContent  = 'Bestätigt (' + bestaetigt + ')';
+      updateFehlerBadge();
+    }
+
+    /* ── Doc badge sticky hover ── */
+    function attachPopoverListeners() {
+      var hideTimer = null;
+      var tbody = document.getElementById('val-tbody');
+
+      tbody.addEventListener('mouseover', function(e) {
+        var badge   = e.target.closest('.p2-doc-badge');
+        var popover = e.target.closest('.p2-doc-popover');
+        if (badge || popover) {
+          clearTimeout(hideTimer);
+          if (badge) {
+            var pop = badge.closest('.p2-doc-badge-wrap').querySelector('.p2-doc-popover');
+            if (pop) pop.style.display = 'block';
+          }
+        }
+      });
+
+      tbody.addEventListener('mouseout', function(e) {
+        var badge   = e.target.closest('.p2-doc-badge');
+        var popover = e.target.closest('.p2-doc-popover');
+        if (badge || popover) {
+          var wrap = (badge || popover).closest('.p2-doc-badge-wrap');
+          var pop  = wrap && wrap.querySelector('.p2-doc-popover');
+          hideTimer = setTimeout(function() {
+            if (pop) pop.style.display = '';
+          }, 150);
+        }
+      });
+    }
+
+    /* ── Init ── */
+    renderTable();
+    updateFilterCounts();
+    updateFehlerBadge();
+    attachPopoverListeners();
+  </script>
+
+</body>
+</html>

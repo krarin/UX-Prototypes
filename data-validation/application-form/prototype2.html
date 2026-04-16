@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototype 2 – Floating Widget</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ============================================================
+       VALIDATION BANNER
+    ============================================================ */
+
+    .p2-banner {
+      position: sticky;
+      top: calc(-1 * var(--space-l));
+      margin: calc(-1 * var(--space-l)) calc(-1 * var(--space-l)) var(--space-l);
+      padding: var(--space-s) var(--space-l);
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-m);
+      z-index: 20;
+    }
+
+    .p2-banner-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-m);
+    }
+
+    .p2-view-toggle {
+      display: inline-flex;
+      background: var(--color-neutral-light-500);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .p2-view-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-600);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    .p2-view-btn.active {
+      background: var(--color-neutral-light-000);
+      color: var(--color-neutral-dark-900);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .p2-view-btn .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .p2-fehler-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-error-100);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-error-700);
+    }
+
+    .p2-fehler-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-error-500);
+      flex-shrink: 0;
+    }
+
+    /* Tabellenansicht */
+    .p2-val-table {
+      width: auto;
+      border-collapse: collapse;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      table-layout: auto;
+    }
+
+    .p2-val-table th {
+      text-align: left;
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 2px solid var(--color-neutral-light-500);
+      color: var(--color-neutral-dark-400);
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
+
+    .p2-val-table td {
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      color: var(--color-neutral-dark-800);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .p2-val-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .p2-val-table tr:hover td {
+      background: var(--color-neutral-light-200);
+    }
+
+    .p2-tbl-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
+
+    .p2-tbl-pill.fehler {
+      background: var(--color-error-100);
+      color: var(--color-error-700);
+    }
+
+    .p2-tbl-pill.bestaetigt {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    /* ============================================================
+       FLOATING WIDGET
+    ============================================================ */
+
+    .p2-widget {
+      position: fixed;
+      bottom: var(--space-l);
+      right: var(--space-l);
+      width: 360px;
+      max-height: 80vh;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .p2-widget-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+    }
+
+    .p2-widget-title {
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+
+    .p2-widget-progress {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+      margin-left: auto;
+    }
+
+    .p2-widget-minimize {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-neutral-dark-400);
+      padding: var(--space-xs);
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .p2-widget-minimize:hover {
+      background: var(--color-neutral-light-200);
+      color: var(--color-neutral-dark-800);
+    }
+
+    .p2-widget-minimize .material-symbols-outlined {
+      font-size: var(--h3-size);
+    }
+
+    .p2-widget-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      scrollbar-width: none;
+    }
+
+    .p2-widget-body::-webkit-scrollbar { display: none; }
+
+    .p2-widget-footer {
+      border-top: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+    }
+
+    /* Widget sections */
+    .p2-section {
+      padding: var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+    }
+
+    .p2-section:last-child {
+      border-bottom: none;
+    }
+
+    /* Undo toast */
+    .p2-toast {
+      padding: var(--space-s) var(--space-m);
+      background: var(--color-success-light);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-600);
+      gap: var(--space-s);
+    }
+
+    /* Status badge */
+    .p2-status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-s);
+      border-radius: 10px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .p2-status-pill.fehler {
+      background: var(--color-error-100);
+      color: var(--color-error-700);
+    }
+
+    .p2-status-pill.warnung {
+      background: var(--color-warning-high-light);
+      color: var(--color-warning-high);
+    }
+
+    /* Field identity */
+    .p2-field-name {
+      font-family: var(--font-family);
+      font-size: var(--h3-size);
+      font-weight: var(--h3-weight);
+      line-height: var(--h3-line-height);
+      color: var(--color-neutral-dark-900);
+      margin: var(--space-xs) 0 2px;
+    }
+
+    .p2-field-abschnitt {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    .p2-jump-link {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary-500);
+      text-decoration: none;
+      display: inline-block;
+      margin-top: var(--space-s);
+    }
+
+    .p2-jump-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Mismatch row */
+    .p2-mismatch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-m);
+    }
+
+    .p2-value-label {
+      font-family: var(--font-family);
+      font-size: var(--h5-size);
+      font-weight: var(--h5-weight);
+      letter-spacing: var(--h5-spacing);
+      text-transform: uppercase;
+      color: var(--color-neutral-dark-300);
+      margin-bottom: var(--space-xs);
+    }
+
+    .p2-value-text {
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+
+    .p2-source-note {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+      margin-top: var(--space-s);
+    }
+
+    .p2-quelle-link {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary-500);
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .p2-quelle-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Document count badge + hover popover */
+    .p2-doc-badge-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      vertical-align: middle;
+    }
+
+    .p2-doc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e8edf2;
+      border-radius: 20px;
+      padding: 3px 8px 3px 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #4a5d6e;
+      cursor: default;
+      line-height: 1;
+    }
+
+    .p2-doc-badge .material-symbols-outlined {
+      font-size: 14px;
+      color: #4a5d6e;
+    }
+
+    .p2-doc-popover {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 320px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .p2-doc-badge-wrap:hover .p2-doc-popover {
+      display: block;
+    }
+
+    .p2-doc-popover-title {
+      font-family: var(--font-family);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-neutral-dark-900);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      margin: 0;
+    }
+
+    .p2-doc-popover-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--color-neutral-light-500);
+    }
+
+    .p2-doc-popover-item:last-child {
+      border-bottom: none;
+    }
+
+    .p2-doc-popover-betrag {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: 500;
+      color: var(--color-neutral-dark-900);
+      min-width: 64px;
+    }
+
+    .p2-doc-popover-name {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-900);
+      flex: 1;
+    }
+
+    .p2-doc-popover-ext {
+      color: var(--color-primary-500);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .p2-doc-popover-ext .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    /* Issue summary box — matches prototype1 val-drawer-issue-box */
+    .p2-issue-box {
+      background: var(--color-warning-high-light);
+      border-radius: 4px;
+      padding: var(--space-m);
+      margin-top: var(--space-m);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-800);
+    }
+
+    /* Editable field */
+    .p2-input-label {
+      display: block;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      margin-bottom: var(--space-xs);
+    }
+
+    .p2-edit-input {
+      width: 100%;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: 4px;
+      padding: var(--space-s) var(--space-m);
+      font-family: var(--font-family);
+      font-size: var(--input-text-small-size);
+      color: var(--color-neutral-dark-900);
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+
+    .p2-edit-input:focus {
+      border-color: var(--color-primary-500);
+    }
+
+    .p2-adopt-system {
+      display: inline-block;
+      margin-top: var(--space-xs);
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-primary-500);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .p2-adopt-system:hover {
+      color: var(--color-primary-700);
+    }
+
+    .p2-match-ok {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-success);
+      margin-top: var(--space-xs);
+    }
+
+    .p2-match-warn {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-warning-high);
+      margin-top: var(--space-xs);
+    }
+
+    /* Comment */
+    .p2-comment-input {
+      width: 100%;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: 4px;
+      padding: var(--space-s) var(--space-m);
+      font-family: var(--font-family);
+      font-size: var(--input-text-small-size);
+      color: var(--color-neutral-dark-900);
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+
+    .p2-comment-input:focus {
+      border-color: var(--color-primary-500);
+    }
+
+    .p2-comment-input.required {
+      border-color: var(--color-warning-high);
+    }
+
+    /* Inline mismatch warning */
+    .p2-inline-warning {
+      background: var(--color-warning-high-light);
+      border-radius: 4px;
+      padding: var(--space-s) var(--space-m);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-600);
+    }
+
+    .p2-inline-warning-links {
+      display: flex;
+      gap: var(--space-m);
+      margin-top: var(--space-s);
+    }
+
+    /* Confirm button */
+    .p2-confirm-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: 6px var(--space-m);
+      background: var(--color-primary-500);
+      color: var(--color-neutral-light-000);
+      border: none;
+      border-radius: 4px;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      margin-bottom: var(--space-s);
+    }
+
+    .p2-confirm-btn:hover:not(:disabled) {
+      background: var(--color-primary-600);
+    }
+
+    .p2-confirm-btn:disabled {
+      background: var(--color-neutral-light-500);
+      color: var(--color-neutral-dark-300);
+      cursor: not-allowed;
+    }
+
+    .p2-confirm-btn .material-symbols-outlined {
+      font-size: var(--h3-size);
+    }
+
+    /* Navigation row */
+    .p2-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .p2-nav-link {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary-500);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .p2-nav-link:hover {
+      text-decoration: underline;
+    }
+
+    .p2-nav-link.disabled {
+      color: var(--color-neutral-dark-200);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .p2-nav-pos {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* Completion */
+    .p2-completion-msg {
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      margin-bottom: var(--space-m);
+    }
+
+    /* Minimized pill */
+    .p2-pill {
+      position: fixed;
+      bottom: var(--space-l);
+      right: var(--space-l);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      border-radius: 20px;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      border: none;
+      z-index: 200;
+      transition: opacity 0.15s ease;
+    }
+
+    .p2-pill.fehler {
+      background: var(--color-error-500);
+      color: var(--color-neutral-light-000);
+    }
+
+    .p2-pill.warnung {
+      background: var(--color-warning-high);
+      color: var(--color-neutral-light-000);
+    }
+
+    .p2-pill.ok {
+      background: var(--color-success);
+      color: var(--color-neutral-light-000);
+    }
+
+    /* ============================================================
+       FORM FIELD HIGHLIGHTING
+    ============================================================ */
+
+    .form-field.has-fehler .form-input {
+      border-color: var(--color-error-500);
+    }
+
+    .form-field.has-warnung .form-input {
+      border-color: var(--color-warning-high);
+    }
+
+    .form-field.has-success .form-input {
+      border-color: var(--color-success);
+    }
+
+    .p2-field-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px var(--space-xs);
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: var(--font-weight-medium);
+      font-family: var(--font-family);
+      vertical-align: middle;
+      margin-left: var(--space-xs);
+      line-height: 16px;
+    }
+
+    .p2-field-badge.fehler {
+      background: var(--color-error-100);
+      color: var(--color-error-700);
+    }
+
+    .p2-field-badge.warnung {
+      background: var(--color-warning-high-light);
+      color: var(--color-warning-high);
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 1,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+
+        <!-- SectionNav -->
+        <nav class="section-sidebar" id="section-nav">
+          <div class="section-nav-client">
+            <span class="section-nav-client-dot"></span>
+            <span class="section-nav-client-name">Maxs Details</span>
+          </div>
+          <button class="section-nav-item indented active" onclick="setActiveSection(this)"><span class="section-nav-item-label">Persönliche Details</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Kontakte und Adresse</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Berufliche Details</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">SCHUFA</span></button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Bonität</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Einnahmen (monatlich)</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Rentenansprüche (monatlich)</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Ausgaben (monatlich)</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Bestehende Kredite</span></button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Objekt</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Immobilieninfos</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Immobilienmerkmale</span></button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Finanzierung</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Anschaffungskosten</span></button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Finanzierungswunsch</span></button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Dokumente</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Grundbuch &amp; Energie</span></button>
+        </nav>
+
+        <!-- Main content -->
+        <div class="content-inner">
+
+          <!-- Persistent validation banner -->
+          <div class="p2-banner" id="p2-banner">
+            <div class="p2-banner-left">
+              <div class="p2-view-toggle">
+                <button class="p2-view-btn active" id="p2-view-antrag" onclick="setView('antrag')">
+                  <span class="material-symbols-outlined">view_column</span>
+                  Antragsicht
+                </button>
+                <button class="p2-view-btn" id="p2-view-tabelle" onclick="setView('tabelle')">
+                  <span class="material-symbols-outlined">format_list_bulleted</span>
+                  Tabellenansicht
+                </button>
+              </div>
+              <span class="p2-fehler-tag" id="p2-fehler-tag">
+                <span class="p2-fehler-dot"></span>
+                <span id="p2-fehler-count">10 Fehler</span>
+              </span>
+            </div>
+            <button class="btn btn-primary" id="p2-start-btn" onclick="startValidation()">Validierung starten</button>
+          </div>
+
+          <!-- Form view (Antragsicht) -->
+          <div id="antrag-form-view">
+
+          <!-- Card: Persönliche Details -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Persönliche Details</h2>
+            <div class="field-grid-4">
+              <div class="form-field">
+                <label class="form-field-label">Anrede</label>
+                <div class="form-input-wrap"><select class="form-input"><option>Herr</option><option>Frau</option></select></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Akademischer Titel</label>
+                <div class="form-input-wrap"><select class="form-input"><option value=""></option><option>Dr.</option><option>Prof.</option></select></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Vorname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Max" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Nachname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Mustermann" /></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsname</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field" id="field-geburtsdatum">
+                <label class="form-field-label">Geburtsdatum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="15.03.1981" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Geburtsort</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="München" /></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsland</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Deutschland" /></div>
+              </div>
+              <div class="form-field" id="field-staatsangehoerigkeit">
+                <label class="form-field-label">Staatsangehörigkeit</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value="">Bitte wählen...</option>
+                    <option>Deutsch</option>
+                    <option>Österreichisch</option>
+                    <option>Schweizerisch</option>
+                    <option>Türkisch</option>
+                    <option>Andere</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Aufenthaltsstatus *</label>
+                <div class="form-input-wrap"><select class="form-input"><option>Deutsche Staatsangehörigkeit</option></select></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Familienstand</label>
+                <div class="form-input-wrap"><select class="form-input"><option>Verheiratet</option></select></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Personen im Haushalt</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="3" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Steueridentifikationsnummer</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="12 345 678 901" /></div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">IBAN</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="DE89 3704 0044 0532 0130 00" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Kontoinhaber</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Max Mustermann" /></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Einnahmen -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Einnahmen (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Einnahmen</p></div>
+              <div class="field-grid-2">
+                <div class="form-field" id="field-gehalt-netto">
+                  <label class="form-field-label">Gehalt (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" placeholder="Pflichtfeld" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field" id="field-monatsgehaelter">
+                  <label class="form-field-label">Anzahl Monatsgehälter</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="12" /></div>
+                </div>
+                <div class="form-field" id="field-variable-einkuenfte">
+                  <label class="form-field-label">Variable Einkünfte (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="4.000" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bruttoeinkommen</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="7.800" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+                <span class="form-summary-value">4.000 €</span>
+              </div>
+            </div>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Annas Einnahmen</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Gehalt (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="4.200" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Anzahl Monatsgehälter</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="13" /></div>
+                </div>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+                <span class="form-summary-value">4.550 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Rentenansprüche -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Rentenansprüche (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Rentenansprüche</p></div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten-Eintrittsdatum</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="01.08.2048" /></div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Gesetzliche Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="1.850" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Private Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="320" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Ausgaben -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Ausgaben (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Ausgaben</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Derzeitige Mietkosten</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="1.400" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Entfallen Mietkosten künftig?</label>
+                  <div class="form-radio-group">
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="ja" checked /> Ja</label>
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="nein" /> Nein</label>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten- und Lebensversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="280" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field" id="field-pkv">
+                  <label class="form-field-label">Private Krankenversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="380" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Berufsunfähigkeitsversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="95" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field" id="field-unterhalt">
+                  <label class="form-field-label">Unterhaltsverpflichtungen</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="0" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Sparpläne</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="200" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bausparvertrag</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="150" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Gesamtausgaben:</span>
+                <span class="form-summary-value">2.505 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Finanzierung -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Finanzierung</h2>
+            <div class="field-grid-3">
+              <div class="form-field" id="field-anschaffungskosten">
+                <label class="form-field-label">Anschaffungskosten</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="440.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Eigenkapital</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="88.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Darlehensbetrag</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="352.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Sollzinssatz</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="3,75" />
+                  <span class="form-input-suffix">%</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Tilgungssatz</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="2,00" />
+                  <span class="form-input-suffix">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Dokumente -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Dokumente</h2>
+            <div class="field-grid-2">
+              <div class="form-field" id="field-grundbuch-datum">
+                <label class="form-field-label">Grundbuchauszug Datum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="15.01.2025" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Grundbuchauszug Nummer</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="GB-2025-00142" /></div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field" id="field-adresse-energie">
+                <label class="form-field-label">Adresse Energieausweis</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Musterstraße 12" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Energieausweis gültig bis</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="30.09.2034" /></div>
+              </div>
+            </div>
+          </div>
+
+          </div><!-- #antrag-form-view -->
+
+          <!-- Table view (Tabellenansicht) -->
+          <div id="tabellen-view" style="display:none">
+            <table class="p2-val-table">
+              <thead>
+                <tr>
+                  <th>Abschnitt</th>
+                  <th>Feld</th>
+                  <th>Kundeneingabe</th>
+                  <th>Systemwert</th>
+                  <th>Quelle</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="p2-val-tbody"></tbody>
+            </table>
+          </div>
+
+        </div><!-- .content-inner -->
+      
+</div>
+
+<script>
+    /* ── Shell nav ── */
+    function setActive(btn) {
+      document.querySelectorAll('#global-sidebar .sidebar-item').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+    function setActiveSection(el) {
+      document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(function(e) { e.classList.remove('active'); });
+      el.classList.add('active');
+    }
+    function setActiveTab(tab) {
+      document.querySelectorAll('.tab-nav .tab').forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+    }
+
+    /* ── Mock data ── */
+    var ITEMS = [
+      { id:1, type:'fehler',  abschnitt:'Persönliche Details', feld:'Staatsangehörigkeit', empty:true,
+        message:'Staatsangehörigkeit fehlt, darf nicht leer sein.',
+        options:['Deutsch','Österreichisch','Schweizerisch','Türkisch','Andere'],
+        kunde:'', system:'', quelle:'', quelleNote:'', fieldId:'field-staatsangehoerigkeit' },
+      { id:2, type:'fehler',  abschnitt:'Einnahmen',   feld:'Variable Einkünfte',      empty:false,
+        kunde:'4.000 €', system:'3.200 €', quelle:'Gehaltsabrechnung', quelleNote:'Ø aus 3 Gehaltsabrechnungen', fieldId:'field-variable-einkuenfte',
+        quelleTitle:'Gehaltsnachweise',
+        quelleDocuments:[
+          { label:'Gehaltsabrechnung September 2025', betrag:'5.288 €', url:'#' },
+          { label:'Gehaltsabrechnung August 2025',    betrag:'5.055 €', url:'#' },
+          { label:'Gehaltsabrechnung Juli 2025',      betrag:'4.500 €', url:'#' }
+        ] },
+      { id:3, type:'fehler',  abschnitt:'Identität',   feld:'Geburtsdatum',            empty:false,
+        kunde:'15.03.1981', system:'15.03.1978', quelle:'Personalausweis', quelleNote:'', fieldId:'field-geburtsdatum' },
+      { id:4, type:'fehler',  abschnitt:'Dokumente',   feld:'Grundbuchauszug Datum',   empty:false,
+        kunde:'15.01.2025', system:'20.11.2024', quelle:'Grundbuchauszug', quelleNote:'', fieldId:'field-grundbuch-datum' },
+      { id:5, type:'fehler',  abschnitt:'Bonität',     feld:'Unterhaltsverpflichtungen', empty:false,
+        kunde:'0 €', system:'650 €', quelle:'Kontoauszug', quelleNote:'', fieldId:'field-unterhalt' },
+      { id:6, type:'fehler', abschnitt:'Einnahmen',   feld:'Anzahl Monatsgehälter',   empty:false,
+        kunde:'12', system:'13', quelle:'Arbeitsvertrag', quelleNote:'', fieldId:'field-monatsgehaelter' },
+      { id:7, type:'fehler', abschnitt:'Dokumente',   feld:'Adresse Energieausweis',  empty:false,
+        kunde:'Musterstraße 12', system:'Musterstr. 12a', quelle:'Energieausweis', quelleNote:'', fieldId:'field-adresse-energie' },
+      { id:8, type:'fehler', abschnitt:'Bonität',     feld:'Private Krankenversicherung', empty:false,
+        kunde:'380 €', system:'420 €', quelle:'Kontoauszug', quelleNote:'', fieldId:'field-pkv' },
+      { id:9, type:'fehler', abschnitt:'Finanzierung',feld:'Anschaffungskosten',      empty:false,
+        kunde:'440.000 €', system:'435.000 €', quelle:'Kaufvertrag', quelleNote:'', fieldId:'field-anschaffungskosten' }
+    ];
+
+    /* ── State ── */
+    var queue        = [1,2,3,4,5,6,7,8,9];
+    var currentIdx   = 0;
+    var widgetActive = false;
+    var editVals     = {};
+    var commentVals  = {};
+    var undoData     = null;
+    var undoTimer    = null;
+    var showWarning  = false; /* inline mismatch warning flag */
+
+    function itemById(id) {
+      return ITEMS.find(function(i) { return i.id === id; });
+    }
+
+    function currentItem() {
+      if (queue.length === 0) return null;
+      return itemById(queue[currentIdx]);
+    }
+
+    /* ── Start / minimize / expand ── */
+    function startValidation() {
+      widgetActive = true;
+      document.getElementById('p2-widget').style.display = 'flex';
+      document.getElementById('p2-pill').style.display   = 'none';
+      updateBanner();
+      render();
+      highlightCurrent();
+    }
+
+    function minimizeWidget() {
+      flushInputState();
+      document.getElementById('p2-widget').style.display = 'none';
+      renderPill();
+      document.getElementById('p2-pill').style.display = 'flex';
+    }
+
+    function expandWidget() {
+      document.getElementById('p2-pill').style.display   = 'none';
+      document.getElementById('p2-widget').style.display = 'flex';
+      render();
+    }
+
+    /* ── View toggle ── */
+    function setView(v) {
+      document.getElementById('p2-view-antrag').classList.toggle('active', v === 'antrag');
+      document.getElementById('p2-view-tabelle').classList.toggle('active', v === 'tabelle');
+      document.getElementById('section-nav').style.display     = v === 'antrag'  ? '' : 'none';
+      document.getElementById('antrag-form-view').style.display = v === 'antrag'  ? '' : 'none';
+      document.getElementById('tabellen-view').style.display    = v === 'tabelle' ? '' : 'none';
+      if (v === 'tabelle') renderTable();
+    }
+
+    function renderTable() {
+      var tbody = document.getElementById('p2-val-tbody');
+      tbody.innerHTML = ITEMS.map(function(item) {
+        var confirmed = !queue.includes(item.id);
+        var statusClass = confirmed ? 'bestaetigt' : 'fehler';
+        var statusLabel = confirmed ? 'Bestätigt' : 'Fehler';
+        return '<tr>' +
+          '<td>' + esc(item.abschnitt) + '</td>' +
+          '<td>' + esc(item.feld) + '</td>' +
+          '<td>' + esc(item.empty ? '—' : item.kunde) + '</td>' +
+          '<td>' + esc(item.empty ? '—' : item.system) + '</td>' +
+          '<td>' + esc(item.quelle || '—') + '</td>' +
+          '<td><span class="p2-tbl-pill ' + statusClass + '">' + statusLabel + '</span></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    /* ── Banner ── */
+    function updateBanner() {
+      var total     = ITEMS.length;
+      var confirmed = total - queue.length;
+      var btn = document.getElementById('p2-start-btn');
+      var tag = document.getElementById('p2-fehler-tag');
+      var cnt = document.getElementById('p2-fehler-count');
+
+      if (queue.length === 0) {
+        if (tag) { tag.style.background = 'var(--color-success-light)'; }
+        if (cnt) cnt.textContent = 'Alle geprüft';
+        var dot = tag ? tag.querySelector('.p2-fehler-dot') : null;
+        if (dot) dot.style.background = 'var(--color-success)';
+        if (btn) btn.style.display = 'none';
+        return;
+      }
+      if (cnt) cnt.textContent = queue.length + ' Fehler';
+      if (btn) btn.style.display = 'none';
+    }
+
+    /* ── Pill ── */
+    function renderPill() {
+      var pill = document.getElementById('p2-pill');
+      var openCount = queue.length;
+      pill.classList.remove('fehler','warnung','ok');
+      if (openCount === 0) {
+        pill.classList.add('ok');
+        pill.textContent = 'Validierung · Abgeschlossen';
+      } else {
+        pill.classList.add('fehler');
+        pill.textContent = 'Validierung · ' + openCount + ' offen';
+      }
+    }
+
+    /* ── Main render ── */
+    function render() {
+      var item = currentItem();
+      var body   = document.getElementById('p2-widget-body');
+      var footer = document.getElementById('p2-widget-footer');
+
+      /* Progress */
+      document.getElementById('p2-widget-progress').textContent =
+        queue.length > 0 ? (currentIdx + 1) + ' von ' + queue.length : '';
+
+      if (!item) {
+        renderCompletion(body, footer);
+        return;
+      }
+
+      var editVal    = editVals[item.id]    !== undefined ? editVals[item.id]    : (item.empty ? '' : item.kunde);
+      var commentVal = commentVals[item.id] !== undefined ? commentVals[item.id] : '';
+      var valueChanged = !item.empty && editVal !== item.kunde;
+      var commentRequired = valueChanged && editVal !== '';
+      var confirmEnabled  = item.empty
+        ? editVal !== ''
+        : !(commentRequired && commentVal === '');
+
+      var html = '';
+
+      /* Undo toast */
+      if (undoData) {
+        html += '<div class="p2-toast" id="p2-toast">' +
+          '<span>Gespeichert.</span>' +
+          '<a href="#" class="p2-nav-link" onclick="undoConfirm(event)">Rückgängig</a>' +
+          '</div>';
+      }
+
+      /* A: Status badge */
+      html += '<div class="p2-section">' +
+        '<span class="p2-status-pill ' + item.type + '">' + (item.type === 'fehler' ? 'Fehler' : 'Warnung') + '</span>' +
+        '<p class="p2-field-name">' + esc(item.feld) + '</p>' +
+        '<p class="p2-field-abschnitt">' + esc(item.abschnitt) + '</p>' +
+        '<a href="#" class="p2-jump-link" onclick="jumpToField(event,\'' + item.fieldId + '\')">Zum Feld springen</a>' +
+        '</div>';
+
+      /* D: Mismatch or empty */
+      html += '<div class="p2-section">';
+      if (item.empty) {
+        html += '<p class="p2-issue-box">' + esc(item.message) + '</p>';
+      } else {
+        html += '<div class="p2-mismatch-grid">' +
+          '<div><p class="p2-value-label">Kundeneingabe</p><p class="p2-value-text">' + esc(item.kunde) + '</p></div>' +
+          '<div><p class="p2-value-label">Systemwert</p><p class="p2-value-text">' + esc(item.system) + '</p></div>' +
+          '</div>';
+        if (item.quelleNote) html += '<p class="p2-source-note">' + esc(item.quelleNote) + '</p>';
+        if (item.quelle) {
+          if (item.quelleDocuments) {
+            var docsHtml = item.quelleDocuments.map(function(d) {
+              return '<div class="p2-doc-popover-item">' +
+                '<span class="p2-doc-popover-betrag">' + esc(d.betrag) + '</span>' +
+                '<span class="p2-doc-popover-name">' + esc(d.label) + '</span>' +
+                '<a href="' + esc(d.url) + '" class="p2-doc-popover-ext" target="_blank">' +
+                  '<span class="material-symbols-outlined">open_in_new</span>' +
+                '</a>' +
+              '</div>';
+            }).join('');
+            html += '<span class="p2-doc-badge-wrap">' +
+              '<a href="#" class="p2-quelle-link">→ ' + esc(item.quelle) + '</a>' +
+              '<span class="p2-doc-badge">' +
+                '<span class="material-symbols-outlined">description</span>' +
+                item.quelleDocuments.length +
+              '</span>' +
+              '<div class="p2-doc-popover">' +
+                '<p class="p2-doc-popover-title">' + esc(item.quelleTitle || item.quelle) + '</p>' +
+                docsHtml +
+              '</div>' +
+            '</span>';
+          } else {
+            html += '<a href="#" class="p2-quelle-link">→ ' + esc(item.quelle) + '</a>';
+          }
+        }
+        html += '<p class="p2-issue-box">' + esc(item.feld) + ' stimmt nicht mit dem Systemwert überein.</p>';
+      }
+      html += '</div>';
+
+      /* E: Editable field */
+      html += '<div class="p2-section">' +
+        '<span class="p2-input-label">Wert ' + (item.empty ? 'eingeben' : 'bearbeiten') + '</span>';
+      if (item.options) {
+        var listId = 'p2-options-list-' + item.id;
+        html += '<input type="text" class="p2-edit-input" id="p2-edit-input"' +
+          ' value="' + esc(editVal) + '" placeholder="Auswählen oder eingeben..."' +
+          ' list="' + listId + '" oninput="onEditInput()" />' +
+          '<datalist id="' + listId + '">';
+        item.options.forEach(function(opt) { html += '<option value="' + esc(opt) + '">'; });
+        html += '</datalist>';
+      } else {
+        html += '<input type="text" class="p2-edit-input" id="p2-edit-input"' +
+          ' value="' + esc(editVal) + '"' +
+          ' placeholder="' + (item.empty ? 'Wert eingeben...' : '') + '"' +
+          ' oninput="onEditInput()" />';
+      }
+      if (!item.empty) {
+        html += '<button class="p2-adopt-system" onclick="adoptSystemVal()">Systemwert übernehmen</button>';
+        if (editVal === item.system) {
+          html += '<p class="p2-match-ok">✓ Stimmt mit Systemwert überein</p>';
+        } else if (editVal !== '' && valueChanged) {
+          html += '<p class="p2-match-warn">⚠ Weicht vom Systemwert ab</p>';
+        }
+      }
+      html += '</div>';
+
+      /* F: Kommentar */
+      html += '<div class="p2-section">' +
+        '<span class="p2-input-label">Kommentar</span>' +
+        '<textarea class="p2-comment-input' + (commentRequired ? ' required' : '') + '"' +
+        ' id="p2-comment-input" rows="3"' +
+        ' placeholder="' + (commentRequired ? 'Kommentar erforderlich...' : 'Kommentar hinzufügen...') + '"' +
+        ' oninput="onCommentInput()">' + esc(commentVal) + '</textarea>' +
+        '</div>';
+
+      /* G: Inline mismatch warning */
+      if (showWarning) {
+        html += '<div class="p2-section">' +
+          '<div class="p2-inline-warning">' +
+          '<p>Wert stimmt noch nicht mit Systemwert überein. Trotzdem bestätigen?</p>' +
+          '<div class="p2-inline-warning-links">' +
+          '<a href="#" class="p2-nav-link" onclick="confirmAnyway(event)">Ja, bestätigen</a>' +
+          '<a href="#" class="p2-nav-link" onclick="cancelWarning(event)">Abbrechen</a>' +
+          '</div></div></div>';
+      }
+
+      body.innerHTML = html;
+
+      /* H + I: Footer */
+      footer.innerHTML =
+        '<div class="p2-section" style="border-bottom:none">' +
+        '<button class="p2-confirm-btn" id="p2-confirm-btn"' + (confirmEnabled ? '' : ' disabled') +
+        ' onclick="onConfirmClick()">' +
+        'Bestätigen und Weiter <span class="material-symbols-outlined">arrow_forward</span>' +
+        '</button>' +
+        '<div class="p2-nav-row">' +
+        '<a href="#" class="p2-nav-link' + (currentIdx <= 0 ? ' disabled' : '') + '" onclick="goBack(event)">← Zurück</a>' +
+        '<span class="p2-nav-pos">' + (currentIdx + 1) + ' von ' + queue.length + '</span>' +
+        '<a href="#" class="p2-nav-link' + (currentIdx >= queue.length - 1 ? ' disabled' : '') + '" onclick="skipItem(event)">Überspringen →</a>' +
+        '</div></div>';
+    }
+
+    function renderCompletion(body, footer) {
+      updateBanner();
+      body.innerHTML =
+        '<div class="p2-section">' +
+        '<p class="p2-completion-msg">Validierung abgeschlossen</p>' +
+        '</div>';
+      footer.innerHTML =
+        '<div class="p2-section" style="border-bottom:none">' +
+        '<button class="p2-confirm-btn" disabled>Einreichungsbericht erstellen</button>' +
+        '</div>';
+    }
+
+    function adoptSystemVal() {
+      var item = currentItem();
+      if (!item || item.empty) return;
+      var input = document.getElementById('p2-edit-input');
+      if (!input) return;
+      input.value = item.system;
+      onEditInput();
+    }
+
+    /* ── Input handlers (no full re-render) ── */
+    function onEditInput() {
+      var item = currentItem();
+      if (!item) return;
+      var input = document.getElementById('p2-edit-input');
+      editVals[item.id] = input.value;
+      var val = input.value;
+
+      /* Passive indicator */
+      updateMatchIndicator(item, val);
+
+      /* Comment required state */
+      var valueChanged = !item.empty && val !== item.kunde;
+      var commentRequired = valueChanged && val !== '';
+      var commentEl = document.getElementById('p2-comment-input');
+      if (commentEl) {
+        commentEl.classList.toggle('required', commentRequired);
+        commentEl.placeholder = commentRequired ? 'Kommentar erforderlich...' : 'Kommentar hinzufügen...';
+      }
+
+      /* Confirm button */
+      var commentVal = commentEl ? commentEl.value : (commentVals[item.id] || '');
+      var enabled = item.empty ? val !== '' : !(commentRequired && commentVal === '');
+      var btn = document.getElementById('p2-confirm-btn');
+      if (btn) btn.disabled = !enabled;
+
+      showWarning = false;
+    }
+
+    function updateMatchIndicator(item, val) {
+      /* Replace the indicator paragraph if it exists */
+      var editSection = document.getElementById('p2-edit-input');
+      if (!editSection || item.empty) return;
+      /* Remove old indicator */
+      var old = editSection.parentNode.querySelector('.p2-match-ok, .p2-match-warn');
+      if (old) old.remove();
+      if (val === item.system) {
+        var p = document.createElement('p');
+        p.className = 'p2-match-ok';
+        p.textContent = '✓ Stimmt mit Systemwert überein';
+        editSection.parentNode.appendChild(p);
+      } else if (val !== '' && val !== item.kunde) {
+        var p = document.createElement('p');
+        p.className = 'p2-match-warn';
+        p.textContent = '⚠ Weicht vom Systemwert ab';
+        editSection.parentNode.appendChild(p);
+      }
+    }
+
+    function onCommentInput() {
+      var item = currentItem();
+      if (!item) return;
+      var commentEl = document.getElementById('p2-comment-input');
+      commentVals[item.id] = commentEl.value;
+      var editEl = document.getElementById('p2-edit-input');
+      var val = editEl ? editEl.value : (editVals[item.id] || (item.empty ? '' : item.kunde));
+      var valueChanged = !item.empty && val !== item.kunde;
+      var commentRequired = valueChanged && val !== '';
+      var enabled = item.empty ? val !== '' : !(commentRequired && commentEl.value === '');
+      var btn = document.getElementById('p2-confirm-btn');
+      if (btn) btn.disabled = !enabled;
+    }
+
+    /* ── Confirm ── */
+    function onConfirmClick() {
+      var item = currentItem();
+      if (!item) return;
+      flushInputState();
+      var val = editVals[item.id] !== undefined ? editVals[item.id] : (item.empty ? '' : item.kunde);
+      if (!item.empty && val !== item.system && !showWarning) {
+        showWarning = true;
+        render();
+        return;
+      }
+      doConfirm();
+    }
+
+    function confirmAnyway(event) {
+      event.preventDefault();
+      showWarning = false;
+      doConfirm();
+    }
+
+    function cancelWarning(event) {
+      event.preventDefault();
+      showWarning = false;
+      render();
+    }
+
+    function doConfirm() {
+      var item = currentItem();
+      if (!item) return;
+      var val     = editVals[item.id]    !== undefined ? editVals[item.id]    : (item.empty ? '' : item.kunde);
+      var comment = commentVals[item.id] !== undefined ? commentVals[item.id] : '';
+
+      /* Update form field */
+      updateFormField(item.fieldId, val);
+
+      /* Flash field green */
+      flashField(item.fieldId);
+
+      /* Audit */
+      console.log('AUDIT', { field: item.feld, old: item.kunde, new: val, system: item.system, comment: comment, advisor: 'Jan Joisten', ts: new Date().toISOString() });
+
+      /* Remove from queue */
+      var removedItem = item;
+      queue.splice(currentIdx, 1);
+      if (currentIdx >= queue.length && currentIdx > 0) currentIdx--;
+
+      /* Undo */
+      undoData = { item: removedItem, val: val, comment: comment };
+      if (undoTimer) clearTimeout(undoTimer);
+      undoTimer = setTimeout(function() {
+        undoData = null;
+        var toast = document.getElementById('p2-toast');
+        if (toast) toast.remove();
+      }, 5000);
+
+      /* Remove old highlight, highlight next */
+      removeHighlight(removedItem.fieldId);
+      showWarning = false;
+      updateBanner();
+      render();
+      if (queue.length > 0) highlightCurrent();
+    }
+
+    function undoConfirm(event) {
+      event.preventDefault();
+      if (!undoData) return;
+      var d = undoData;
+      undoData = null;
+      if (undoTimer) { clearTimeout(undoTimer); undoTimer = null; }
+      updateFormField(d.item.fieldId, d.item.kunde);
+      editVals[d.item.id]    = d.val;
+      commentVals[d.item.id] = d.comment;
+      queue.splice(currentIdx, 0, d.item.id);
+      updateBanner();
+      showWarning = false;
+      render();
+      highlightCurrent();
+    }
+
+    /* ── Skip / back ── */
+    function skipItem(event) {
+      event.preventDefault();
+      if (currentIdx >= queue.length - 1) return;
+      flushInputState();
+      var skippedId = queue.splice(currentIdx, 1)[0];
+      queue.push(skippedId);
+      if (currentIdx >= queue.length) currentIdx = 0;
+      showWarning = false;
+      clearAllHighlights();
+      highlightCurrent();
+      render();
+    }
+
+    function goBack(event) {
+      event.preventDefault();
+      if (currentIdx <= 0) return;
+      flushInputState();
+      currentIdx--;
+      showWarning = false;
+      clearAllHighlights();
+      highlightCurrent();
+      render();
+    }
+
+    /* ── Field interaction ── */
+    function jumpToField(event, fieldId) {
+      event.preventDefault();
+      var el = document.getElementById(fieldId);
+      if (!el) return;
+      var contentInner = document.querySelector('.content-inner');
+      var elRect        = el.getBoundingClientRect();
+      var ciRect        = contentInner.getBoundingClientRect();
+      var offset        = elRect.top - ciRect.top - 80;
+      contentInner.scrollBy({ top: offset, behavior: 'smooth' });
+    }
+
+    function highlightCurrent() {
+      var item = currentItem();
+      if (!item) return;
+      clearAllHighlights();
+      setHighlight(item.fieldId, item.type);
+    }
+
+    function setHighlight(fieldId, type) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+      field.classList.add('has-' + type);
+      var label = field.querySelector('.form-field-label');
+      if (label) {
+        var b = document.createElement('span');
+        b.className = 'p2-field-badge ' + type;
+        b.textContent = type === 'fehler' ? 'Fehler' : 'Warnung';
+        label.appendChild(b);
+      }
+    }
+
+    function removeHighlight(fieldId) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+      field.classList.remove('has-fehler','has-warnung','has-success');
+      var badge = field.querySelector('.p2-field-badge');
+      if (badge) badge.remove();
+    }
+
+    function clearAllHighlights() {
+      document.querySelectorAll('.form-field').forEach(function(f) {
+        f.classList.remove('has-fehler','has-warnung','has-success');
+        var b = f.querySelector('.p2-field-badge');
+        if (b) b.remove();
+      });
+    }
+
+    function flashField(fieldId) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+      field.classList.add('has-success');
+      setTimeout(function() { field.classList.remove('has-success'); }, 900);
+    }
+
+    function updateFormField(fieldId, value) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+      var input = field.querySelector('input, textarea, select');
+      if (input) input.value = value;
+    }
+
+    /* ── Helpers ── */
+    function flushInputState() {
+      var editEl    = document.getElementById('p2-edit-input');
+      var commentEl = document.getElementById('p2-comment-input');
+      var item      = currentItem();
+      if (!item) return;
+      if (editEl)    editVals[item.id]    = editEl.value;
+      if (commentEl) commentVals[item.id] = commentEl.value;
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+  </script>
+
+</body>
+</html>

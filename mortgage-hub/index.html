@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Hub – Prototypes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../design-system/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles.css" />
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      background: var(--color-neutral-light-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .launcher { width: 100%; max-width: 860px; padding: var(--space-xl) var(--space-l); }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+      text-decoration: none;
+      margin-bottom: var(--space-l);
+    }
+    .back-link:hover { color: var(--color-neutral-dark-900); text-decoration: none; }
+    .launcher-eyebrow {
+      font-size: var(--h5-size);
+      font-weight: var(--h5-weight);
+      letter-spacing: var(--h5-spacing);
+      text-transform: uppercase;
+      color: var(--color-neutral-dark-300);
+      margin-bottom: var(--space-s);
+    }
+    .launcher-heading {
+      font-size: var(--h1-size);
+      font-weight: var(--h1-weight);
+      color: var(--color-neutral-dark-900);
+      margin-bottom: var(--space-xl);
+    }
+    .empty-state {
+      background: var(--color-neutral-light-000);
+      border: 1px dashed var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: var(--space-xl) var(--space-l);
+      text-align: center;
+    }
+    .empty-state p {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-300);
+      margin-bottom: var(--space-m);
+    }
+    .empty-hint {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-200);
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="launcher">
+    <a href="../index.html" class="back-link">← Alle Projekte</a>
+    <p class="launcher-eyebrow">Projekt 1</p>
+    <h1 class="launcher-heading">Mortgage Hub</h1>
+
+    <p class="section-label" style="font-size:var(--h5-size);font-weight:var(--h5-weight);letter-spacing:var(--h5-spacing);text-transform:uppercase;color:var(--color-neutral-dark-300);margin-bottom:var(--space-m);padding-bottom:var(--space-xs);border-bottom:1px solid var(--color-neutral-light-500);">Offer Submission</p>
+    <div class="proto-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-l);">
+      <div class="proto-card" style="background:var(--color-neutral-light-000);border:1px solid var(--color-neutral-light-500);border-radius:var(--radius-s);padding:var(--space-l);display:flex;flex-direction:column;gap:var(--space-s);">
+        <span style="font-size:var(--h5-size);font-weight:var(--h5-weight);letter-spacing:var(--h5-spacing);text-transform:uppercase;color:var(--color-neutral-dark-300);">Prototype 1</span>
+        <span style="font-size:var(--h3-size);font-weight:var(--h3-weight);color:var(--color-neutral-dark-900);margin-top:var(--space-xs);">Angebotssuche</span>
+        <p style="font-size:var(--body-regular-size);line-height:var(--body-regular-line-height);color:var(--color-neutral-dark-400);flex:1;margin-bottom:var(--space-s);">Offer submission flow with search and selection.</p>
+        <a href="offer-submission/index.html" style="display:inline-flex;align-items:center;padding:6px var(--space-m);background:var(--color-primary-500);color:var(--color-neutral-light-000);border-radius:var(--radius-s);font-size:var(--body-regular-size);font-weight:var(--font-weight-medium);text-decoration:none;align-self:flex-start;">Öffnen</a>
+      </div>
+
+      <div class="proto-card" style="background:var(--color-neutral-light-000);border:1px solid var(--color-neutral-light-500);border-radius:var(--radius-s);padding:var(--space-l);display:flex;flex-direction:column;gap:var(--space-s);">
+        <span style="font-size:var(--h5-size);font-weight:var(--h5-weight);letter-spacing:var(--h5-spacing);text-transform:uppercase;color:var(--color-neutral-dark-300);">Prototype 2</span>
+        <span style="font-size:var(--h3-size);font-weight:var(--h3-weight);color:var(--color-neutral-dark-900);margin-top:var(--space-xs);">Angebotssuche V2</span>
+        <p style="font-size:var(--body-regular-size);line-height:var(--body-regular-line-height);color:var(--color-neutral-dark-400);flex:1;margin-bottom:var(--space-s);">Horizontal search bar at top, vertical step nav on left.</p>
+        <a href="offer-submission/offer-submission-v2.html" style="display:inline-flex;align-items:center;padding:6px var(--space-m);background:var(--color-primary-500);color:var(--color-neutral-light-000);border-radius:var(--radius-s);font-size:var(--body-regular-size);font-weight:var(--font-weight-medium);text-decoration:none;align-self:flex-start;">Öffnen</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

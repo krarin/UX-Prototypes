@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototypes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <link rel="stylesheet" href="design-system/styles.css" />
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      background: var(--color-neutral-light-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .launcher { width: 100%; max-width: 800px; padding: var(--space-xl) var(--space-l); }
+    .launcher-eyebrow {
+      font-size: var(--h5-size);
+      font-weight: var(--h5-weight);
+      letter-spacing: var(--h5-spacing);
+      text-transform: uppercase;
+      color: var(--color-neutral-dark-300);
+      margin-bottom: var(--space-s);
+    }
+    .launcher-heading {
+      font-size: var(--h1-size);
+      font-weight: var(--h1-weight);
+      color: var(--color-neutral-dark-900);
+      margin-bottom: var(--space-xl);
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-l);
+    }
+    .project-card {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: var(--space-l);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+      transition: box-shadow var(--transition-base);
+    }
+    .project-card:hover { box-shadow: var(--shadow-s); }
+    .project-tag {
+      font-size: var(--h5-size);
+      font-weight: var(--h5-weight);
+      letter-spacing: var(--h5-spacing);
+      text-transform: uppercase;
+      color: var(--color-neutral-dark-300);
+    }
+    .project-title {
+      font-size: var(--h2-size);
+      font-weight: var(--h2-weight);
+      color: var(--color-neutral-dark-900);
+      margin-top: var(--space-xs);
+    }
+    .project-desc {
+      font-size: var(--body-regular-size);
+      line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-400);
+      flex: 1;
+      margin-bottom: var(--space-s);
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px var(--space-m);
+      background: var(--color-primary-500);
+      color: var(--color-neutral-light-000);
+      border-radius: var(--radius-s);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      text-decoration: none;
+      align-self: flex-start;
+      transition: background var(--transition-base);
+    }
+    .project-link:hover { background: var(--color-primary-600); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="launcher">
+    <p class="launcher-eyebrow">Design System Prototypes</p>
+    <h1 class="launcher-heading">Alle Projekte</h1>
+
+    <div class="project-grid">
+
+      <div class="project-card">
+        <span class="project-tag">Projekt 1</span>
+        <span class="project-title">Mortgage Hub</span>
+        <p class="project-desc">Angebotsstrecke und Kreditantrag. Offer Submission Flows.</p>
+        <a href="mortgage-hub/index.html" class="project-link">Öffnen →</a>
+      </div>
+
+      <div class="project-card">
+        <span class="project-tag">Projekt 2</span>
+        <span class="project-title">Data Validation</span>
+        <p class="project-desc">Datenvalidierung im Antrag. Application Form und wichtige Felder.</p>
+        <a href="data-validation/index.html" class="project-link">Öffnen →</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

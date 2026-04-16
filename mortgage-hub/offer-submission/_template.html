@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototype – [Title]</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!--
+    CSS PATH NOTE:
+    Adjust the prefix below based on this file's depth relative to design-system/:
+      Same level as design-system/  →  design-system/
+      One folder deep               →  ../design-system/
+      Two folders deep              →  ../../design-system/
+  -->
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================================================
+       SIDEBAR — do not modify, shared across projects
+       ================================================ -->
+  <aside class="sidebar">
+    <nav class="sidebar-nav">
+      <ul style="list-style:none; padding:0; margin:0; width:100%;">
+
+        <li>
+          <a href="#" class="sidebar-item active">
+            <span class="sidebar-icon material-symbols-outlined">description</span>
+            <span class="sidebar-label">Antrag</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-item">
+            <span class="sidebar-icon material-symbols-outlined">task_alt</span>
+            <span class="sidebar-label">Aufgaben</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-item">
+            <span class="sidebar-icon material-symbols-outlined">forum</span>
+            <span class="sidebar-label">Nachrichten</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-item">
+            <span class="sidebar-icon material-symbols-outlined">attach_file</span>
+            <span class="sidebar-label">Dokumente</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ================================================
+       MAIN AREA
+       ================================================ -->
+  <div class="main">
+
+    <!-- TOP BAR — do not modify -->
+    <header class="topbar">
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn" title="Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="topbar-icon-btn" title="Help">
+          <span class="material-symbols-outlined">help_outline</span>
+        </button>
+        <div class="topbar-divider"></div>
+        <div class="topbar-user">
+          <div class="topbar-avatar">KH</div>
+          <div class="topbar-user-info">
+            <span class="topbar-user-name">Karin Hoffmann</span>
+            <span class="topbar-user-role">Kreditanalystin</span>
+          </div>
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE HEADER — edit title and actions per prototype -->
+    <div class="page-header">
+      <div class="page-header-title">
+        <h1 class="page-header-name">[Page Title]</h1>
+        <span class="page-header-amount">[Subtitle or metadata]</span>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-secondary">
+          <span class="material-symbols-outlined">more_horiz</span>
+        </button>
+        <button class="btn btn-primary">
+          <span class="material-symbols-outlined">check</span>
+          [Primary Action]
+        </button>
+      </div>
+    </div>
+
+    <!-- INFO BAR — edit fields per prototype -->
+    <div class="info-bar">
+      <div class="info-item">
+        <span class="info-label">Antragsteller</span>
+        <span class="info-value">[Name]</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <span class="info-label">Antrags-ID</span>
+        <span class="info-value">[ID]</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <span class="info-label">Produkt</span>
+        <span class="info-value">[Product]</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <span class="info-label">Status</span>
+        <span class="info-value">[Status]</span>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION — edit tabs per prototype -->
+    <nav class="tab-nav">
+      <div class="tab-bar">
+        <button class="tab active">Tab One</button>
+        <button class="tab">Tab Two</button>
+        <button class="tab">Tab Three</button>
+      </div>
+    </nav>
+
+    <!-- CONTENT AREA — build your prototype here -->
+    <div class="content">
+      <div class="content-inner">
+
+        <!-- ============================================
+             PROTOTYPE CONTENT STARTS HERE
+             ============================================ -->
+
+        <p style="color: var(--color-neutral-dark-300); font-family: var(--font-family);">
+          Replace this with your prototype content.
+        </p>
+
+        <!-- ============================================
+             PROTOTYPE CONTENT ENDS HERE
+             ============================================ -->
+
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+
+</div><!-- /.app -->
+
+
+<!-- ================================================
+     INFO BAR COMPONENT STYLES
+     (included here until added to components.css)
+     ================================================ -->
+<style>
+  .info-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    padding: var(--space-s) var(--space-l);
+    background: var(--color-neutral-light-000);
+    border-bottom: 1px solid var(--color-neutral-light-500);
+    flex-shrink: 0;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .info-label {
+    font-family: var(--font-family);
+    font-size: var(--h5-size);
+    font-weight: var(--h5-weight);
+    letter-spacing: var(--h5-spacing);
+    text-transform: uppercase;
+    color: var(--color-neutral-dark-300);
+    line-height: var(--h5-line-height);
+  }
+
+  .info-value {
+    font-family: var(--font-family);
+    font-size: var(--body-regular-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-neutral-dark-900);
+    line-height: var(--body-regular-line-height);
+  }
+
+  .info-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--color-neutral-light-500);
+    flex-shrink: 0;
+    align-self: center;
+  }
+</style>
+
+<!-- Tab switching (minimal, prototype-ready) -->
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

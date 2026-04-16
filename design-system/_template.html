@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Prototype Title]</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!--
+    CSS PATH NOTE — adjust prefix based on folder depth:
+      One folder deep   (e.g. mortgage-hub/offer-submission/)  →  ../../design-system/
+      Two folders deep  (e.g. data-validation/app-form/)       →  ../../design-system/
+  -->
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     1. LOAD SHELL — generates sidebar, topbar, page-header,
+        info-bar and tab-nav automatically from config below.
+        Any change to shell.js updates ALL prototypes instantly.
+============================================================ -->
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    // Page header
+    title:    "[Client or Page Name]",
+    subtitle: "[Amount or subtitle]",
+
+    // Which sidebar item is active (matches data-nav id)
+    activeNav: "antraege",
+
+    // Tab labels — first tab is index 0
+    tabs:     ["Tab One", "Tab Two", "Tab Three"],
+    activeTab: 0,
+
+    // Info bar — add/remove items as needed
+    infoItems: [
+      { label: "Antragsteller", value: "[Name]"    },
+      { label: "Antrags-ID",    value: "[ID]"      },
+      { label: "Produkt",       value: "[Produkt]" },
+      { label: "Status",        value: "[Status]"  }
+    ],
+
+    // Page header action buttons
+    actions: [
+      { label: "[Secondary Action]", type: "secondary", icon: "fact_check" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ],
+
+    // Optional: called when a tab is clicked — use to show/hide content panels
+    // onTabChange: function(index, label) { ... }
+  });
+</script>
+
+
+<!-- ============================================================
+     2. PROTOTYPE CONTENT
+        Everything inside .content goes here:
+        - Section sidebar (if needed)
+        - content-inner with your prototype UI
+        - Drawers or overlays (if needed)
+
+        DO NOT add sidebar / topbar / page-header / tab-nav here.
+        The shell generates those from config above.
+============================================================ -->
+<div id="proto-content">
+
+  <div class="content-inner">
+
+    <!-- ── YOUR PROTOTYPE STARTS HERE ── -->
+
+    <p style="color: var(--color-neutral-dark-300); font-family: var(--font-family); padding: var(--space-l) 0;">
+      Replace this with your prototype content.
+    </p>
+
+    <!-- ── YOUR PROTOTYPE ENDS HERE ── -->
+
+  </div>
+
+</div><!-- #proto-content -->
+
+
+<!-- ============================================================
+     3. PROTOTYPE-SPECIFIC SCRIPTS
+        Put any JS that interacts with your prototype content here.
+        Use document.addEventListener('shell:ready', ...) if you
+        need to query elements that the shell generates.
+
+        Tab switching example:
+        document.addEventListener('shell:tab-change', function(e) {
+          var index = e.detail.index;
+          // show/hide panels based on index
+        });
+============================================================ -->
+<script>
+  // Prototype logic here
+</script>
+
+</body>
+</html>

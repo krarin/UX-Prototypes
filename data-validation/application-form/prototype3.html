@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prototype 3 – Inline Tabellenansicht</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ============================================================
+       BANNER
+    ============================================================ */
+
+    .p3-banner {
+      position: sticky;
+      top: calc(-1 * var(--space-l));
+      margin: calc(-1 * var(--space-l)) calc(-1 * var(--space-l)) var(--space-l);
+      padding: var(--space-s) var(--space-l);
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      display: flex;
+      align-items: center;
+      gap: var(--space-m);
+      z-index: var(--z-raised);
+    }
+
+    .p3-fehler-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FCEBEB;
+      border-radius: var(--radius-full);
+      padding: 4px 12px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: #A32D2D;
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+
+    .p3-fehler-tag.all-done {
+      background: #EAF3DE;
+      color: #3B6D11;
+    }
+
+    .p3-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #A32D2D;
+      flex-shrink: 0;
+      transition: background var(--transition-base);
+    }
+
+    .p3-dot.all-done {
+      background: #3B6D11;
+    }
+
+    /* ============================================================
+       TABLE
+    ============================================================ */
+
+    .p3-table-wrap {
+      overflow-x: auto;
+    }
+
+    .p3-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+    }
+
+    .p3-table thead th {
+      text-align: left;
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 2px solid var(--color-neutral-light-500);
+      color: var(--color-neutral-dark-400);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+      background: var(--color-neutral-light-000);
+    }
+
+    /* Kundenwert & Systemwert: shrink to content */
+    .p3-table th.p3-col-val,
+    .p3-table td.p3-col-val {
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    .p3-table tbody tr td {
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      vertical-align: middle;
+    }
+
+    .p3-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Phase 6: 3px left-border accent ── */
+    tr.p3-row-fehler    > td:first-child  { box-shadow: inset 3px 0 0 #A32D2D; }
+    tr.p3-row-fehlend   > td:first-child  { box-shadow: inset 3px 0 0 #854F0B; }
+    tr.p3-row-bestaetigt > td:first-child { box-shadow: inset 3px 0 0 #3B6D11; }
+
+    tr.p3-row-bestaetigt td {
+      background: #F9FCF6;
+    }
+
+    /* ============================================================
+       FELD CELL
+    ============================================================ */
+
+    .p3-feld-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .p3-feld-name {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      white-space: nowrap;
+    }
+
+    .p3-feld-abschnitt {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* ============================================================
+       VALUE CELLS (Kundenwert / Systemwert)
+    ============================================================ */
+
+    .p3-val-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      width: 100%;
+    }
+
+    .p3-val-text {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-800);
+      white-space: nowrap;
+    }
+
+    /* Phase 3: strikethrough on unconfirmed side */
+    .p3-val-text.p3-strikethrough {
+      text-decoration: line-through;
+      color: var(--color-neutral-dark-200);
+    }
+
+    .p3-val-empty {
+      color: var(--color-neutral-dark-200);
+      font-size: var(--body-regular-size);
+    }
+
+    /* ── Phase 1: Round check buttons ── */
+    .p3-check-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-000);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color var(--transition-base), background var(--transition-base);
+    }
+
+    .p3-check-btn:hover:not(.confirmed) {
+      border-color: var(--color-neutral-dark-300);
+      background: var(--color-neutral-light-200);
+    }
+
+    .p3-check-btn .material-symbols-outlined {
+      font-size: 16px;
+      color: var(--color-neutral-dark-200);
+      transition: color var(--transition-base);
+    }
+
+    .p3-check-btn.confirmed {
+      background: #3B6D11;
+      border-color: #3B6D11;
+    }
+
+    .p3-check-btn.confirmed .material-symbols-outlined {
+      color: #fff;
+    }
+
+    /* ── Phase 2: Status badges ── */
+    .p3-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
+
+    .p3-badge.fehler    { background: #FCEBEB; color: #A32D2D; }
+    .p3-badge.fehlend   { background: #FAEEDA; color: #854F0B; }
+    .p3-badge.bestaetigt { background: #EAF3DE; color: #3B6D11; }
+
+    /* ============================================================
+       MANUELLER WERT CELL (Phase 4)
+    ============================================================ */
+
+    /* always-visible input form with pencil prefix */
+    .p3-manual-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+      min-width: 120px;
+      max-width: 200px;
+    }
+
+    .p3-manual-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 0 var(--space-s);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      background: var(--color-neutral-light-000);
+      cursor: text;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .p3-manual-input-wrap:focus-within {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--focus-ring);
+    }
+
+    .p3-manual-lead-icon {
+      font-size: 14px;
+      color: var(--color-neutral-dark-300);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .p3-manual-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 5px 0;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-900);
+      width: 100%;
+      min-width: 0;
+    }
+
+    .p3-manual-select {
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 5px 0;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-900);
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .p3-begruendung {
+      width: 100%;
+      padding: 5px var(--space-s);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      resize: none;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .p3-begruendung:focus {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--focus-ring);
+    }
+
+    .p3-manual-actions {
+      display: flex;
+      gap: var(--space-s);
+      align-items: center;
+    }
+
+    .p3-manual-confirm {
+      padding: 4px 12px;
+      border: none;
+      border-radius: var(--radius-s);
+      background: var(--color-primary-500);
+      color: var(--color-neutral-light-000);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: background var(--transition-base), opacity var(--transition-base);
+    }
+
+    .p3-manual-confirm:hover:not(:disabled) {
+      background: var(--color-primary-600);
+    }
+
+    .p3-manual-confirm:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .p3-manual-cancel {
+      padding: 4px 12px;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      background: transparent;
+      color: var(--color-neutral-dark-600);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      cursor: pointer;
+      transition: background var(--transition-base);
+    }
+
+    .p3-manual-cancel:hover {
+      background: var(--color-neutral-light-200);
+    }
+
+    /* confirmed state: shows value + small edit button */
+    .p3-confirmed-manual {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: #3B6D11;
+      white-space: nowrap;
+    }
+
+    .p3-edit-confirmed {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: var(--radius-s);
+      background: transparent;
+      cursor: pointer;
+      color: #3B6D11;
+      transition: background var(--transition-base);
+    }
+
+    .p3-edit-confirmed:hover {
+      background: #EAF3DE;
+    }
+
+    .p3-edit-confirmed .material-symbols-outlined {
+      font-size: 14px;
+    }
+
+    /* ============================================================
+       QUELLE CELL (Phase 5)
+    ============================================================ */
+
+    .p3-quelle-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .p3-quelle-link {
+      color: #1D9E75;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: var(--body-small-size);
+      white-space: nowrap;
+    }
+
+    .p3-quelle-link:hover {
+      text-decoration: underline;
+    }
+
+    .p3-quelle-link .material-symbols-outlined {
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 1,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+  <!-- ── Section nav ── -->
+  <nav class="section-sidebar" id="section-nav">
+    <div class="section-nav-client">
+      <span class="section-nav-client-dot"></span>
+      <span class="section-nav-client-name">Maxs Details</span>
+    </div>
+    <button class="section-nav-item indented active" onclick="setActiveSection(this)"><span class="section-nav-item-label">Persönliche Details</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Kontakte und Adresse</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Berufliche Details</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">SCHUFA</span></button>
+    <button class="section-nav-heading" onclick="setActiveSection(this)">Bonität</button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Einnahmen (monatlich)</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Rentenansprüche (monatlich)</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Ausgaben (monatlich)</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Bestehende Kredite</span></button>
+    <button class="section-nav-heading" onclick="setActiveSection(this)">Objekt</button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Immobilieninfos</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Immobilienmerkmale</span></button>
+    <button class="section-nav-heading" onclick="setActiveSection(this)">Finanzierung</button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Anschaffungskosten</span></button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Finanzierungswunsch</span></button>
+    <button class="section-nav-heading" onclick="setActiveSection(this)">Dokumente</button>
+    <button class="section-nav-item indented" onclick="setActiveSection(this)"><span class="section-nav-item-label">Grundbuch &amp; Energie</span></button>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <div class="content-inner">
+
+    <!-- Banner -->
+    <div class="p3-banner">
+      <span class="p3-fehler-tag" id="p3-fehler-tag">
+        <span class="p3-dot" id="p3-dot"></span>
+        <span id="p3-open-count">9 offen</span>
+      </span>
+    </div>
+
+    <!-- Table -->
+    <div class="p3-table-wrap">
+      <table class="p3-table">
+        <thead>
+          <tr>
+            <th>Feld</th>
+            <th class="p3-col-val">Kundenwert</th>
+            <th class="p3-col-val">Systemwert</th>
+            <th>Manueller Wert</th>
+            <th>Quelle</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="p3-tbody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- .content-inner -->
+
+</div><!-- #proto-content -->
+
+<script>
+  /* ── Section nav ── */
+  function setActiveSection(el) {
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(function(e) { e.classList.remove('active'); });
+    el.classList.add('active');
+  }
+
+  /* ── Data ── */
+  var ROWS = [
+    {
+      id: 1, abschnitt: 'Einnahmen', feld: 'Variable Einkünfte',
+      kunde: '4.000 €', system: '3.200 €', initStatus: 'fehler',
+      numeric: true,
+      quellen: [
+        { label: 'Gehaltsabrechnung Sep 2025' },
+        { label: 'Gehaltsabrechnung Aug 2025' },
+        { label: 'Gehaltsabrechnung Jul 2025' }
+      ]
+    },
+    {
+      id: 2, abschnitt: 'Identität', feld: 'Geburtsdatum',
+      kunde: '15.03.1981', system: '15.03.1978', initStatus: 'fehler',
+      numeric: false,
+      quellen: [{ label: 'Personalausweis' }]
+    },
+    {
+      id: 3, abschnitt: 'Dokumente', feld: 'Grundbuchauszug Datum',
+      kunde: '15.01.2025', system: '20.11.2024', initStatus: 'fehler',
+      numeric: false,
+      quellen: [{ label: 'Grundbuchauszug' }]
+    },
+    {
+      id: 4, abschnitt: 'Bonität', feld: 'Unterhaltsverpflichtungen',
+      kunde: '0 €', system: '650 €', initStatus: 'fehler',
+      numeric: true,
+      quellen: [{ label: 'Kontoauszug' }]
+    },
+    {
+      id: 5, abschnitt: 'Einnahmen', feld: 'Anzahl Monatsgehälter',
+      kunde: '12', system: '13', initStatus: 'fehler',
+      numeric: false,
+      quellen: [{ label: 'Arbeitsvertrag' }]
+    },
+    {
+      id: 6, abschnitt: 'Dokumente', feld: 'Adresse Energieausweis',
+      kunde: 'Musterstraße 12', system: 'Musterstr. 12a', initStatus: 'fehler',
+      numeric: false,
+      quellen: [{ label: 'Energieausweis' }]
+    },
+    {
+      id: 7, abschnitt: 'Bonität', feld: 'Private Krankenversicherung',
+      kunde: '380 €', system: '420 €', initStatus: 'fehler',
+      numeric: true,
+      quellen: [{ label: 'Kontoauszug' }]
+    },
+    {
+      id: 8, abschnitt: 'Finanzierung', feld: 'Anschaffungskosten',
+      kunde: '440.000 €', system: '435.000 €', initStatus: 'fehler',
+      numeric: true,
+      quellen: [{ label: 'Kaufvertrag' }]
+    },
+    {
+      id: 9, abschnitt: 'Identität', feld: 'Staatsangehörigkeit',
+      kunde: '', system: '', initStatus: 'fehlend',
+      numeric: false,
+      quellen: [],
+      options: ['Deutsch', 'Österreichisch', 'Schweizerisch', 'Türkisch', 'Andere']
+    }
+  ];
+
+  /* ── State ── */
+  var rowState = {};
+  ROWS.forEach(function(row) {
+    rowState[row.id] = {
+      decision:    null,
+      manualVal:   row.options ? row.options[0] : '',  /* pre-select first option for dropdowns */
+      begruendung: '',
+      manualOpen:  false
+    };
+  });
+
+  /* ── Helpers ── */
+  function esc(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function getRowStatus(id) {
+    if (rowState[id].decision !== null) return 'bestaetigt';
+    return ROWS.find(function(r) { return r.id === id; }).initStatus;
+  }
+
+  /* German number formatting: digits only, dot every 3 digits */
+  function formatGermanNumber(raw) {
+    var digits = raw.replace(/[^\d]/g, '');
+    if (!digits) return '';
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  /* ── Build row HTML ── */
+  function buildRowHTML(row, state, status) {
+    var isEmpty     = row.initStatus === 'fehlend' && row.kunde === '';
+    var kundeStrike = state.decision === 'system' || state.decision === 'manual';
+    var sysStrike   = state.decision === 'kunde'  || state.decision === 'manual';
+    var kundeConf   = state.decision === 'kunde';
+    var sysConf     = state.decision === 'system';
+
+    /* ── Cell 1: Feld ── */
+    var c1 = '<td>' +
+      '<div class="p3-feld-cell">' +
+        '<span class="p3-feld-name">'      + esc(row.feld)      + '</span>' +
+        '<span class="p3-feld-abschnitt">' + esc(row.abschnitt) + '</span>' +
+      '</div></td>';
+
+    /* ── Cell 2: Kundenwert ── */
+    var c2;
+    if (isEmpty) {
+      c2 = '<td class="p3-col-val"><span class="p3-val-empty">—</span></td>';
+    } else {
+      c2 = '<td class="p3-col-val"><div class="p3-val-cell">' +
+        '<button class="p3-check-btn' + (kundeConf ? ' confirmed' : '') + '" onclick="confirmKunde(' + row.id + ')" title="Kundenwert bestätigen">' +
+          '<span class="material-symbols-outlined">check</span>' +
+        '</button>' +
+        '<span class="p3-val-text' + (kundeStrike ? ' p3-strikethrough' : '') + '">' + esc(row.kunde) + '</span>' +
+      '</div></td>';
+    }
+
+    /* ── Cell 3: Systemwert ── */
+    var c3;
+    if (isEmpty) {
+      c3 = '<td class="p3-col-val"><span class="p3-val-empty">—</span></td>';
+    } else {
+      c3 = '<td class="p3-col-val"><div class="p3-val-cell">' +
+        '<button class="p3-check-btn' + (sysConf ? ' confirmed' : '') + '" onclick="confirmSystem(' + row.id + ')" title="Systemwert bestätigen">' +
+          '<span class="material-symbols-outlined">check</span>' +
+        '</button>' +
+        '<span class="p3-val-text' + (sysStrike ? ' p3-strikethrough' : '') + '">' + esc(row.system) + '</span>' +
+      '</div></td>';
+    }
+
+    /* ── Cell 4: Manueller Wert ── */
+    var c4;
+    if (state.decision === 'manual') {
+      /* Confirmed: show value + small edit btn */
+      c4 = '<td><div class="p3-val-cell">' +
+        '<span class="p3-confirmed-manual">' + esc(state.manualVal) + '</span>' +
+        '<button class="p3-edit-confirmed" onclick="reEditManual(' + row.id + ')" title="Wert bearbeiten">' +
+          '<span class="material-symbols-outlined">edit</span>' +
+        '</button>' +
+      '</div></td>';
+    } else {
+      /* Always-visible input/select with pencil prefix; expansion controlled by manualOpen */
+      var inputEl;
+      if (row.options) {
+        /* Dropdown (e.g. Staatsangehörigkeit) */
+        var opts = row.options.map(function(opt) {
+          return '<option value="' + esc(opt) + '"' + (state.manualVal === opt ? ' selected' : '') + '>' + esc(opt) + '</option>';
+        }).join('');
+        inputEl =
+          '<select class="p3-manual-select" id="p3-manual-input-' + row.id + '"' +
+            ' onfocus="onManualFocus(' + row.id + ')"' +
+            ' onchange="onManualChange(' + row.id + ', this)">' +
+            opts +
+          '</select>';
+      } else {
+        /* Text input */
+        inputEl =
+          '<input class="p3-manual-input" id="p3-manual-input-' + row.id + '"' +
+            ' type="text"' +
+            ' placeholder="Wert eingeben..."' +
+            ' value="' + esc(state.manualVal) + '"' +
+            ' onfocus="onManualFocus(' + row.id + ')"' +
+            ' oninput="onManualInput(' + row.id + ', this)" />';
+      }
+
+      var expansion = '';
+      if (state.manualOpen) {
+        expansion =
+          '<textarea class="p3-begruendung" id="p3-begr-' + row.id + '" rows="2"' +
+            ' placeholder="Begründung (optional)..."' +
+            ' oninput="onBegrInput(' + row.id + ', this)">' +
+            esc(state.begruendung) +
+          '</textarea>' +
+          '<div class="p3-manual-actions">' +
+            '<button class="p3-manual-confirm" id="p3-manual-confirm-' + row.id + '"' +
+              (state.manualVal.trim() ? '' : ' disabled') +
+              ' onclick="confirmManual(' + row.id + ')">Übernehmen</button>' +
+            '<button class="p3-manual-cancel" onclick="cancelManual(' + row.id + ')">Abbrechen</button>' +
+          '</div>';
+      }
+
+      c4 = '<td>' +
+        '<div class="p3-manual-form">' +
+          '<div class="p3-manual-input-wrap">' +
+            '<span class="material-symbols-outlined p3-manual-lead-icon">edit</span>' +
+            inputEl +
+          '</div>' +
+          expansion +
+        '</div>' +
+      '</td>';
+    }
+
+    /* ── Cell 5: Quelle ── */
+    var c5;
+    if (!row.quellen || row.quellen.length === 0) {
+      c5 = '<td><span class="p3-val-empty">—</span></td>';
+    } else {
+      var links = row.quellen.map(function(q) {
+        return '<a href="#" class="p3-quelle-link">' + esc(q.label) + '<span class="material-symbols-outlined">open_in_new</span></a>';
+      }).join('');
+      c5 = '<td><div class="p3-quelle-stack">' + links + '</div></td>';
+    }
+
+    /* ── Cell 6: Status ── */
+    var label = status === 'bestaetigt' ? 'Bestätigt' : status === 'fehlend' ? 'Fehlend' : 'Fehler';
+    var c6 = '<td><span class="p3-badge ' + status + '">' + label + '</span></td>';
+
+    return c1 + c2 + c3 + c4 + c5 + c6;
+  }
+
+  /* ── Render ── */
+  function renderTable() {
+    var tbody = document.getElementById('p3-tbody');
+    tbody.innerHTML = '';
+    ROWS.forEach(function(row) {
+      var state  = rowState[row.id];
+      var status = getRowStatus(row.id);
+      var tr     = document.createElement('tr');
+      tr.id        = 'p3-row-' + row.id;
+      tr.className = 'p3-row-' + status;
+      tr.innerHTML = buildRowHTML(row, state, status);
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderRow(id) {
+    var tr = document.getElementById('p3-row-' + id);
+    if (!tr) return;
+    var row    = ROWS.find(function(r) { return r.id === id; });
+    var state  = rowState[id];
+    var status = getRowStatus(id);
+    tr.className = 'p3-row-' + status;
+    tr.innerHTML = buildRowHTML(row, state, status);
+    /* Restore focus inside text input if expanded */
+    if (state.manualOpen && !row.options) {
+      var inp = document.getElementById('p3-manual-input-' + id);
+      if (inp) {
+        var len = inp.value.length;
+        inp.focus();
+        try { inp.setSelectionRange(len, len); } catch(e) {}
+      }
+    }
+  }
+
+  /* ── Banner ── */
+  function updateBanner() {
+    var open    = ROWS.filter(function(r) { return rowState[r.id].decision === null; }).length;
+    var countEl = document.getElementById('p3-open-count');
+    var tagEl   = document.getElementById('p3-fehler-tag');
+    var dotEl   = document.getElementById('p3-dot');
+    if (!countEl) return;
+    if (open === 0) {
+      countEl.textContent = 'Alle Fälle bearbeitet';
+      if (tagEl) tagEl.classList.add('all-done');
+      if (dotEl) dotEl.classList.add('all-done');
+    } else {
+      countEl.textContent = open + ' offen';
+      if (tagEl) tagEl.classList.remove('all-done');
+      if (dotEl) dotEl.classList.remove('all-done');
+    }
+  }
+
+  /* ── Phase 3: Confirm Kundenwert ── */
+  function confirmKunde(id) {
+    var state = rowState[id];
+    if (state.decision === 'kunde') {
+      state.decision = null;
+    } else {
+      state.decision   = 'kunde';
+      state.manualOpen = false;
+    }
+    renderRow(id);
+    updateBanner();
+  }
+
+  /* ── Phase 3: Confirm Systemwert ── */
+  function confirmSystem(id) {
+    var state = rowState[id];
+    if (state.decision === 'system') {
+      state.decision = null;
+    } else {
+      state.decision   = 'system';
+      state.manualOpen = false;
+    }
+    renderRow(id);
+    updateBanner();
+  }
+
+  /* ── Phase 4: Expand on input focus ── */
+  function onManualFocus(id) {
+    if (!rowState[id].manualOpen) {
+      rowState[id].manualOpen = true;
+      renderRow(id);
+      /* renderRow re-focuses input which fires onfocus again,
+         but manualOpen is already true so this is a no-op */
+    }
+  }
+
+  /* ── Phase 4: Text input change ── */
+  function onManualInput(id, inputEl) {
+    var row = ROWS.find(function(r) { return r.id === id; });
+    var val = inputEl.value;
+    if (row && row.numeric) {
+      var cursor = inputEl.selectionStart;
+      var before = val.length;
+      var formatted = formatGermanNumber(val);
+      inputEl.value = formatted;
+      var after = inputEl.value.length;
+      try { inputEl.setSelectionRange(cursor + (after - before), cursor + (after - before)); } catch(e) {}
+      val = formatted;
+    }
+    rowState[id].manualVal = val;
+    var btn = document.getElementById('p3-manual-confirm-' + id);
+    if (btn) btn.disabled = val.trim() === '';
+  }
+
+  /* ── Phase 4: Dropdown change ── */
+  function onManualChange(id, selectEl) {
+    rowState[id].manualVal = selectEl.value;
+    /* expand if not already open */
+    if (!rowState[id].manualOpen) {
+      rowState[id].manualOpen = true;
+      renderRow(id);
+    } else {
+      var btn = document.getElementById('p3-manual-confirm-' + id);
+      if (btn) btn.disabled = selectEl.value.trim() === '';
+    }
+  }
+
+  function onBegrInput(id, textareaEl) {
+    rowState[id].begruendung = textareaEl.value;
+  }
+
+  /* ── Phase 4: Confirm manual value ── */
+  function confirmManual(id) {
+    var state = rowState[id];
+    if (!state.manualVal.trim()) return;
+    var ta = document.getElementById('p3-begr-' + id);
+    if (ta) state.begruendung = ta.value;
+    state.decision   = 'manual';
+    state.manualOpen = false;
+    renderRow(id);
+    updateBanner();
+  }
+
+  function cancelManual(id) {
+    rowState[id].manualOpen = false;
+    renderRow(id);
+  }
+
+  /* Re-edit a confirmed manual value */
+  function reEditManual(id) {
+    var state       = rowState[id];
+    state.decision  = null;
+    state.manualOpen = true;
+    renderRow(id);
+    updateBanner();
+  }
+
+  /* ── Init ── */
+  renderTable();
+  updateBanner();
+</script>
+
+</body>
+</html>

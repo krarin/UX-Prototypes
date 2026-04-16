@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Hub – Angebotssuche V2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/prototype.css" />
+
+  <style>
+    /* ============================================================
+       V2 LAYOUT OVERRIDES
+       Force content area to be a flex column so v2-body can fill.
+    ============================================================ */
+    .content {
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    .content-inner {
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+      flex: 1 !important;
+      min-height: 0 !important;
+    }
+
+    /* ============================================================
+       V2 SEARCH ZONE — light tinted container behind loan cards
+    ============================================================ */
+    .v2-search-zone {
+      background: var(--color-neutral-light-200);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+      padding: var(--space-m) var(--space-l);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+    }
+
+    /* Loan card — white card with shadow */
+    .v2-loan-card {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m);
+      box-shadow: var(--shadow-s);
+      padding: var(--space-s) var(--space-m);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+    }
+
+    /* Card top row: title + delete icon */
+    .v2-loan-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .v2-loan-label {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+    }
+
+    .v2-delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-neutral-dark-200);
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      border-radius: var(--radius-s);
+    }
+    .v2-delete-btn:hover { color: var(--color-error-500); }
+    .v2-delete-btn .material-symbols-outlined { font-size: 18px; }
+
+    /* Card fields row */
+    .v2-loan-card-fields {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-s);
+      flex-wrap: wrap;
+    }
+
+    .v2-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .v2-field-label {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-600);
+    }
+
+    /* Input with inline unit suffix */
+    .v2-input-wrap {
+      display: flex;
+      align-items: center;
+      height: 28px;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      background: var(--color-neutral-light-000);
+      overflow: hidden;
+    }
+    .v2-input-wrap:focus-within {
+      border-color: var(--color-primary-500);
+      box-shadow: var(--focus-ring);
+    }
+
+    .v2-field-input {
+      height: 100%;
+      font-size: 13px;
+      font-family: var(--font-family);
+      padding: 0 4px 0 8px;
+      border: none;
+      outline: none;
+      color: var(--color-neutral-dark-900);
+      background: transparent;
+      width: 80px;
+    }
+
+    .v2-input-suffix {
+      font-family: var(--font-family);
+      font-size: 12px;
+      color: var(--color-neutral-dark-300);
+      padding: 0 8px 0 2px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    /* Action buttons — sit at the end of the fields row */
+    .v2-search-btn {
+      height: 28px;
+      padding: 0 var(--space-m);
+      background: var(--color-primary-500);
+      color: var(--color-neutral-light-000);
+      border: none;
+      border-radius: var(--radius-s);
+      font-size: var(--body-small-size);
+      font-family: var(--font-family);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .v2-search-btn:hover { background: var(--color-primary-600); }
+
+    .v2-add-loan-btn {
+      height: 28px;
+      padding: 0 var(--space-m);
+      font-size: var(--body-small-size);
+      font-family: var(--font-family);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary-600);
+      background: none;
+      border: 1px solid var(--color-primary-400);
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .v2-add-loan-btn:hover { background: var(--color-primary-100); }
+
+    /* ============================================================
+       V2 BODY — horizontal split: step nav | step content
+    ============================================================ */
+    .v2-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       V2 STEP NAV — tight vertical left column
+    ============================================================ */
+    .v2-step-nav {
+      width: 140px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--color-neutral-light-500);
+      padding: var(--space-m) var(--space-s);
+      display: flex;
+      flex-direction: column;
+      background: var(--color-neutral-light-000);
+      overflow-y: auto;
+    }
+
+    .v2-step-item {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--space-s);
+      padding: var(--space-s);
+      cursor: pointer;
+      border-radius: var(--radius-s);
+    }
+
+    .v2-step-item:hover { background: var(--color-neutral-light-100); }
+
+    /* Circle replaced with icon — uses Material Symbol inside */
+    .v2-step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .v2-step-circle .material-symbols-outlined {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .v2-step-item--active .v2-step-circle {
+      background: var(--color-warning-high);
+      color: var(--color-neutral-light-000);
+    }
+
+    .v2-step-item--done .v2-step-circle {
+      background: var(--color-success);
+      color: var(--color-neutral-light-000);
+    }
+
+    .v2-step-item--idle .v2-step-circle {
+      border: 1.5px solid var(--color-neutral-dark-200);
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* Hover tooltip tag — black pill, white text */
+    .v2-step-item { position: relative; }
+    .v2-step-tooltip {
+      display: none;
+      position: absolute;
+      left: calc(100% + 8px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--color-neutral-dark-900);
+      color: var(--color-neutral-light-000);
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: var(--radius-s);
+      pointer-events: none;
+      z-index: var(--z-overlay);
+    }
+    .v2-step-item:hover .v2-step-tooltip { display: block; }
+
+    .v2-step-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 2px;
+    }
+
+    .v2-step-label {
+      font-family: var(--font-family);
+      font-size: 13px;
+      color: var(--color-neutral-dark-400);
+    }
+
+    .v2-step-item--active .v2-step-label {
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+
+    .v2-step-item--done .v2-step-label {
+      color: var(--color-neutral-dark-600);
+    }
+
+    .v2-step-sub {
+      font-family: var(--font-family);
+      font-size: 11px;
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* Vertical connector line between steps — aligns to circle centre */
+    .v2-step-connector {
+      width: 2px;
+      height: 14px;
+      background: var(--color-neutral-light-500);
+      /* nav padding-left 8px + item padding-left 8px + circle half-width 14px - connector half-width 1px = 29px */
+      margin-left: 29px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       V2 STEP CONTENT AREA
+    ============================================================ */
+    .v2-step-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .v2-step-content #step-1 {
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .v2-step-content #step-2,
+    .v2-step-content #step-3 {
+      min-height: 0;
+    }
+
+    .v2-result-body {
+      flex: 1;
+      overflow: auto;
+      padding: var(--space-m);
+    }
+
+    /* ============================================================
+       EI2 HEADER — Einreichung header bar (component 1 of redesign)
+    ============================================================ */
+    .ei2-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-m);
+      padding: var(--space-s) var(--space-l);
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+    }
+
+    .ei2-back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-neutral-dark-400);
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: var(--radius-s);
+    }
+    .ei2-back-btn:hover { color: var(--color-neutral-dark-900); background: var(--color-neutral-light-200); }
+    .ei2-back-btn .material-symbols-outlined { font-size: 20px; }
+
+    .ei2-header-label,
+    .ei2-header-bank {
+      font-family: var(--font-family);
+      font-size: var(--h3-size);
+      font-weight: var(--h3-weight);
+      color: var(--color-neutral-dark-900);
+    }
+
+    .ei2-header-sep {
+      font-family: var(--font-family);
+      font-size: var(--h3-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* Status badge — base */
+    .ei2-status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .ei2-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* State: Eingereicht — blue */
+    .ei2-status-tag--eingereicht { background: var(--color-info-light); color: var(--color-info); }
+    .ei2-status-tag--eingereicht .ei2-status-dot { background: var(--color-info); }
+
+    /* State: In Prüfung — orange */
+    .ei2-status-tag--in-pruefung { background: var(--color-warning-high-light); color: var(--color-warning-high); }
+    .ei2-status-tag--in-pruefung .ei2-status-dot { background: var(--color-warning-high); }
+
+    /* State: Finanzierung genehmigt — green */
+    .ei2-status-tag--genehmigt { background: var(--color-success-light); color: var(--color-success); }
+    .ei2-status-tag--genehmigt .ei2-status-dot { background: var(--color-success); }
+
+    .ei2-header-spacer { flex: 1; }
+
+    /* "Status ändern" button */
+    .ei2-status-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 0 var(--space-m);
+      background: none;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .ei2-status-btn:hover { background: var(--color-neutral-light-200); }
+    .ei2-status-btn .material-symbols-outlined { font-size: 18px; }
+
+    /* ============================================================
+       EI2 INFO BANNER
+    ============================================================ */
+    .ei2-info-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-l);
+      background: var(--color-info-light);
+      border-left: 3px solid var(--color-info);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-600);
+      flex-shrink: 0;
+    }
+    .ei2-info-banner .material-symbols-outlined { font-size: 18px; color: var(--color-info); flex-shrink: 0; }
+
+    /* ============================================================
+       EI2 BODY — sidenav | content
+    ============================================================ */
+    #step-3 { flex-direction: column; overflow: hidden; }
+
+    .ei2-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ---- Side nav ---- */
+    .ei2-sidenav {
+      width: 240px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-100);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-m);
+      gap: var(--space-xs);
+    }
+
+    .ei2-nav-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ei2-nav-group-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      width: 100%;
+      min-height: 36px;
+      padding: var(--space-s) 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font-family);
+      font-size: 16px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      letter-spacing: 0.1px;
+      transition: color var(--transition-base);
+    }
+    .ei2-nav-group-header:hover {
+      background: #ECEFF1;
+      border-radius: var(--radius-s);
+      font-weight: var(--font-weight-medium);
+    }
+    .ei2-nav-group-header--open { font-weight: var(--font-weight-medium); }
+
+    .ei2-nav-group-icon { font-size: 20px; color: var(--color-neutral-dark-400); flex-shrink: 0; }
+    .ei2-nav-group-label { flex: 1; }
+
+    .ei2-nav-chevron {
+      font-size: 20px;
+      color: var(--color-neutral-dark-300);
+      transition: transform var(--transition-base);
+      flex-shrink: 0;
+    }
+    .ei2-nav-group-header--open .ei2-nav-chevron { transform: rotate(180deg); }
+
+    .ei2-nav-subitems { padding-left: var(--space-s); }
+
+    .ei2-nav-subitem {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      width: 100%;
+      padding: var(--space-s) var(--space-s) var(--space-s) 24px;
+      background: none;
+      border: none;
+      border-left: 1px solid var(--color-neutral-light-500);
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-regular);
+      color: var(--color-neutral-dark-800);
+      letter-spacing: 0.25px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background var(--transition-base);
+    }
+    .ei2-nav-subitem:hover { background: var(--color-neutral-light-200); }
+    .ei2-nav-subitem--active {
+      border-left: 2px solid var(--color-neutral-dark-900);
+      color: var(--color-neutral-dark-800);
+      background: #ECEFF1;
+      border-radius: var(--radius-s);
+      font-weight: var(--font-weight-regular);
+    }
+
+    /* Label fills available space — pushes dot/icon to the right */
+    .ei2-nav-subitem-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Status dot (Finanzierungsdetails sub-items) — right-aligned */
+    .ei2-nav-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .ei2-nav-dot--success { background: var(--color-success); }
+    .ei2-nav-dot--warning { background: var(--color-warning-high); }
+
+    /* Step state icons (Sparkasse / Hanseatic sub-items) */
+    .ei2-step-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      color: var(--color-neutral-dark-300);
+    }
+    .ei2-step-icon--done  { color: var(--color-success); }
+    .ei2-step-icon--current { color: var(--color-neutral-dark-800); }
+    .ei2-step-icon--idle  { color: var(--color-neutral-dark-200); }
+
+    /* Step icon (Produkt sub-items) — left of label */
+    .ei2-step-icon { font-size: 16px; flex-shrink: 0; }
+    .ei2-step-icon--done    { color: var(--color-success); }
+    .ei2-step-icon--current { color: var(--color-primary-500); }
+    .ei2-step-icon--idle    { color: var(--color-neutral-dark-200); }
+
+    /* Card title row with step icon */
+    .ei2-card-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+    }
+
+    /* ---- Content column: banner + scrollable cards ---- */
+    .ei2-content-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ---- Content area ---- */
+    .ei2-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-m);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+      min-height: 0;
+    }
+
+    #ei2-section-finanzierung,
+    #ei2-section-sparkasse,
+    #ei2-section-hanseatic {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="global-sidebar" aria-label="Hauptnavigation">
+      <ul class="sidebar-nav" role="list">
+
+        <li>
+          <button class="sidebar-item" data-nav="mein-tag" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">calendar_today</span>
+            <span class="sidebar-label">Mein Tag</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item active" data-nav="antraege" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">description</span>
+            <span class="sidebar-label">Anträge</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="leads" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">person_search</span>
+            <span class="sidebar-label">Leads</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="quellen" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">hub</span>
+            <span class="sidebar-label">Quellen</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="unternehmen" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">domain</span>
+            <span class="sidebar-label">Unternehmen</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="buchhaltung" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">account_balance</span>
+            <span class="sidebar-label">Buchhaltung</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="reporting" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">bar_chart</span>
+            <span class="sidebar-label">Reporting</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="lead-shop" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">storefront</span>
+            <span class="sidebar-label">Lead-Shop</span>
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-item" data-nav="email" onclick="setActive(this)">
+            <span class="sidebar-icon material-symbols-outlined">mail</span>
+            <span class="sidebar-label">Email</span>
+          </button>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- MAIN AREA -->
+    <div class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-actions">
+
+          <button class="topbar-icon-btn" aria-label="Hinzufügen">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Benachrichtigungen">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Hilfe">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+          <button class="topbar-icon-btn" aria-label="Vollbild">
+            <span class="material-symbols-outlined">fullscreen</span>
+          </button>
+
+          <button class="topbar-lang" aria-label="Sprache wechseln">
+            DE
+            <span class="material-symbols-outlined">expand_more</span>
+          </button>
+
+          <div class="topbar-divider" role="separator"></div>
+
+          <div class="topbar-user" role="button" tabindex="0" aria-label="Benutzerprofil">
+            <div class="topbar-avatar" aria-hidden="true">JJ</div>
+            <div class="topbar-user-info">
+              <span class="topbar-user-name">Jan Joisten</span>
+              <span class="topbar-user-role">Advisor</span>
+            </div>
+            <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- SHELL BAR -->
+      <div class="shell">
+        <div class="shell-client-pill">Müller, Thomas · € 350.000 · 15J</div>
+      </div>
+
+      <!-- CASE SHELL -->
+      <div class="case-shell">
+
+        <!-- Row 1: Client name + actions -->
+        <div class="case-header">
+          <div class="case-header-left">
+            <span class="case-header-name">Frau Karina Hoffmann</span>
+            <span class="case-header-amount">296.280,00 €</span>
+            <span class="case-header-sep">|</span>
+            <span class="case-header-number">Antragsnummer: 592 317</span>
+          </div>
+          <div class="case-header-actions">
+            <button class="case-header-btn">
+              <span class="material-symbols-outlined">grid_view</span>
+              Finanzierungs-Assistent
+            </button>
+            <button class="case-header-btn">
+              <span class="material-symbols-outlined">open_in_new</span>
+              Kundensicht
+            </button>
+            <button class="topbar-icon-btn" aria-label="Mehr Optionen">
+              <span class="material-symbols-outlined">more_horiz</span>
+            </button>
+            <button class="topbar-icon-btn" aria-label="Vollbild">
+              <span class="material-symbols-outlined">open_in_full</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Tags -->
+        <div class="case-tags">
+          <span class="case-tag case-tag-blue">
+            <span class="material-symbols-outlined">home</span>
+            Immobilie gefunden
+          </span>
+          <span class="case-tag case-tag-outline">
+            <span class="material-symbols-outlined">monitor</span>
+            Antragsstrecke: LoanLink24 Mortgage GmbH
+          </span>
+          <span class="case-tag case-tag-removable case-tag-removable-blue">
+            blue card1
+            <button class="case-tag-remove" aria-label="Entfernen">×</button>
+          </span>
+          <span class="case-tag case-tag-removable case-tag-removable-red">
+            practice
+            <button class="case-tag-remove" aria-label="Entfernen">×</button>
+          </span>
+          <button class="case-tag-add">
+            <span class="material-symbols-outlined">add</span>
+            Tag hinzufügen
+          </button>
+        </div>
+
+        <!-- Row 3: Loan info -->
+        <div class="case-loan">
+          <span class="case-loan-label">Kauf einer bestehenden Immobilie, März 2026</span>
+          <div class="case-loan-center">
+            <span class="case-loan-pill">
+              Kauf einer bestehenden Immobilie, März 2026
+              <span class="material-symbols-outlined case-loan-pill-icon">edit</span>
+              <span class="material-symbols-outlined case-loan-pill-icon teal">visibility</span>
+            </span>
+          </div>
+          <button class="case-loan-link">+ Antrag kopieren</button>
+        </div>
+
+        <!-- Row 4: Tab bar -->
+        <div class="tab-nav">
+          <div class="tab-bar" role="tablist">
+            <button class="tab" role="tab" onclick="setTab(this)">Übersicht</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Antrag</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Kommunikation</button>
+            <button class="tab active" role="tab" onclick="setTab(this)">Angebotssuche</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Manuelles Angebot</button>
+            <button class="tab" role="tab" onclick="setTab(this)">Objektbewertung</button>
+            <button class="tab" role="tab" onclick="setTab(this)">
+              Dokumente
+              <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">open_in_new</span>
+            </button>
+            <button class="tab" role="tab" onclick="setTab(this)">PDF</button>
+          </div>
+        </div>
+
+      </div><!-- /.case-shell -->
+
+      <!-- PAGE CONTENT -->
+      <div class="content">
+        <div class="content-inner">
+
+          <!-- ================================================
+               V2 BODY — vertical step nav | step content
+          ================================================ -->
+          <div class="v2-body">
+
+            <!-- Left: Vertical step navigation -->
+            <nav class="v2-step-nav" aria-label="Prozessschritte">
+
+              <div class="v2-step-item v2-step-item--active" id="v2-step-1" onclick="goToStep(1)" aria-current="step">
+                <div class="v2-step-circle">
+                  <span class="material-symbols-outlined">star</span>
+                </div>
+                <div class="v2-step-info">
+                  <span class="v2-step-label">Suche</span>
+                  <span class="v2-step-sub" id="v2-step-1-sub">12 Treffer</span>
+                </div>
+                <span class="v2-step-tooltip">Angebotssuche</span>
+              </div>
+
+              <div class="v2-step-connector"></div>
+
+              <div class="v2-step-item v2-step-item--idle" id="v2-step-2" onclick="goToStep(2)">
+                <div class="v2-step-circle">
+                  <span class="material-symbols-outlined">euro</span>
+                </div>
+                <div class="v2-step-info">
+                  <span class="v2-step-label">Angebote</span>
+                </div>
+                <span class="v2-step-tooltip">Erstellte Angebote</span>
+              </div>
+
+              <div class="v2-step-connector"></div>
+
+              <div class="v2-step-item v2-step-item--idle" id="v2-step-3" onclick="goToStep(3)">
+                <div class="v2-step-circle">
+                  <span class="material-symbols-outlined">send</span>
+                </div>
+                <div class="v2-step-info">
+                  <span class="v2-step-label">Einreichung</span>
+                </div>
+                <span class="v2-step-tooltip">Einreichung</span>
+              </div>
+
+            </nav><!-- /.v2-step-nav -->
+
+            <!-- Right: Step content -->
+            <div class="v2-step-content">
+
+              <!-- STEP 1: Search parameters + results table -->
+              <section id="step-1" style="display:flex; flex-direction:column; flex:1; overflow:hidden; min-height:0;">
+
+                <!-- Search zone — lives inside step 1 only -->
+                <div class="v2-search-zone">
+
+                  <div id="v2-loan-rows">
+                    <!-- Loan card 1 — delete button hidden on first card -->
+                    <div class="v2-loan-card">
+                      <div class="v2-loan-card-top">
+                        <span class="v2-loan-label">Darlehen 1</span>
+                        <button class="v2-delete-btn" onclick="removeLoanRow(this)" aria-label="Darlehen entfernen" style="display:none;">
+                          <span class="material-symbols-outlined">delete</span>
+                        </button>
+                      </div>
+                      <div class="v2-loan-card-fields">
+                        <div class="v2-field">
+                          <label class="v2-field-label">Darlehensbetrag</label>
+                          <div class="v2-input-wrap">
+                            <input class="v2-field-input" type="text" value="350.000" style="width:90px;" />
+                            <span class="v2-input-suffix">€</span>
+                          </div>
+                        </div>
+                        <div class="v2-field">
+                          <label class="v2-field-label">Zinsbindung</label>
+                          <div class="v2-input-wrap">
+                            <input class="v2-field-input" type="text" value="15" style="width:48px;" />
+                            <span class="v2-input-suffix">J</span>
+                          </div>
+                        </div>
+                        <div class="v2-field">
+                          <label class="v2-field-label">Tilgungsrate</label>
+                          <div class="v2-input-wrap">
+                            <input class="v2-field-input" type="text" value="2,00" style="width:52px;" />
+                            <span class="v2-input-suffix">%</span>
+                          </div>
+                        </div>
+                        <div class="v2-field">
+                          <label class="v2-field-label">Min. Sondertilgung</label>
+                          <div class="v2-input-wrap">
+                            <input class="v2-field-input" type="text" value="5,00" style="width:52px;" />
+                            <span class="v2-input-suffix">%</span>
+                          </div>
+                        </div>
+                        <div class="v2-field">
+                          <label class="v2-field-label">Min. BZF Zeit</label>
+                          <div class="v2-input-wrap">
+                            <input class="v2-field-input" type="text" value="6" style="width:48px;" />
+                            <span class="v2-input-suffix">M</span>
+                          </div>
+                        </div>
+                        <button class="v2-search-btn" onclick="runSearch()">Suche aktualisieren →</button>
+                        <button class="v2-add-loan-btn" onclick="addLoanRow()">+ Darlehen hinzufügen</button>
+                      </div>
+                    </div>
+                  </div><!-- /#v2-loan-rows -->
+
+                </div><!-- /.v2-search-zone -->
+
+                <div class="v2-result-body">
+                  <table class="results-table" id="results-table" style="display:none;">
+                    <thead>
+                      <tr>
+                        <th class="col-pin" aria-label="Auswahl"></th>
+                        <th class="col-machbarkeit">Machbarkeit</th>
+                        <th class="col-anbieter">Anbieter</th>
+                        <th class="col-zinsen">Soll- / Effektiv</th>
+                        <th class="col-rate">Mon. Rate</th>
+                        <th class="col-marktplatz">Marktplatz</th>
+                        <th class="col-actions" aria-label="Aktionen"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="row-machbar" data-row="0">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(0)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">Sparkasse</td>
+                        <td>2,85 / 2,91 %</td>
+                        <td>€ 1.240</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="1">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(1)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Prüfen</span></td>
+                        <td class="col-anbieter">ING</td>
+                        <td>3,10 / 3,18 %</td>
+                        <td>€ 1.310</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr class="row-machbar" data-row="2">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(2)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">DKB</td>
+                        <td>2,99 / 3,04 %</td>
+                        <td>€ 1.275</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="3">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(3)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-nicht-machbar"><span class="tag-dot dot-nicht-machbar"></span>Nicht machbar</span></td>
+                        <td class="col-anbieter">Commerzbank</td>
+                        <td>3,45 / 3,52 %</td>
+                        <td>€ 1.420</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr class="row-machbar" data-row="4">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(4)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span></td>
+                        <td class="col-anbieter">Postbank</td>
+                        <td>2,92 / 2,98 %</td>
+                        <td>€ 1.255</td>
+                        <td>EUROPACE</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                      <tr data-row="5">
+                        <td class="col-pin"><button class="pin-btn" onclick="togglePin(5)" aria-label="Auswählen"><span class="pin-icon pin-icon--off"></span></button></td>
+                        <td><span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Prüfen</span></td>
+                        <td class="col-anbieter">Volksbank</td>
+                        <td>3,05 / 3,12 %</td>
+                        <td>€ 1.295</td>
+                        <td>HYPOPORT</td>
+                        <td class="col-actions"><div class="row-actions"><button class="row-action-icon" aria-label="In neuem Tab öffnen"><span class="material-symbols-outlined">open_in_new</span></button><button class="row-action-btn">Ansehen</button><button class="row-action-btn row-action-btn--primary" onclick="erstellenAngebot(this)">Erstellen</button></div></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </section><!-- /#step-1 -->
+
+              <!-- STEP 2: Angebote -->
+              <section id="step-2" style="display:none;">
+                <div id="angebote-empty" class="angebote-empty-state">
+                  Noch keine Angebote erstellt. Klicken Sie in der Suche auf „Erstellen".
+                </div>
+                <div id="angebote-grid" class="angebote-grid"></div>
+              </section><!-- /#step-2 -->
+
+              <!-- STEP 3: Einreichung -->
+              <section id="step-3" style="display:none;">
+
+                <!-- EI2 HEADER — Component 1 of redesign -->
+                <!--
+                  Variable states for .ei2-status-tag:
+                    ei2-status-tag--eingereicht   → blue  (submitted to bank)
+                    ei2-status-tag--in-pruefung   → orange (bank reviewing)
+                    ei2-status-tag--genehmigt     → green (Finanzierung genehmigt)
+
+                  Variable: .ei2-header-bank text = bank name (e.g. Commerzbank, Sparkasse)
+                -->
+                <div class="ei2-header">
+                  <button class="ei2-back-btn" onclick="goToStep(1)" aria-label="Zurück zur Angebotssuche">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                  </button>
+                  <span class="ei2-header-label">Einreichung</span>
+                  <span class="ei2-header-sep">—</span>
+                  <span class="ei2-header-bank">Commerzbank</span>
+                  <span class="ei2-status-tag ei2-status-tag--eingereicht">
+                    <span class="ei2-status-dot"></span>
+                    Eingereicht
+                  </span>
+                  <div class="ei2-header-spacer"></div>
+                  <button class="ei2-status-btn">
+                    <span class="material-symbols-outlined">expand_more</span>
+                    Status ändern
+                  </button>
+                </div>
+
+                <div class="ei2-body">
+
+                  <!-- ── Side navigation ── -->
+                  <nav class="ei2-sidenav" aria-label="Einreichungsabschnitte">
+
+                    <!-- Group 1: Finanzierungsdetails (open by default) -->
+                    <div class="ei2-nav-group">
+                      <button class="ei2-nav-group-header ei2-nav-group-header--open" data-ei-group="finanzierung" onclick="toggleEiGroup('finanzierung')">
+                        <span class="material-symbols-outlined ei2-nav-group-icon">euro</span>
+                        <span class="ei2-nav-group-label">Finanzierungsdetails</span>
+                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                      </button>
+                      <div class="ei2-nav-subitems" id="ei2-subitems-finanzierung">
+                        <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-machbarkeit" onclick="scrollToEiCard('finanzierung','ei2c-machbarkeit')">
+                          <span class="ei2-nav-subitem-label">Machbarkeit</span>
+                          <span class="ei2-nav-dot ei2-nav-dot--success"></span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-kapital" onclick="scrollToEiCard('finanzierung','ei2c-kapital')">
+                          <span class="ei2-nav-subitem-label">Kapitaldienstrechnung</span>
+                          <span class="ei2-nav-dot ei2-nav-dot--warning"></span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-zinsen" onclick="scrollToEiCard('finanzierung','ei2c-zinsen')">
+                          <span class="ei2-nav-subitem-label">Zinssensitivierung</span>
+                          <span class="ei2-nav-dot ei2-nav-dot--success"></span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-tilgung" onclick="scrollToEiCard('finanzierung','ei2c-tilgung')">
+                          <span class="ei2-nav-subitem-label">Tilgungsplan</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-margen" onclick="scrollToEiCard('finanzierung','ei2c-margen')">
+                          <span class="ei2-nav-subitem-label">Margenparameter</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Group 2: Produkt – Sparkasse -->
+                    <div class="ei2-nav-group">
+                      <button class="ei2-nav-group-header" data-ei-group="sparkasse" onclick="toggleEiGroup('sparkasse')">
+                        <span class="material-symbols-outlined ei2-nav-group-icon">desktop_windows</span>
+                        <span class="ei2-nav-group-label">Produkt – Sparkasse</span>
+                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                      </button>
+                      <div class="ei2-nav-subitems" id="ei2-subitems-sparkasse" style="display:none;">
+                        <button class="ei2-nav-subitem" data-card="ei2c-sp-immobilien" onclick="scrollToEiCard('sparkasse','ei2c-sp-immobilien')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                          <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-sp-prescoring" onclick="scrollToEiCard('sparkasse','ei2c-sp-prescoring')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                          <span class="ei2-nav-subitem-label">Prescoring</span>
+                        </button>
+                        <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-sp-dokumente" onclick="scrollToEiCard('sparkasse','ei2c-sp-dokumente')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--current">radio_button_checked</span>
+                          <span class="ei2-nav-subitem-label">Dokumente</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-sp-email" onclick="scrollToEiCard('sparkasse','ei2c-sp-email')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Einreichungsemail</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-sp-pruefung" onclick="scrollToEiCard('sparkasse','ei2c-sp-pruefung')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Group 3: Produkt – Hanseatic -->
+                    <div class="ei2-nav-group">
+                      <button class="ei2-nav-group-header" data-ei-group="hanseatic" onclick="toggleEiGroup('hanseatic')">
+                        <span class="material-symbols-outlined ei2-nav-group-icon">desktop_windows</span>
+                        <span class="ei2-nav-group-label">Produkt – Hanseatic</span>
+                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                      </button>
+                      <div class="ei2-nav-subitems" id="ei2-subitems-hanseatic" style="display:none;">
+                        <button class="ei2-nav-subitem" data-card="ei2c-ha-immobilien" onclick="scrollToEiCard('hanseatic','ei2c-ha-immobilien')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-ha-prescoring" onclick="scrollToEiCard('hanseatic','ei2c-ha-prescoring')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Prescoring</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-ha-dokumente" onclick="scrollToEiCard('hanseatic','ei2c-ha-dokumente')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Dokumente</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-ha-email" onclick="scrollToEiCard('hanseatic','ei2c-ha-email')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Einreichungsemail</span>
+                        </button>
+                        <button class="ei2-nav-subitem" data-card="ei2c-ha-pruefung" onclick="scrollToEiCard('hanseatic','ei2c-ha-pruefung')">
+                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                          <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </nav><!-- /.ei2-sidenav -->
+
+                  <!-- ── Content column (banner + cards) ── -->
+                  <div class="ei2-content-col">
+
+                  <!-- Info banner — visible when status = Eingereicht -->
+                  <div class="ei2-info-banner" id="ei2-info-banner">
+                    <span class="material-symbols-outlined">info</span>
+                    Paket an Bank eingereicht am 13.10.25, 10:20. Warte auf Bank-Antwort.
+                  </div>
+
+                  <!-- Cards -->
+                  <div class="ei2-content" id="ei2-content-area">
+
+                    <!-- SECTION: Finanzierungsdetails (shown by default, all cards collapsed) -->
+                    <div id="ei2-section-finanzierung">
+
+                      <div class="ei-card" id="ei2c-machbarkeit">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <span class="ei-card-title">Machbarkeit</span>
+                          <div class="ei-card-header-right">
+                            <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Darlehensbetrag</span><span class="ei-kv-value">296.280,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Beleihungswert</span><span class="ei-kv-value">320.000,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Beleihungsauslauf</span><span class="ei-kv-value">92,59 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Sollzinsbindung</span><span class="ei-kv-value">15 Jahre</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Tilgungsrate</span><span class="ei-kv-value">2,00 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Sondertilgung</span><span class="ei-kv-value">5,00 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Bereitstellungszinsfrei</span><span class="ei-kv-value">6 Monate</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Marktplatz</span><span class="ei-kv-value">EUROPACE</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-kapital">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <span class="ei-card-title">Kapitaldienstrechnung</span>
+                          <div class="ei-card-header-right">
+                            <span class="machbarkeit-tag tag-pruefen"><span class="tag-dot dot-pruefen"></span>Bedingt machbar</span>
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Nettoeinkommen</span><span class="ei-kv-value">5.800,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Monatliche Rate</span><span class="ei-kv-value">€ 1.240</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Kapitaldienst-Quote</span><span class="ei-kv-value">21,4 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Freies Einkommen</span><span class="ei-kv-value">4.560,00 €</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-zinsen">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <span class="ei-card-title">Zinssensitivierung</span>
+                          <div class="ei-card-header-right">
+                            <span class="machbarkeit-tag tag-machbar"><span class="tag-dot dot-machbar"></span>Machbar</span>
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Stress-Sollzins</span><span class="ei-kv-value">5,00 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Stress-Rate</span><span class="ei-kv-value">€ 1.870</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Tragbarkeit</span><span class="ei-kv-value">Ja</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Überschuss (Stress)</span><span class="ei-kv-value">2.930,00 €</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-tilgung">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <span class="ei-card-title">Tilgungsplan</span>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Sollzins</span><span class="ei-kv-value">2,85 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Effektivzins</span><span class="ei-kv-value">2,91 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Anfangstilgung</span><span class="ei-kv-value">2,00 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Restschuld (15J)</span><span class="ei-kv-value">180.200,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Zinssumme</span><span class="ei-kv-value">38.680,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Tilgungssumme</span><span class="ei-kv-value">116.080,00 €</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-margen">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <span class="ei-card-title">Margenparameter</span>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Zielmarge</span><span class="ei-kv-value">1,20 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Ist-Marge</span><span class="ei-kv-value">1,35 %</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Spread</span><span class="ei-kv-value">+ 0,15 %</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div><!-- /#ei2-section-finanzierung -->
+
+                    <!-- SECTION: Produkt – Sparkasse (hidden by default) -->
+                    <div id="ei2-section-sparkasse" style="display:none;">
+
+                      <div class="ei-card" id="ei2c-sp-immobilien">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                            <span class="ei-card-title">Immobilienbewertung</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Objektart</span><span class="ei-kv-value">Eigentumswohnung</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Wohnfläche</span><span class="ei-kv-value">98 m²</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Kaufpreis</span><span class="ei-kv-value">360.000,00 €</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Beleihungswert</span><span class="ei-kv-value">320.000,00 €</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-sp-prescoring">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                            <span class="ei-card-title">Prescoring</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">SCHUFA-Score</span><span class="ei-kv-value">97,4</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Ergebnis</span><span class="ei-kv-value">Positiv</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Geprüft am</span><span class="ei-kv-value">12.10.2025</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-sp-dokumente">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--current">radio_button_checked</span>
+                            <span class="ei-card-title">Dokumente</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Gehaltsnachweis</span><span class="ei-kv-value">Ausstehend</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Grundbuchauszug</span><span class="ei-kv-value">Hochgeladen</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Selbstauskunft</span><span class="ei-kv-value">Ausstehend</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Kaufvertrag</span><span class="ei-kv-value">Ausstehend</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-sp-email">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Einreichungsemail</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Status</span><span class="ei-kv-value">Noch nicht versendet</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Empfänger</span><span class="ei-kv-value">kredit@sparkasse.de</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-sp-pruefung">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Prüfungshistorie</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <div class="ei-kv-grid">
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Letzte Prüfung</span><span class="ei-kv-value">—</span></div>
+                            <div class="ei-kv-cell"><span class="ei-kv-label">Ergebnis</span><span class="ei-kv-value">—</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div><!-- /#ei2-section-sparkasse -->
+
+                    <!-- SECTION: Produkt – Hanseatic (hidden by default, all idle) -->
+                    <div id="ei2-section-hanseatic" style="display:none;">
+
+                      <div class="ei-card" id="ei2c-ha-immobilien">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Immobilienbewertung</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <p style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-neutral-dark-300);margin:0;">Noch nicht gestartet.</p>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-ha-prescoring">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Prescoring</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <p style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-neutral-dark-300);margin:0;">Noch nicht gestartet.</p>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-ha-dokumente">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Dokumente</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <p style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-neutral-dark-300);margin:0;">Noch nicht gestartet.</p>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-ha-email">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Einreichungsemail</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <p style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-neutral-dark-300);margin:0;">Noch nicht gestartet.</p>
+                        </div>
+                      </div>
+
+                      <div class="ei-card" id="ei2c-ha-pruefung">
+                        <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
+                          <div class="ei2-card-title-row">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei-card-title">Prüfungshistorie</span>
+                          </div>
+                          <div class="ei-card-header-right">
+                            <span class="material-symbols-outlined ei-card-chevron">expand_more</span>
+                          </div>
+                        </button>
+                        <div class="ei-card-body" style="display:none;">
+                          <p style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-neutral-dark-300);margin:0;">Noch nicht gestartet.</p>
+                        </div>
+                      </div>
+
+                    </div><!-- /#ei2-section-hanseatic -->
+
+                  </div><!-- /.ei2-content -->
+
+                  </div><!-- /.ei2-content-col -->
+
+                </div><!-- /.ei2-body -->
+
+              </section><!-- /#step-3 -->
+
+            </div><!-- /.v2-step-content -->
+
+          </div><!-- /.v2-body -->
+
+        </div><!-- /.content-inner -->
+      </div><!-- /.content -->
+
+    </div><!-- /.main -->
+  </div><!-- /.app -->
+
+  <script>
+    /* ---- Row data ---- */
+    window.ANGEBOTE_DATA = [
+      { bank: 'Sparkasse',    machbarkeit: 'machbar',       sollzins: 2.85, effektivzins: 2.91, rate: 1240, restschuld: 180200, sollzinsStr: '2,85 %', effektivzinsStr: '2,91 %', rateStr: '\u20ac 1.240', restschuldStr: '\u20ac 180.200' },
+      { bank: 'ING',          machbarkeit: 'pruefen',       sollzins: 3.10, effektivzins: 3.18, rate: 1310, restschuld: 195400, sollzinsStr: '3,10 %', effektivzinsStr: '3,18 %', rateStr: '\u20ac 1.310', restschuldStr: '\u20ac 195.400' },
+      { bank: 'DKB',          machbarkeit: 'machbar',       sollzins: 2.99, effektivzins: 3.04, rate: 1275, restschuld: 182800, sollzinsStr: '2,99 %', effektivzinsStr: '3,04 %', rateStr: '\u20ac 1.275', restschuldStr: '\u20ac 182.800' },
+      { bank: 'Commerzbank',  machbarkeit: 'nicht-machbar', sollzins: 3.45, effektivzins: 3.52, rate: 1420, restschuld: 210500, sollzinsStr: '3,45 %', effektivzinsStr: '3,52 %', rateStr: '\u20ac 1.420', restschuldStr: '\u20ac 210.500' },
+      { bank: 'Postbank',     machbarkeit: 'machbar',       sollzins: 2.92, effektivzins: 2.98, rate: 1255, restschuld: 178600, sollzinsStr: '2,92 %', effektivzinsStr: '2,98 %', rateStr: '\u20ac 1.255', restschuldStr: '\u20ac 178.600' },
+      { bank: 'Volksbank',    machbarkeit: 'pruefen',       sollzins: 3.05, effektivzins: 3.12, rate: 1295, restschuld: 188900, sollzinsStr: '3,05 %', effektivzinsStr: '3,12 %', rateStr: '\u20ac 1.295', restschuldStr: '\u20ac 188.900' }
+    ];
+
+    /* ---- State ---- */
+    window.stepperState = { currentStep: 1, completed: [] };
+    window.appState     = { pinnedRows: [], erstellteAngebote: [], angefragt: new Set() };
+
+    /* ---- Stepper ---- */
+    function goToStep(n) {
+      if (n > 1 && window.stepperState.completed.indexOf(n - 1) === -1) return;
+      window.stepperState.currentStep = n;
+      document.getElementById('step-1').style.display = n === 1 ? 'flex'  : 'none';
+      document.getElementById('step-2').style.display = n === 2 ? 'block' : 'none';
+      document.getElementById('step-3').style.display = n === 3 ? 'flex'  : 'none';
+      renderStepper();
+    }
+
+    function unlockStep(n) {
+      if (window.stepperState.completed.indexOf(n) === -1) window.stepperState.completed.push(n);
+    }
+
+    function renderStepper() {
+      var current = window.stepperState.currentStep;
+      var done    = window.stepperState.completed;
+      [1, 2, 3].forEach(function(i) {
+        var el     = document.getElementById('v2-step-' + i);
+        var status = done.indexOf(i) !== -1 ? 'done' : i === current ? 'active' : 'idle';
+        el.className = 'v2-step-item v2-step-item--' + status;
+        el.setAttribute('aria-current', status === 'active' ? 'step' : '');
+      });
+    }
+
+    /* ---- Search table ---- */
+    function runSearch() {
+      document.getElementById('results-table').style.display = 'table';
+    }
+
+    function togglePin(rowIndex) {
+      var pinned = window.appState.pinnedRows;
+      var idx    = pinned.indexOf(rowIndex);
+      var row    = document.querySelector('[data-row="' + rowIndex + '"]');
+      var icon   = row.querySelector('.pin-icon');
+      if (idx === -1) {
+        pinned.push(rowIndex);
+        row.classList.add('row-pinned');
+        icon.classList.replace('pin-icon--off', 'pin-icon--on');
+      } else {
+        pinned.splice(idx, 1);
+        row.classList.remove('row-pinned');
+        icon.classList.replace('pin-icon--on', 'pin-icon--off');
+      }
+    }
+
+    /* ---- Angebote ---- */
+    function erstellenAngebot(btn) {
+      var rowIndex = parseInt(btn.closest('[data-row]').dataset.row);
+      if (window.appState.erstellteAngebote.indexOf(rowIndex) === -1) {
+        window.appState.erstellteAngebote.push(rowIndex);
+      }
+      unlockStep(1);
+      renderAngeboteCards();
+      updateAngeboteCounter();
+      goToStep(2);
+    }
+
+    function renderAngeboteCards() {
+      var container  = document.getElementById('angebote-grid');
+      var emptyState = document.getElementById('angebote-empty');
+      if (!container) return;
+      var cards = window.appState.erstellteAngebote;
+      if (cards.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+      if (emptyState) emptyState.style.display = 'none';
+
+      var best = { sollzins: Infinity, effektivzins: Infinity, rate: Infinity, restschuld: Infinity };
+      var showBest = cards.length > 1;
+      if (showBest) {
+        cards.forEach(function(idx) {
+          var d = window.ANGEBOTE_DATA[idx];
+          if (d.sollzins     < best.sollzins)     best.sollzins     = d.sollzins;
+          if (d.effektivzins < best.effektivzins)  best.effektivzins = d.effektivzins;
+          if (d.rate         < best.rate)          best.rate         = d.rate;
+          if (d.restschuld   < best.restschuld)    best.restschuld   = d.restschuld;
+        });
+      }
+      container.innerHTML = cards.map(function(idx) { return buildCardHTML(idx, best, showBest); }).join('');
+    }
+
+    function buildCardHTML(rowIndex, best, showBest) {
+      var d           = window.ANGEBOTE_DATA[rowIndex];
+      var isAngefragt = window.appState.angefragt.has(rowIndex);
+      var state       = isAngefragt ? 'angefragt' : 'pinned';
+
+      var machLabel = { machbar: 'Machbar', pruefen: 'Pr\u00fcfen', 'nicht-machbar': 'Nicht machbar' }[d.machbarkeit];
+      var machTag   = '<span class="machbarkeit-tag tag-' + d.machbarkeit + '"><span class="tag-dot dot-' + d.machbarkeit + '"></span>' + machLabel + '</span>';
+      var einTag    = isAngefragt ? '<span class="card-einreichung-tag">In Einreichung</span>' : '';
+
+      function cell(label, key, str, num) {
+        var isBest = showBest && num === best[key];
+        return '<div class="card-data-cell">' +
+          '<span class="card-data-label">' + label + '</span>' +
+          '<span class="card-data-value' + (isBest ? ' card-data-value--best' : '') + '">' +
+            (isBest ? '\u2193\u202f' : '') + str +
+          '</span></div>';
+      }
+
+      var checkSVG = '<svg class="card-check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="7" fill="currentColor"/><path d="M4 7l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      var footerPinned = '<div class="card-footer-state card-footer-pinned"' + (isAngefragt ? ' style="display:none"' : '') + '>' +
+        '<button class="card-entfernen card-entfernen--footer" onclick="removePin(' + rowIndex + ')">entfernen</button>' +
+        '<button class="card-anfragen" onclick="anfragenOffer(' + rowIndex + ')">Anfragen \u2192</button>' +
+        '</div>';
+
+      var footerAngefragt = '<div class="card-footer-state card-footer-angefragt"' + (!isAngefragt ? ' style="display:none"' : '') + '>' +
+        '<span class="card-angefragt-info">' + checkSVG +
+          '\u00a0Wird in Einreichung angezeigt\u00a0' +
+          '<button class="card-rueckgaengig" onclick="removeAnfrage(' + rowIndex + ')">r\u00fckg\u00e4ngig</button>' +
+        '</span>' +
+        '<button class="card-anfragen card-anfragen--done" disabled>Angefragt \u2713</button>' +
+        '</div>';
+
+      var sideEntfernen = !isAngefragt
+        ? '<button class="card-entfernen card-entfernen--side" onclick="removePin(' + rowIndex + ')">entfernen</button>'
+        : '';
+
+      return [
+        '<div class="angebot-card" data-card="' + rowIndex + '" data-machbarkeit="' + d.machbarkeit + '" data-state="' + state + '">',
+          '<div class="card-col-left">',
+            '<div class="card-col-left-top">',
+              '<span class="card-bank-name">' + d.bank + '</span>',
+              machTag, einTag,
+            '</div>',
+            sideEntfernen,
+          '</div>',
+          '<div class="card-col-right">',
+            '<div class="card-header">',
+              '<span class="card-bank-name">' + d.bank + '</span>',
+              '<div class="card-header-tags">' + machTag + einTag + '</div>',
+            '</div>',
+            '<div class="card-data-grid">',
+              cell('Sollzins',        'sollzins',     d.sollzinsStr,    d.sollzins),
+              cell('Monatliche Rate', 'rate',          d.rateStr,        d.rate),
+              cell('Effektivzins',    'effektivzins',  d.effektivzinsStr, d.effektivzins),
+              cell('Restschuld',      'restschuld',    d.restschuldStr,  d.restschuld),
+            '</div>',
+            '<div class="card-footer">' + footerPinned + footerAngefragt + '</div>',
+          '</div>',
+        '</div>'
+      ].join('');
+    }
+
+    function updateAngeboteCounter() {
+      var count = window.appState.erstellteAngebote.length;
+      var label = document.querySelector('#v2-step-2 .v2-step-label');
+      if (label) label.textContent = count > 0 ? 'Angebote (' + count + ')' : 'Angebote';
+    }
+
+    function anfragenOffer(rowIndex) {
+      window.appState.angefragt.add(rowIndex);
+      renderAngeboteCards();
+      addToEinreichung(window.ANGEBOTE_DATA[rowIndex].bank, rowIndex);
+      unlockStep(2);
+      renderStepper();
+    }
+
+    function removeAnfrage(rowIndex) {
+      window.appState.angefragt.delete(rowIndex);
+      renderAngeboteCards();
+      removeFromEinreichung(rowIndex);
+    }
+
+    function removePin(rowIndex) {
+      if (window.appState.angefragt.has(rowIndex)) {
+        window.appState.angefragt.delete(rowIndex);
+        removeFromEinreichung(rowIndex);
+      }
+      var idx = window.appState.erstellteAngebote.indexOf(rowIndex);
+      if (idx !== -1) window.appState.erstellteAngebote.splice(idx, 1);
+      updateAngeboteCounter();
+
+      var container = document.getElementById('angebote-grid');
+      var cardEl    = container.querySelector('[data-card="' + rowIndex + '"]');
+      if (!cardEl) return;
+
+      var undoEl = document.createElement('div');
+      undoEl.className = 'card-undo-row';
+      undoEl.innerHTML = 'Angebot entfernt\u2009\u2014\u2009<button class="card-undo-btn" onclick="undoRemovePin(' + rowIndex + ', this)">R\u00fckg\u00e4ngig</button>';
+      cardEl.parentNode.replaceChild(undoEl, cardEl);
+
+      setTimeout(function() {
+        if (undoEl.parentNode) undoEl.parentNode.removeChild(undoEl);
+        if (window.appState.erstellteAngebote.length === 0) {
+          var empty = document.getElementById('angebote-empty');
+          if (empty) empty.style.display = 'block';
+        }
+      }, 4000);
+    }
+
+    function undoRemovePin(rowIndex, btn) {
+      var undoEl = btn.closest('.card-undo-row');
+      if (undoEl && undoEl.parentNode) undoEl.parentNode.removeChild(undoEl);
+      window.appState.erstellteAngebote.push(rowIndex);
+      renderAngeboteCards();
+      updateAngeboteCounter();
+    }
+
+    function addToEinreichung(bankName, rowIndex) {
+      var list = document.getElementById('einreichung-list');
+      if (!list || list.querySelector('[data-einreichung="' + rowIndex + '"]')) return;
+      var slot = document.createElement('div');
+      slot.className = 'einreichung-slot';
+      slot.dataset.einreichung = rowIndex;
+      slot.innerHTML = '<span class="einreichung-slot-name">' + bankName + '</span>';
+      list.appendChild(slot);
+    }
+
+    function removeFromEinreichung(rowIndex) {
+      var list = document.getElementById('einreichung-list');
+      if (!list) return;
+      var slot = list.querySelector('[data-einreichung="' + rowIndex + '"]');
+      if (slot) slot.parentNode.removeChild(slot);
+    }
+
+    /* ---- Einreichung card expand/collapse ---- */
+    function toggleCard(headerBtn) {
+      var card     = headerBtn.closest('.ei-card');
+      var body     = card.querySelector('.ei-card-body');
+      var expanded = headerBtn.getAttribute('aria-expanded') === 'true';
+      headerBtn.setAttribute('aria-expanded', !expanded);
+      card.classList.toggle('ei-card--expanded', !expanded);
+      body.style.display = !expanded ? 'block' : 'none';
+    }
+
+    /* ---- Einreichung side nav accordion ---- */
+    var EI2_GROUPS = ['finanzierung', 'sparkasse', 'hanseatic'];
+
+    function toggleEiGroup(groupId) {
+      var isOpen = document.getElementById('ei2-subitems-' + groupId).style.display !== 'none';
+      if (isOpen) return;
+      EI2_GROUPS.forEach(function(id) {
+        document.getElementById('ei2-subitems-' + id).style.display = 'none';
+        document.querySelector('[data-ei-group="' + id + '"]').classList.remove('ei2-nav-group-header--open');
+        document.getElementById('ei2-section-' + id).style.display = 'none';
+      });
+      document.getElementById('ei2-subitems-' + groupId).style.display = 'block';
+      document.querySelector('[data-ei-group="' + groupId + '"]').classList.add('ei2-nav-group-header--open');
+      document.getElementById('ei2-section-' + groupId).style.display = 'flex';
+    }
+
+    function scrollToEiCard(sectionId, cardId) {
+      /* First switch to the correct group if needed */
+      var currentOpen = EI2_GROUPS.filter(function(id) {
+        return document.getElementById('ei2-subitems-' + id).style.display !== 'none';
+      })[0];
+      if (currentOpen !== sectionId) toggleEiGroup(sectionId);
+
+      var content = document.getElementById('ei2-content-area');
+      var card    = document.getElementById(cardId);
+      if (!card || !content) return;
+
+      /* Expand the card if it's collapsed */
+      var body   = card.querySelector('.ei-card-body');
+      var header = card.querySelector('.ei-card-header');
+      if (body && body.style.display === 'none') {
+        body.style.display = 'block';
+        card.classList.add('ei-card--expanded');
+        if (header) header.setAttribute('aria-expanded', 'true');
+      }
+
+      /* Scroll to it */
+      content.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' });
+
+      /* Mark active nav sub-item */
+      document.querySelectorAll('#ei2-subitems-' + sectionId + ' .ei2-nav-subitem').forEach(function(item) {
+        item.classList.toggle('ei2-nav-subitem--active', item.dataset.card === cardId);
+      });
+    }
+
+    /* ---- Info banner visibility ---- */
+    document.addEventListener('DOMContentLoaded', function() {
+      var banner = document.getElementById('ei2-info-banner');
+      if (!banner) return;
+      var isEingereicht = document.querySelector('.ei2-status-tag--eingereicht') !== null;
+      banner.style.display = isEingereicht ? 'flex' : 'none';
+    });
+
+    /* ---- V2: Add / remove loan cards ---- */
+    function addLoanRow() {
+      var container = document.getElementById('v2-loan-rows');
+      var cards     = container.querySelectorAll('.v2-loan-card');
+      var newCard   = cards[0].cloneNode(true);
+      var n         = cards.length + 1;
+      /* Update label */
+      newCard.querySelector('.v2-loan-label').textContent = 'Darlehen ' + n;
+      /* Clear input values */
+      newCard.querySelectorAll('.v2-field-input').forEach(function(inp) { inp.value = ''; });
+      /* Show delete button */
+      var delBtn = newCard.querySelector('.v2-delete-btn');
+      if (delBtn) delBtn.style.display = 'flex';
+      /* Remove action buttons — they live only on the first card */
+      newCard.querySelectorAll('.v2-search-btn, .v2-add-loan-btn').forEach(function(b) { b.remove(); });
+      container.appendChild(newCard);
+    }
+
+    function removeLoanRow(btn) {
+      var card = btn.closest('.v2-loan-card');
+      if (card) card.parentNode.removeChild(card);
+      /* Renumber remaining cards */
+      var container = document.getElementById('v2-loan-rows');
+      container.querySelectorAll('.v2-loan-card').forEach(function(c, i) {
+        c.querySelector('.v2-loan-label').textContent = 'Darlehen ' + (i + 1);
+      });
+    }
+
+    /* ---- Navigation helpers ---- */
+    function setActive(btn) {
+      document.querySelectorAll('.sidebar-item').forEach(function(el) { el.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+
+    function setTab(btn) {
+      document.querySelectorAll('.tab-bar .tab').forEach(function(el) { el.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
