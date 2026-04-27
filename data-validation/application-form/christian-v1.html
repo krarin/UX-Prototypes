@@ -782,6 +782,18 @@
       color: #2558d9;
       gap: 4px;
     }
+    /* Neu → light red, dark red text */
+    .badge-new {
+      background: #ffebee;
+      color: #b71c1c;
+      gap: 4px;
+    }
+    .badge-new .material-symbols-outlined {
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
     /* Bestätigt → light green, dark green text */
     .badge-confirmed {
       background: #eaf7ee;
@@ -811,9 +823,9 @@
 
     /* Status column — fixed width so it never jumps */
     .status-td {
-      width: 148px;
-      min-width: 148px;
-      max-width: 148px;
+      width: 180px;
+      min-width: 180px;
+      max-width: 180px;
     }
 
     /* Field category subtitle */
@@ -1211,6 +1223,7 @@
     .sub-row-value {
       color: #37474f;
       font-size: 12px;
+      padding-left: 30px;
     }
 
     /* ─── SECTION HEADER ROWS ─────────────────────────────── */
@@ -1264,8 +1277,8 @@
       display: inline-flex;
       align-items: center;
       padding: 1px 7px;
-      background: #eceff1;
-      color: #546e7a;
+      background: #fff3e0;
+      color: #c75b00;
       border-radius: 10px;
       font-size: 10px;
       font-weight: 700;
@@ -2335,7 +2348,11 @@
         { systemValue: '3.799,86 €', source: 'Gehaltsabrechnung Feb 2025' },
       ]
     },
-    { id:15, group:'as1', status:'error',     field:'Nettogehalt',                   customerInput:'8.500,0 €',       systemValue:'2.788,93 €',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:15, group:'as1', newDocument:true,    field:'Nettogehalt',                   fieldSub:'Einkommen',            customerInput:'3.200 €',       systemValue:'3.450 €',  source:'Gehaltsabrechnung Jan 2026', manuellerWert:'',
+      subRows: [
+        { label:'Vorheriger Wert', systemValue:'3.200 €', source:'Gehaltsabrechnung Okt 2025' }
+      ]
+    },
     { id:16, group:'as1', status:'error',     field:'Bruttogehalt',                  customerInput:'12.000,0 €',      systemValue:'3.799,86 €',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
     { id:17, group:'as1', status:'error',     field:'Beschäftigungsart',             customerInput:'Selbstständig',   systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
     { id:6,  group:'as1', status:'error',     field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'–' },
@@ -2472,6 +2489,7 @@
     if (!r.manuellerWert) r.manuellerWert = '';
     if (!r.confirmedSource) r.confirmedSource = null; // null | 'customer' | 'system'
     rowStatuses[r.id] = computeStatus(r);
+    if (r.newDocument) expandedRows.add(r.id);
   });
 
   function statusBadge(status) {
@@ -2513,7 +2531,7 @@
       const collapsed = collapsedGroups.has(gk);
       const confirmedCount = groupRows.filter(r => rowStatuses[r.id] === 'confirmed').length;
       const offenCount     = groupRows.filter(r => rowStatuses[r.id] !== 'confirmed').length;
-      const avatarHtml = `<span class="section-avatar" style="background:${meta.color}"><span class="material-symbols-outlined" style="font-size:13px;line-height:1;color:white;letter-spacing:0;">${meta.icon}</span></span>`;
+      const avatarHtml = `<span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:#37474f;flex-shrink:0;letter-spacing:0;">${meta.icon}</span>`;
       const chevron = `<svg class="section-chevron ${collapsed ? 'collapsed' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
       const subtitleHtml = meta.subtitle ? `<span class="section-subtitle">${meta.subtitle}</span>` : '';
       const countHtml = collapsed ? 'eingeklappt'
@@ -2556,9 +2574,10 @@
         ? `<span class="dash ${custStruck ? 'value-struck' : ''}">–</span>`
         : `<span class="${custStruck ? 'value-struck' : ''}">${custRaw}</span>`;
       const sysValue = row.systemValue === '–' ? dash : row.systemValue;
+      const newDocIcon = row.newDocument ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e53935" stroke="none" style="flex-shrink:0;margin-right:5px;vertical-align:middle;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>` : '';
       const sysValueHtml = row.systemValue === '–'
         ? dash
-        : `<span class="${sysStruck ? 'value-struck' : ''}">${row.systemValue}</span>`;
+        : `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${newDocIcon}${row.systemValue}</span>`;
       let sourceHtml;
       if (row.sourceWarning) {
         sourceHtml = `<div style="display:flex;flex-direction:column;gap:2px;">
@@ -2639,6 +2658,7 @@
                     </div>`).join('')}
                 </div>
               </div>
+              ${row.newDocument ? `<span class="badge badge-new"><span class="material-symbols-outlined">error</span>Neu</span>` : ''}
               ${row.confirmedSource ? `<span class="confirmed-avatar" title="Bestätigt von KH">KH</span>` : ''}
             </div>
           </td>
@@ -2683,7 +2703,7 @@
           <tr class="sub-row">
             <td></td>
             <td></td>
-            <td class="sub-row-indent">${row.field}</td>
+            <td class="sub-row-indent">${sub.label || row.field}</td>
             <td></td>
             <td class="sub-row-value">${sub.systemValue}</td>
             <td></td>
@@ -2992,6 +3012,7 @@
       if (val !== '–') row.manuellerWert = val;
       rowStatuses[id] = 'confirmed';
       lockedRows.add(id);
+      if (row.newDocument) row.newDocument = false;
       const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
       logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
     }
@@ -3128,6 +3149,7 @@
 
   // Initial render
   renderTable();
+  updateCounts();
 </script>
 </body>
 </html>
