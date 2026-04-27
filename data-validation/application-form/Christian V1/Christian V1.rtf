@@ -1,0 +1,2166 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2869
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 <!DOCTYPE html>\
+<html lang="en">\
+<head>\
+  <meta charset="UTF-8" />\
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\
+  <title>Data Validation (beta) \'96 Prototype</title>\
+  <style>\
+    * \{ box-sizing: border-box; margin: 0; padding: 0; \}\
+\
+    body \{\
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\
+      background: #f5f6f8;\
+      color: #1a1a2e;\
+      font-size: 13px;\
+      display: flex;\
+      height: 100vh;\
+      overflow: hidden;\
+    \}\
+\
+    /* \uc0\u9472 \u9472 \u9472  SIDEBAR \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\
+    .sidebar \{\
+      width: 64px;\
+      background: #1e2235;\
+      display: flex;\
+      flex-direction: column;\
+      align-items: center;\
+      padding: 12px 0;\
+      gap: 4px;\
+      flex-shrink: 0;\
+    \}\
+\
+    .sidebar .logo \{\
+      width: 36px;\
+      height: 36px;\
+      background: #3b82f6;\
+      border-radius: 8px;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      margin-bottom: 16px;\
+      color: white;\
+      font-weight: 700;\
+      font-size: 15px;\
+    \}\
+\
+    .sidebar .badge-wrap \{\
+      position: relative;\
+      width: 44px;\
+      height: 44px;\
+    \}\
+\
+    .sidebar .nav-item \{\
+      width: 44px;\
+      height: 44px;\
+      border-radius: 10px;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      color: #8b93b0;\
+      transition: background 0.15s, color 0.15s;\
+      position: relative;\
+    \}\
+\
+    .sidebar .nav-item:hover \{ background: #2a3050; color: #c5cadd; \}\
+    .sidebar .nav-item.active \{ background: #2a3050; color: #ffffff; \}\
+\
+    .sidebar .nav-item svg \{ width: 20px; height: 20px; \}\
+\
+    .sidebar .badge \{\
+      position: absolute;\
+      top: 4px; right: 4px;\
+      background: #ef4444;\
+      color: white;\
+      border-radius: 10px;\
+      font-size: 9px;\
+      font-weight: 700;\
+      min-width: 16px;\
+      height: 16px;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      padding: 0 3px;\
+      line-height: 1;\
+    \}\
+\
+    .sidebar .nav-label \{\
+      font-size: 9px;\
+      color: #8b93b0;\
+      margin-top: 2px;\
+      text-align: center;\
+    \}\
+\
+    .sidebar .nav-group \{\
+      display: flex;\
+      flex-direction: column;\
+      align-items: center;\
+      gap: 2px;\
+      width: 100%;\
+    \}\
+\
+    /* \uc0\u9472 \u9472 \u9472  MAIN AREA \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\
+    .main \{\
+      flex: 1;\
+      display: flex;\
+      flex-direction: column;\
+      overflow: hidden;\
+    \}\
+\
+    /* Top notification bar */\
+    .notify-bar \{\
+      background: #fef9ec;\
+      border-bottom: 1px solid #f0e4bc;\
+      padding: 10px 24px;\
+      display: flex;\
+      align-items: center;\
+      gap: 10px;\
+      font-size: 12.5px;\
+      color: #92600a;\
+    \}\
+\
+    .notify-bar svg \{ color: #d97706; flex-shrink: 0; \}\
+    .notify-bar a \{ color: #0d6efd; text-decoration: none; font-weight: 500; \}\
+    .notify-bar a:hover \{ text-decoration: underline; \}\
+    .notify-bar .close-btn \{\
+      margin-left: auto;\
+      cursor: pointer;\
+      color: #aaa;\
+      font-size: 16px;\
+      line-height: 1;\
+    \}\
+    .notify-bar .close-btn:hover \{ color: #666; \}\
+\
+    /* Header */\
+    .header \{\
+      background: white;\
+      border-bottom: 1px solid #e5e7ef;\
+      padding: 14px 24px 0;\
+    \}\
+\
+    .header-top \{\
+      display: flex;\
+      align-items: flex-start;\
+      justify-content: space-between;\
+      margin-bottom: 12px;\
+    \}\
+\
+    .header-title \{\
+      font-size: 19px;\
+      font-weight: 600;\
+      color: #111827;\
+      display: flex;\
+      align-items: center;\
+      gap: 12px;\
+    \}\
+\
+    .header-title .amount \{\
+      font-size: 15px;\
+      font-weight: 500;\
+      color: #6b7280;\
+    \}\
+\
+    .header-title .case-id \{\
+      font-size: 13px;\
+      font-weight: 400;\
+      color: #9ca3af;\
+    \}\
+\
+    .header-actions \{\
+      display: flex;\
+      gap: 8px;\
+      align-items: center;\
+    \}\
+\
+    .btn \{\
+      display: flex;\
+      align-items: center;\
+      gap: 6px;\
+      padding: 7px 14px;\
+      border-radius: 6px;\
+      font-size: 12.5px;\
+      font-weight: 500;\
+      cursor: pointer;\
+      border: 1px solid #d1d5db;\
+      background: white;\
+      color: #374151;\
+      transition: background 0.12s, border-color 0.12s;\
+    \}\
+\
+    .btn:hover \{ background: #f9fafb; border-color: #9ca3af; \}\
+\
+    .btn svg \{ width: 14px; height: 14px; \}\
+\
+    .btn-more \{\
+      padding: 7px 10px;\
+      border-radius: 6px;\
+      border: 1px solid #d1d5db;\
+      background: white;\
+      cursor: pointer;\
+      color: #374151;\
+      display: flex;\
+      align-items: center;\
+    \}\
+\
+    .btn-expand \{\
+      padding: 5px 8px;\
+      border-radius: 6px;\
+      border: 1px solid #d1d5db;\
+      background: white;\
+      cursor: pointer;\
+      color: #374151;\
+      display: flex;\
+      align-items: center;\
+    \}\
+\
+    /* Tags row */\
+    .tags-row \{\
+      display: flex;\
+      align-items: center;\
+      gap: 8px;\
+      margin-bottom: 12px;\
+      flex-wrap: wrap;\
+    \}\
+\
+    .tag \{\
+      display: flex;\
+      align-items: center;\
+      gap: 5px;\
+      padding: 4px 10px;\
+      border-radius: 5px;\
+      font-size: 12px;\
+      font-weight: 500;\
+      cursor: pointer;\
+    \}\
+\
+    .tag-green \{\
+      background: #d1fae5;\
+      color: #065f46;\
+      border: 1px solid #6ee7b7;\
+    \}\
+\
+    .tag-gray \{\
+      background: #f3f4f6;\
+      color: #374151;\
+      border: 1px solid #d1d5db;\
+    \}\
+\
+    .tag-add \{\
+      background: none;\
+      border: none;\
+      color: #6b7280;\
+      font-size: 12px;\
+      cursor: pointer;\
+      padding: 4px 6px;\
+      border-radius: 5px;\
+    \}\
+\
+    .tag-add:hover \{ background: #f3f4f6; color: #374151; \}\
+\
+    /* Sub-breadcrumb / app selector */\
+    .app-selector \{\
+      display: flex;\
+      align-items: center;\
+      gap: 6px;\
+      margin-bottom: 12px;\
+    \}\
+\
+    .app-badge \{\
+      display: inline-flex;\
+      align-items: center;\
+      gap: 5px;\
+      padding: 4px 10px;\
+      border: 1px solid #d1d5db;\
+      border-radius: 20px;\
+      font-size: 12px;\
+      color: #374151;\
+      background: white;\
+      cursor: pointer;\
+    \}\
+\
+    .app-badge .dot \{ width: 7px; height: 7px; border-radius: 50%; background: #10b981; \}\
+\
+    /* Tab nav */\
+    .tab-nav \{\
+      display: flex;\
+      gap: 0;\
+      border-bottom: none;\
+      overflow-x: auto;\
+    \}\
+\
+    .tab-nav::-webkit-scrollbar \{ display: none; \}\
+\
+    .tab-item \{\
+      padding: 10px 16px;\
+      font-size: 13px;\
+      font-weight: 500;\
+      color: #6b7280;\
+      cursor: pointer;\
+      border-bottom: 2px solid transparent;\
+      white-space: nowrap;\
+      transition: color 0.12s, border-color 0.12s;\
+      display: flex;\
+      align-items: center;\
+      gap: 5px;\
+      text-decoration: none;\
+    \}\
+\
+    .tab-item:hover \{ color: #374151; \}\
+\
+    .tab-item.active \{\
+      color: #059669;\
+      border-bottom-color: #059669;\
+    \}\
+\
+    .tab-item .ext-icon \{\
+      width: 11px;\
+      height: 11px;\
+      color: #9ca3af;\
+    \}\
+\
+    /* \uc0\u9472 \u9472 \u9472  CONTENT AREA \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\
+    .content \{\
+      flex: 1;\
+      overflow-y: auto;\
+      padding: 20px 24px;\
+      background: #f5f6f8;\
+    \}\
+\
+    /* Beta notice */\
+    .beta-notice \{\
+      background: #fffbeb;\
+      border: 1px solid #fde68a;\
+      border-left: 4px solid #f59e0b;\
+      border-radius: 6px;\
+      padding: 14px 16px;\
+      margin-bottom: 16px;\
+      display: flex;\
+      align-items: flex-start;\
+      justify-content: space-between;\
+      gap: 12px;\
+    \}\
+\
+    .beta-notice-content \{\}\
+    .beta-notice-title \{\
+      font-weight: 600;\
+      font-size: 13px;\
+      color: #92400e;\
+      margin-bottom: 4px;\
+    \}\
+\
+    .beta-notice-text \{\
+      font-size: 12.5px;\
+      color: #78350f;\
+      line-height: 1.5;\
+    \}\
+\
+    .beta-notice .toggle-wrap \{\
+      display: flex;\
+      align-items: center;\
+      gap: 8px;\
+      flex-shrink: 0;\
+    \}\
+\
+    .toggle-label \{\
+      font-size: 12px;\
+      color: #78350f;\
+      font-weight: 500;\
+    \}\
+\
+    /* Toggle switch */\
+    .toggle \{\
+      position: relative;\
+      width: 40px;\
+      height: 22px;\
+      cursor: pointer;\
+    \}\
+\
+    .toggle input \{ display: none; \}\
+\
+    .toggle-track \{\
+      position: absolute;\
+      inset: 0;\
+      background: #d1d5db;\
+      border-radius: 11px;\
+      transition: background 0.2s;\
+    \}\
+\
+    .toggle input:checked + .toggle-track \{ background: #10b981; \}\
+\
+    .toggle-thumb \{\
+      position: absolute;\
+      top: 3px;\
+      left: 3px;\
+      width: 16px;\
+      height: 16px;\
+      background: white;\
+      border-radius: 50%;\
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);\
+      transition: left 0.2s;\
+    \}\
+\
+    .toggle input:checked ~ .toggle-thumb \{ left: 21px; \}\
+\
+    /* Filter tabs */\
+    .filter-tabs \{\
+      display: flex;\
+      gap: 6px;\
+      margin-bottom: 12px;\
+      flex-wrap: wrap;\
+    \}\
+\
+    .filter-tab \{\
+      padding: 6px 14px;\
+      border-radius: 20px;\
+      font-size: 12.5px;\
+      font-weight: 500;\
+      cursor: pointer;\
+      border: 1px solid #e5e7eb;\
+      background: white;\
+      color: #6b7280;\
+      transition: all 0.12s;\
+    \}\
+\
+    .filter-tab:hover \{ border-color: #9ca3af; color: #374151; \}\
+\
+    .filter-tab.active \{\
+      background: white;\
+      border-color: #374151;\
+      color: #111827;\
+      font-weight: 600;\
+    \}\
+\
+    /* Table */\
+    .table-wrap \{\
+      background: white;\
+      border-radius: 8px;\
+      border: 1px solid #e5e7eb;\
+      overflow: hidden;\
+    \}\
+\
+    table \{\
+      width: 100%;\
+      border-collapse: collapse;\
+    \}\
+\
+    thead tr \{\
+      background: #f9fafb;\
+      border-bottom: 1px solid #e5e7eb;\
+    \}\
+\
+    thead th \{\
+      padding: 11px 16px;\
+      text-align: left;\
+      font-size: 12px;\
+      font-weight: 600;\
+      color: #6b7280;\
+      user-select: none;\
+      white-space: nowrap;\
+    \}\
+\
+    thead th:first-child \{ width: 44px; padding: 11px 0 11px 16px; \}\
+    thead th.sortable \{ cursor: pointer; \}\
+    thead th.sortable:hover \{ color: #374151; \}\
+    thead th.sortable::after \{ content: " \uc0\u8597 "; font-size: 10px; opacity: 0.5; \}\
+\
+    tbody tr \{\
+      border-bottom: 1px solid #f3f4f6;\
+      transition: background 0.1s;\
+    \}\
+\
+    tbody tr:last-child \{ border-bottom: none; \}\
+    tbody tr:hover \{ background: #f9fafb; \}\
+    tbody tr.selected \{ background: #eff6ff; \}\
+\
+    tbody td \{\
+      padding: 12px 16px;\
+      font-size: 13px;\
+      color: #374151;\
+      vertical-align: middle;\
+    \}\
+\
+    tbody td:first-child \{ padding: 12px 0 12px 16px; width: 44px; \}\
+\
+    /* Custom checkbox */\
+    .cb \{\
+      width: 16px;\
+      height: 16px;\
+      border: 1.5px solid #d1d5db;\
+      border-radius: 4px;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      transition: border-color 0.12s, background 0.12s;\
+      flex-shrink: 0;\
+    \}\
+\
+    .cb:hover \{ border-color: #6b7280; \}\
+    .cb.checked \{ background: #3b82f6; border-color: #3b82f6; \}\
+    .cb.checked::after \{ content: "\uc0\u10003 "; color: white; font-size: 10px; font-weight: 700; \}\
+    .cb-all.partial \{ background: #3b82f6; border-color: #3b82f6; \}\
+    .cb-all.partial::after \{ content: "\'97"; color: white; font-size: 10px; font-weight: 700; \}\
+\
+    /* Status badge */\
+    .badge \{\
+      display: inline-flex;\
+      align-items: center;\
+      padding: 3px 8px;\
+      border-radius: 4px;\
+      font-size: 11px;\
+      font-weight: 600;\
+      letter-spacing: 0.01em;\
+    \}\
+\
+    .badge-error \{ background: #fee2e2; color: #dc2626; \}\
+    .badge-unknown \{ background: #374151; color: #f9fafb; \}\
+    .badge-confirmed \{ background: #d1fae5; color: #065f46; \}\
+    .badge-notsure \{ background: #fef3c7; color: #92400e; \}\
+\
+    /* Source link */\
+    .source-link \{\
+      color: #0d9488;\
+      text-decoration: none;\
+      font-size: 12.5px;\
+    \}\
+\
+    .source-link:hover \{ text-decoration: underline; color: #0f766e; \}\
+\
+    /* Empty / dash */\
+    .dash \{ color: #9ca3af; \}\
+\
+\
+    .field-cell \{ min-width: 160px; \}\
+    .value-cell \{ min-width: 140px; \}\
+    .source-cell \{ min-width: 140px; \}\
+\
+    /* Pflichtfeld indicator */\
+    .pflicht-col \{ width: 20px; padding: 0 0 0 12px !important; \}\
+\
+    .pflicht-icon \{\
+      display: inline-flex;\
+      align-items: center;\
+      justify-content: center;\
+      width: 16px;\
+      height: 16px;\
+      border-radius: 50%;\
+      background: #ef4444;\
+      color: white;\
+      font-size: 10px;\
+      font-weight: 800;\
+      cursor: default;\
+      position: relative;\
+      flex-shrink: 0;\
+    \}\
+\
+    .pflicht-icon .pflicht-tooltip \{\
+      display: none;\
+      position: absolute;\
+      left: 50%;\
+      top: calc(100% + 5px);\
+      transform: translateX(-50%);\
+      background: #1f2937;\
+      color: white;\
+      font-size: 11px;\
+      font-weight: 500;\
+      padding: 4px 8px;\
+      border-radius: 5px;\
+      white-space: nowrap;\
+      pointer-events: none;\
+      z-index: 100;\
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);\
+    \}\
+\
+    .pflicht-icon .pflicht-tooltip::before \{\
+      content: '';\
+      position: absolute;\
+      bottom: 100%;\
+      left: 50%;\
+      transform: translateX(-50%);\
+      border: 4px solid transparent;\
+      border-bottom-color: #1f2937;\
+    \}\
+\
+    .pflicht-icon:hover .pflicht-tooltip \{ display: block; \}\
+\
+    /* Table toolbar */\
+    .table-toolbar \{\
+      display: flex;\
+      align-items: center;\
+      justify-content: space-between;\
+      margin-bottom: 10px;\
+    \}\
+\
+    /* 3-dot menu */\
+    .dot-menu-wrap \{ position: relative; \}\
+\
+    .dot-menu-btn \{\
+      width: 32px;\
+      height: 32px;\
+      border-radius: 6px;\
+      border: 1px solid #e5e7eb;\
+      background: white;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      color: #6b7280;\
+      gap: 2px;\
+      transition: background 0.12s, border-color 0.12s;\
+    \}\
+\
+    .dot-menu-btn:hover, .dot-menu-btn.open \{\
+      background: #f3f4f6;\
+      border-color: #9ca3af;\
+      color: #374151;\
+    \}\
+\
+    .dot-menu-btn span \{\
+      display: block;\
+      width: 4px; height: 4px;\
+      border-radius: 50%;\
+      background: currentColor;\
+    \}\
+\
+    .dot-dropdown \{\
+      display: none;\
+      position: absolute;\
+      top: calc(100% + 6px);\
+      right: 0;\
+      background: white;\
+      border: 1px solid #e5e7eb;\
+      border-radius: 8px;\
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);\
+      z-index: 200;\
+      min-width: 230px;\
+      padding: 6px 0;\
+      animation: fadeIn 0.12s ease;\
+    \}\
+\
+    @keyframes fadeIn \{\
+      from \{ opacity: 0; transform: translateY(-4px); \}\
+      to   \{ opacity: 1; transform: translateY(0); \}\
+    \}\
+\
+    .dot-dropdown.open \{ display: block; \}\
+\
+    .dropdown-section \{\
+      padding: 8px 12px 6px;\
+    \}\
+\
+    .dropdown-section + .dropdown-section \{\
+      border-top: 1px solid #f3f4f6;\
+      margin-top: 2px;\
+      padding-top: 10px;\
+    \}\
+\
+    .dropdown-section-label \{\
+      font-size: 11px;\
+      font-weight: 600;\
+      color: #9ca3af;\
+      text-transform: uppercase;\
+      letter-spacing: 0.05em;\
+      margin-bottom: 6px;\
+    \}\
+\
+    .dropdown-options \{\
+      display: flex;\
+      flex-direction: column;\
+      gap: 2px;\
+    \}\
+\
+    .dropdown-option \{\
+      display: flex;\
+      align-items: center;\
+      gap: 8px;\
+      padding: 6px 8px;\
+      border-radius: 5px;\
+      cursor: pointer;\
+      font-size: 13px;\
+      color: #374151;\
+      transition: background 0.1s;\
+    \}\
+\
+    .dropdown-option:hover \{ background: #f9fafb; \}\
+\
+    .dropdown-option input[type="radio"] \{\
+      accent-color: #059669;\
+      width: 14px; height: 14px;\
+      cursor: pointer;\
+      flex-shrink: 0;\
+    \}\
+\
+    .dropdown-option.selected \{ color: #059669; font-weight: 500; \}\
+\
+    /* Active filter pills on toolbar */\
+    .active-filter-pills \{\
+      display: flex;\
+      align-items: center;\
+      gap: 6px;\
+      flex-wrap: wrap;\
+    \}\
+\
+    .active-pill \{\
+      display: inline-flex;\
+      align-items: center;\
+      gap: 5px;\
+      padding: 3px 8px 3px 10px;\
+      border-radius: 20px;\
+      background: #ecfdf5;\
+      border: 1px solid #6ee7b7;\
+      font-size: 11.5px;\
+      color: #065f46;\
+      font-weight: 500;\
+    \}\
+\
+    .active-pill .pill-remove \{\
+      cursor: pointer;\
+      color: #6ee7b7;\
+      font-size: 13px;\
+      line-height: 1;\
+      margin-left: 1px;\
+    \}\
+\
+    .active-pill .pill-remove:hover \{ color: #059669; \}\
+\
+    /* Sub-rows */\
+    .expand-btn \{\
+      background: none;\
+      border: none;\
+      cursor: pointer;\
+      color: #9ca3af;\
+      font-size: 11px;\
+      padding: 2px 4px;\
+      border-radius: 3px;\
+      margin-right: 4px;\
+      transition: color 0.12s, background 0.12s;\
+      line-height: 1;\
+      vertical-align: middle;\
+    \}\
+\
+    .expand-btn:hover \{ color: #374151; background: #f3f4f6; \}\
+    .expand-btn.open \{ color: #374151; \}\
+\
+    tr.expandable-row \{ cursor: pointer; \}\
+\
+    tr.sub-row td \{\
+      background: #f8fafc;\
+      border-bottom: 1px solid #f0f4f8;\
+      padding-top: 9px;\
+      padding-bottom: 9px;\
+      color: #6b7280;\
+      font-size: 12.5px;\
+    \}\
+\
+    tr.sub-row:last-child td \{ border-bottom: 1px solid #e5e7eb; \}\
+\
+    tr.sub-row td:first-child \{\
+      border-left: 3px solid #e0f2fe;\
+    \}\
+\
+    .sub-row-indent \{\
+      padding-left: 28px;\
+      color: #6b7280;\
+      font-size: 12.5px;\
+    \}\
+\
+    .sub-row-value \{\
+      color: #374151;\
+      font-size: 12.5px;\
+    \}\
+\
+    /* Note button */\
+    .note-cell \{ width: 44px; text-align: center; padding-right: 12px !important; \}\
+\
+    .note-btn \{\
+      width: 28px;\
+      height: 28px;\
+      border-radius: 6px;\
+      border: 1px solid transparent;\
+      background: none;\
+      display: inline-flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      color: #d1d5db;\
+      transition: all 0.12s;\
+      position: relative;\
+      padding: 0;\
+    \}\
+\
+    .note-btn svg \{ width: 14px; height: 14px; pointer-events: none; \}\
+\
+    .note-btn:hover \{ background: #f3f4f6; border-color: #e5e7eb; color: #6b7280; \}\
+\
+    .note-btn.has-note \{ color: #f59e0b; \}\
+    .note-btn.has-note:hover \{ background: #fef3c7; border-color: #fde68a; color: #d97706; \}\
+\
+    .note-dot \{\
+      position: absolute;\
+      top: 3px; right: 3px;\
+      width: 6px; height: 6px;\
+      border-radius: 50%;\
+      background: #f59e0b;\
+      border: 1.5px solid white;\
+    \}\
+\
+    /* Note widget */\
+    .note-widget \{\
+      position: fixed;\
+      bottom: 24px;\
+      right: 24px;\
+      width: 320px;\
+      background: white;\
+      border: 1px solid #e5e7eb;\
+      border-radius: 10px;\
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);\
+      z-index: 1000;\
+      overflow: hidden;\
+      animation: slideUp 0.18s ease;\
+    \}\
+\
+    @keyframes slideUp \{\
+      from \{ opacity: 0; transform: translateY(10px); \}\
+      to   \{ opacity: 1; transform: translateY(0); \}\
+    \}\
+\
+    .note-widget-header \{\
+      display: flex;\
+      align-items: center;\
+      justify-content: space-between;\
+      padding: 12px 14px;\
+      border-bottom: 1px solid #f3f4f6;\
+      background: #fafafa;\
+    \}\
+\
+    .note-widget-title \{\
+      display: flex;\
+      align-items: center;\
+      gap: 7px;\
+      font-size: 13px;\
+      font-weight: 600;\
+      color: #111827;\
+    \}\
+\
+    .note-widget-title svg \{ color: #6b7280; \}\
+\
+    .note-widget-close \{\
+      background: none;\
+      border: none;\
+      cursor: pointer;\
+      font-size: 18px;\
+      color: #9ca3af;\
+      line-height: 1;\
+      padding: 0 2px;\
+    \}\
+\
+    .note-widget-close:hover \{ color: #374151; \}\
+\
+    .note-widget-body \{ padding: 14px; \}\
+\
+    .note-textarea \{\
+      width: 100%;\
+      height: 90px;\
+      border: 1px solid #d1d5db;\
+      border-radius: 6px;\
+      padding: 8px 10px;\
+      font-size: 13px;\
+      font-family: inherit;\
+      color: #111827;\
+      resize: none;\
+      outline: none;\
+      transition: border-color 0.12s, box-shadow 0.12s;\
+      line-height: 1.5;\
+    \}\
+\
+    .note-textarea:focus \{\
+      border-color: #3b82f6;\
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);\
+    \}\
+\
+    .note-checkbox-wrap \{\
+      display: flex;\
+      align-items: flex-start;\
+      gap: 8px;\
+      margin-top: 10px;\
+      font-size: 12.5px;\
+      color: #374151;\
+      cursor: pointer;\
+      line-height: 1.4;\
+    \}\
+\
+    .note-checkbox-wrap input[type="checkbox"] \{\
+      margin-top: 2px;\
+      accent-color: #3b82f6;\
+      cursor: pointer;\
+      flex-shrink: 0;\
+    \}\
+\
+    .note-widget-footer \{\
+      display: flex;\
+      justify-content: flex-end;\
+      gap: 8px;\
+      padding: 10px 14px;\
+      border-top: 1px solid #f3f4f6;\
+      background: #fafafa;\
+    \}\
+\
+    .note-cancel-btn \{\
+      padding: 6px 14px;\
+      border-radius: 6px;\
+      border: 1px solid #d1d5db;\
+      background: white;\
+      color: #6b7280;\
+      font-size: 12.5px;\
+      cursor: pointer;\
+    \}\
+\
+    .note-cancel-btn:hover \{ background: #f9fafb; \}\
+\
+    .note-save-btn \{\
+      padding: 6px 14px;\
+      border-radius: 6px;\
+      border: 1px solid #3b82f6;\
+      background: #3b82f6;\
+      color: white;\
+      font-size: 12.5px;\
+      font-weight: 500;\
+      cursor: pointer;\
+    \}\
+\
+    .note-save-btn:hover \{ background: #2563eb; border-color: #2563eb; \}\
+\
+    /* Editor initials tag */\
+    .editor-tag \{\
+      display: inline-flex;\
+      align-items: center;\
+      justify-content: center;\
+      padding: 0 5px;\
+      height: 20px;\
+      border-radius: 4px;\
+      background: transparent;\
+      border: 1.5px solid #9ca3af;\
+      color: #6b7280;\
+      font-size: 9px;\
+      font-weight: 700;\
+      letter-spacing: 0.04em;\
+      flex-shrink: 0;\
+    \}\
+\
+    /* Status dropdown */\
+    .status-wrap \{\
+      position: relative;\
+      display: inline-flex;\
+      align-items: center;\
+    \}\
+\
+    .status-wrap .badge \{\
+      cursor: pointer;\
+      user-select: none;\
+      transition: opacity 0.12s;\
+    \}\
+\
+    .status-wrap .badge:hover \{ opacity: 0.8; \}\
+\
+    .status-dropdown \{\
+      display: none;\
+      position: absolute;\
+      top: calc(100% + 5px);\
+      left: 0;\
+      background: white;\
+      border: 1px solid #e5e7eb;\
+      border-radius: 7px;\
+      box-shadow: 0 6px 20px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);\
+      z-index: 300;\
+      min-width: 140px;\
+      padding: 4px;\
+      animation: fadeIn 0.12s ease;\
+    \}\
+\
+    .status-dropdown.open \{ display: block; \}\
+\
+    .status-option \{\
+      display: flex;\
+      align-items: center;\
+      gap: 8px;\
+      padding: 7px 10px;\
+      border-radius: 5px;\
+      cursor: pointer;\
+      font-size: 12.5px;\
+      color: #374151;\
+      transition: background 0.1s;\
+    \}\
+\
+    .status-option:hover \{ background: #f9fafb; \}\
+    .status-option.current \{ background: #f3f4f6; font-weight: 600; \}\
+\
+    /* Lock button */\
+    .lock-btn \{\
+      width: 22px;\
+      height: 22px;\
+      border-radius: 4px;\
+      border: 1px solid transparent;\
+      background: none;\
+      display: inline-flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      flex-shrink: 0;\
+      transition: background 0.12s, border-color 0.12s, color 0.12s;\
+      padding: 0;\
+    \}\
+\
+    .lock-btn svg \{ width: 12px; height: 12px; pointer-events: none; \}\
+\
+    .lock-btn.unlocked \{ color: #9ca3af; \}\
+    .lock-btn.unlocked:hover \{ background: #f3f4f6; border-color: #d1d5db; color: #6b7280; \}\
+\
+    .lock-btn.locked \{ color: #059669; \}\
+    .lock-btn.locked:hover \{ background: #d1fae5; border-color: #6ee7b7; color: #047857; \}\
+\
+    /* Overwrite button */\
+    .overwrite-btn \{\
+      width: 24px;\
+      height: 24px;\
+      border-radius: 5px;\
+      border: 1px solid #d1d5db;\
+      background: white;\
+      color: #6b7280;\
+      display: inline-flex;\
+      align-items: center;\
+      justify-content: center;\
+      cursor: pointer;\
+      flex-shrink: 0;\
+      transition: background 0.12s, border-color 0.12s, color 0.12s;\
+      vertical-align: middle;\
+    \}\
+\
+    .overwrite-btn:hover:not(:disabled) \{\
+      background: #eff6ff;\
+      border-color: #93c5fd;\
+      color: #2563eb;\
+    \}\
+\
+    .overwrite-btn:disabled \{\
+      opacity: 0.3;\
+      cursor: not-allowed;\
+    \}\
+\
+    .overwrite-btn svg \{ width: 12px; height: 12px; pointer-events: none; \}\
+\
+    .sys-value-cell \{\
+      display: flex;\
+      align-items: center;\
+      gap: 7px;\
+    \}\
+\
+    /* Inline edit */\
+    .editable-cell \{\
+      cursor: text;\
+      border-radius: 4px;\
+      padding: 2px 4px;\
+      margin: -2px -4px;\
+      min-width: 80px;\
+      display: inline-block;\
+    \}\
+\
+    .editable-cell:hover \{\
+      background: #f0f9ff;\
+      outline: 1px dashed #93c5fd;\
+    \}\
+\
+    .editable-cell .edit-hint \{\
+      display: none;\
+      margin-left: 5px;\
+      color: #93c5fd;\
+      font-size: 11px;\
+    \}\
+\
+    .editable-cell:hover .edit-hint \{ display: inline; \}\
+\
+    .inline-input \{\
+      border: 1.5px solid #3b82f6;\
+      border-radius: 5px;\
+      padding: 4px 8px;\
+      font-size: 13px;\
+      font-family: inherit;\
+      color: #111827;\
+      background: white;\
+      outline: none;\
+      width: 100%;\
+      min-width: 120px;\
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);\
+    \}\
+\
+    .inline-input:focus \{ border-color: #2563eb; \}\
+\
+    .inline-edit-wrap \{\
+      display: flex;\
+      align-items: center;\
+      gap: 5px;\
+    \}\
+\
+    .inline-save-btn \{\
+      padding: 3px 8px;\
+      border-radius: 4px;\
+      font-size: 11.5px;\
+      font-weight: 600;\
+      cursor: pointer;\
+      border: 1px solid #6ee7b7;\
+      background: #d1fae5;\
+      color: #065f46;\
+      white-space: nowrap;\
+      flex-shrink: 0;\
+    \}\
+\
+    .inline-save-btn:hover \{ background: #a7f3d0; \}\
+\
+    .inline-cancel-btn \{\
+      padding: 3px 8px;\
+      border-radius: 4px;\
+      font-size: 11.5px;\
+      cursor: pointer;\
+      border: 1px solid #e5e7eb;\
+      background: white;\
+      color: #9ca3af;\
+      flex-shrink: 0;\
+    \}\
+\
+    .inline-cancel-btn:hover \{ background: #f3f4f6; color: #6b7280; \}\
+\
+    .inline-validation-error \{\
+      font-size: 11.5px;\
+      color: #dc2626;\
+      margin-top: 5px;\
+      display: flex;\
+      align-items: center;\
+      gap: 4px;\
+    \}\
+\
+    .inline-input.has-error \{\
+      border-color: #dc2626;\
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.12);\
+    \}\
+\
+    /* Scrollbar styling */\
+    .content::-webkit-scrollbar \{ width: 6px; \}\
+    .content::-webkit-scrollbar-track \{ background: transparent; \}\
+    .content::-webkit-scrollbar-thumb \{ background: #d1d5db; border-radius: 3px; \}\
+\
+    /* Responsive notice bar hidden */\
+    .notify-hidden \{ display: none; \}\
+\
+    /* Action toolbar (appears when rows selected) */\
+    .bulk-toolbar \{\
+      display: none;\
+      align-items: center;\
+      gap: 10px;\
+      padding: 10px 16px;\
+      background: #eff6ff;\
+      border-bottom: 1px solid #bfdbfe;\
+      font-size: 12.5px;\
+      color: #1d4ed8;\
+      font-weight: 500;\
+    \}\
+\
+    .bulk-toolbar.visible \{ display: flex; \}\
+\
+    .bulk-btn \{\
+      padding: 5px 12px;\
+      border-radius: 5px;\
+      font-size: 12px;\
+      font-weight: 500;\
+      cursor: pointer;\
+      border: 1px solid;\
+    \}\
+\
+    .bulk-confirm \{ background: #d1fae5; border-color: #6ee7b7; color: #065f46; \}\
+    .bulk-confirm:hover \{ background: #a7f3d0; \}\
+    .bulk-reject \{ background: white; border-color: #e5e7eb; color: #6b7280; \}\
+    .bulk-reject:hover \{ background: #fee2e2; border-color: #fca5a5; color: #dc2626; \}\
+\
+    .bulk-clear \{ margin-left: auto; cursor: pointer; color: #6b7280; font-size: 12px; \}\
+    .bulk-clear:hover \{ color: #374151; text-decoration: underline; \}\
+\
+    /* User avatar area in top right */\
+    .topbar-right \{\
+      display: flex;\
+      align-items: center;\
+      gap: 10px;\
+      padding: 8px 24px 8px;\
+      background: white;\
+      border-bottom: 1px solid #e5e7ef;\
+      justify-content: flex-end;\
+      font-size: 12.5px;\
+      color: #374151;\
+    \}\
+\
+    .topbar-right .user-info \{\
+      display: flex;\
+      align-items: center;\
+      gap: 8px;\
+    \}\
+\
+    .topbar-right .avatar \{\
+      width: 28px;\
+      height: 28px;\
+      border-radius: 50%;\
+      background: #3b82f6;\
+      color: white;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      font-size: 11px;\
+      font-weight: 700;\
+    \}\
+\
+    .topbar-right .icon-btn \{\
+      width: 28px;\
+      height: 28px;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+      border-radius: 6px;\
+      cursor: pointer;\
+      color: #6b7280;\
+      position: relative;\
+    \}\
+\
+    .topbar-right .icon-btn:hover \{ background: #f3f4f6; \}\
+\
+    .topbar-right .notif-badge \{\
+      position: absolute;\
+      top: 2px; right: 2px;\
+      width: 14px; height: 14px;\
+      border-radius: 50%;\
+      background: #ef4444;\
+      color: white;\
+      font-size: 8px;\
+      font-weight: 700;\
+      display: flex;\
+      align-items: center;\
+      justify-content: center;\
+    \}\
+  </style>\
+</head>\
+<body>\
+\
+<!-- \uc0\u9472 \u9472 \u9472  SIDEBAR \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  -->\
+<aside class="sidebar">\
+  <div class="logo">L</div>\
+\
+  <!-- My Day -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>\
+    </div>\
+    <div class="nav-label">My Day</div>\
+  </div>\
+\
+  <!-- Loan Applications -->\
+  <div class="nav-group">\
+    <div class="nav-item active" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>\
+      <span class="badge">39</span>\
+    </div>\
+    <div class="nav-label">Loans</div>\
+  </div>\
+\
+  <!-- Leads -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>\
+      <span class="badge">1</span>\
+    </div>\
+    <div class="nav-label">Leads</div>\
+  </div>\
+\
+  <!-- Sources -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>\
+    </div>\
+    <div class="nav-label">Sources</div>\
+  </div>\
+\
+  <!-- Accounting -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>\
+    </div>\
+    <div class="nav-label">Accounting</div>\
+  </div>\
+\
+  <!-- Reporting -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>\
+    </div>\
+    <div class="nav-label">Reporting</div>\
+  </div>\
+\
+  <!-- Lead-Shop -->\
+  <div class="nav-group">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>\
+    </div>\
+    <div class="nav-label">Lead-Shop</div>\
+  </div>\
+\
+  <!-- Email -->\
+  <div class="nav-group" style="margin-top: auto;">\
+    <div class="nav-item" onclick="setNav(this)">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>\
+    </div>\
+    <div class="nav-label">Email</div>\
+  </div>\
+</aside>\
+\
+<!-- \uc0\u9472 \u9472 \u9472  MAIN \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  -->\
+<div class="main">\
+\
+  <!-- Notification bar -->\
+  <div class="notify-bar" id="notifyBar">\
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>\
+    This applicant doesn't have an active account and doesn't have access to the client portal.&nbsp;\
+    <a href="#">Activate account</a>\
+    <span class="close-btn" onclick="document.getElementById('notifyBar').style.display='none'">\'d7</span>\
+  </div>\
+\
+  <!-- Top right bar -->\
+  <div class="topbar-right">\
+    <div class="icon-btn">\
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>\
+    </div>\
+    <div class="icon-btn">\
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>\
+      <span class="notif-badge">3</span>\
+    </div>\
+    <span style="color:#9ca3af">EN</span>\
+    <div class="user-info">\
+      <div class="avatar">LA</div>\
+      <div>\
+        <div style="font-weight:600;font-size:12.5px;color:#111827">Loanlink Admin Advisor</div>\
+        <div style="font-size:11px;color:#9ca3af">Administrator</div>\
+      </div>\
+    </div>\
+  </div>\
+\
+  <!-- Header -->\
+  <div class="header">\
+    <div class="header-top">\
+      <div>\
+        <div class="header-title">\
+          Mr Test Data Verif\
+          <span class="amount">231.710,00 \'80</span>\
+          <span class="case-id">Case ID: 408</span>\
+        </div>\
+      </div>\
+      <div class="header-actions">\
+        <button class="btn">\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>\
+          Loan simulator\
+        </button>\
+        <button class="btn">\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>\
+          Client view\
+        </button>\
+        <button class="btn-more btn">\
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>\
+        </button>\
+        <button class="btn-expand btn">\
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>\
+        </button>\
+      </div>\
+    </div>\
+\
+    <!-- Tags -->\
+    <div class="tags-row">\
+      <div class="app-badge">\
+        <span class="dot"></span>\
+        Property found\
+      </div>\
+      <div class="app-badge" style="font-size:12px;">\
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>\
+        Onboarding: LoanLink24 Mortgage GmbH\
+      </div>\
+      <button class="tag-add">+ add new</button>\
+    </div>\
+\
+    <!-- Tabs -->\
+    <div class="tab-nav">\
+      <div class="tab-item" onclick="setTab(this)">\'dcbersicht</div>\
+      <div class="tab-item" onclick="setTab(this)">Antrag</div>\
+      <div class="tab-item active" onclick="setTab(this)">Antragsvalidierung (beta)</div>\
+      <div class="tab-item" onclick="setTab(this)">Manuelle Angebote</div>\
+      <div class="tab-item" onclick="setTab(this)">Immobilienbewertung</div>\
+      <div class="tab-item" onclick="setTab(this)">\
+        Dokumente\
+        <svg class="ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>\
+      </div>\
+      <div class="tab-item" onclick="setTab(this)">PDF</div>\
+    </div>\
+  </div>\
+\
+  <!-- Content -->\
+  <div class="content">\
+\
+    <!-- Beta notice -->\
+    <div class="beta-notice">\
+      <div class="beta-notice-content">\
+        <div class="beta-notice-title">Data validation (beta)</div>\
+        <div class="beta-notice-text">\
+          This function makes it possible to read out data from ID cards/passports, salary statements, energy certificates and expos\'e9s.\
+          A few minutes after the upload and categorization in the Document Center, the data is transferred to the application.\
+          You can decide whether you want to transfer the data.\
+        </div>\
+      </div>\
+      <div class="toggle-wrap">\
+        <span class="toggle-label">Show</span>\
+        <label class="toggle">\
+          <input type="checkbox" checked onchange="toggleContent(this)">\
+          <div class="toggle-track"></div>\
+          <div class="toggle-thumb"></div>\
+        </label>\
+      </div>\
+    </div>\
+\
+    <!-- Table toolbar -->\
+    <div class="table-toolbar">\
+      <!-- Active pills -->\
+      <div class="active-filter-pills" id="activePills"></div>\
+\
+      <!-- 3-dot menu -->\
+      <div class="dot-menu-wrap">\
+        <button class="dot-menu-btn" id="dotMenuBtn" onclick="toggleDotMenu()" title="Tabellenoptionen">\
+          <span></span><span></span><span></span>\
+        </button>\
+        <div class="dot-dropdown" id="dotDropdown">\
+\
+          <!-- Antragsphase -->\
+          <div class="dropdown-section">\
+            <div class="dropdown-section-label">Antragsphase</div>\
+            <div class="dropdown-options">\
+              <label class="dropdown-option" id="opt-alle">\
+                <input type="radio" name="antragsphase" value="alle" checked onchange="setAntragsphase('alle')">\
+                Alle\
+              </label>\
+              <label class="dropdown-option" id="opt-angebot">\
+                <input type="radio" name="antragsphase" value="angebot" onchange="setAntragsphase('angebot')">\
+                Angebot erstellen\
+              </label>\
+              <label class="dropdown-option" id="opt-einreichen">\
+                <input type="radio" name="antragsphase" value="einreichen" onchange="setAntragsphase('einreichen')">\
+                Antrag einreichen\
+              </label>\
+            </div>\
+          </div>\
+\
+          <!-- Pflichtfelder hervorheben -->\
+          <div class="dropdown-section">\
+            <div class="dropdown-section-label">Pflichtfelder hervorheben</div>\
+            <div class="dropdown-options">\
+              <label class="dropdown-option" id="opt-pf-ja">\
+                <input type="radio" name="pflichtfelder" value="ja" onchange="setPflichtfelder('ja')">\
+                Ja\
+              </label>\
+              <label class="dropdown-option" id="opt-pf-nein">\
+                <input type="radio" name="pflichtfelder" value="nein" checked onchange="setPflichtfelder('nein')">\
+                Nein\
+              </label>\
+            </div>\
+          </div>\
+\
+        </div>\
+      </div>\
+\
+    </div>\
+\
+    <!-- Filter tabs -->\
+    <div class="filter-tabs">\
+      <button class="filter-tab active" onclick="setFilter('all', this)">Alle (41)</button>\
+      <button class="filter-tab" onclick="setFilter('error', this)">Fehler (21)</button>\
+      <button class="filter-tab" onclick="setFilter('confirmed', this)">Best\'e4tigt (1)</button>\
+      <button class="filter-tab" onclick="setFilter('notsure', this)">Unsicher (0)</button>\
+      <button class="filter-tab" onclick="setFilter('unknown', this)">Unbekannt (19)</button>\
+    </div>\
+\
+    <!-- Bulk toolbar -->\
+    <div class="bulk-toolbar" id="bulkToolbar">\
+      <span id="selectedCount">0 rows selected</span>\
+      <button class="bulk-btn bulk-confirm" onclick="bulkApplySystemValues()">\uc0\u8601  Systemwerte \'fcbernehmen</button>\
+      <span class="bulk-clear" onclick="clearSelection()">Auswahl aufheben</span>\
+    </div>\
+\
+    <!-- Table -->\
+    <div class="table-wrap">\
+      <table id="validationTable">\
+        <thead>\
+          <tr>\
+            <th class="pflicht-col"></th>\
+            <th>\
+              <div class="cb cb-all" id="cbAll" onclick="toggleAll()"></div>\
+            </th>\
+            <th class="sortable" onclick="sortBy('status')">Status \uc0\u8597 </th>\
+            <th class="sortable" onclick="sortBy('field')">Feld \uc0\u8597 </th>\
+            <th>Aktueller Datenwert</th>\
+            <th>Systemwert</th>\
+            <th>Datenquelle</th>\
+            <th style="width:48px"></th>\
+          </tr>\
+        </thead>\
+        <tbody id="tableBody">\
+        </tbody>\
+      </table>\
+    </div>\
+  </div>\
+</div>\
+\
+<!-- Note widget -->\
+<div id="noteWidget" class="note-widget" style="display:none">\
+  <div class="note-widget-header">\
+    <div class="note-widget-title">\
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>\
+      <span id="noteWidgetTitle">Notiz hinzuf\'fcgen</span>\
+    </div>\
+    <button class="note-widget-close" onclick="closeNoteWidget()">\'d7</button>\
+  </div>\
+  <div class="note-widget-body">\
+    <textarea id="noteTextarea" class="note-textarea" placeholder="Notiz eingeben\'85"></textarea>\
+    <label class="note-checkbox-wrap">\
+      <input type="checkbox" id="noteCheckbox">\
+      <span>Notiz bei der Einreichung ber\'fccksichtigen</span>\
+    </label>\
+  </div>\
+  <div class="note-widget-footer">\
+    <button class="note-cancel-btn" onclick="closeNoteWidget()">Abbrechen</button>\
+    <button class="note-save-btn" onclick="saveNote()">Speichern</button>\
+  </div>\
+</div>\
+\
+<script>\
+  // \uc0\u9472 \u9472 \u9472  DATA \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+  const rows = [\
+    // ERRORS (21)\
+    \{ id:1,  status:'error',     field:'Vorname',                            customerInput:'Test',           systemValue:'Erika',                        source:'Personalausweis / Reisepass' \},\
+    \{ id:2,  status:'error',     field:'Nachname',                           customerInput:'Data Verif',     systemValue:'Mustermann',                   source:'Personalausweis / Reisepass' \},\
+    \{ id:3,  status:'error',     field:'Geburtsdatum',                       customerInput:'\'96',              systemValue:'12.08.1983',                   source:'Personalausweis / Reisepass' \},\
+    \{ id:4,  status:'error',     field:'Staatsangeh\'f6rigkeit',                customerInput:'\'96',              systemValue:'Deutschland',                  source:'Personalausweis / Reisepass' \},\
+    \{ id:5,  status:'error',     field:'Monatliches Einkommen',              customerInput:'10.000,0 \'80',     systemValue:'2.788,93 \'80, 3.799,86 \'80',       source:'Gehaltsabrechnung',\
+      subRows: [\
+        \{ systemValue: '2.788,93 \'80', source: 'Gehaltsabrechnung Jan 2025' \},\
+        \{ systemValue: '3.799,86 \'80', source: 'Gehaltsabrechnung Feb 2025' \},\
+      ]\
+    \},\
+    \{ id:6,  status:'error',     field:'IBAN',                               customerInput:'\'96',              systemValue:'DE89 3704 0044 0532 0130 00',   source:'Gehaltsabrechnung' \},\
+    \{ id:7,  status:'error',     field:'Firmenname',                         customerInput:'\'96',              systemValue:'Datevmuster GmbH',              source:'Gehaltsabrechnung' \},\
+    \{ id:8,  status:'error',     field:'Steueridentifikationsnummer',        customerInput:'\'96',              systemValue:'45678912349',                  source:'Gehaltsabrechnung' \},\
+    \{ id:9,  status:'error',     field:'Dokumentennummer',                   customerInput:'\'96',              systemValue:'L01X00T47',                    source:'Personalausweis / Reisepass' \},\
+    \{ id:10, status:'error',     field:'Ablaufdatum',                        customerInput:'\'96',              systemValue:'01.08.2031',                   source:'Personalausweis / Reisepass' \},\
+    \{ id:11, status:'error',     field:'Stra\'dfe',                             customerInput:'\'96',              systemValue:'HEIDESTRASSE',                 source:'Personalausweis / Reisepass' \},\
+    \{ id:12, status:'error',     field:'Hausnummer',                         customerInput:'\'96',              systemValue:'17',                           source:'Personalausweis / Reisepass' \},\
+    \{ id:13, status:'error',     field:'Postleitzahl',                       customerInput:'\'96',              systemValue:'12345',                        source:'Personalausweis / Reisepass' \},\
+    \{ id:14, status:'error',     field:'Stadt',                              customerInput:'\'96',              systemValue:'Berlin',                       source:'Personalausweis / Reisepass' \},\
+    \{ id:15, status:'error',     field:'Nettogehalt',                        customerInput:'8.500,0 \'80',      systemValue:'2.788,93 \'80',                   source:'Gehaltsabrechnung' \},\
+    \{ id:16, status:'error',     field:'Bruttogehalt',                       customerInput:'12.000,0 \'80',     systemValue:'3.799,86 \'80',                   source:'Gehaltsabrechnung' \},\
+    \{ id:17, status:'error',     field:'Besch\'e4ftigungsart',                  customerInput:'Selbstst\'e4ndig',  systemValue:'Angestellt',                   source:'Gehaltsabrechnung' \},\
+    \{ id:18, status:'error',     field:'Steuerklasse',                       customerInput:'\'96',              systemValue:'1',                            source:'Gehaltsabrechnung' \},\
+    \{ id:19, status:'error',     field:'Krankenversicherung',                customerInput:'\'96',              systemValue:'gesetzlich',                   source:'Gehaltsabrechnung' \},\
+    \{ id:20, status:'error',     field:'Kinderfreibetrag',                   customerInput:'\'96',              systemValue:'0',                            source:'Gehaltsabrechnung' \},\
+    \{ id:21, status:'error',     field:'Kirchensteuer',                      customerInput:'\'96',              systemValue:'nein',                         source:'Gehaltsabrechnung' \},\
+    // BEST\'c4TIGT (1)\
+    \{ id:22, status:'confirmed', field:'E-Mail-Adresse',                     customerInput:'test@example.de',systemValue:'test@example.de',              source:'Personalausweis / Reisepass' \},\
+    // UNBEKANNT (19)\
+    \{ id:23, status:'unknown',   field:'Vertragsende',                       customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:24, status:'unknown',   field:'Startdatum',                         customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:25, status:'unknown',   field:'Besch\'e4ftigungsdauer',                customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:26, status:'unknown',   field:'Bonuszahlungen',                     customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:27, status:'unknown',   field:'\'dcberstundenverg\'fctung',               customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:28, status:'unknown',   field:'Nebeneinkommen',                     customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:29, status:'unknown',   field:'Renteneinkommen',                    customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:30, status:'unknown',   field:'Mieteinnahmen',                      customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:31, status:'unknown',   field:'Immobilientyp',                      customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:32, status:'unknown',   field:'Baujahr',                            customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:33, status:'unknown',   field:'Wohnfl\'e4che',                         customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:34, status:'unknown',   field:'Energieeffizienzklasse',             customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:35, status:'unknown',   field:'Prim\'e4renergiebedarf',                customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:36, status:'unknown',   field:'Heizungsart',                        customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:37, status:'unknown',   field:'Grundst\'fccksfl\'e4che',                  customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:38, status:'unknown',   field:'Anzahl der Etagen',                  customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:39, status:'unknown',   field:'Stellplatz',                         customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:40, status:'unknown',   field:'Keller',                             customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+    \{ id:41, status:'unknown',   field:'Garten',                             customerInput:'\'96',              systemValue:'\'96',                            source:'\'96' \},\
+  ];\
+\
+  let currentFilter = 'all';\
+  let selectedIds = new Set();\
+  let rowStatuses = \{\};\
+  let expandedRows = new Set();\
+  let lockedRows = new Set();\
+  let rowNotes = \{\};      // id -> \{ text, includeInSubmission \}\
+  let activeNoteId = null;\
+  let manuallyEditedRows = new Set();\
+\
+  rows.forEach(r => \{ rowStatuses[r.id] = r.status; \});\
+\
+  function statusBadge(status) \{\
+    const map = \{\
+      error:     '<span class="badge badge-error">Fehler</span>',\
+      unknown:   '<span class="badge badge-unknown">Unbekannt</span>',\
+      confirmed: '<span class="badge badge-confirmed">Best\'e4tigt</span>',\
+      notsure:   '<span class="badge badge-notsure">Unsicher</span>',\
+    \};\
+    return map[status] || '';\
+  \}\
+\
+  function filteredRows() \{\
+    let result = currentFilter === 'all' ? rows : rows.filter(r => rowStatuses[r.id] === currentFilter);\
+    if (antragsphase === 'angebot') \{\
+      result = result.filter(r => angebot_felder.has(r.field));\
+    \}\
+    return result;\
+  \}\
+\
+  function renderTable() \{\
+    const tbody = document.getElementById('tableBody');\
+    const visible = filteredRows();\
+\
+    tbody.innerHTML = visible.map(row => \{\
+      const st = rowStatuses[row.id];\
+      const isSelected = selectedIds.has(row.id);\
+      const isExpanded = expandedRows.has(row.id);\
+      const hasSubRows = row.subRows && row.subRows.length > 0;\
+      const dash = '<span class="dash">\'96</span>';\
+      const custRaw = row.customerInput;\
+      const custDisplay = custRaw === '\'96'\
+        ? `<span class="editable-cell dash-editable" data-id="$\{row.id\}" onclick="startEdit($\{row.id\}, this, event)"><span class="dash">\'96</span><span class="edit-hint">\uc0\u9998 </span></span>`\
+        : `<span class="editable-cell" data-id="$\{row.id\}" onclick="startEdit($\{row.id\}, this, event)">$\{custRaw\}<span class="edit-hint">\uc0\u9998 </span></span>`;\
+      const sysValue = row.systemValue === '\'96' ? dash : row.systemValue;\
+      const sourceHtml = row.source === '\'96'\
+        ? dash\
+        : `<a class="source-link" href="#">$\{row.source\}</a>`;\
+\
+      const isConfirmed = st === 'confirmed';\
+      const isLocked = lockedRows.has(row.id);\
+      const lockBtn = isConfirmed ? `\
+        <button\
+          class="lock-btn $\{isLocked ? 'locked' : 'unlocked'\}"\
+          onclick="toggleLock($\{row.id\}, event)"\
+          title="$\{isLocked\
+            ? 'Werden neue Dokumente hochgeladen, beeinflussen diese nicht den Validierungsstatus'\
+            : 'Neue Dokumente beeinflussen den Validierungsstatus. Bei Unstimmigkeiten, zeigen wir das Feld wieder an'\}"\
+        >\
+          $\{isLocked\
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`\
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`\
+          \}\
+        </button>` : '';\
+\
+      const expandBtn = hasSubRows\
+        ? `<button class="expand-btn $\{isExpanded ? 'open' : ''\}" onclick="toggleExpand($\{row.id\}, event)" title="$\{isExpanded ? 'Subzeilen ausblenden' : 'Subzeilen anzeigen'\}">$\{isExpanded ? '\uc0\u9662 ' : '\u9656 '\}</button>`\
+        : '';\
+\
+      const isPflicht = pflichtfelder === 'ja' && pflichtfelder_set.has(row.field);\
+      const pflichtCell = `<td class="pflicht-col">$\{isPflicht\
+        ? `<span class="pflicht-icon">!<span class="pflicht-tooltip">Pflichtfeld</span></span>`\
+        : ''\}</td>`;\
+\
+      const mainRow = `\
+        <tr class="$\{isSelected ? 'selected' : ''\}$\{hasSubRows ? ' expandable-row' : ''\}" data-id="$\{row.id\}" $\{hasSubRows ? `onclick="toggleExpand($\{row.id\}, event)"` : ''\}>\
+          $\{pflichtCell\}\
+          <td>\
+            <div class="cb $\{isSelected ? 'checked' : ''\}" onclick="toggleRow($\{row.id\}, event)"></div>\
+          </td>\
+          <td>\
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">\
+              <div class="status-wrap">\
+                <span onclick="toggleStatusDropdown($\{row.id\}, event)">$\{statusBadge(st)\}</span>\
+                <div class="status-dropdown" id="statusDd_$\{row.id\}">\
+                  $\{['error','confirmed','notsure','unknown'].map(s => `\
+                    <div class="status-option $\{st === s ? 'current' : ''\}" onclick="setStatus($\{row.id\}, '$\{s\}', event)">\
+                      $\{statusBadge(s)\}\
+                    </div>`).join('')\}\
+                </div>\
+              </div>\
+              $\{manuallyEditedRows.has(row.id) ? '<span class="editor-tag">CS</span>' : ''\}\
+              $\{lockBtn\}\
+            </div>\
+          </td>\
+          <td class="field-cell">$\{expandBtn\}$\{row.field\}</td>\
+          <td class="value-cell">$\{custDisplay\}</td>\
+          <td class="value-cell">\
+            <div class="sys-value-cell">\
+              <button\
+                class="overwrite-btn"\
+                onclick="applySystemValue($\{row.id\}, event)"\
+                $\{row.systemValue === '\'96' ? 'disabled' : ''\}\
+                title="$\{row.systemValue === '\'96' ? 'Kein Systemwert vorhanden' : 'Systemwert \'fcbernehmen'\}"\
+              >\
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>\
+              </button>\
+              $\{hasSubRows && !isExpanded ? `<span style="color:#9ca3af;font-size:12px">$\{row.subRows.length\} Werte</span>` : sysValue\}\
+            </div>\
+          </td>\
+          <td class="source-cell">$\{sourceHtml\}</td>\
+          <td class="note-cell">\
+            <button\
+              class="note-btn $\{rowNotes[row.id] ? 'has-note' : ''\}"\
+              onclick="openNoteWidget($\{row.id\}, event)"\
+              title="$\{rowNotes[row.id] ? 'Notiz bearbeiten' : 'Notiz hinzuf\'fcgen'\}"\
+            >\
+              <svg viewBox="0 0 24 24" fill="$\{rowNotes[row.id] ? 'currentColor' : 'none'\}" stroke="currentColor" stroke-width="2">\
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>\
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>\
+              </svg>\
+              $\{rowNotes[row.id] ? '<span class="note-dot"></span>' : ''\}\
+            </button>\
+          </td>\
+        </tr>`;\
+\
+      const subRowsHtml = (hasSubRows && isExpanded)\
+        ? row.subRows.map(sub => `\
+          <tr class="sub-row">\
+            <td></td>\
+            <td></td>\
+            <td></td>\
+            <td class="sub-row-indent">\uc0\u8627  $\{row.field\}</td>\
+            <td></td>\
+            <td class="sub-row-value">$\{sub.systemValue\}</td>\
+            <td><a class="source-link" href="#">$\{sub.source\}</a></td>\
+          </tr>`).join('')\
+        : '';\
+\
+      return mainRow + subRowsHtml;\
+    \}).join('');\
+\
+    updateBulkToolbar();\
+    updateSelectAll();\
+  \}\
+\
+  function toggleRow(id, event) \{\
+    event.stopPropagation();\
+    if (selectedIds.has(id)) \{\
+      selectedIds.delete(id);\
+    \} else \{\
+      selectedIds.add(id);\
+    \}\
+    renderTable();\
+  \}\
+\
+  function toggleAll() \{\
+    const visible = filteredRows();\
+    const allSelected = visible.every(r => selectedIds.has(r.id));\
+    if (allSelected) \{\
+      visible.forEach(r => selectedIds.delete(r.id));\
+    \} else \{\
+      visible.forEach(r => selectedIds.add(r.id));\
+    \}\
+    renderTable();\
+  \}\
+\
+  function updateSelectAll() \{\
+    const visible = filteredRows();\
+    const cbAll = document.getElementById('cbAll');\
+    const allSelected = visible.length > 0 && visible.every(r => selectedIds.has(r.id));\
+    const someSelected = visible.some(r => selectedIds.has(r.id));\
+    cbAll.className = 'cb cb-all';\
+    if (allSelected) cbAll.className += ' checked';\
+    else if (someSelected) cbAll.className += ' partial';\
+  \}\
+\
+  function updateBulkToolbar() \{\
+    const toolbar = document.getElementById('bulkToolbar');\
+    const count = selectedIds.size;\
+    document.getElementById('selectedCount').textContent = `$\{count\} row$\{count !== 1 ? 's' : ''\} selected`;\
+    toolbar.className = count > 0 ? 'bulk-toolbar visible' : 'bulk-toolbar';\
+  \}\
+\
+  function confirmRow(id, event) \{\
+    event.stopPropagation();\
+    rowStatuses[id] = 'confirmed';\
+    renderTable();\
+    updateCounts();\
+  \}\
+\
+  function rejectRow(id, event) \{\
+    event.stopPropagation();\
+    rowStatuses[id] = 'notsure';\
+    renderTable();\
+    updateCounts();\
+  \}\
+\
+  function bulkApplySystemValues() \{\
+    selectedIds.forEach(id => \{\
+      const row = rows.find(r => r.id === id);\
+      if (row && row.systemValue !== '\'96') \{\
+        row.customerInput = row.systemValue;\
+        rowStatuses[id] = 'confirmed';\
+      \}\
+    \});\
+    selectedIds.clear();\
+    renderTable();\
+    updateCounts();\
+  \}\
+\
+  function clearSelection() \{\
+    selectedIds.clear();\
+    renderTable();\
+  \}\
+\
+  function updateCounts() \{\
+    const counts = \{ all: rows.length, error: 0, confirmed: 0, notsure: 0, unknown: 0 \};\
+    rows.forEach(r => \{ counts[rowStatuses[r.id]]++; \});\
+    const tabs = document.querySelectorAll('.filter-tab');\
+    const labels = ['all', 'error', 'confirmed', 'notsure', 'unknown'];\
+    const display = ['Alle', 'Fehler', 'Best\'e4tigt', 'Unsicher', 'Unbekannt'];\
+    tabs.forEach((tab, i) => \{\
+      tab.textContent = `$\{display[i]\} ($\{counts[labels[i]]\})`;\
+    \});\
+  \}\
+\
+  function setFilter(filter, el) \{\
+    currentFilter = filter;\
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));\
+    el.classList.add('active');\
+    selectedIds.clear();\
+    renderTable();\
+  \}\
+\
+  function setNav(el) \{\
+    document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));\
+    el.classList.add('active');\
+  \}\
+\
+  function setTab(el) \{\
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));\
+    el.classList.add('active');\
+  \}\
+\
+  function toggleContent(checkbox) \{\
+    const content = document.querySelector('.filter-tabs');\
+    const tableWrap = document.querySelector('.table-wrap');\
+    const bulkToolbar = document.getElementById('bulkToolbar');\
+    const filterTabs = document.querySelector('.filter-tabs');\
+    if (checkbox.checked) \{\
+      content.style.display = '';\
+      tableWrap.style.display = '';\
+    \} else \{\
+      filterTabs.style.display = 'none';\
+      tableWrap.style.display = 'none';\
+      bulkToolbar.style.display = 'none';\
+    \}\
+  \}\
+\
+  // \uc0\u9472 \u9472 \u9472  NOTE WIDGET \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+  function openNoteWidget(id, event) \{\
+    event.stopPropagation();\
+    activeNoteId = id;\
+    const row = rows.find(r => r.id === id);\
+    const existing = rowNotes[id];\
+    const widget = document.getElementById('noteWidget');\
+    document.getElementById('noteWidgetTitle').textContent =\
+      existing ? 'Notiz bearbeiten' : 'Notiz hinzuf\'fcgen';\
+    document.getElementById('noteTextarea').value = existing ? existing.text : '';\
+    document.getElementById('noteCheckbox').checked = existing ? existing.includeInSubmission : false;\
+    widget.style.display = 'block';\
+    document.getElementById('noteTextarea').focus();\
+  \}\
+\
+  function closeNoteWidget() \{\
+    document.getElementById('noteWidget').style.display = 'none';\
+    activeNoteId = null;\
+  \}\
+\
+  function saveNote() \{\
+    if (activeNoteId === null) return;\
+    const text = document.getElementById('noteTextarea').value.trim();\
+    const include = document.getElementById('noteCheckbox').checked;\
+    if (text) \{\
+      rowNotes[activeNoteId] = \{ text, includeInSubmission: include \};\
+    \} else \{\
+      delete rowNotes[activeNoteId];\
+    \}\
+    closeNoteWidget();\
+    renderTable();\
+  \}\
+\
+  let openStatusId = null;\
+\
+  function toggleStatusDropdown(id, event) \{\
+    event.stopPropagation();\
+    const dd = document.getElementById(`statusDd_$\{id\}`);\
+    if (!dd) return;\
+    const isOpen = dd.classList.contains('open');\
+    // Close any open dropdown first\
+    if (openStatusId !== null) \{\
+      const prev = document.getElementById(`statusDd_$\{openStatusId\}`);\
+      if (prev) prev.classList.remove('open');\
+    \}\
+    if (isOpen) \{\
+      dd.classList.remove('open');\
+      openStatusId = null;\
+      document.removeEventListener('mousedown', closeStatusDropdown);\
+    \} else \{\
+      dd.classList.add('open');\
+      openStatusId = id;\
+      setTimeout(() => document.addEventListener('mousedown', closeStatusDropdown), 0);\
+    \}\
+  \}\
+\
+  function closeStatusDropdown(e) \{\
+    if (openStatusId === null) return;\
+    const dd = document.getElementById(`statusDd_$\{openStatusId\}`);\
+    if (dd && !dd.contains(e.target)) \{\
+      dd.classList.remove('open');\
+      openStatusId = null;\
+      document.removeEventListener('mousedown', closeStatusDropdown);\
+    \}\
+  \}\
+\
+  function setStatus(id, status, event) \{\
+    event.stopPropagation();\
+    rowStatuses[id] = status;\
+    openStatusId = null;\
+    document.removeEventListener('mousedown', closeStatusDropdown);\
+    renderTable();\
+    updateCounts();\
+  \}\
+\
+  function toggleLock(id, event) \{\
+    event.stopPropagation();\
+    if (lockedRows.has(id)) \{\
+      lockedRows.delete(id);\
+    \} else \{\
+      lockedRows.add(id);\
+    \}\
+    renderTable();\
+  \}\
+\
+  function applySystemValue(id, event) \{\
+    event.stopPropagation();\
+    const row = rows.find(r => r.id === id);\
+    if (!row || row.systemValue === '\'96') return;\
+    row.customerInput = row.systemValue;\
+    manuallyEditedRows.delete(row.id);\
+    syncStatus(row);\
+    renderTable();\
+    updateCounts();\
+  \}\
+\
+  function syncStatus(row) \{\
+    if (row.customerInput !== '\'96' && row.customerInput === row.systemValue) \{\
+      rowStatuses[row.id] = 'confirmed';\
+    \}\
+  \}\
+\
+  function toggleExpand(id, event) \{\
+    event.stopPropagation();\
+    if (expandedRows.has(id)) \{\
+      expandedRows.delete(id);\
+    \} else \{\
+      expandedRows.add(id);\
+    \}\
+    renderTable();\
+  \}\
+\
+  function sortBy(col) \{\
+    // Simple toggle sort indicator\
+    renderTable();\
+  \}\
+\
+  // \uc0\u9472 \u9472 \u9472  3-DOT MENU \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+  const pflichtfelder_set = new Set(['Vorname', 'Nachname', 'Geburtsdatum', 'Monatliches Einkommen', 'Postleitzahl', 'Stadt']);\
+  const angebot_felder = new Set(['Vorname', 'Nachname', 'Monatliches Einkommen', 'Staatsangeh\'f6rigkeit', 'Postleitzahl', 'Stadt', 'Besch\'e4ftigungsart']);\
+\
+  let antragsphase = 'alle';\
+  let pflichtfelder = 'nein';\
+\
+  function toggleDotMenu() \{\
+    const btn = document.getElementById('dotMenuBtn');\
+    const dd  = document.getElementById('dotDropdown');\
+    const isOpen = dd.classList.contains('open');\
+    dd.classList.toggle('open');\
+    btn.classList.toggle('open');\
+    if (!isOpen) \{\
+      setTimeout(() => document.addEventListener('mousedown', closeDotMenuOutside), 0);\
+    \}\
+  \}\
+\
+  function closeDotMenuOutside(e) \{\
+    if (!e.target.closest('.dot-menu-wrap')) \{\
+      document.getElementById('dotDropdown').classList.remove('open');\
+      document.getElementById('dotMenuBtn').classList.remove('open');\
+      document.removeEventListener('mousedown', closeDotMenuOutside);\
+    \}\
+  \}\
+\
+  function setAntragsphase(val) \{\
+    antragsphase = val;\
+    updatePills();\
+    renderTable();\
+  \}\
+\
+  function setPflichtfelder(val) \{\
+    pflichtfelder = val;\
+    updatePills();\
+    renderTable();\
+  \}\
+\
+  function updatePills() \{\
+    const wrap = document.getElementById('activePills');\
+    const pills = [];\
+    if (antragsphase !== 'alle') \{\
+      const labels = \{ angebot: 'Angebot erstellen', einreichen: 'Antrag einreichen' \};\
+      pills.push(`\
+        <span class="active-pill">\
+          $\{labels[antragsphase]\}\
+          <span class="pill-remove" onclick="resetAntragsphase()" title="Zur\'fccksetzen">\'d7</span>\
+        </span>`);\
+    \}\
+    if (pflichtfelder === 'ja') \{\
+      pills.push(`\
+        <span class="active-pill">\
+          Pflichtfelder\
+          <span class="pill-remove" onclick="resetPflichtfelder()" title="Zur\'fccksetzen">\'d7</span>\
+        </span>`);\
+    \}\
+    wrap.innerHTML = pills.join('');\
+  \}\
+\
+  function resetAntragsphase() \{\
+    antragsphase = 'alle';\
+    document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;\
+    updatePills();\
+  \}\
+\
+  function resetPflichtfelder() \{\
+    pflichtfelder = 'nein';\
+    document.querySelector('input[name="pflichtfelder"][value="nein"]').checked = true;\
+    updatePills();\
+  \}\
+\
+  // \uc0\u9472 \u9472 \u9472  INLINE EDIT \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+  let activeEditId = null;\
+\
+  function startEdit(id, el, event) \{\
+    if (event) event.stopPropagation();\
+    if (activeEditId === id) return;\
+    // Close any open edit first\
+    if (activeEditId !== null) commitEdit(activeEditId);\
+\
+    activeEditId = id;\
+    const row = rows.find(r => r.id === id);\
+    const currentVal = row.customerInput === '\'96' ? '' : row.customerInput;\
+    const td = el.closest('td');\
+\
+    td.innerHTML = `\
+      <div>\
+        <div class="inline-edit-wrap">\
+          <input\
+            class="inline-input"\
+            id="inlineInput_$\{id\}"\
+            type="text"\
+            value="$\{currentVal\}"\
+            placeholder="Wert eingeben\'85"\
+            onkeydown="handleEditKey(event, $\{id\})"\
+            oninput="validateInline($\{id\})"\
+            onfocus="this.select()"\
+          />\
+          <button class="inline-save-btn" onclick="commitEdit($\{id\})">\uc0\u10003 </button>\
+          <button class="inline-cancel-btn" onclick="cancelEdit($\{id\})">\uc0\u10005 </button>\
+        </div>\
+        <div class="inline-validation-error" id="inlineError_$\{id\}" style="display:none"></div>\
+      </div>`;\
+\
+    const input = document.getElementById(`inlineInput_$\{id\}`);\
+    input.focus();\
+\
+    // Save on outside click\
+    setTimeout(() => \{\
+      document.addEventListener('mousedown', outsideClickHandler);\
+    \}, 0);\
+  \}\
+\
+  function outsideClickHandler(e) \{\
+    if (!e.target.closest(`#inlineInput_$\{activeEditId\}`) &&\
+        !e.target.closest('.inline-save-btn') &&\
+        !e.target.closest('.inline-cancel-btn') &&\
+        !e.target.closest('.inline-validation-error')) \{\
+      commitEdit(activeEditId);\
+    \}\
+  \}\
+\
+  function handleEditKey(e, id) \{\
+    if (e.key === 'Enter') \{ e.preventDefault(); commitEdit(id); \}\
+    if (e.key === 'Escape') \{ cancelEdit(id); \}\
+  \}\
+\
+  // Field-level validators: return error string or null\
+  const fieldValidators = \{\
+    'IBAN':         (val) => val.replace(/\\s/g, '').length !== 22 ? 'Die IBAN muss aus 22 Zeichen bestehen' : null,\
+    'Geburtsdatum': (val) => /^\\d\{2\}\\.\\d\{2\}\\.\\d\{4\}$/.test(val) ? null : 'Das Geburtsdatum muss im Format TT.MM.JJJJ angegeben werden',\
+  \};\
+\
+  function getValidator(id) \{\
+    const row = rows.find(r => r.id === id);\
+    return row ? fieldValidators[row.field] : null;\
+  \}\
+\
+  function validateInline(id) \{\
+    const input = document.getElementById(`inlineInput_$\{id\}`);\
+    const errorEl = document.getElementById(`inlineError_$\{id\}`);\
+    const validator = getValidator(id);\
+    if (!input || !errorEl || !validator) return true;\
+    const val = input.value.trim();\
+    const error = val !== '' ? validator(val) : null;\
+    if (error) \{\
+      input.classList.add('has-error');\
+      errorEl.textContent = '\uc0\u9888  ' + error;\
+      errorEl.style.display = 'flex';\
+    \} else \{\
+      input.classList.remove('has-error');\
+      errorEl.style.display = 'none';\
+    \}\
+    return !error;\
+  \}\
+\
+  function commitEdit(id) \{\
+    if (activeEditId !== id) return;\
+    const input = document.getElementById(`inlineInput_$\{id\}`);\
+    if (input) \{\
+      // Block save if validation fails\
+      if (!validateInline(id)) return;\
+      const newVal = input.value.trim();\
+      const row = rows.find(r => r.id === id);\
+      row.customerInput = newVal === '' ? '\'96' : newVal;\
+      if (newVal !== '' && newVal !== row.systemValue) manuallyEditedRows.add(id);\
+      else manuallyEditedRows.delete(id);\
+      syncStatus(row);\
+      updateCounts();\
+    \}\
+    activeEditId = null;\
+    document.removeEventListener('mousedown', outsideClickHandler);\
+    renderTable();\
+  \}\
+\
+  function cancelEdit(id) \{\
+    activeEditId = null;\
+    document.removeEventListener('mousedown', outsideClickHandler);\
+    renderTable();\
+  \}\
+\
+  // Initial render\
+  renderTable();\
+</script>\
+</body>\
+</html>\
+}

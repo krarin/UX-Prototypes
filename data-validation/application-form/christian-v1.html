@@ -1,0 +1,3133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Validation (beta) – Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f7f8;
+      color: #37474f;
+      font-size: 14px;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      width: 64px;
+      background: #1e2235;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .sidebar .logo {
+      width: 36px;
+      height: 36px;
+      background: #009688;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .sidebar .badge-wrap {
+      position: relative;
+      width: 44px;
+      height: 44px;
+    }
+
+    .sidebar .nav-item {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #8b93b0;
+      transition: background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .sidebar .nav-item:hover { background: #2a3050; color: #c5cadd; }
+    .sidebar .nav-item.active { background: #2a3050; color: #ffffff; }
+    .sidebar .nav-item svg { width: 20px; height: 20px; }
+
+    .sidebar .badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: #ef4444;
+      color: white;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      line-height: 1;
+    }
+
+    .sidebar .nav-label {
+      font-size: 9px;
+      color: #8b93b0;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .sidebar .nav-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      width: 100%;
+    }
+
+    /* ─── MAIN AREA ────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top notification bar */
+    .notify-bar {
+      background: #fef9ec;
+      border-bottom: 1px solid #f0e4bc;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: #92600a;
+    }
+
+    .notify-bar svg { color: #d97706; flex-shrink: 0; }
+    .notify-bar a { color: #009688; text-decoration: none; font-weight: 500; }
+    .notify-bar a:hover { text-decoration: underline; }
+    .notify-bar .close-btn {
+      margin-left: auto;
+      cursor: pointer;
+      color: #aaa;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .notify-bar .close-btn:hover { color: #666; }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      padding: 14px 24px 0;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: #263238;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title .amount {
+      font-size: 15px;
+      font-weight: 500;
+      color: #78909c;
+    }
+
+    .header-title .case-id {
+      font-size: 13px;
+      font-weight: 400;
+      color: #b0bec5;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #4b5961;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .btn:hover { background: #f5f7f8; border-color: #78909c; }
+    .btn svg { width: 14px; height: 14px; }
+
+    .btn-validate {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+      font-weight: 600;
+    }
+    .btn-validate:hover { background: #00796b; border-color: #00796b; }
+    .btn-validate svg { stroke: white; }
+
+    /* ─── VALIDATION MODAL ─────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 34, 53, 0.55);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-dialog {
+      background: #f5f7f8;
+      border-radius: 10px;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.22);
+      width: 100%;
+      max-width: 1280px;
+      max-height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(-16px);
+      transition: transform 0.2s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal-dialog {
+      transform: translateY(0);
+    }
+    .modal-header {
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #263238;
+    }
+    .modal-subtitle {
+      font-size: 13px;
+      color: #90a4ae;
+    }
+    .modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      background: #e0f2f1;
+      color: #00796b;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #eceff1;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #78909c;
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.12s, color 0.12s;
+    }
+    .modal-close:hover { background: #eceff1; color: #37474f; }
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+    }
+
+    /* ─── USE CASES MODAL ──────────────────────────────────── */
+    .uc-modal-dialog {
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .uc-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px 28px;
+    }
+    .uc-section { margin-bottom: 24px; }
+    .uc-section:last-child { margin-bottom: 0; }
+    .uc-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #37474f;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .uc-section-title .uc-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .uc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .uc-list li {
+      font-size: 13px;
+      color: #546e7a;
+      line-height: 1.55;
+      padding-left: 16px;
+      position: relative;
+    }
+    .uc-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #b0bec5;
+    }
+    .uc-list li strong { color: #37474f; font-weight: 600; }
+    .uc-divider {
+      border: none;
+      border-top: 1px solid #eceff1;
+      margin: 20px 0;
+    }
+
+    .btn-more {
+      padding: 7px 10px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      cursor: pointer;
+      color: #4b5961;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-expand {
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      cursor: pointer;
+      color: #4b5961;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Tags row */
+    .tags-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .tag-green {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .tag-gray {
+      background: #eceff1;
+      color: #546e7a;
+      border: 1px solid #b0bec5;
+    }
+
+    .tag-add {
+      background: none;
+      border: none;
+      color: #78909c;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .tag-add:hover { background: #eceff1; color: #37474f; }
+
+    /* Sub-breadcrumb / app selector */
+    .app-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 1px solid #b0bec5;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #4b5961;
+      background: white;
+      cursor: pointer;
+    }
+
+    .app-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #20bf6b; }
+
+    /* Tab nav */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: none;
+      overflow-x: auto;
+    }
+
+    .tab-nav::-webkit-scrollbar { display: none; }
+
+    .tab-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #78909c;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.12s, border-color 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .tab-item:hover { color: #37474f; }
+
+    .tab-item.active {
+      color: #009688;
+      border-bottom-color: #009688;
+    }
+
+    .tab-item .ext-icon {
+      width: 11px;
+      height: 11px;
+      color: #b0bec5;
+    }
+
+    /* ─── CONTENT AREA ─────────────────────────────────────── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      background: #f5f7f8;
+    }
+
+    /* Beta notice */
+    .beta-notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .beta-notice-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .beta-notice-text {
+      font-size: 12.5px;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
+    .beta-notice .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      color: #78350f;
+      font-weight: 500;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .toggle input { display: none; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #b0bec5;
+      border-radius: 11px;
+      transition: background 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track { background: #009688; }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: left 0.2s;
+    }
+
+    .toggle input:checked ~ .toggle-thumb { left: 21px; }
+
+    /* ─── STATUS PROGRESS BAR ──────────────────────────────── */
+    .status-progress-wrap {
+      margin-bottom: 14px;
+    }
+
+    .status-progress-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #eceff1;
+      margin-bottom: 8px;
+    }
+
+    .progress-seg {
+      height: 100%;
+      transition: width 0.4s ease;
+      min-width: 0;
+    }
+
+    .progress-seg--error    { background: #f59e0b; }
+    .progress-seg--confirmed { background: #009688; }
+    .progress-seg--unknown  { background: #5c6bc0; }
+    .progress-seg--notsure  { background: #fb923c; }
+
+    .progress-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .progress-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #546e7a;
+      cursor: pointer;
+      padding: 1px 0;
+    }
+
+    .progress-legend-item:hover .progress-legend-label { color: #263238; }
+
+    .progress-legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .progress-legend-dot--error    { background: #f59e0b; }
+    .progress-legend-dot--confirmed { background: #009688; }
+    .progress-legend-dot--unknown  { background: #5c6bc0; }
+    .progress-legend-dot--notsure  { background: #fb923c; }
+
+    .progress-legend-label { font-weight: 500; }
+    .progress-legend-count { color: #90a4ae; font-weight: 400; }
+
+    /* ─── FILTER TABS (Figma: rectangular pill-buttons) ────── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #4b5961;
+      transition: all 0.12s;
+      line-height: 20px;
+    }
+
+    .filter-tab:hover { border-color: #78909c; background: #f5f7f8; }
+
+    .filter-tab.active {
+      background: #eceff1;
+      border-color: #b0bec5;
+      color: #37474f;
+      font-weight: 500;
+    }
+
+    /* ─── TABLE ─────────────────────────────────────────────── */
+    .table-wrap {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #eceff1;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: #f5f7f8;
+      border-bottom: 1px solid #eceff1;
+    }
+
+    thead th {
+      padding: 16px 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: #37474f;
+      user-select: none;
+      white-space: nowrap;
+      height: 52px;
+      border-right: 1px solid #eceff1;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+
+    thead th:last-child { border-right: none; }
+    thead th:first-child { width: 40px; padding: 16px 0 16px 12px; }
+    thead th.sortable { cursor: pointer; }
+    thead th.sortable:hover { color: #263238; }
+
+    /* Sort arrows inline */
+    .sort-arrows {
+      display: inline-flex;
+      flex-direction: column;
+      margin-left: 4px;
+      vertical-align: middle;
+      gap: 1px;
+    }
+    .sort-arrows span {
+      font-size: 8px;
+      line-height: 1;
+      color: #b0bec5;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #eceff1;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover td { background: #f5f7f8; }
+    tbody tr.selected td { background: #e0f2f1; }
+
+    /* Row striping — every second row gets a very subtle gray tint */
+    tbody tr:nth-child(even):not(.section-row) td { background: #fafbfc; }
+    tbody tr:nth-child(even):not(.section-row):hover td { background: #f2f4f5; }
+
+    tbody td {
+      padding: 7px 12px;
+      font-size: 12px;
+      color: #37474f;
+      vertical-align: middle;
+      border-right: 1px solid #eceff1;
+    }
+
+    tbody td:last-child { border-right: none; }
+    tbody td:first-child { padding: 7px 0 7px 12px; width: 40px; }
+
+    /* Custom checkbox */
+    .cb {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #b0bec5;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+      flex-shrink: 0;
+      background: white;
+    }
+
+    .cb:hover { border-color: #78909c; }
+    .cb.checked { background: #009688; border-color: #009688; }
+    .cb.checked::after { content: "✓"; color: white; font-size: 10px; font-weight: 700; }
+    .cb-all.partial { background: #009688; border-color: #009688; }
+    .cb-all.partial::after { content: "—"; color: white; font-size: 10px; font-weight: 700; }
+
+    /* ─── STATUS BADGES (Figma: solid color, white text) ────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    /* Prüfen → light amber, orange text */
+    .badge-error {
+      background: #fff3e0;
+      color: #c75b00;
+      gap: 4px;
+    }
+    .badge-error .material-symbols-outlined,
+    .badge-unknown .material-symbols-outlined,
+    .badge-confirmed .material-symbols-outlined {
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    /* Keine angabe → light blue-gray, blue text */
+    .badge-unknown {
+      background: #eff1fb;
+      color: #2558d9;
+      gap: 4px;
+    }
+    /* Bestätigt → light green, dark green text */
+    .badge-confirmed {
+      background: #eaf7ee;
+      color: #1a7a45;
+      gap: 4px;
+    }
+    /* Unsicher → solid amber */
+    .badge-notsure { background: #ff9f1a; color: white; }
+    /* Offen → amber (same hue, distinct label) */
+    .badge-open { background: #ff9f1a; color: white; }
+
+    /* Confirmed-by avatar — same shape as badge, outlined dark purple */
+    .confirmed-avatar {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1.5px solid #9575cd;
+      color: #90a4ae;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Status column — fixed width so it never jumps */
+    .status-td {
+      width: 148px;
+      min-width: 148px;
+      max-width: 148px;
+    }
+
+    /* Field category subtitle */
+    .field-sub {
+      display: block;
+      font-size: 10px;
+      color: #90a4ae;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      margin-top: 1px;
+    }
+
+    /* Warning text in source cell */
+    .source-warning {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #ff9f1a;
+      font-size: 12px;
+    }
+    .source-warning svg { flex-shrink: 0; }
+
+    /* "Dokument anfordern" micro-button */
+    .doc-request-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 500;
+      color: #009688;
+      background: transparent;
+      border: 1px solid #009688;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .doc-request-btn:hover { background: #e0f2f1; }
+
+    /* Section header subtitle (second line) */
+    .section-subtitle {
+      font-size: 10px;
+      color: #90a4ae;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0.3px;
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* Source link — teal, medium weight */
+    .source-link {
+      color: #009688;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .source-link:hover { text-decoration: underline; color: #00796b; }
+
+    /* Empty / dash */
+    .dash { color: #b0bec5; }
+
+    .field-cell { min-width: 160px; }
+    .value-cell { min-width: 140px; }
+    .source-cell { min-width: 140px; }
+
+    /* Bold field name */
+    .field-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+      line-height: 1.3;
+    }
+
+
+    /* Confirm button */
+    .confirm-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid #b0bec5;
+      background: white;
+      color: #b0bec5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      vertical-align: middle;
+      padding: 0;
+    }
+    .confirm-btn svg { width: 12px; height: 12px; pointer-events: none; }
+    .confirm-btn:hover:not(.confirmed):not(.rejected) {
+      background: #e0f2f1;
+      border-color: #80cbc4;
+      color: #009688;
+    }
+    .confirm-btn.confirmed {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+      cursor: default;
+    }
+    .confirm-btn.rejected {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+    .value-struck {
+      text-decoration: line-through;
+      color: #78909c;
+    }
+
+    /* Manueller Wert inline input */
+    .manual-input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1px solid #b0bec5;
+      border-radius: 4px;
+      background: white;
+      padding: 0 8px;
+      gap: 5px;
+      min-width: 120px;
+      width: 100%;
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .manual-input-wrap:focus-within {
+      border-color: #009688;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+    .manual-input-wrap.is-disabled {
+      background: #f5f7f8;
+      border-color: #eceff1;
+    }
+    .manual-input-icon {
+      font-size: 14px;
+      color: #90a4ae;
+      flex-shrink: 0;
+      line-height: 1;
+      user-select: none;
+    }
+    .manual-input {
+      border: none;
+      border-radius: 0;
+      padding: 4px 0;
+      font-size: 12px;
+      font-family: 'Roboto', sans-serif;
+      color: #37474f;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      line-height: 20px;
+    }
+    .manual-input:focus { box-shadow: none; }
+    .manual-input::placeholder { color: #b0bec5; }
+    .manual-input:disabled {
+      color: #b0bec5;
+      cursor: not-allowed;
+    }
+
+    /* Pflichtfeld indicator */
+    .pflicht-col { width: 32px; min-width: 32px; padding: 0 4px 0 8px !important; text-align: center; }
+
+    .pflicht-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e64d4d;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: default;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .pflicht-icon .pflicht-tooltip {
+      display: none;
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 5px);
+      transform: translateX(-50%);
+      background: #263238;
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .pflicht-icon .pflicht-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-bottom-color: #263238;
+    }
+
+    .pflicht-icon:hover .pflicht-tooltip { display: block; }
+
+    /* Table toolbar */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    /* 3-dot menu */
+    .dot-menu-wrap { position: relative; }
+
+    .dot-menu-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid #eceff1;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #78909c;
+      gap: 2px;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .dot-menu-btn:hover, .dot-menu-btn.open {
+      background: #f5f7f8;
+      border-color: #b0bec5;
+      color: #37474f;
+    }
+
+    .dot-menu-btn span {
+      display: block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .dot-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: white;
+      border: 1px solid #eceff1;
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      z-index: 200;
+      min-width: 230px;
+      padding: 6px 0;
+      animation: fadeIn 0.12s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .dot-dropdown.open { display: block; }
+
+    .dropdown-section {
+      padding: 8px 12px 6px;
+    }
+
+    .dropdown-section + .dropdown-section {
+      border-top: 1px solid #f5f7f8;
+      margin-top: 2px;
+      padding-top: 10px;
+    }
+
+    .dropdown-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b0bec5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .dropdown-options {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dropdown-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #37474f;
+      transition: background 0.1s;
+    }
+
+    .dropdown-option:hover { background: #f5f7f8; }
+
+    .dropdown-option input[type="radio"] {
+      accent-color: #009688;
+      width: 14px; height: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dropdown-option.selected { color: #009688; font-weight: 500; }
+
+    /* Active filter pills on toolbar */
+    .active-filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .active-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 10px;
+      border-radius: 20px;
+      background: #e0f2f1;
+      border: 1px solid #80cbc4;
+      font-size: 11.5px;
+      color: #00695c;
+      font-weight: 500;
+    }
+
+    .active-pill .pill-remove {
+      cursor: pointer;
+      color: #80cbc4;
+      font-size: 13px;
+      line-height: 1;
+      margin-left: 1px;
+    }
+
+    .active-pill .pill-remove:hover { color: #009688; }
+
+    /* Sub-rows */
+    .expand-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #009688;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.12s, transform 0.18s;
+      line-height: 1;
+    }
+
+    .expand-btn svg { pointer-events: none; transition: transform 0.18s ease; }
+    .expand-btn.open svg { transform: rotate(90deg); }
+    .expand-btn:hover { color: #00695c; }
+
+    tr.expandable-row { cursor: pointer; }
+
+    tr.sub-row td,
+    tbody tr.sub-row td:nth-child(even),
+    tbody tr.sub-row:hover td,
+    tbody tr.sub-row:hover td:nth-child(even) {
+      background: #f5f7f8;
+      border-bottom: 1px solid #eceff1;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      color: #37474f;
+      font-size: 12px;
+    }
+
+    tr.sub-row:last-child td { border-bottom: 1px solid #eceff1; }
+
+    .sub-row-indent {
+      padding-left: 28px;
+      color: #37474f;
+      font-size: 12px;
+    }
+
+    .sub-row-value {
+      color: #37474f;
+      font-size: 12px;
+    }
+
+    /* ─── SECTION HEADER ROWS ─────────────────────────────── */
+    .section-row td {
+      background: #ffffff;
+      padding: 9px 16px;
+      border-top: 2px solid #dde3e6;
+      border-bottom: 1px solid #dde3e6;
+      font-size: 0; /* collapse whitespace */
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .section-row-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+      text-transform: none;
+      letter-spacing: 0.2px;
+    }
+    .section-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+    .section-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: #90a4ae;
+      transition: transform 0.18s ease;
+    }
+    .section-chevron.collapsed { transform: rotate(-90deg); }
+    .section-row:hover td { background: #f5f7f8; }
+    .section-row--expanded td { background: #f0f4f5; }
+    .section-row--expanded:hover td { background: #e8edef; }
+    .section-label { letter-spacing: 0.2px; }
+    .section-err {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 7px;
+      background: #eceff1;
+      color: #546e7a;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .section-count {
+      color: #90a4ae;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* Note button */
+    .note-cell { width: auto; text-align: right; padding-right: 12px !important; }
+
+    /* ── Base style for all icon-only buttons inside table rows ── */
+    .table-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;   /* Light neutral/500 */
+      background: #f5f7f8;          /* Light neutral/200 */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #546e7a;               /* Dark-neutral/Gray-600 */
+      transition: all 0.12s;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .table-icon-btn svg  { width: 14px; height: 14px; pointer-events: none; }
+    .table-icon-btn:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+
+    /* Note button */
+    .note-cell { width: auto; text-align: right; padding-right: 12px !important; }
+
+    .note-btn {
+      position: relative;
+    }
+    .note-btn.has-note { background: #fef3c7; border-color: #fde68a; color: #d97706; }
+    .note-btn.has-note:hover { background: #fde68a; border-color: #f59e0b; color: #b45309; }
+
+    .note-dot {
+      position: absolute;
+      top: 3px; right: 3px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 1.5px solid white;
+    }
+
+    /* History button */
+    .history-btn.has-history { background: #e0f2f1; border-color: #80cbc4; color: #009688; }
+    .history-btn.has-history:hover { background: #b2dfdb; border-color: #4db6ac; color: #00796b; }
+
+    /* History popover */
+    .history-popover {
+      position: fixed;
+      z-index: 9999;
+      background: white;
+      border: 1px solid #eceff1;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      padding: 14px 16px;
+      min-width: 260px;
+      max-width: 340px;
+      pointer-events: none;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .history-popover.visible { opacity: 1; }
+    .history-popover-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #90a4ae;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+    .history-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f5f7f8;
+    }
+    .history-entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .history-entry-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #009688;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .history-entry-text {
+      font-size: 13px;
+      color: #37474f;
+      line-height: 1.4;
+      flex: 1;
+    }
+    .history-entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px;
+    }
+    .history-entry-time {
+      font-size: 11px;
+      color: #90a4ae;
+    }
+    .history-empty {
+      font-size: 13px;
+      color: #b0bec5;
+      font-style: italic;
+    }
+
+    /* ─── COMMENT DRAWER ─────────────────────────────────────── */
+    .comment-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 900;
+      display: none;
+    }
+    .comment-overlay.open { display: block; }
+
+    .comment-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 360px;
+      background: white;
+      box-shadow: -4px 0 32px rgba(0,0,0,0.14);
+      z-index: 901;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+    }
+    .comment-drawer.open { transform: translateX(0); }
+
+    .comment-drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eceff1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .comment-drawer-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #263238;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .comment-drawer-title .material-symbols-outlined {
+      font-size: 18px;
+      color: #009688;
+      letter-spacing: 0;
+    }
+    .comment-drawer-field-label {
+      font-size: 11px;
+      color: #90a4ae;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .comment-drawer-field-name {
+      font-size: 12px;
+      color: #37474f;
+      font-weight: 600;
+    }
+    .comment-drawer-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #90a4ae;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .comment-drawer-close:hover { background: #f5f7f8; color: #37474f; }
+
+    .comment-thread {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .comment-empty {
+      color: #b0bec5;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 48px;
+      font-style: italic;
+    }
+    .comment-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comment-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .comment-bubble {
+      flex: 1;
+      background: #f5f7f8;
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .comment-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .comment-author {
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+    }
+    .comment-time {
+      font-size: 11px;
+      color: #90a4ae;
+    }
+    .comment-text {
+      font-size: 13px;
+      color: #37474f;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    /* Composer */
+    .comment-composer-area {
+      border-top: 1px solid #eceff1;
+      padding: 14px 20px;
+      flex-shrink: 0;
+      background: #fafbfc;
+    }
+    .comment-composer {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comment-composer-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .comment-input {
+      flex: 1;
+      border: 1px solid #b0bec5;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+      color: #263238;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      height: 72px;
+      background: white;
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .comment-input:focus {
+      border-color: #009688;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+    .comment-input::placeholder { color: #b0bec5; }
+    .comment-submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .comment-submit-btn {
+      padding: 6px 18px;
+      border-radius: 4px;
+      border: none;
+      background: #009688;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s;
+    }
+    .comment-submit-btn:hover { background: #00796b; }
+
+    /* Editor initials tag */
+    .editor-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      height: 20px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1.5px solid #b0bec5;
+      color: #78909c;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    /* Status dropdown */
+    .status-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .status-wrap .badge {
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.12s;
+    }
+
+    .status-wrap .badge:hover { opacity: 0.85; }
+
+    .status-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      background: white;
+      border: 1px solid #eceff1;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      z-index: 300;
+      min-width: 140px;
+      padding: 4px;
+      animation: fadeIn 0.12s ease;
+    }
+
+    .status-dropdown.open { display: block; }
+
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: #37474f;
+      transition: background 0.1s;
+    }
+
+    .status-option:hover { background: #f5f7f8; }
+    .status-option.current { background: #eceff1; font-weight: 600; }
+
+    /* Lock button */
+    .lock-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      padding: 0;
+    }
+
+    .lock-btn svg { width: 13px; height: 13px; pointer-events: none; }
+
+    .lock-btn.unlocked { background: #f5f7f8; border-color: #b0bec5; color: #546e7a; }
+    .lock-btn.unlocked:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+
+    .lock-btn.locked { background: #f5f7f8; border-color: #b0bec5; color: #546e7a; }
+    .lock-btn.locked:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+
+    /* Overwrite button */
+    .overwrite-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #78909c;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      vertical-align: middle;
+    }
+
+    .overwrite-btn:hover:not(:disabled) {
+      background: #e0f2f1;
+      border-color: #80cbc4;
+      color: #009688;
+    }
+
+    .overwrite-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .overwrite-btn svg { width: 12px; height: 12px; pointer-events: none; }
+
+    .sys-value-cell {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* Inline edit */
+    .editable-cell {
+      cursor: text;
+      border-radius: 4px;
+      padding: 2px 4px;
+      margin: -2px -4px;
+      min-width: 80px;
+      display: inline-block;
+    }
+
+    .editable-cell:hover {
+      background: #e0f2f1;
+      outline: 1px dashed #80cbc4;
+    }
+
+    .editable-cell .edit-hint {
+      display: none;
+      margin-left: 5px;
+      color: #80cbc4;
+      font-size: 11px;
+    }
+
+    .editable-cell:hover .edit-hint { display: inline; }
+
+    .inline-input {
+      border: 1.5px solid #009688;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      color: #263238;
+      background: white;
+      outline: none;
+      width: 100%;
+      min-width: 120px;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+
+    .inline-input:focus { border-color: #00796b; }
+
+    .inline-edit-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .inline-save-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #80cbc4;
+      background: #e0f2f1;
+      color: #00695c;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .inline-save-btn:hover { background: #b2dfdb; }
+
+    .inline-cancel-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      cursor: pointer;
+      border: 1px solid #eceff1;
+      background: white;
+      color: #b0bec5;
+      flex-shrink: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .inline-cancel-btn:hover { background: #f5f7f8; color: #78909c; }
+
+    .inline-validation-error {
+      font-size: 11.5px;
+      color: #e64d4d;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .inline-input.has-error {
+      border-color: #e64d4d;
+      box-shadow: 0 0 0 3px rgba(230,77,77,0.12);
+    }
+
+    /* Scrollbar styling */
+    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 3px; }
+
+    /* Action toolbar (appears when rows selected) */
+    .bulk-toolbar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #e0f2f1;
+      border-bottom: 1px solid #80cbc4;
+      font-size: 12.5px;
+      color: #00695c;
+      font-weight: 500;
+    }
+
+    .bulk-toolbar.visible { display: flex; }
+
+    .bulk-btn {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .bulk-confirm { background: #e0f2f1; border-color: #80cbc4; color: #00695c; }
+    .bulk-confirm:hover { background: #b2dfdb; }
+    .bulk-reject { background: white; border-color: #eceff1; color: #78909c; }
+    .bulk-reject:hover { background: #fde8e8; border-color: #f5a5a5; color: #e64d4d; }
+
+    .bulk-clear { margin-left: auto; cursor: pointer; color: #78909c; font-size: 12px; }
+    .bulk-clear:hover { color: #37474f; text-decoration: underline; }
+
+    /* User avatar area in top right */
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 24px 8px;
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      justify-content: flex-end;
+      font-size: 12.5px;
+      color: #37474f;
+    }
+
+    .topbar-right .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-right .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .topbar-right .icon-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #78909c;
+      position: relative;
+    }
+
+    .topbar-right .icon-btn:hover { background: #f5f7f8; }
+
+    .topbar-right .notif-badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─────────────────────────── -->
+<aside class="sidebar">
+  <div class="logo">L</div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="nav-label">My Day</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item active" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="badge">39</span>
+    </div>
+    <div class="nav-label">Loans</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="badge">1</span>
+    </div>
+    <div class="nav-label">Leads</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </div>
+    <div class="nav-label">Sources</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+    <div class="nav-label">Accounting</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <div class="nav-label">Reporting</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </div>
+    <div class="nav-label">Lead-Shop</div>
+  </div>
+
+  <div class="nav-group" style="margin-top: auto;">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <div class="nav-label">Email</div>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─────────────────────────────── -->
+<div class="main">
+
+  <!-- Notification bar -->
+  <div class="notify-bar" id="notifyBar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    This applicant doesn't have an active account and doesn't have access to the client portal.&nbsp;
+    <a href="#">Activate account</a>
+    <span class="close-btn" onclick="document.getElementById('notifyBar').style.display='none'">×</span>
+  </div>
+
+  <!-- Top right bar -->
+  <div class="topbar-right">
+    <div class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge">3</span>
+    </div>
+    <span style="color:#b0bec5">EN</span>
+    <div class="user-info">
+      <div class="avatar">LA</div>
+      <div>
+        <div style="font-weight:600;font-size:12.5px;color:#263238">Loanlink Admin Advisor</div>
+        <div style="font-size:11px;color:#b0bec5">Administrator</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-title">
+          Mr Test Data Verif
+          <span class="amount">231.710,00 €</span>
+          <span class="case-id">Case ID: 408</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" onclick="openUseCasesModal()">Use Cases</button>
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Loan simulator
+        </button>
+        <button class="btn btn-validate" onclick="openValidationModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/></svg>
+          Antrag validieren
+        </button>
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Client view
+        </button>
+        <button class="btn-more btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+        <button class="btn-expand btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="tags-row">
+      <div class="app-badge">
+        <span class="dot"></span>
+        Property found
+      </div>
+      <div class="app-badge" style="font-size:12px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+        Onboarding: LoanLink24 Mortgage GmbH
+      </div>
+      <button class="tag-add">+ add new</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <div class="tab-item active" onclick="setTab(this)">Übersicht</div>
+      <div class="tab-item" onclick="setTab(this)">Antrag</div>
+      <div class="tab-item" onclick="setTab(this)">Antragsvalidierung (beta)</div>
+      <div class="tab-item" onclick="setTab(this)">Manuelle Angebote</div>
+      <div class="tab-item" onclick="setTab(this)">Immobilienbewertung</div>
+      <div class="tab-item" onclick="setTab(this)">
+        Dokumente
+        <svg class="ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+      <div class="tab-item" onclick="setTab(this)">PDF</div>
+    </div>
+  </div>
+
+  <!-- Content: Übersicht placeholder -->
+  <div class="content">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;color:#90a4ae;padding-bottom:60px;">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#b0bec5" stroke-width="1.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      <div style="text-align:center;">
+        <div style="font-size:15px;font-weight:600;color:#78909c;margin-bottom:6px;">Übersicht</div>
+        <div style="font-size:13px;color:#b0bec5;">Dieser Bereich ist noch nicht verfügbar.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── VALIDATION MODAL ─────────────────────────────────────────────── -->
+<div class="modal-overlay" id="validationModal" onclick="handleModalOverlayClick(event)" style="display:none">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div>
+          <div class="modal-title">Antragsvalidierung</div>
+          <div class="modal-subtitle">Mr Test Data Verif · Case ID 408 · 231.710,00 €</div>
+        </div>
+        <span class="modal-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          beta
+        </span>
+      </div>
+      <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Beta notice -->
+      <div class="beta-notice" id="betaNotice">
+        <div class="beta-notice-content">
+          <div class="beta-notice-title">Data validation (beta)</div>
+          <div class="beta-notice-text">
+            This function makes it possible to read out data from ID cards/passports, salary statements, energy certificates and exposés.
+            A few minutes after the upload and categorization in the Document Center, the data is transferred to the application.
+            You can decide whether you want to transfer the data.
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <span class="toggle-label">Show</span>
+          <label class="toggle">
+            <input type="checkbox" checked onchange="toggleContent(this)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table toolbar -->
+      <div class="table-toolbar">
+        <div class="active-filter-pills" id="activePills"></div>
+        <div class="dot-menu-wrap">
+          <button class="dot-menu-btn" id="dotMenuBtn" onclick="toggleDotMenu()" title="Tabellenoptionen">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="dot-dropdown" id="dotDropdown">
+            <div class="dropdown-section">
+              <div class="dropdown-section-label">Antragsphase</div>
+              <div class="dropdown-options">
+                <label class="dropdown-option" id="opt-alle">
+                  <input type="radio" name="antragsphase" value="alle" checked onchange="setAntragsphase('alle')">
+                  Alle
+                </label>
+                <label class="dropdown-option" id="opt-angebot">
+                  <input type="radio" name="antragsphase" value="angebot" onchange="setAntragsphase('angebot')">
+                  Angebot erstellen
+                </label>
+                <label class="dropdown-option" id="opt-einreichen">
+                  <input type="radio" name="antragsphase" value="einreichen" onchange="setAntragsphase('einreichen')">
+                  Antrag einreichen
+                </label>
+              </div>
+            </div>
+            <div class="dropdown-section">
+              <div class="dropdown-section-label">Pflichtfelder hervorheben</div>
+              <div class="dropdown-options">
+                <label class="dropdown-option" id="opt-pf-ja">
+                  <input type="radio" name="pflichtfelder" value="ja" onchange="setPflichtfelder('ja')">
+                  Ja
+                </label>
+                <label class="dropdown-option" id="opt-pf-nein">
+                  <input type="radio" name="pflichtfelder" value="nein" checked onchange="setPflichtfelder('nein')">
+                  Nein
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status progress bar -->
+      <div class="status-progress-wrap">
+        <div class="status-progress-bar" id="statusProgressBar"></div>
+        <div class="progress-legend" id="progressLegend"></div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all', this)">Alle (41)</button>
+        <button class="filter-tab" onclick="setFilter('error', this)">Fehler (21)</button>
+        <button class="filter-tab" onclick="setFilter('confirmed', this)">Bestätigt (1)</button>
+        <button class="filter-tab" onclick="setFilter('notsure', this)">Unsicher (0)</button>
+        <button class="filter-tab" onclick="setFilter('unknown', this)">Unbekannt (19)</button>
+      </div>
+
+      <!-- Bulk toolbar -->
+      <div class="bulk-toolbar" id="bulkToolbar">
+        <span id="selectedCount">0 rows selected</span>
+        <button class="bulk-btn bulk-confirm" onclick="bulkApplySystemValues()">↙ Systemwerte übernehmen</button>
+        <span class="bulk-clear" onclick="clearSelection()">Auswahl aufheben</span>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table id="validationTable">
+          <thead>
+            <tr>
+              <th class="pflicht-col"></th>
+              <th>
+                <div class="cb cb-all" id="cbAll" onclick="toggleAll()"></div>
+              </th>
+              <th class="sortable" onclick="sortBy('field')">
+                Feld
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Kundeneingabe
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Systemwert
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Manueller Wert
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Quelle
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th class="sortable status-td" onclick="sortBy('status')">
+                Status
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th style="width:48px">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /.modal-body -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal-overlay -->
+
+<!-- ─── USE CASES MODAL ──────────────────────────────────────────────── -->
+<div class="modal-overlay" id="useCasesModal" onclick="if(event.target===this)closeUseCasesModal()" style="display:none">
+  <div class="uc-modal-dialog">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-title">Use Cases</div>
+        <div class="modal-subtitle">Was der Berater in jeder Zeile sieht</div>
+      </div>
+      <button class="modal-close" onclick="closeUseCasesModal()" title="Schließen">×</button>
+    </div>
+    <div class="uc-modal-body">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-confirmed" style="padding:2px 8px;border-radius:10px;font-size:11px;">Bestätigt</span>
+          Erfolgreiche Validierungen
+        </div>
+        <ul class="uc-list">
+          <li><strong>Netto-Kaltmiete (500 €):</strong> Das System hat den Mietbetrag aus zwei unabhängigen Quellen gezogen – dem Mietvertrag und dem Kontoauszug September. Wenn die angegebene Zahl, der Vertrag und die tatsächlichen Banküberweisungen übereinstimmen, ist das eine starke Bestätigung.</li>
+          <li><strong>Nominalzins (2,45 %):</strong> Direkt aus dem Darlehensvertrag-PDF extrahiert. Keine Kreuzprüfung nötig, da der Vertrag die maßgebliche Quelle ist.</li>
+          <li><strong>Wohnfläche (100 m²):</strong> Stimmt exakt mit der Wohnflächenberechnung überein.</li>
+          <li><strong>Eigentumsverhältnis:</strong> Der Grundbuchauszug bestätigt beide Antragsteller als Eigentümer (je 1/2 Miteigentum). Das System hat den einfachen Eintrag „Beide Antragsteller" mit dem genauen Rechtsanteil angereichert.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-error" style="padding:2px 8px;border-radius:10px;font-size:11px;">Fehler</span>
+          Validierungsfehler
+        </div>
+        <ul class="uc-list">
+          <li><strong>Marktwert:</strong> Kunde gab 150.000 € an, aber das hochgeladene Wertgutachten von 2024 nennt 128.000 €. Eine ~17 %ige Überbewertung verändert den LTV des neuen Darlehens wesentlich – der Berater muss entweder den niedrigeren Wert akzeptieren oder ein aktuelles Gutachten anfordern.</li>
+          <li><strong>Restschuld:</strong> Kunde gab 85.000 € an, die Saldenbestätigung der Commerzbank (Oktober 2025) zeigt hingegen 83.420 €. Kleine Differenz, wahrscheinlich veraltete Kundendaten – muss jedoch abgestimmt werden, bevor die Bank den gesicherten/ungesicherten Anteil berechnet.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-open" style="padding:2px 8px;border-radius:10px;font-size:11px;">Offen</span>
+          Noch nicht validierbar
+        </div>
+        <ul class="uc-list">
+          <li><strong>Endenergiewert (300 kWh/m²):</strong> Kein Energieausweis hochgeladen. Der Berater kann das ohne das Dokument nicht bestätigen – und es ist ohnehin eine gesetzliche Anforderung für Mietobjekte.</li>
+          <li><strong>Modernisierungsjahr (2015):</strong> Die Angabe ist plausibel, aber ungeprüft – ohne Rechnungen oder Handwerkerbelege kann das Bewertungsmodell den angesetzten Modernisierungsabschlag auf den Marktwert nicht bestätigen.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">Design-Hinweise</div>
+        <ul class="uc-list">
+          <li>Die Spalte <strong>Manueller Wert</strong> ermöglicht dem Berater, sowohl Kundenwert als auch Systemwert zu überschreiben – nützlich, wenn der Berater Informationen aus einem Telefonat hat oder weiß, dass der Wert einen Abschlag braucht.</li>
+          <li>Der Button <strong>„Dokument anfordern"</strong> in der Quellen-Spalte ist ein natürlicher Ansatzpunkt, um ein LLM zur Erstellung einer Dokumentenanforderungs-E-Mail an die Antragsteller einzubinden.</li>
+          <li>Die farblich kodierte <strong>Status-Pille</strong> rechts erlaubt dem Berater, ein langes Formular zu überfliegen und direkt zu den Zeilen zu springen, die Aufmerksamkeit erfordern.</li>
+        </ul>
+      </div>
+
+    </div><!-- /.uc-modal-body -->
+  </div><!-- /.uc-modal-dialog -->
+</div><!-- /#useCasesModal -->
+
+<!-- History popover (global, positioned via JS) -->
+<div id="historyPopover" class="history-popover"></div>
+
+<!-- Comment drawer overlay -->
+<div id="commentOverlay" class="comment-overlay" onclick="closeCommentDrawer()"></div>
+
+<!-- Comment drawer -->
+<div id="commentDrawer" class="comment-drawer">
+  <div class="comment-drawer-header">
+    <div>
+      <div class="comment-drawer-title">
+        <span class="material-symbols-outlined">comment</span>
+        Kommentare
+      </div>
+      <span class="comment-drawer-field-label">Feld: </span><span id="commentDrawerField" class="comment-drawer-field-name"></span>
+    </div>
+    <button class="comment-drawer-close" onclick="closeCommentDrawer()">×</button>
+  </div>
+  <div class="comment-thread" id="commentThread">
+    <div class="comment-empty">Noch keine Kommentare</div>
+  </div>
+  <div class="comment-composer-area">
+    <div class="comment-composer">
+      <div class="comment-composer-avatar">KH</div>
+      <textarea id="commentInput" class="comment-input" placeholder="Kommentar schreiben… (Strg+Enter zum Senden)" onkeydown="handleCommentKey(event)"></textarea>
+    </div>
+    <div class="comment-submit-row">
+      <button class="comment-submit-btn" onclick="submitComment()">Senden</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── DATA ─────────────────────────────────────────────────────────────────
+  const rows = [
+    // ── Antragsteller 1 ──────────────────────────────────────────────────────
+    { id:1,  group:'as1', status:'error',     field:'Vorname',                       customerInput:'Test',            systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'–' },
+    { id:2,  group:'as1', status:'error',     field:'Nachname',                      customerInput:'Data Verif',      systemValue:'Mustermann',                  source:'Personalausweis / Reisepass' },
+    { id:3,  group:'as1', status:'error',     field:'Geburtsdatum',                  customerInput:'–',               systemValue:'12.08.1983',                  source:'Personalausweis / Reisepass' },
+    { id:4,  group:'as1', status:'error',     field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutschland',                 source:'Personalausweis / Reisepass' },
+    { id:9,  group:'as1', status:'error',     field:'Dokumentennummer',              customerInput:'–',               systemValue:'L01X00T47',                   source:'Personalausweis / Reisepass' },
+    { id:10, group:'as1', status:'error',     field:'Ablaufdatum',                   customerInput:'–',               systemValue:'01.08.2031',                  source:'Personalausweis / Reisepass' },
+    { id:22, group:'as1', status:'confirmed', field:'E-Mail-Adresse',                customerInput:'test@example.de', systemValue:'test@example.de',             source:'Kundeneingabe' },
+    { id:5,  group:'as1', status:'error',     field:'Monatliches Einkommen',         customerInput:'10.000,0 €',      systemValue:'2.788,93 €, 3.799,86 €',      source:'Gehaltsabrechnung',
+      subRows: [
+        { systemValue: '2.788,93 €', source: 'Gehaltsabrechnung Jan 2025' },
+        { systemValue: '3.799,86 €', source: 'Gehaltsabrechnung Feb 2025' },
+      ]
+    },
+    { id:15, group:'as1', status:'error',     field:'Nettogehalt',                   customerInput:'8.500,0 €',       systemValue:'2.788,93 €',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:16, group:'as1', status:'error',     field:'Bruttogehalt',                  customerInput:'12.000,0 €',      systemValue:'3.799,86 €',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:17, group:'as1', status:'error',     field:'Beschäftigungsart',             customerInput:'Selbstständig',   systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:6,  group:'as1', status:'error',     field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:7,  group:'as1', status:'error',     field:'Firmenname',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:8,  group:'as1', status:'error',     field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:18, group:'as1', status:'error',     field:'Steuerklasse',                  customerInput:'–',               systemValue:'1',                           source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:19, group:'as1', status:'error',     field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:20, group:'as1', status:'error',     field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:21, group:'as1', status:'error',     field:'Kirchensteuer',                 customerInput:'–',               systemValue:'nein',                        source:'Gehaltsabrechnung', manuellerWert:'–' },
+    { id:23, group:'as1', status:'unknown',   field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:24, group:'as1', status:'unknown',   field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:25, group:'as1', status:'unknown',   field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:26, group:'as1', status:'unknown',   field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:27, group:'as1', status:'unknown',   field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:28, group:'as1', status:'unknown',   field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:29, group:'as1', status:'unknown',   field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:30, group:'as1', status:'unknown',   field:'Mieteinnahmen',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    // ── Antragsteller 2 ──────────────────────────────────────────────────────
+    { id:42, group:'as2', status:'unknown',   field:'Vorname',                       customerInput:'Sabine',          systemValue:'–',                           source:'–' },
+    { id:43, group:'as2', status:'error',     field:'Nachname',                      customerInput:'Richter',         systemValue:'Müller',                      source:'Personalausweis / Reisepass' },
+    { id:44, group:'as2', status:'unknown',   field:'Geburtsdatum',                  customerInput:'15.05.1980',      systemValue:'–',                           source:'–' },
+    { id:45, group:'as2', status:'unknown',   field:'Staatsangehörigkeit',           customerInput:'Deutsch',         systemValue:'–',                           source:'–' },
+    { id:50, group:'as2', status:'error',     field:'Dokumentennummer',              customerInput:'KX9A00B34',       systemValue:'KX9A12B34',                   source:'Personalausweis / Reisepass' },
+    { id:51, group:'as2', status:'unknown',   field:'Ablaufdatum',                   customerInput:'–',               systemValue:'20.11.2027',                  source:'Personalausweis / Reisepass' },
+    { id:55, group:'as2', status:'unknown',   field:'E-Mail-Adresse',                customerInput:'s.richter@web.de',systemValue:'–',                           source:'–' },
+    { id:46, group:'as2', status:'unknown',   field:'Monatliches Einkommen',         customerInput:'3.200,0 €',       systemValue:'–',                           source:'–' },
+    { id:52, group:'as2', status:'unknown',   field:'Nettogehalt',                   customerInput:'2.700,0 €',       systemValue:'–',                           source:'–' },
+    { id:53, group:'as2', status:'unknown',   field:'Bruttogehalt',                  customerInput:'3.800,0 €',       systemValue:'–',                           source:'–' },
+    { id:54, group:'as2', status:'unknown',   field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'–',                           source:'–' },
+    { id:47, group:'as2', status:'unknown',   field:'IBAN',                          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:48, group:'as2', status:'unknown',   field:'Firmenname',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:49, group:'as2', status:'unknown',   field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:56, group:'as2', status:'unknown',   field:'Steuerklasse',                  customerInput:'3',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:57, group:'as2', status:'unknown',   field:'Krankenversicherung',           customerInput:'privat',          systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:58, group:'as2', status:'unknown',   field:'Kinderfreibetrag',              customerInput:'1',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:59, group:'as2', status:'unknown',   field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    // ── Gemeinsame Felder ────────────────────────────────────────────────────
+    { id:11, group:'shared', status:'error',   field:'Straße',                        customerInput:'–',               systemValue:'HEIDESTRASSE',                source:'Personalausweis / Reisepass' },
+    { id:12, group:'shared', status:'error',   field:'Hausnummer',                    customerInput:'–',               systemValue:'17',                          source:'Personalausweis / Reisepass' },
+    { id:13, group:'shared', status:'error',   field:'Postleitzahl',                  customerInput:'–',               systemValue:'12345',                       source:'Personalausweis / Reisepass' },
+    { id:14, group:'shared', status:'error',   field:'Stadt',                         customerInput:'–',               systemValue:'Berlin',                      source:'Personalausweis / Reisepass' },
+    { id:31, group:'shared', status:'unknown', field:'Immobilientyp',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:32, group:'shared', status:'unknown', field:'Baujahr',                       customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:33, group:'shared', status:'unknown', field:'Wohnfläche',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:34, group:'shared', status:'unknown', field:'Energieeffizienzklasse',        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:35, group:'shared', status:'unknown', field:'Primärenergiebedarf',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:36, group:'shared', status:'unknown', field:'Heizungsart',                   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:37, group:'shared', status:'unknown', field:'Grundstücksfläche',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:38, group:'shared', status:'unknown', field:'Anzahl der Etagen',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:39, group:'shared', status:'unknown', field:'Stellplatz',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:40, group:'shared', status:'unknown', field:'Keller',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:41, group:'shared', status:'unknown', field:'Garten',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    // ── Immobilie 1 — Mareschstr. 4, 12055 Berlin ───────────────────────────
+    { id:60, group:'immo1', status:'confirmed', field:'Netto-Kaltmiete',      fieldSub:'Einnahmen',          customerInput:'500 €',              systemValue:'500 €',              source:['Mietvertrag 2023', 'Kontoauszug Sep 2025'] },
+    { id:61, group:'immo1', status:'error',     field:'Aktueller Marktwert',  fieldSub:'Vermögen',           customerInput:'150.000 €',          systemValue:'128.000 €',          source:['Wertgutachten 2024'] },
+    { id:62, group:'immo1', status:'error',     field:'Aktuelle Restschuld',  fieldSub:'Verbindlichkeit',    customerInput:'85.000 €',           systemValue:'83.420 €',           source:['Saldenbestätigung Okt 2025', 'Jahreskontoauszug 2024'] },
+    { id:63, group:'immo1', status:'confirmed', field:'Nominalzins',          fieldSub:'Darlehenskondition', customerInput:'2,45 %',             systemValue:'2,45 %',             source:['Darlehensvertrag Commerzbank'] },
+    { id:64, group:'immo1', status:'confirmed', field:'Wohnfläche',           fieldSub:'Objektdetail',       customerInput:'100 m²',             systemValue:'100 m²',             source:['Wohnflächenberechnung'] },
+    { id:65, group:'immo1', status:'confirmed', field:'Eigentumsverhältnis',  fieldSub:'Grundbuch',          customerInput:'Beide Antragsteller',systemValue:'Je 1/2 Miteigentum', source:['Grundbuchauszug Aug 2025'] },
+    { id:66, group:'immo1', status:'open',      field:'Endenergiewert',       fieldSub:'Objektdetail',       customerInput:'300 kWh/m²',         systemValue:'–',                  sourceWarning:'Energieausweis fehlt' },
+    { id:67, group:'immo1', status:'open',      field:'Modernisierungsjahr',  fieldSub:'Objektdetail',       customerInput:'2015',               systemValue:'–',                  sourceWarning:'Modernisierungsnachweise fehlen' },
+  ];
+
+  let currentFilter = 'all';
+  let selectedIds = new Set();
+  let rowStatuses = {};
+  let expandedRows = new Set();
+  let lockedRows = new Set();
+
+  let manuallyEditedRows = new Set();
+  let rowHistory = {};
+  let manuellerWertDebounce = {};
+  let collapsedGroups = new Set();
+
+  // ─── HISTORY HELPERS ──────────────────────────────────────────────────────
+  function logChange(id, text) {
+    if (!rowHistory[id]) rowHistory[id] = [];
+    const now = new Date();
+    const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    rowHistory[id].unshift({ text, time });
+    // Update button class without full re-render
+    const btn = document.getElementById(`historyBtn_${id}`);
+    if (btn) btn.classList.add('has-history');
+  }
+
+  function showHistoryPopover(id, el) {
+    const history = rowHistory[id] || [];
+    const popover = document.getElementById('historyPopover');
+    const entriesHtml = history.length === 0
+      ? '<div class="history-empty">Noch keine Änderungen aufgezeichnet.</div>'
+      : history.map(e => `
+          <div class="history-entry">
+            <div class="history-entry-dot"></div>
+            <div style="flex:1">
+              <div class="history-entry-text">${e.text}</div>
+              <div class="history-entry-meta">
+                <span class="editor-tag" style="font-size:10px;padding:1px 5px;height:16px;">CS</span>
+                <span class="history-entry-time">${e.time}</span>
+              </div>
+            </div>
+          </div>`).join('');
+
+    popover.innerHTML = `<div class="history-popover-title">Verlauf</div>${entriesHtml}`;
+    popover.style.display = 'block';
+    popover.style.opacity = '0';
+
+    // Position above the button (flip below if not enough space)
+    const rect = el.getBoundingClientRect();
+    const popW = popover.offsetWidth;
+    const popH = popover.offsetHeight;
+    let top = rect.top - popH - 8;
+    let left = rect.right - popW;
+    if (top < 8) top = rect.bottom + 8;
+    if (left < 8) left = 8;
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+    popover.classList.add('visible');
+  }
+
+  function hideHistoryPopover() {
+    const popover = document.getElementById('historyPopover');
+    popover.classList.remove('visible');
+    setTimeout(() => { if (!popover.classList.contains('visible')) popover.style.display = 'none'; }, 150);
+  }
+
+  function computeStatus(r) {
+    if (r.confirmedSource) return 'confirmed';
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    if (hasVal(r.customerInput) || hasVal(r.systemValue)) return 'error'; // Prüfen
+    return 'unknown'; // Keine angabe
+  }
+
+  rows.forEach(r => {
+    if (!r.manuellerWert) r.manuellerWert = '';
+    if (!r.confirmedSource) r.confirmedSource = null; // null | 'customer' | 'system'
+    rowStatuses[r.id] = computeStatus(r);
+  });
+
+  function statusBadge(status) {
+    const map = {
+      error:     '<span class="badge badge-error"><span class="material-symbols-outlined">schedule</span>Prüfen</span>',
+      unknown:   '<span class="badge badge-unknown"><span class="material-symbols-outlined">help</span>Keine angabe</span>',
+      confirmed: '<span class="badge badge-confirmed"><span class="material-symbols-outlined">check</span>Bestätigt</span>',
+      notsure:   '<span class="badge badge-notsure">Unsicher</span>',
+      open:      '<span class="badge badge-open">Offen</span>',
+    };
+    return map[status] || '';
+  }
+
+  function openUseCasesModal()  { document.getElementById('useCasesModal').style.display = 'flex'; }
+  function closeUseCasesModal() { document.getElementById('useCasesModal').style.display = 'none'; }
+
+  function filteredRows() {
+    let result = currentFilter === 'all' ? rows : rows.filter(r => rowStatuses[r.id] === currentFilter);
+    if (antragsphase === 'angebot') {
+      result = result.filter(r => angebot_felder.has(r.field));
+    }
+    return result;
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const visible = filteredRows();
+
+    const groupOrder = ['as1', 'as2', 'shared', 'immo1'];
+    const groupMeta = {
+      as1:    { label: 'Antragsteller 1',                              icon: 'person', color: '#009688' },
+      as2:    { label: 'Antragsteller 2',                              icon: 'person', color: '#546e7a' },
+      shared: { label: 'Gemeinsame Felder',                            icon: 'group',  color: '#78909c' },
+      immo1:  { label: 'Immobilie 1 — Mareschstr. 4, 12055 Berlin',   icon: 'home',   color: '#795548', subtitle: 'Zusatzsicherheit · Vermietet · Beide Antragsteller' },
+    };
+
+    function sectionHeaderHtml(gk, groupRows) {
+      const meta = groupMeta[gk];
+      const collapsed = collapsedGroups.has(gk);
+      const confirmedCount = groupRows.filter(r => rowStatuses[r.id] === 'confirmed').length;
+      const offenCount     = groupRows.filter(r => rowStatuses[r.id] !== 'confirmed').length;
+      const avatarHtml = `<span class="section-avatar" style="background:${meta.color}"><span class="material-symbols-outlined" style="font-size:13px;line-height:1;color:white;letter-spacing:0;">${meta.icon}</span></span>`;
+      const chevron = `<svg class="section-chevron ${collapsed ? 'collapsed' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+      const subtitleHtml = meta.subtitle ? `<span class="section-subtitle">${meta.subtitle}</span>` : '';
+      const countHtml = collapsed ? 'eingeklappt'
+        : (meta.subtitle
+            ? `${confirmedCount} bestätigt · ${offenCount} offen`
+            : groupRows.length + ' Felder');
+      return `<tr class="section-row${collapsed ? '' : ' section-row--expanded'}" onclick="toggleGroup('${gk}')" style="cursor:pointer">
+        <td colspan="9"><div class="section-row-inner">
+          ${chevron}
+          ${avatarHtml}
+          <span><span class="section-label">${meta.label}</span>${subtitleHtml}</span>
+          ${offenCount > 0 ? `<span class="section-err">${offenCount} Offen</span>` : ''}
+          <span class="section-count">${countHtml}</span>
+        </div></td>
+      </tr>`;
+    }
+
+    let allHtml = '';
+    for (const gk of groupOrder) {
+      const groupRows = visible.filter(r => (r.group || 'as1') === gk);
+      if (groupRows.length === 0) continue;
+      allHtml += sectionHeaderHtml(gk, groupRows);
+      if (collapsedGroups.has(gk)) continue;
+      allHtml += groupRows.map(row => {
+      const st = rowStatuses[row.id];
+      const isSelected = selectedIds.has(row.id);
+      const isExpanded = expandedRows.has(row.id);
+      const hasSubRows = row.subRows && row.subRows.length > 0;
+      const dash = '<span class="dash">–</span>';
+      const custRaw = row.customerInput;
+      const confirmed = row.confirmedSource;
+      const custStruck = confirmed === 'system';
+      const sysStruck  = confirmed === 'customer';
+      const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      const custBtnClass = confirmed === 'customer' ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
+      const sysBtnClass  = confirmed === 'system'   ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
+
+      const custValueHtml = custRaw === '–'
+        ? `<span class="dash ${custStruck ? 'value-struck' : ''}">–</span>`
+        : `<span class="${custStruck ? 'value-struck' : ''}">${custRaw}</span>`;
+      const sysValue = row.systemValue === '–' ? dash : row.systemValue;
+      const sysValueHtml = row.systemValue === '–'
+        ? dash
+        : `<span class="${sysStruck ? 'value-struck' : ''}">${row.systemValue}</span>`;
+      let sourceHtml;
+      if (row.sourceWarning) {
+        sourceHtml = `<div style="display:flex;flex-direction:column;gap:2px;">
+          <span class="source-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>${row.sourceWarning}</span>
+          <button class="doc-request-btn" onclick="event.stopPropagation()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Dokument anfordern</button>
+        </div>`;
+      } else if (Array.isArray(row.source)) {
+        sourceHtml = row.source.map(s => `<a class="source-link" href="#" style="display:block">${s}</a>`).join('');
+      } else {
+        sourceHtml = row.source === '–' ? dash : `<a class="source-link" href="#">${row.source}</a>`;
+      }
+
+      const isConfirmed = st === 'confirmed';
+      const isLocked = lockedRows.has(row.id);
+
+      const isPflicht = pflichtfelder === 'ja' && pflichtfelder_set.has(row.field);
+      const pflichtCell = `<td class="pflicht-col">${hasSubRows
+        ? `<button class="expand-btn ${isExpanded ? 'open' : ''}" onclick="toggleExpand(${row.id}, event)" title="${isExpanded ? 'Subzeilen ausblenden' : 'Subzeilen anzeigen'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>`
+        : isPflicht ? `<span class="pflicht-icon">!<span class="pflicht-tooltip">Pflichtfeld</span></span>` : ''
+      }</td>`;
+
+      const groupLabel = (groupMeta[row.group] || groupMeta['as1']).label.split(' — ')[0];
+      const fieldSubLabel = row.fieldSub || groupLabel;
+      const isRowConfirmed = confirmed !== null;
+
+      const mainRow = `
+        <tr class="${isSelected ? 'selected' : ''}${hasSubRows ? ' expandable-row' : ''}${isRowConfirmed ? ' row-confirmed' : ''}" data-id="${row.id}" ${hasSubRows ? `onclick="toggleExpand(${row.id}, event)"` : ''}>
+          ${pflichtCell}
+          <td>
+            <div class="cb ${isSelected ? 'checked' : ''}" onclick="toggleRow(${row.id}, event)"></div>
+          </td>
+          <td class="field-cell"><span class="field-name">${row.field}</span><span class="field-sub">${fieldSubLabel}</span></td>
+          <td class="value-cell">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button
+                class="confirm-btn ${custBtnClass}"
+                onclick="confirmSource(${row.id}, 'customer', event)"
+                ${confirmed === 'system' ? 'disabled' : ''}
+                title="Kundeneingabe bestätigen"
+              >${checkSvg}</button>
+              ${custValueHtml}
+            </div>
+          </td>
+          <td class="value-cell">
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${row.systemValue !== '–' ? `<button
+                class="confirm-btn ${sysBtnClass}"
+                onclick="confirmSource(${row.id}, 'system', event)"
+                ${confirmed === 'customer' ? 'disabled' : ''}
+                title="Systemwert bestätigen"
+              >${checkSvg}</button>` : ''}
+              ${hasSubRows && !isExpanded ? `<span style="color:#b0bec5;font-size:12px">${row.subRows.length} Werte</span>` : sysValueHtml}
+            </div>
+          </td>
+          <td class="value-cell">
+            <div class="manual-input-wrap${row.confirmedSource ? ' is-disabled' : ''}">
+              <span class="material-symbols-outlined manual-input-icon">edit</span>
+              <input
+                class="manual-input"
+                type="text"
+                value="${row.manuellerWert || ''}"
+                placeholder="Wert eingeben…"
+                oninput="updateManuellerWert(${row.id}, this.value)"
+                onclick="event.stopPropagation()"
+                ${row.confirmedSource ? 'disabled' : ''}
+              />
+            </div>
+          </td>
+          <td class="source-cell">${sourceHtml}</td>
+          <td class="status-td">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;">
+              <div class="status-wrap">
+                <span onclick="toggleStatusDropdown(${row.id}, event)">${statusBadge(st)}</span>
+                <div class="status-dropdown" id="statusDd_${row.id}">
+                  ${['error','confirmed','open','notsure','unknown'].map(s => `
+                    <div class="status-option ${st === s ? 'current' : ''}" onclick="setStatus(${row.id}, '${s}', event)">
+                      ${statusBadge(s)}
+                    </div>`).join('')}
+                </div>
+              </div>
+              ${row.confirmedSource ? `<span class="confirmed-avatar" title="Bestätigt von KH">KH</span>` : ''}
+            </div>
+          </td>
+          <td class="note-cell">
+            <div style="display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;">
+
+              ${isConfirmed ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
+                <button
+                  class="lock-btn ${isLocked ? 'locked' : 'unlocked'}"
+                  onclick="toggleLock(${row.id}, event)"
+                  title="${isLocked ? 'Gesperrt' : 'Entsperrt'}"
+                  style="margin:0"
+                >${isLocked ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>` : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}</button>
+              </span>` : `<span id="lockWrap_${row.id}" style="display:none"></span>`}
+              <button
+                id="historyBtn_${row.id}"
+                class="table-icon-btn history-btn ${(rowHistory[row.id] && rowHistory[row.id].length > 0) ? 'has-history' : ''}"
+                onmouseenter="showHistoryPopover(${row.id}, this)"
+                onmouseleave="hideHistoryPopover()"
+                onclick="event.stopPropagation()"
+                title="Änderungsverlauf"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </button>
+              <button
+                class="table-icon-btn note-btn ${(rowComments[row.id] && rowComments[row.id].length > 0) ? 'has-note' : ''}"
+                onclick="openCommentDrawer(${row.id}, event)"
+                title="Kommentare"
+              >
+                <span class="material-symbols-outlined" style="font-size:15px;letter-spacing:0;line-height:1;">comment</span>
+                ${(rowComments[row.id] && rowComments[row.id].length > 0) ? `<span class="note-dot"></span>` : ''}
+              </button>
+            </div>
+          </td>
+        </tr>`;
+
+      const subRowsHtml = (hasSubRows && isExpanded)
+        ? row.subRows.map(sub => `
+          <tr class="sub-row">
+            <td></td>
+            <td></td>
+            <td class="sub-row-indent">${row.field}</td>
+            <td></td>
+            <td class="sub-row-value">${sub.systemValue}</td>
+            <td></td>
+            <td><a class="source-link" href="#">${sub.source}</a></td>
+            <td></td>
+            <td></td>
+          </tr>`).join('')
+        : '';
+
+      return mainRow + subRowsHtml;
+      }).join('');
+    }
+    tbody.innerHTML = allHtml;
+
+    updateBulkToolbar();
+    updateSelectAll();
+  }
+
+  function toggleRow(id, event) {
+    event.stopPropagation();
+    if (selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+    renderTable();
+  }
+
+  function toggleAll() {
+    const visible = filteredRows();
+    const allSelected = visible.every(r => selectedIds.has(r.id));
+    if (allSelected) visible.forEach(r => selectedIds.delete(r.id));
+    else visible.forEach(r => selectedIds.add(r.id));
+    renderTable();
+  }
+
+  function updateSelectAll() {
+    const visible = filteredRows();
+    const cbAll = document.getElementById('cbAll');
+    const allSelected = visible.length > 0 && visible.every(r => selectedIds.has(r.id));
+    const someSelected = visible.some(r => selectedIds.has(r.id));
+    cbAll.className = 'cb cb-all';
+    if (allSelected) cbAll.className += ' checked';
+    else if (someSelected) cbAll.className += ' partial';
+  }
+
+  function updateBulkToolbar() {
+    const toolbar = document.getElementById('bulkToolbar');
+    const count = selectedIds.size;
+    document.getElementById('selectedCount').textContent = `${count} Zeile${count !== 1 ? 'n' : ''} ausgewählt`;
+    toolbar.className = count > 0 ? 'bulk-toolbar visible' : 'bulk-toolbar';
+  }
+
+  function bulkApplySystemValues() {
+    selectedIds.forEach(id => {
+      const row = rows.find(r => r.id === id);
+      if (row && row.systemValue !== '–') {
+        row.confirmedSource = 'system';
+        row.manuellerWert = row.systemValue;
+        rowStatuses[id] = 'confirmed';
+      }
+    });
+    selectedIds.clear();
+    renderTable();
+    updateCounts();
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    renderTable();
+  }
+
+  function updateCounts() {
+    const counts = { all: rows.length, error: 0, confirmed: 0, notsure: 0, unknown: 0 };
+    rows.forEach(r => { counts[rowStatuses[r.id]]++; });
+
+    // Update filter tab labels
+    const tabs = document.querySelectorAll('.filter-tab');
+    const labels = ['all', 'error', 'confirmed', 'notsure', 'unknown'];
+    const display = ['Alle', 'Prüfen', 'Bestätigt', 'Unsicher', 'Keine angabe'];
+    tabs.forEach((tab, i) => {
+      tab.textContent = `${display[i]} (${counts[labels[i]]})`;
+    });
+
+    // Update progress bar
+    const total = counts.all || 1;
+    const segments = [
+      { key: 'error',     label: 'Prüfen',       cls: 'error' },
+      { key: 'confirmed', label: 'Bestätigt',     cls: 'confirmed' },
+      { key: 'unknown',   label: 'Keine angabe',  cls: 'unknown' },
+      { key: 'notsure',   label: 'Unsicher',      cls: 'notsure' },
+    ];
+
+    const bar = document.getElementById('statusProgressBar');
+    const legend = document.getElementById('progressLegend');
+
+    bar.innerHTML = segments
+      .filter(s => counts[s.key] > 0)
+      .map(s => {
+        const pct = (counts[s.key] / total * 100).toFixed(1);
+        return `<div class="progress-seg progress-seg--${s.cls}" style="width:${pct}%" title="${s.label}: ${counts[s.key]}"></div>`;
+      }).join('');
+
+    legend.innerHTML = segments
+      .filter(s => counts[s.key] > 0)
+      .map(s => `
+        <span class="progress-legend-item" onclick="setFilter('${s.key}', document.querySelector('.filter-tab:nth-child(${labels.indexOf(s.key) + 1})'))" title="${s.label} filtern">
+          <span class="progress-legend-dot progress-legend-dot--${s.cls}"></span>
+          <span class="progress-legend-label">${s.label}</span>
+          <span class="progress-legend-count">${counts[s.key]}</span>
+        </span>`
+      ).join('');
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    selectedIds.clear();
+    renderTable();
+  }
+
+  function setNav(el) {
+    document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function setTab(el) {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ─── VALIDATION MODAL ────────────────────────────────────────────────────
+  function openValidationModal() {
+    const modal = document.getElementById('validationModal');
+    modal.style.display = 'flex';
+    // Force reflow so transition fires
+    modal.offsetHeight;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeValidationModal() {
+    const modal = document.getElementById('validationModal');
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    modal.addEventListener('transitionend', () => {
+      if (!modal.classList.contains('open')) modal.style.display = 'none';
+    }, { once: true });
+  }
+
+  function handleModalOverlayClick(e) {
+    if (e.target === document.getElementById('validationModal')) {
+      closeValidationModal();
+    }
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeValidationModal();
+  });
+
+  function toggleContent(checkbox) {
+    const filterTabs = document.querySelector('.filter-tabs');
+    const tableWrap = document.querySelector('.table-wrap');
+    const bulkToolbar = document.getElementById('bulkToolbar');
+    if (checkbox.checked) {
+      filterTabs.style.display = '';
+      tableWrap.style.display = '';
+    } else {
+      filterTabs.style.display = 'none';
+      tableWrap.style.display = 'none';
+      bulkToolbar.style.display = 'none';
+    }
+  }
+
+  // ─── COMMENT DRAWER ───────────────────────────────────────────────────────
+  let rowComments = {};
+  let activeCommentId = null;
+
+  function openCommentDrawer(id, event) {
+    event.stopPropagation();
+    activeCommentId = id;
+    const row = rows.find(r => r.id === id);
+    document.getElementById('commentDrawerField').textContent = row ? row.field : '';
+    renderCommentThread(id);
+    document.getElementById('commentDrawer').classList.add('open');
+    document.getElementById('commentOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('commentInput').focus(), 50);
+  }
+
+  function closeCommentDrawer() {
+    document.getElementById('commentDrawer').classList.remove('open');
+    document.getElementById('commentOverlay').classList.remove('open');
+    activeCommentId = null;
+  }
+
+  function renderCommentThread(id) {
+    const thread = document.getElementById('commentThread');
+    const comments = rowComments[id] || [];
+    if (comments.length === 0) {
+      thread.innerHTML = '<div class="comment-empty">Noch keine Kommentare</div>';
+      return;
+    }
+    thread.innerHTML = comments.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar">${c.author}</div>
+        <div class="comment-bubble">
+          <div class="comment-meta">
+            <span class="comment-author">${c.author}</span>
+            <span class="comment-time">${c.timestamp}</span>
+          </div>
+          <div class="comment-text">${c.text.replace(/</g,'&lt;')}</div>
+        </div>
+      </div>
+    `).join('');
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function submitComment() {
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (!text || activeCommentId === null) return;
+    const now = new Date();
+    const date = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const timestamp = `${date} · ${time}`;
+    if (!rowComments[activeCommentId]) rowComments[activeCommentId] = [];
+    rowComments[activeCommentId].push({ text, timestamp, author: 'KH' });
+    input.value = '';
+    renderCommentThread(activeCommentId);
+    renderTable();
+  }
+
+  function handleCommentKey(event) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      submitComment();
+    }
+  }
+
+  let openStatusId = null;
+
+  function toggleStatusDropdown(id, event) {
+    event.stopPropagation();
+    const dd = document.getElementById(`statusDd_${id}`);
+    if (!dd) return;
+    const isOpen = dd.classList.contains('open');
+    if (openStatusId !== null) {
+      const prev = document.getElementById(`statusDd_${openStatusId}`);
+      if (prev) prev.classList.remove('open');
+    }
+    if (isOpen) {
+      dd.classList.remove('open');
+      openStatusId = null;
+      document.removeEventListener('mousedown', closeStatusDropdown);
+    } else {
+      dd.classList.add('open');
+      openStatusId = id;
+      setTimeout(() => document.addEventListener('mousedown', closeStatusDropdown), 0);
+    }
+  }
+
+  function closeStatusDropdown(e) {
+    if (openStatusId === null) return;
+    const dd = document.getElementById(`statusDd_${openStatusId}`);
+    if (dd && !dd.contains(e.target)) {
+      dd.classList.remove('open');
+      openStatusId = null;
+      document.removeEventListener('mousedown', closeStatusDropdown);
+    }
+  }
+
+  function setStatus(id, status, event) {
+    event.stopPropagation();
+    const statusLabels = { error: 'Prüfen', confirmed: 'Bestätigt', notsure: 'Unsicher', unknown: 'Keine angabe' };
+    logChange(id, `Status gesetzt: ${statusLabels[status] || status}`);
+    rowStatuses[id] = status;
+    openStatusId = null;
+    document.removeEventListener('mousedown', closeStatusDropdown);
+    renderTable();
+    updateCounts();
+  }
+
+  function toggleLock(id, event) {
+    event.stopPropagation();
+    if (lockedRows.has(id)) {
+      lockedRows.delete(id);
+      logChange(id, 'Zeile entsperrt');
+    } else {
+      lockedRows.add(id);
+      logChange(id, 'Zeile gesperrt');
+    }
+    renderTable();
+  }
+
+  function confirmSource(id, source, event) {
+    event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+    // Toggle: clicking the active button deselects
+    if (row.confirmedSource === source) {
+      row.confirmedSource = null;
+      logChange(id, 'Bestätigung aufgehoben');
+    } else {
+      row.confirmedSource = source;
+      // Auto-fill Manueller Wert with confirmed value
+      const val = source === 'customer' ? row.customerInput : row.systemValue;
+      if (val !== '–') row.manuellerWert = val;
+      rowStatuses[id] = 'confirmed';
+      lockedRows.add(id);
+      const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
+      logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
+    }
+    if (!row.confirmedSource) {
+      lockedRows.delete(id);
+      rowStatuses[id] = computeStatus(row);
+    }
+    renderTable();
+    updateCounts();
+  }
+
+  function updateManuellerWert(id, val) {
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+    row.manuellerWert = val;
+    const lockWrap = document.getElementById(`lockWrap_${id}`);
+    const show = val.trim().length > 0;
+    if (lockWrap) lockWrap.style.display = show ? 'inline-flex' : 'none';
+    if (show) manuallyEditedRows.add(id);
+    else manuallyEditedRows.delete(id);
+    // Debounced history log (only record after 800ms of no typing)
+    clearTimeout(manuellerWertDebounce[id]);
+    manuellerWertDebounce[id] = setTimeout(() => {
+      if (val.trim().length > 0) {
+        logChange(id, `Manueller Wert gesetzt: „${val}"`);
+      } else {
+        logChange(id, 'Manueller Wert geleert');
+      }
+    }, 800);
+  }
+
+  function applySystemValue(id, event) {
+    event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row || row.systemValue === '–') return;
+    row.manuellerWert = row.systemValue;
+    renderTable();
+  }
+
+  function syncStatus(row) {
+    if (row.manuellerWert && row.manuellerWert !== '–' && row.manuellerWert === row.systemValue) {
+      rowStatuses[row.id] = 'confirmed';
+    }
+  }
+
+  function toggleGroup(gk) {
+    if (collapsedGroups.has(gk)) collapsedGroups.delete(gk);
+    else collapsedGroups.add(gk);
+    renderTable();
+  }
+
+  function toggleExpand(id, event) {
+    event.stopPropagation();
+    if (expandedRows.has(id)) expandedRows.delete(id);
+    else expandedRows.add(id);
+    renderTable();
+  }
+
+  function sortBy(col) { renderTable(); }
+
+  // ─── 3-DOT MENU ──────────────────────────────────────────────────────────
+  const pflichtfelder_set = new Set(['Vorname', 'Nachname', 'Geburtsdatum', 'Monatliches Einkommen', 'Postleitzahl', 'Stadt']);
+  const angebot_felder = new Set(['Vorname', 'Nachname', 'Monatliches Einkommen', 'Staatsangehörigkeit', 'Postleitzahl', 'Stadt', 'Beschäftigungsart']);
+
+  let antragsphase = 'alle';
+  let pflichtfelder = 'nein';
+
+  function toggleDotMenu() {
+    const btn = document.getElementById('dotMenuBtn');
+    const dd  = document.getElementById('dotDropdown');
+    const isOpen = dd.classList.contains('open');
+    dd.classList.toggle('open');
+    btn.classList.toggle('open');
+    if (!isOpen) {
+      setTimeout(() => document.addEventListener('mousedown', closeDotMenuOutside), 0);
+    }
+  }
+
+  function closeDotMenuOutside(e) {
+    if (!e.target.closest('.dot-menu-wrap')) {
+      document.getElementById('dotDropdown').classList.remove('open');
+      document.getElementById('dotMenuBtn').classList.remove('open');
+      document.removeEventListener('mousedown', closeDotMenuOutside);
+    }
+  }
+
+  function setAntragsphase(val) {
+    antragsphase = val;
+    updatePills();
+    renderTable();
+  }
+
+  function setPflichtfelder(val) {
+    pflichtfelder = val;
+    updatePills();
+    renderTable();
+  }
+
+  function updatePills() {
+    const wrap = document.getElementById('activePills');
+    const pills = [];
+    if (antragsphase !== 'alle') {
+      const labels = { angebot: 'Angebot erstellen', einreichen: 'Antrag einreichen' };
+      pills.push(`
+        <span class="active-pill">
+          ${labels[antragsphase]}
+          <span class="pill-remove" onclick="resetAntragsphase()" title="Zurücksetzen">×</span>
+        </span>`);
+    }
+    if (pflichtfelder === 'ja') {
+      pills.push(`
+        <span class="active-pill">
+          Pflichtfelder
+          <span class="pill-remove" onclick="resetPflichtfelder()" title="Zurücksetzen">×</span>
+        </span>`);
+    }
+    wrap.innerHTML = pills.join('');
+  }
+
+  function resetAntragsphase() {
+    antragsphase = 'alle';
+    document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;
+    updatePills();
+    renderTable();
+  }
+
+  function resetPflichtfelder() {
+    pflichtfelder = 'nein';
+    document.querySelector('input[name="pflichtfelder"][value="nein"]').checked = true;
+    updatePills();
+    renderTable();
+  }
+
+
+  // Initial render
+  renderTable();
+</script>
+</body>
+</html>

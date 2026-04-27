@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mortgage Hub – Angebotssuche V2</title>
+  <title>Mortgage Hub – Angebotssuche V3</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -27,7 +27,7 @@
       display: flex !important;
       flex-direction: column !important;
       overflow: hidden !important;
-      padding: 0 !important;
+      padding: 0 var(--space-m) !important;
       flex: 1 !important;
       min-height: 0 !important;
     }
@@ -39,7 +39,7 @@
       background: var(--color-neutral-light-200);
       border-bottom: 1px solid var(--color-neutral-light-500);
       flex-shrink: 0;
-      padding: var(--space-m) var(--space-l);
+      padding: var(--space-s) var(--space-l) var(--space-m);
       display: flex;
       flex-direction: column;
       gap: var(--space-s);
@@ -171,6 +171,50 @@
       white-space: nowrap;
     }
     .v2-add-loan-btn:hover { background: var(--color-primary-100); }
+
+    /* ============================================================
+       V3 HORIZONTAL SUBNAV
+    ============================================================ */
+    .v3-subnav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-m) 0 var(--space-s);
+      flex-shrink: 0;
+    }
+
+    .v3-subnav-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px var(--space-m);
+      border: none;
+      border-radius: var(--radius-s);
+      background: transparent;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-400);
+      cursor: pointer;
+      transition: color var(--transition-base);
+      white-space: nowrap;
+    }
+
+    .v3-subnav-btn:hover {
+      color: var(--color-neutral-dark-800);
+    }
+
+    .v3-subnav-btn.active {
+      color: var(--color-primary-600);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .v3-subnav-chevron {
+      font-size: 16px;
+      color: var(--color-neutral-dark-200);
+      margin: 0 var(--space-xs);
+      user-select: none;
+      flex-shrink: 0;
+    }
 
     /* ============================================================
        V2 BODY — horizontal split: step nav | step content
@@ -598,6 +642,353 @@
       flex-direction: column;
       gap: var(--space-s);
     }
+
+    /* ============================================================
+       EI3 OUTER CARD — single integrated panel
+    ============================================================ */
+    #step-3 {
+      flex: 1 !important;
+      display: flex !important;
+      padding: var(--space-m);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .ei3-outer-card {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m);
+      background: var(--color-neutral-light-000);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .ei3-card-header {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+    }
+
+    .ei3-header-top {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+    }
+
+    .ei3-header-title {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+
+    .ei3-header-spacer { flex: 1; }
+
+    .ei3-info-line {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-300);
+    }
+    .ei3-info-line .material-symbols-outlined {
+      font-size: 14px;
+      color: var(--color-info);
+      flex-shrink: 0;
+    }
+
+    .ei3-card-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Sidebar inside card */
+    .ei3-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--color-neutral-light-100);
+      border-right: 1px solid var(--color-neutral-light-500);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-s) var(--space-xs);
+      gap: var(--space-s);
+    }
+
+    /* Compact nav overrides for sidebar inside card */
+    .ei3-sidebar .ei2-nav-group-header {
+      min-height: 30px;
+      padding: 6px var(--space-xs);
+      font-size: var(--h3-size);
+      font-weight: var(--h3-weight);
+      line-height: var(--h3-line-height);
+      letter-spacing: var(--h3-spacing);
+      color: var(--color-neutral-dark-900);
+    }
+    .ei3-sidebar .ei2-nav-group-icon { font-size: 15px; }
+    .ei3-sidebar .ei2-nav-chevron    { font-size: 15px; }
+    .ei3-sidebar .ei2-nav-subitems   { padding-left: 12px; }
+    .ei3-sidebar .ei2-nav-subitem {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--body-regular-line-height);
+      letter-spacing: var(--body-regular-spacing);
+      padding: 11px 6px 11px 16px;
+      color: var(--color-neutral-dark-400);
+    }
+    .ei3-sidebar .ei2-nav-dot  { width: 7px; height: 7px; }
+    .ei3-sidebar .ei2-step-icon { font-size: 14px; }
+    .ei3-sidebar .ei2-nav-subitem--active { border-radius: 0; }
+
+    /* Content area inside card */
+    .ei3-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-m);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-s);
+      min-height: 0;
+    }
+
+    /* ============================================================
+       COMPACT HEADER COMPONENT
+    ============================================================ */
+    .ch-top-row {
+      display: flex;
+      align-items: stretch;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      background: var(--color-neutral-light-100);
+    }
+
+    /* Shared card surface */
+    .ch-person-card,
+    .ch-prop-tab,
+    .ch-action-btn,
+    .ch-icon-btn {
+      background: var(--color-neutral-light-000);
+      border: 0.5px solid rgba(0,0,0,0.18);
+      border-radius: var(--radius-m);
+      box-shadow: var(--shadow-xs);
+    }
+
+    /* ---- Person card ---- */
+    .ch-person-card {
+      flex-shrink: 0;
+      min-width: 220px;
+      overflow: hidden;
+    }
+    .ch-person-trigger {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      cursor: pointer;
+      user-select: none;
+    }
+    .ch-person-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .ch-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-s);
+    }
+    .ch-name {
+      font-family: var(--font-family);
+      font-size: var(--h4-size);
+      font-weight: var(--h4-weight);
+      color: var(--color-neutral-dark-900);
+      white-space: nowrap;
+    }
+    .ch-antrag {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      white-space: nowrap;
+    }
+    .ch-amount {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+    }
+    .ch-chevron {
+      font-size: 20px;
+      color: var(--color-neutral-dark-200);
+      transition: transform var(--transition-slow);
+      flex-shrink: 0;
+    }
+    .ch-chevron.rotated { transform: rotate(180deg); }
+
+    /* Expandable body */
+    .ch-expand-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-slow);
+      padding: 0 var(--space-m);
+    }
+
+    /* Tags inside expand */
+    .ch-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      padding-top: var(--space-xs);
+      padding-bottom: var(--space-s);
+    }
+    .ch-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px var(--space-s);
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+    }
+    .ch-tag--orange { background: var(--color-warning-high-light); color: var(--color-warning-high); }
+    .ch-tag--blue   { background: var(--color-info-light);         color: var(--color-info); }
+    .ch-tag--purple { background: var(--color-purple-light);       color: #9B3DBD; }
+    .ch-tag--red    { background: var(--color-error-100);          color: var(--color-error-600); }
+    .ch-tag-x {
+      background: none; border: none; cursor: pointer;
+      color: inherit; padding: 0 1px;
+      font-size: 13px; line-height: 1;
+    }
+    .ch-tag-add {
+      background: none; border: none; cursor: pointer;
+      color: var(--color-primary-500);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      padding: 2px var(--space-xs);
+    }
+    .ch-tag-add:hover { text-decoration: underline; }
+
+    /* ---- Property tabs ---- */
+    .ch-prop-tabs {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-s);
+      flex-shrink: 0;
+    }
+    .ch-prop-tab {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: var(--space-s) var(--space-m);
+      cursor: pointer;
+      font-family: var(--font-family);
+      transition: box-shadow var(--transition-base);
+      white-space: nowrap;
+    }
+    .ch-prop-tab:hover:not(.ch-prop-tab--active) { box-shadow: var(--shadow-s); }
+    .ch-prop-tab--active {
+      background: #185FA5;
+      border-color: #185FA5;
+    }
+    .ch-prop-label {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      margin-bottom: 2px;
+    }
+    .ch-prop-main {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .ch-prop-value {
+      font-size: var(--h4-size);
+      font-weight: var(--h4-weight);
+      color: var(--color-neutral-dark-900);
+      white-space: nowrap;
+    }
+    .ch-prop-sub {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      white-space: nowrap;
+    }
+    .ch-prop-tab--active .ch-prop-label,
+    .ch-prop-tab--active .ch-prop-sub  { color: rgba(255,255,255,0.75); }
+    .ch-prop-tab--active .ch-prop-value { color: #fff; }
+
+    /* + button with tooltip */
+    .ch-prop-add-wrap {
+      position: relative;
+      align-self: center;
+    }
+    .ch-tooltip {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-neutral-dark-900);
+      color: #fff;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      padding: 4px var(--space-s);
+      border-radius: var(--radius-s);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-base);
+      z-index: var(--z-raised);
+    }
+    .ch-prop-add-wrap:hover .ch-tooltip { opacity: 1; }
+
+    /* ---- Action buttons ---- */
+    .ch-actions {
+      display: flex;
+      gap: var(--space-s);
+      align-items: flex-start;
+      flex-shrink: 0;
+      margin-left: auto;
+      align-self: flex-start;
+    }
+    .ch-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      height: 36px;
+      padding: 0 var(--space-m);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-800);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: box-shadow var(--transition-base);
+    }
+    .ch-action-btn:hover { box-shadow: var(--shadow-s); }
+    .ch-action-btn .material-symbols-outlined { font-size: 18px; }
+    .ch-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      cursor: pointer;
+      color: var(--color-neutral-dark-800);
+      transition: box-shadow var(--transition-base);
+    }
+    .ch-icon-btn:hover { box-shadow: var(--shadow-s); }
+    .ch-icon-btn .material-symbols-outlined { font-size: 20px; }
+
+    /* Tab strip spacing + active override */
+    .tab-bar .tab {
+      padding-top: var(--space-xs);
+    }
+    .tab-bar .tab.active {
+      font-weight: var(--font-weight-medium);
+      color: #185FA5;
+      border-bottom: 2px solid #185FA5;
+    }
   </style>
 </head>
 <body>
@@ -715,70 +1106,75 @@
 <!-- CASE SHELL -->
       <div class="case-shell">
 
-        <!-- Row 1: Client name + actions -->
-        <div class="case-header">
-          <div class="case-header-left">
-            <span class="case-header-name">Frau Karina Hoffmann</span>
-            <span class="case-header-amount">296.280,00 €</span>
-            <span class="case-header-sep">|</span>
-            <span class="case-header-number">Antragsnummer: 592 317</span>
+        <!-- Compact expandable header -->
+        <div class="ch-top-row">
+
+          <!-- 1. Person card -->
+          <div class="ch-person-card" id="ch-person-card">
+            <div class="ch-person-trigger" onclick="chToggle()" aria-expanded="true" aria-controls="ch-body">
+              <div class="ch-person-info">
+                <div class="ch-name-row">
+                  <span class="ch-name">Frau Erika Mustermann</span>
+                  <span class="ch-antrag">Antrag 568 484</span>
+                </div>
+                <span class="ch-amount">267.437,50 €</span>
+              </div>
+              <span class="material-symbols-outlined ch-chevron rotated" id="ch-chevron">expand_more</span>
+            </div>
+            <div class="ch-expand-body" id="ch-body">
+              <div class="ch-tags">
+                <span class="ch-tag ch-tag--orange">&gt;100% Finanzierungsauslauf</span>
+                <span class="ch-tag ch-tag--blue">ING <button class="ch-tag-x" aria-label="Entfernen">×</button></span>
+                <span class="ch-tag ch-tag--purple">Urlaubsvertretung <button class="ch-tag-x" aria-label="Entfernen">×</button></span>
+                <span class="ch-tag ch-tag--red">neg <button class="ch-tag-x" aria-label="Entfernen">×</button></span>
+                <button class="ch-tag-add">+ Tag hinzufügen</button>
+              </div>
+            </div>
           </div>
-          <div class="case-header-actions">
-            <button class="case-header-btn">
+
+          <!-- 2. Property tabs + add button -->
+          <div class="ch-prop-tabs" role="group" aria-label="Objekte">
+            <button class="ch-prop-tab ch-prop-tab--active" onclick="chSetProp(this)" data-prop="1">
+              <div class="ch-prop-main">
+                <span class="ch-prop-value">Leukertsweg 34</span>
+                <span class="ch-prop-sub">Kauf · Sep. 2025</span>
+              </div>
+            </button>
+            <button class="ch-prop-tab" onclick="chSetProp(this)" data-prop="2">
+              <div class="ch-prop-main">
+                <span class="ch-prop-value">Modernisierung</span>
+                <span class="ch-prop-sub">Apr. 2026</span>
+              </div>
+            </button>
+            <div class="ch-prop-add-wrap">
+              <button class="ch-icon-btn" aria-label="Antrag kopieren">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+              <div class="ch-tooltip" role="tooltip">Antrag kopieren</div>
+            </div>
+          </div>
+
+          <!-- 3. Action buttons -->
+          <div class="ch-actions">
+            <button class="ch-action-btn">
               <span class="material-symbols-outlined">grid_view</span>
               Finanzierungs-Assistent
             </button>
-            <button class="case-header-btn">
-              <span class="material-symbols-outlined">open_in_new</span>
+            <button class="ch-action-btn">
+              <span class="material-symbols-outlined">person</span>
               Kundensicht
             </button>
-            <button class="topbar-icon-btn" aria-label="Mehr Optionen">
+            <button class="ch-icon-btn" aria-label="Mehr Optionen">
               <span class="material-symbols-outlined">more_horiz</span>
             </button>
-            <button class="topbar-icon-btn" aria-label="Vollbild">
+            <button class="ch-icon-btn" aria-label="Vollbild">
               <span class="material-symbols-outlined">open_in_full</span>
             </button>
           </div>
-        </div>
 
-        <!-- Row 2: Tags -->
-        <div class="case-tags">
-          <span class="case-tag case-tag-blue">
-            <span class="material-symbols-outlined">home</span>
-            Immobilie gefunden
-          </span>
-          <span class="case-tag case-tag-outline">
-            <span class="material-symbols-outlined">monitor</span>
-            Antragsstrecke: LoanLink24 Mortgage GmbH
-          </span>
-          <span class="case-tag case-tag-removable case-tag-removable-blue">
-            blue card1
-            <button class="case-tag-remove" aria-label="Entfernen">×</button>
-          </span>
-          <span class="case-tag case-tag-removable case-tag-removable-red">
-            practice
-            <button class="case-tag-remove" aria-label="Entfernen">×</button>
-          </span>
-          <button class="case-tag-add">
-            <span class="material-symbols-outlined">add</span>
-            Tag hinzufügen
-          </button>
-        </div>
+        </div><!-- /.ch-top-row -->
 
-        <!-- Row 3: Loan info -->
-        <div class="case-loan">
-          <span class="case-loan-label">Kauf einer bestehenden Immobilie, März 2026</span>
-          <div class="case-loan-center">
-            <span class="case-loan-pill">
-              Kauf einer bestehenden Immobilie, März 2026
-              <span class="material-symbols-outlined case-loan-pill-icon">edit</span>
-              <span class="material-symbols-outlined case-loan-pill-icon teal">visibility</span>
-            </span>
-          </div>
-          <button class="case-loan-link">+ Antrag kopieren</button>
-        </div>
-
-        <!-- Row 4: Tab bar -->
+        <!-- Tab bar -->
         <div class="tab-nav">
           <div class="tab-bar" role="tablist">
             <button class="tab" role="tab" onclick="setTab(this)">Übersicht</button>
@@ -801,52 +1197,21 @@
       <div class="content">
         <div class="content-inner">
 
+          <!-- Horizontal subnav — lives in content so it sits inline with card headers -->
+          <div class="v3-subnav">
+            <button class="v3-subnav-btn active" id="v3-nav-1" onclick="goToStep(1)">Suche</button>
+            <span class="v3-subnav-chevron material-symbols-outlined">chevron_right</span>
+            <button class="v3-subnav-btn" id="v3-nav-2" onclick="goToStep(2)">Angebote (3)</button>
+            <span class="v3-subnav-chevron material-symbols-outlined">chevron_right</span>
+            <button class="v3-subnav-btn" id="v3-nav-3" onclick="goToStep(3)">Einreichung – Commerzbank</button>
+          </div>
+
           <!-- ================================================
                V2 BODY — vertical step nav | step content
           ================================================ -->
           <div class="v2-body">
 
-            <!-- Left: Vertical step navigation -->
-            <nav class="v2-step-nav" aria-label="Prozessschritte">
-
-              <div class="v2-step-item v2-step-item--active" id="v2-step-1" onclick="goToStep(1)" aria-current="step">
-                <div class="v2-step-circle">
-                  <span class="material-symbols-outlined">star</span>
-                </div>
-                <div class="v2-step-info">
-                  <span class="v2-step-label">Suche</span>
-                  <span class="v2-step-sub" id="v2-step-1-sub">12 Treffer</span>
-                </div>
-                <span class="v2-step-tooltip">Angebotssuche</span>
-              </div>
-
-              <div class="v2-step-connector"></div>
-
-              <div class="v2-step-item v2-step-item--idle" id="v2-step-2" onclick="goToStep(2)">
-                <div class="v2-step-circle">
-                  <span class="material-symbols-outlined">euro</span>
-                </div>
-                <div class="v2-step-info">
-                  <span class="v2-step-label">Angebote</span>
-                </div>
-                <span class="v2-step-tooltip">Erstellte Angebote</span>
-              </div>
-
-              <div class="v2-step-connector"></div>
-
-              <div class="v2-step-item v2-step-item--idle" id="v2-step-3" onclick="goToStep(3)">
-                <div class="v2-step-circle">
-                  <span class="material-symbols-outlined">send</span>
-                </div>
-                <div class="v2-step-info">
-                  <span class="v2-step-label">Einreichung</span>
-                </div>
-                <span class="v2-step-tooltip">Einreichung</span>
-              </div>
-
-            </nav><!-- /.v2-step-nav -->
-
-            <!-- Right: Step content -->
+            <!-- Step content -->
             <div class="v2-step-content">
 
               <!-- STEP 1: Search parameters + results table -->
@@ -992,146 +1357,133 @@
 
               <!-- STEP 3: Einreichung -->
               <section id="step-3" style="display:none;">
+                <div class="ei3-outer-card">
 
-                <!-- EI2 HEADER — Component 1 of redesign -->
-                <!--
-                  Variable states for .ei2-status-tag:
-                    ei2-status-tag--eingereicht   → blue  (submitted to bank)
-                    ei2-status-tag--in-pruefung   → orange (bank reviewing)
-                    ei2-status-tag--genehmigt     → green (Finanzierung genehmigt)
-
-                  Variable: .ei2-header-bank text = bank name (e.g. Commerzbank, Sparkasse)
-                -->
-                <div class="ei2-header">
-                  <button class="ei2-back-btn" onclick="goToStep(1)" aria-label="Zurück zur Angebotssuche">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                  </button>
-                  <span class="ei2-header-label">Einreichung</span>
-                  <span class="ei2-header-sep">—</span>
-                  <span class="ei2-header-bank">Commerzbank</span>
-                  <span class="ei2-status-tag ei2-status-tag--eingereicht">
-                    <span class="ei2-status-dot"></span>
-                    Eingereicht
-                  </span>
-                  <div class="ei2-header-spacer"></div>
-                  <button class="ei2-status-btn">
-                    <span class="material-symbols-outlined">expand_more</span>
-                    Status ändern
-                  </button>
-                </div>
-
-                <div class="ei2-body">
-
-                  <!-- ── Side navigation ── -->
-                  <nav class="ei2-sidenav" aria-label="Einreichungsabschnitte">
-
-                    <!-- Group 1: Finanzierungsdetails (open by default) -->
-                    <div class="ei2-nav-group">
-                      <button class="ei2-nav-group-header ei2-nav-group-header--open" data-ei-group="finanzierung" onclick="toggleEiGroup('finanzierung')">
-                        <span class="material-symbols-outlined ei2-nav-group-icon">euro</span>
-                        <span class="ei2-nav-group-label">Finanzierungsdetails</span>
-                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                  <!-- Card header -->
+                  <div class="ei3-card-header">
+                    <div class="ei3-header-top">
+                      <span class="ei3-header-title">Einreichung – Commerzbank</span>
+                      <span class="ei2-status-tag ei2-status-tag--eingereicht">
+                        <span class="ei2-status-dot"></span>
+                        Eingereicht
+                      </span>
+                      <div class="ei3-header-spacer"></div>
+                      <button class="ei2-status-btn">
+                        <span class="material-symbols-outlined">expand_more</span>
+                        Status ändern
                       </button>
-                      <div class="ei2-nav-subitems" id="ei2-subitems-finanzierung">
-                        <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-machbarkeit" onclick="scrollToEiCard('finanzierung','ei2c-machbarkeit')">
-                          <span class="ei2-nav-subitem-label">Machbarkeit</span>
-                          <span class="ei2-nav-dot ei2-nav-dot--success"></span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-kapital" onclick="scrollToEiCard('finanzierung','ei2c-kapital')">
-                          <span class="ei2-nav-subitem-label">Kapitaldienstrechnung</span>
-                          <span class="ei2-nav-dot ei2-nav-dot--warning"></span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-zinsen" onclick="scrollToEiCard('finanzierung','ei2c-zinsen')">
-                          <span class="ei2-nav-subitem-label">Zinssensitivierung</span>
-                          <span class="ei2-nav-dot ei2-nav-dot--success"></span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-tilgung" onclick="scrollToEiCard('finanzierung','ei2c-tilgung')">
-                          <span class="ei2-nav-subitem-label">Tilgungsplan</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-margen" onclick="scrollToEiCard('finanzierung','ei2c-margen')">
-                          <span class="ei2-nav-subitem-label">Margenparameter</span>
-                        </button>
-                      </div>
                     </div>
-
-                    <!-- Group 2: Produkt – Sparkasse -->
-                    <div class="ei2-nav-group">
-                      <button class="ei2-nav-group-header" data-ei-group="sparkasse" onclick="toggleEiGroup('sparkasse')">
-                        <span class="material-symbols-outlined ei2-nav-group-icon">desktop_windows</span>
-                        <span class="ei2-nav-group-label">Produkt – Sparkasse</span>
-                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
-                      </button>
-                      <div class="ei2-nav-subitems" id="ei2-subitems-sparkasse" style="display:none;">
-                        <button class="ei2-nav-subitem" data-card="ei2c-sp-immobilien" onclick="scrollToEiCard('sparkasse','ei2c-sp-immobilien')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
-                          <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-sp-prescoring" onclick="scrollToEiCard('sparkasse','ei2c-sp-prescoring')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
-                          <span class="ei2-nav-subitem-label">Prescoring</span>
-                        </button>
-                        <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-sp-dokumente" onclick="scrollToEiCard('sparkasse','ei2c-sp-dokumente')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--current">radio_button_checked</span>
-                          <span class="ei2-nav-subitem-label">Dokumente</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-sp-email" onclick="scrollToEiCard('sparkasse','ei2c-sp-email')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Einreichungsemail</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-sp-pruefung" onclick="scrollToEiCard('sparkasse','ei2c-sp-pruefung')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Group 3: Produkt – Hanseatic -->
-                    <div class="ei2-nav-group">
-                      <button class="ei2-nav-group-header" data-ei-group="hanseatic" onclick="toggleEiGroup('hanseatic')">
-                        <span class="material-symbols-outlined ei2-nav-group-icon">desktop_windows</span>
-                        <span class="ei2-nav-group-label">Produkt – Hanseatic</span>
-                        <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
-                      </button>
-                      <div class="ei2-nav-subitems" id="ei2-subitems-hanseatic" style="display:none;">
-                        <button class="ei2-nav-subitem" data-card="ei2c-ha-immobilien" onclick="scrollToEiCard('hanseatic','ei2c-ha-immobilien')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-ha-prescoring" onclick="scrollToEiCard('hanseatic','ei2c-ha-prescoring')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Prescoring</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-ha-dokumente" onclick="scrollToEiCard('hanseatic','ei2c-ha-dokumente')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Dokumente</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-ha-email" onclick="scrollToEiCard('hanseatic','ei2c-ha-email')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Einreichungsemail</span>
-                        </button>
-                        <button class="ei2-nav-subitem" data-card="ei2c-ha-pruefung" onclick="scrollToEiCard('hanseatic','ei2c-ha-pruefung')">
-                          <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
-                          <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
-                        </button>
-                      </div>
-                    </div>
-
-                  </nav><!-- /.ei2-sidenav -->
-
-                  <!-- ── Content column (banner + cards) ── -->
-                  <div class="ei2-content-col">
-
-                  <!-- Info banner — visible when status = Eingereicht -->
-                  <div class="ei2-info-banner" id="ei2-info-banner">
-                    <span class="material-symbols-outlined">info</span>
-                    Paket an Bank eingereicht am 13.10.25, 10:20. Warte auf Bank-Antwort.
                   </div>
 
-                  <!-- Cards -->
-                  <div class="ei2-content" id="ei2-content-area">
+                  <!-- Card body: sidebar + content -->
+                  <div class="ei3-card-body">
+
+                    <!-- Sidebar -->
+                    <nav class="ei3-sidebar" aria-label="Einreichungsabschnitte">
+
+                      <!-- Group 1: Finanzierungsdetails (open by default) -->
+                      <div class="ei2-nav-group">
+                        <button class="ei2-nav-group-header ei2-nav-group-header--open" data-ei-group="finanzierung" onclick="toggleEiGroup('finanzierung')">
+                          <span class="material-symbols-outlined ei2-nav-group-icon">euro</span>
+                          <span class="ei2-nav-group-label">Finanzierungsdetails</span>
+                          <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                        </button>
+                        <div class="ei2-nav-subitems" id="ei2-subitems-finanzierung">
+                          <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-machbarkeit" onclick="scrollToEiCard('finanzierung','ei2c-machbarkeit')">
+                            <span class="ei2-nav-subitem-label">Machbarkeit</span>
+                            <span class="ei2-nav-dot ei2-nav-dot--success"></span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-kapital" onclick="scrollToEiCard('finanzierung','ei2c-kapital')">
+                            <span class="ei2-nav-subitem-label">Kapitaldienstrechnung</span>
+                            <span class="ei2-nav-dot ei2-nav-dot--warning"></span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-zinsen" onclick="scrollToEiCard('finanzierung','ei2c-zinsen')">
+                            <span class="ei2-nav-subitem-label">Zinssensitivierung</span>
+                            <span class="ei2-nav-dot ei2-nav-dot--success"></span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-tilgung" onclick="scrollToEiCard('finanzierung','ei2c-tilgung')">
+                            <span class="ei2-nav-subitem-label">Tilgungsplan</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-margen" onclick="scrollToEiCard('finanzierung','ei2c-margen')">
+                            <span class="ei2-nav-subitem-label">Margenparameter</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Group 2: Produkt – Sparkasse -->
+                      <div class="ei2-nav-group">
+                        <button class="ei2-nav-group-header" data-ei-group="sparkasse" onclick="toggleEiGroup('sparkasse')">
+                          <span class="material-symbols-outlined ei2-nav-group-icon">inventory_2</span>
+                          <span class="ei2-nav-group-label">Produkt – Sparkasse</span>
+                          <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                        </button>
+                        <div class="ei2-nav-subitems" id="ei2-subitems-sparkasse" style="display:none;">
+                          <button class="ei2-nav-subitem" data-card="ei2c-sp-immobilien" onclick="scrollToEiCard('sparkasse','ei2c-sp-immobilien')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                            <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-sp-prescoring" onclick="scrollToEiCard('sparkasse','ei2c-sp-prescoring')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--done">check_circle</span>
+                            <span class="ei2-nav-subitem-label">Prescoring</span>
+                          </button>
+                          <button class="ei2-nav-subitem ei2-nav-subitem--active" data-card="ei2c-sp-dokumente" onclick="scrollToEiCard('sparkasse','ei2c-sp-dokumente')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--current">radio_button_checked</span>
+                            <span class="ei2-nav-subitem-label">Dokumente</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-sp-email" onclick="scrollToEiCard('sparkasse','ei2c-sp-email')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Einreichungsemail</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-sp-pruefung" onclick="scrollToEiCard('sparkasse','ei2c-sp-pruefung')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Group 3: Produkt – Hanseatic -->
+                      <div class="ei2-nav-group">
+                        <button class="ei2-nav-group-header" data-ei-group="hanseatic" onclick="toggleEiGroup('hanseatic')">
+                          <span class="material-symbols-outlined ei2-nav-group-icon">inventory_2</span>
+                          <span class="ei2-nav-group-label">Produkt – Hanseatic</span>
+                          <span class="material-symbols-outlined ei2-nav-chevron">expand_more</span>
+                        </button>
+                        <div class="ei2-nav-subitems" id="ei2-subitems-hanseatic" style="display:none;">
+                          <button class="ei2-nav-subitem" data-card="ei2c-ha-immobilien" onclick="scrollToEiCard('hanseatic','ei2c-ha-immobilien')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Immobilienbewertung</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-ha-prescoring" onclick="scrollToEiCard('hanseatic','ei2c-ha-prescoring')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Prescoring</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-ha-dokumente" onclick="scrollToEiCard('hanseatic','ei2c-ha-dokumente')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Dokumente</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-ha-email" onclick="scrollToEiCard('hanseatic','ei2c-ha-email')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Einreichungsemail</span>
+                          </button>
+                          <button class="ei2-nav-subitem" data-card="ei2c-ha-pruefung" onclick="scrollToEiCard('hanseatic','ei2c-ha-pruefung')">
+                            <span class="material-symbols-outlined ei2-step-icon ei2-step-icon--idle">radio_button_unchecked</span>
+                            <span class="ei2-nav-subitem-label">Prüfungshistorie</span>
+                          </button>
+                        </div>
+                      </div>
+
+                    </nav><!-- /.ei3-sidebar -->
+
+                    <!-- Content area -->
+                    <div class="ei3-content" id="ei2-content-area">
 
                     <!-- SECTION: Finanzierungsdetails (shown by default, all cards collapsed) -->
                     <div id="ei2-section-finanzierung">
+
+                      <div class="ei3-info-line" style="margin-bottom: var(--space-xs);">
+                        <span class="material-symbols-outlined">info</span>
+                        Paket an Bank eingereicht am 13.10.25, 10:20. Warte auf Bank-Antwort.
+                      </div>
 
                       <div class="ei-card" id="ei2c-machbarkeit">
                         <button class="ei-card-header" onclick="toggleCard(this)" aria-expanded="false">
@@ -1408,11 +1760,11 @@
 
                     </div><!-- /#ei2-section-hanseatic -->
 
-                  </div><!-- /.ei2-content -->
+                    </div><!-- /.ei3-content -->
 
-                  </div><!-- /.ei2-content-col -->
+                  </div><!-- /.ei3-card-body -->
 
-                </div><!-- /.ei2-body -->
+                </div><!-- /.ei3-outer-card -->
 
               </section><!-- /#step-3 -->
 
@@ -1427,6 +1779,69 @@
   </div><!-- /.app -->
 
   <script>
+    /* ---- Compact Header component ---- */
+    var chState = { expanded: true, interactionCount: 0, manuallyReopened: false };
+
+    function chApply(open) {
+      var body = document.getElementById('ch-body');
+      var chevron = document.getElementById('ch-chevron');
+      if (!body || !chevron) return;
+      if (open) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        chevron.classList.add('rotated');
+        body.setAttribute('aria-hidden', 'false');
+      } else {
+        body.style.maxHeight = '0';
+        chevron.classList.remove('rotated');
+        body.setAttribute('aria-hidden', 'true');
+      }
+      chState.expanded = open;
+    }
+
+    function chToggle() {
+      var opening = !chState.expanded;
+      if (opening) { chState.manuallyReopened = true; }
+      chApply(opening);
+    }
+
+    function chAutoCollapse() {
+      if (!chState.manuallyReopened && chState.expanded) {
+        chApply(false);
+      }
+    }
+
+    function chSetProp(btn) {
+      document.querySelectorAll('.ch-prop-tab').forEach(function(t) {
+        t.classList.remove('ch-prop-tab--active');
+      });
+      btn.classList.add('ch-prop-tab--active');
+      chTrackInteraction();
+    }
+
+    function chTrackInteraction() {
+      if (chState.manuallyReopened) return;
+      chAutoCollapse();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      chApply(true);
+
+      // Scroll on any scrollable ancestor collapses the header
+      function onScroll(e) {
+        var el = e.target;
+        var scrollY = (el === document || el === window || el === document.documentElement || el === document.body)
+          ? window.scrollY
+          : el.scrollTop;
+        if (scrollY > 40) { chAutoCollapse(); }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+
+      // Any tab or subnav click collapses on first interaction
+      document.querySelectorAll('.tab, .v3-subnav-btn').forEach(function(el) {
+        el.addEventListener('click', chTrackInteraction);
+      });
+    });
+
     /* ---- Row data ---- */
     window.ANGEBOTE_DATA = [
       { bank: 'Sparkasse',    machbarkeit: 'machbar',       sollzins: 2.85, effektivzins: 2.91, rate: 1240, restschuld: 180200, sollzinsStr: '2,85 %', effektivzinsStr: '2,91 %', rateStr: '\u20ac 1.240', restschuldStr: '\u20ac 180.200' },
@@ -1443,7 +1858,6 @@
 
     /* ---- Stepper ---- */
     function goToStep(n) {
-      if (n > 1 && window.stepperState.completed.indexOf(n - 1) === -1) return;
       window.stepperState.currentStep = n;
       document.getElementById('step-1').style.display = n === 1 ? 'flex'  : 'none';
       document.getElementById('step-2').style.display = n === 2 ? 'block' : 'none';
@@ -1457,12 +1871,9 @@
 
     function renderStepper() {
       var current = window.stepperState.currentStep;
-      var done    = window.stepperState.completed;
       [1, 2, 3].forEach(function(i) {
-        var el     = document.getElementById('v2-step-' + i);
-        var status = done.indexOf(i) !== -1 ? 'done' : i === current ? 'active' : 'idle';
-        el.className = 'v2-step-item v2-step-item--' + status;
-        el.setAttribute('aria-current', status === 'active' ? 'step' : '');
+        var btn = document.getElementById('v3-nav-' + i);
+        if (btn) btn.classList.toggle('active', i === current);
       });
     }
 
@@ -1715,13 +2126,6 @@
       });
     }
 
-    /* ---- Info banner visibility ---- */
-    document.addEventListener('DOMContentLoaded', function() {
-      var banner = document.getElementById('ei2-info-banner');
-      if (!banner) return;
-      var isEingereicht = document.querySelector('.ei2-status-tag--eingereicht') !== null;
-      banner.style.display = isEingereicht ? 'flex' : 'none';
-    });
 
     /* ---- V2: Add / remove loan cards ---- */
     function addLoanRow() {
