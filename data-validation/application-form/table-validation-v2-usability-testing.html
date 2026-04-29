@@ -2296,6 +2296,7 @@
       <div class="modal-header-pills-row">
         <div class="scenario-pills">
           <button class="scenario-pill active" onclick="switchScenario('standard', this)">Standard</button>
+          <button class="scenario-pill" onclick="switchScenario('standard2', this)">Standard 2</button>
           <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
           <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
           <button class="scenario-pill" onclick="switchScenario('fall3', this)">Fall 3</button>
@@ -2531,17 +2532,17 @@
   // ─── DATA ─────────────────────────────────────────────────────────────────
   const rows = [
     // ── Antragsteller 1 ──────────────────────────────────────────────────────
-    { id:1,  group:'as1', status:'error',     field:'Vorname',                       customerInput:'Test',            systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'' },
-    { id:2,  group:'as1', status:'error',     field:'Nachname',                      customerInput:'Data Verif',      systemValue:'Mustermann',                  source:'Personalausweis / Reisepass' },
-    { id:3,  group:'as1', status:'error',     field:'Geburtsdatum',                  customerInput:'–',               systemValue:'12.08.1983',                  source:'Personalausweis / Reisepass' },
-    { id:4,  group:'as1', status:'error',     field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutschland',                 source:'Personalausweis / Reisepass' },
-    { id:9,  group:'as1', status:'error',     field:'Dokumentennummer',              customerInput:'–',               systemValue:'L01X00T47',                   source:'Personalausweis / Reisepass' },
-    { id:10, group:'as1', status:'error',     field:'Ablaufdatum',                   customerInput:'–',               systemValue:'01.08.2031',                  source:'Personalausweis / Reisepass' },
-    { id:22, group:'as1', status:'confirmed', field:'E-Mail-Adresse',                customerInput:'test@example.de', systemValue:'test@example.de',             source:'Kundeneingabe' },
-    { id:5,  group:'as1', status:'error',     field:'Monatliches Einkommen',         customerInput:'10.000,0 €',      systemValue:'2.788,93 €, 3.799,86 €',      source:'Gehaltsabrechnung',
+    { id:1,  group:'as1', field:'Vorname',                       customerInput:'Erika',           systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'' },
+    { id:2,  group:'as1', field:'Nachname',                      customerInput:'Mustermann',      systemValue:'Mustermann',                  source:'Personalausweis / Reisepass' },
+    { id:3,  group:'as1', field:'Geburtsdatum',                  customerInput:'12.08.1983',      systemValue:'12.08.1983',                  source:'Personalausweis / Reisepass' },
+    { id:4,  group:'as1', field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutsch',                     source:'Personalausweis / Reisepass' },
+    { id:9,  group:'as1', field:'Dokumentennummer',              customerInput:'–',               systemValue:'L01X00T47',                   source:'Personalausweis / Reisepass' },
+    { id:10, group:'as1', field:'Ablaufdatum',                   customerInput:'–',               systemValue:'01.08.2031',                  source:'Personalausweis / Reisepass' },
+    { id:22, group:'as1', field:'E-Mail-Adresse',                customerInput:'Erika_M@gmail.com', systemValue:'Erika_M@gmail.com',         source:'Kundeneingabe' },
+    { id:5,  group:'as1', field:'Einnahmen (Monatlich)',         customerInput:'3.200 €',         systemValue:'3.200 €, 3.450 €',            source:'Gehaltsabrechnung',
       subRows: [
-        { systemValue: '2.788,93 €', source: 'Gehaltsabrechnung Jan 2025' },
-        { systemValue: '3.799,86 €', source: 'Gehaltsabrechnung Feb 2025' },
+        { systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
+        { systemValue: '3.450 €', source: 'Gehaltsabrechnung Dez 2025' },
       ]
     },
     { id:15, group:'as1', newDocument:true,    field:'Nettogehalt',                   fieldSub:'Einkommen',            customerInput:'3.200 €',       systemValue:'3.450 €',  source:'Gehaltsabrechnung Jan 2026', manuellerWert:'',
@@ -2549,23 +2550,22 @@
         { label:'Vorheriger Wert', systemValue:'3.200 €', source:'Gehaltsabrechnung Okt 2025' }
       ]
     },
-    { id:16, group:'as1', status:'error',     field:'Bruttogehalt',                  customerInput:'12.000,0 €',      systemValue:'3.799,86 €',                  source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:17, group:'as1', status:'error',     field:'Beschäftigungsart',             customerInput:'Selbstständig',   systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:6,  group:'as1', status:'error',     field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:7,  group:'as1', status:'error',     field:'Firmenname',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:8,  group:'as1', status:'error',     field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:18, group:'as1', status:'error',     field:'Steuerklasse',                  customerInput:'–',               systemValue:'1',                           source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:19, group:'as1', status:'error',     field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:20, group:'as1', status:'error',     field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:21, group:'as1', status:'error',     field:'Kirchensteuer',                 customerInput:'–',               systemValue:'nein',                        source:'Gehaltsabrechnung', manuellerWert:'' },
-    { id:23, group:'as1', status:'unknown',   field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:24, group:'as1', status:'unknown',   field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:25, group:'as1', status:'unknown',   field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:26, group:'as1', status:'unknown',   field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:27, group:'as1', status:'unknown',   field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:28, group:'as1', status:'unknown',   field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:29, group:'as1', status:'unknown',   field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
-    { id:30, group:'as1', status:'unknown',   field:'Mieteinnahmen',                 customerInput:'1.200 €',          systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:17, group:'as1', field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:6,  group:'as1', field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:7,  group:'as1', field:'Firmenname',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:8,  group:'as1', field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:18, group:'as1', field:'Steuerklasse',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:19, group:'as1', field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:20, group:'as1', field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:21, group:'as1', field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:23, group:'as1', field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:24, group:'as1', field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:25, group:'as1', field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:26, group:'as1', field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:27, group:'as1', field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:28, group:'as1', field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:29, group:'as1', field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:30, group:'as1', field:'Mieteinnahmen',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
     // ── Antragsteller 2 ──────────────────────────────────────────────────────
     { id:42, group:'as2', status:'unknown',   field:'Vorname',                       customerInput:'Sabine',          systemValue:'–',                           source:'–' },
     { id:43, group:'as2', status:'error',     field:'Nachname',                      customerInput:'Richter',         systemValue:'Müller',                      source:'Personalausweis / Reisepass' },
@@ -2622,7 +2622,7 @@
   let manuallyEditedRows = new Set();
   let rowHistory = {};
   let manuellerWertDebounce = {};
-  let collapsedGroups = new Set();
+  let collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
 
   // ─── HISTORY HELPERS ──────────────────────────────────────────────────────
   function logChange(id, text) {
@@ -2676,17 +2676,24 @@
   }
 
   function computeStatus(r) {
-    if (r.confirmedSource) return 'confirmed';
     const hasVal = v => v && v !== '–' && String(v).trim() !== '';
-    if (hasVal(r.systemValue)) return 'error'; // Prüfen — system has a value to check
-    if (hasVal(r.customerInput)) return 'no_system'; // customer input exists but no system value
-    return 'unknown'; // Keine Angabe — no data at all
+    const hasCust   = hasVal(r.customerInput);
+    const hasSys    = hasVal(r.systemValue);
+    const hasManual = hasVal(r.manuellerWert);
+    // No data on any side → always Keine Angabe, even if confirmedSource is set
+    if (!hasCust && !hasSys && !hasManual) return 'unknown';
+    if (r.confirmedSource) return 'confirmed';
+    if (hasSys)  return 'error';      // Prüfen — system has a value to check
+    if (hasCust) return 'no_system';  // Kein Systemwert
+    return 'unknown';
   }
 
   rows.forEach(r => {
     if (!r.manuellerWert) r.manuellerWert = '';
     if (!r.confirmedSource) r.confirmedSource = null; // null | 'customer' | 'system'
     rowStatuses[r.id] = computeStatus(r);
+    // Enforce: rows with no data on any side are never confirmed
+    if (rowStatuses[r.id] === 'unknown') r.confirmedSource = null;
     if (r.newDocument) expandedRows.add(r.id);
   });
 
@@ -2743,6 +2750,7 @@
       const avatarHtml = `<span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:#37474f;flex-shrink:0;letter-spacing:0;">${meta.icon}</span>`;
       const chevron = `<svg class="section-chevron ${collapsed ? 'collapsed' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
       const subtitleHtml = meta.subtitle ? `<span class="section-subtitle">${meta.subtitle}</span>` : '';
+      const hasNew = groupRows.some(r => r.newDocument);
       const countHtml = collapsed ? 'eingeklappt'
         : (meta.subtitle
             ? `${confirmedCount} bestätigt · ${offenCount} offen`
@@ -2752,6 +2760,7 @@
           ${chevron}
           ${avatarHtml}
           <span><span class="section-label">${meta.label}</span></span>
+          ${(hasNew && currentScenario === 'fall1') ? `<span class="badge badge-new" style="font-size:10px;padding:2px 7px;gap:3px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>` : ''}
           ${offenCount > 0 ? `<span class="section-err">${offenCount} Prüfen</span>` : ''}
         </div></td>
       </tr>`;
@@ -2759,30 +2768,24 @@
 
     let allHtml = '';
 
-    // Fall 1: identify the top row; it will be rendered inside the loop before the first section
-    let fall1TopRowId = null;
-    if (currentScenario === 'fall1') {
-      const topRow = visible.find(r => r.id === 15 && r.newDocument);
-      if (topRow) fall1TopRowId = topRow.id;
-    }
-    let fall1TopRowRendered = false;
-
     for (const gk of groupOrder) {
-      // Row builder — defined at the top of each iteration so it's available for Fall 1 top row
       function buildRowHtml(row) {
-      const st = rowStatuses[row.id];
+      const _hv = v => v && v !== '–' && String(v).trim() !== '';
+      const _hasAnyVal = _hv(row.customerInput) || _hv(row.systemValue) || _hv(row.manuellerWert);
+      // Hard guard: if no data exists anywhere, row can never be Bestätigt
+      const st = _hasAnyVal ? rowStatuses[row.id] : 'unknown';
+      const confirmed = _hasAnyVal ? row.confirmedSource : null;
       const isSelected = selectedIds.has(row.id);
       const isExpanded = expandedRows.has(row.id);
       const hasSubRows = row.subRows && row.subRows.length > 0;
       const dash = '<span class="dash">–</span>';
       const custRaw = row.customerInput;
-      const confirmed = row.confirmedSource;
       const custStruck = confirmed === 'system' || confirmed === 'manual';
       const sysStruck  = confirmed === 'customer' || confirmed === 'manual';
       const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
 
-      const custBtnClass = confirmed === 'customer' ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
-      const sysBtnClass  = confirmed === 'system'   ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
+      const custBtnClass = (confirmed === 'customer' || confirmed === 'both') ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
+      const sysBtnClass  = (confirmed === 'system'  || confirmed === 'both') ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
 
       const custValueHtml = custRaw === '–'
         ? `<span class="dash ${custStruck ? 'value-struck' : ''}">–</span>`
@@ -2800,6 +2803,8 @@
         </div>`;
       } else if (Array.isArray(row.source)) {
         sourceHtml = row.source.map(s => `<a class="source-link" href="#" style="display:block">${s}</a>`).join('');
+      } else if (row.openPayslipScenario) {
+        sourceHtml = `<a class="source-link" href="#" onclick="openPayslip(event,'${row.openPayslipScenario}')">${row.source}</a>`;
       } else {
         sourceHtml = row.source === '–' ? dash : `<a class="source-link" href="#">${row.source}</a>`;
       }
@@ -2823,12 +2828,12 @@
           <td class="field-cell"><span class="field-name">${row.field}</span></td>
           <td class="value-cell">
             <div style="display:flex;align-items:center;gap:6px;">
-              <button
+              ${row.customerInput !== '–' ? `<button
                 class="confirm-btn ${custBtnClass}"
                 onclick="confirmSource(${row.id}, 'customer', event)"
                 ${confirmed === 'system' ? 'disabled' : ''}
                 title="Kundeneingabe bestätigen"
-              >${checkSvg}</button>
+              >${checkSvg}</button>` : ''}
               ${custValueHtml}
             </div>
           </td>
@@ -2849,7 +2854,7 @@
             </div>
           </td>
           <td class="value-cell">
-            <div class="manual-input-wrap${row.confirmedSource ? ' is-disabled' : ''}">
+            <div class="manual-input-wrap">
               <input
                 class="manual-input"
                 type="text"
@@ -2859,12 +2864,11 @@
                 onblur="${row.id === 6 ? 'ibanValidate(this)' : ''}"
                 onkeydown="if(event.key==='Enter'){event.stopPropagation();confirmManuellerWert(${row.id}, event);}"
                 onclick="event.stopPropagation()"
-                ${row.confirmedSource ? 'disabled' : ''}
               />
               <button
                 id="manualConfirm_${row.id}"
                 class="manual-confirm-btn"
-                style="display:${row.manuellerWert && !row.confirmedSource ? 'inline-flex' : 'none'}"
+                style="display:${row.manuellerWert ? 'inline-flex' : 'none'}"
                 onclick="confirmManuellerWert(${row.id}, event)"
                 title="Bestätigen"
               ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
@@ -2889,7 +2893,7 @@
           <td class="note-cell">
             <div style="display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;">
 
-              ${isConfirmed ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
+              ${(isConfirmed && currentScenario !== 'standard') ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
                 <button
                   class="lock-btn ${isLocked ? 'locked' : 'unlocked'}"
                   onclick="toggleLock(${row.id}, event)"
@@ -2903,7 +2907,7 @@
                 onmouseenter="showHistoryPopover(${row.id}, this)"
                 onmouseleave="hideHistoryPopover()"
                 onclick="event.stopPropagation()"
-                title="Änderungsverlauf"
+                title="Verlauf"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/>
@@ -2913,7 +2917,7 @@
               <button
                 class="table-icon-btn note-btn ${(rowComments[row.id] && rowComments[row.id].length > 0) ? 'has-note' : ''}"
                 onclick="openCommentDrawer(${row.id}, event)"
-                title="Kommentare"
+                title="Notiz hinzufügen"
               >
                 <span class="material-symbols-outlined" style="font-size:15px;letter-spacing:0;line-height:1;">comment</span>
                 ${(rowComments[row.id] && rowComments[row.id].length > 0) ? `<span class="note-dot"></span>` : ''}
@@ -2947,18 +2951,8 @@
       return mainRow + subRowsHtml;
       }
 
-      // Fall 1: render Nettogehalt before the first section header (once only)
-      if (currentScenario === 'fall1' && fall1TopRowId !== null && !fall1TopRowRendered) {
-        const topRow = rows.find(r => r.id === fall1TopRowId);
-        if (topRow) {
-          allHtml += buildRowHtml(topRow);
-          fall1TopRowRendered = true;
-        }
-      }
-
       const groupRows = visible
-        .filter(r => (r.group || 'as1') === gk)
-        .filter(r => r.id !== fall1TopRowId);
+        .filter(r => (r.group || 'as1') === gk);
       if (groupRows.length === 0) continue;
       allHtml += sectionHeaderHtml(gk, groupRows);
       if (collapsedGroups.has(gk)) continue;
@@ -3005,7 +2999,6 @@
       const row = rows.find(r => r.id === id);
       if (row && row.systemValue !== '–') {
         row.confirmedSource = 'system';
-        row.manuellerWert = row.systemValue;
         rowStatuses[id] = 'confirmed';
       }
     });
@@ -3270,19 +3263,28 @@
     event.stopPropagation();
     const row = rows.find(r => r.id === id);
     if (!row) return;
-    // Toggle: clicking the active button deselects
-    if (row.confirmedSource === source) {
+    // Toggle off: clicking active button or either button when 'both' deselects
+    if (row.confirmedSource === 'both' || row.confirmedSource === source) {
       row.confirmedSource = null;
       logChange(id, 'Bestätigung aufgehoben');
     } else {
-      row.confirmedSource = source;
-      // Auto-fill Manueller Wert with confirmed value
-      const val = source === 'customer' ? row.customerInput : row.systemValue;
-      if (val !== '–') row.manuellerWert = val;
-      rowStatuses[id] = 'confirmed';
-      if (row.newDocument) row.newDocument = false;
-      const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
-      logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
+      // Check if both values are identical (non-empty, non-'–')
+      const _hv = v => v && v !== '–' && String(v).trim() !== '';
+      const bothMatch = _hv(row.customerInput) && _hv(row.systemValue) &&
+                        row.customerInput.trim() === row.systemValue.trim();
+      if (bothMatch) {
+        row.confirmedSource = 'both';
+        rowStatuses[id] = 'confirmed';
+        if (row.newDocument) row.newDocument = false;
+        logChange(id, `Kundeneingabe und Systemwert stimmen überein – bestätigt: „${row.customerInput}"`);
+      } else {
+        row.confirmedSource = source;
+        const val = source === 'customer' ? row.customerInput : row.systemValue;
+        rowStatuses[id] = 'confirmed';
+        if (row.newDocument) row.newDocument = false;
+        const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
+        logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
+      }
     }
     if (!row.confirmedSource) {
       lockedRows.delete(id);
@@ -3433,15 +3435,60 @@
 
   // ─── SCENARIO MANAGEMENT ─────────────────────────────────────────────────
 
+  function buildFall2Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    return base.map(r => {
+      if (r.id === 6) {
+        return {
+          id: 6, group: 'as1', field: 'IBAN', fieldSub: 'Antragsteller 1',
+          customerInput: 'DE89 3704 0044 0532 0130 00',
+          systemValue:   'DE89 3704 0044 0532 0131 00',
+          source: 'Gehaltsabrechnung Jan 2026',
+          openPayslipScenario: 'fall2',
+          confirmedSource: null, manuellerWert: ''
+        };
+      }
+      const hasCust = hasVal(r.customerInput);
+      const hasSys  = hasVal(r.systemValue);
+      const bothMatch = hasCust && hasSys && r.customerInput.trim() === r.systemValue.trim();
+      const confirmedSource = bothMatch        ? 'both'
+                            : (hasCust && !hasSys) ? 'customer'
+                            : (!hasCust && hasSys) ? 'system'
+                            : null;
+      return { ...r, confirmedSource, newDocument: false, manuellerWert: '' };
+    });
+  }
+
+  function buildStandard2Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    return base.map(r => {
+      const bothMatch = hasVal(r.customerInput) && hasVal(r.systemValue) &&
+                        r.customerInput.trim() === r.systemValue.trim();
+      return bothMatch ? { ...r, confirmedSource: 'both', manuellerWert: '' } : { ...r, manuellerWert: '' };
+    });
+  }
+
   function buildFall1Rows() {
     const base = JSON.parse(JSON.stringify(_standardSnapshot));
-    // All rows get confirmedSource:'system' except id:15
-    const result = base
+    // Auto-confirm based on which side has a value:
+    // only customerInput → 'customer', only systemValue → 'system',
+    // both → null (needs manual decision), neither → null (Keine Angabe)
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    const rest = base
       .filter(r => r.id !== 15)
-      .map(r => ({ ...r, confirmedSource: 'system', newDocument: false }));
+      .map(r => {
+        const hasCust = hasVal(r.customerInput);
+        const hasSys  = hasVal(r.systemValue);
+        const confirmedSource = (hasCust && !hasSys) ? 'customer'
+                              : (!hasCust && hasSys) ? 'system'
+                              : null;
+        return { ...r, confirmedSource, newDocument: false, manuellerWert: '' };
+      });
 
-    // Special Nettogehalt row for Fall 1
-    result.push({
+    // Special Nettogehalt row — prepended so it appears first in the AS1 section
+    const fall1Nettogehalt = {
       id: 15, group: 'as1', field: 'Nettogehalt', fieldSub: 'Einkommen',
       customerInput: '3.200 €', systemValue: '4.000 €',
       source: 'Gehaltsabrechnung Jan 2026',
@@ -3452,8 +3499,8 @@
         { label: 'November 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
         { label: 'Oktober 2025',  systemValue: '3.200 €', source: 'Gehaltsabrechnung Okt 2025' },
       ]
-    });
-    return result;
+    };
+    return [fall1Nettogehalt, ...rest];
   }
 
   function switchScenario(name, btn) {
@@ -3470,7 +3517,7 @@
     rowHistory = {};
     rowComments = {};
     rowStatuses = {};
-    collapsedGroups.clear();
+    collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
     antragsphase = 'alle';
     pflichtfelder = 'nein';
     document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;
@@ -3485,7 +3532,7 @@
     const content = document.getElementById('scenarioContent');
     const placeholder = document.getElementById('scenarioPlaceholder');
 
-    if (name === 'fall2' || name === 'fall3') {
+    if (name === 'fall3') {
       content.style.display = 'none';
       placeholder.style.display = 'flex';
       return;
@@ -3496,15 +3543,18 @@
 
     // Rebuild rows array
     rows.length = 0;
-    const newRows = name === 'fall1'
-      ? buildFall1Rows()
-      : JSON.parse(JSON.stringify(_standardSnapshot));
+    const newRows = name === 'fall1'     ? buildFall1Rows()
+                  : name === 'fall2'     ? buildFall2Rows()
+                  : name === 'standard2' ? buildStandard2Rows()
+                  : JSON.parse(JSON.stringify(_standardSnapshot));
     newRows.forEach(r => rows.push(r));
 
     rows.forEach(r => {
       if (!r.manuellerWert) r.manuellerWert = '';
       if (r.confirmedSource === undefined) r.confirmedSource = null;
       rowStatuses[r.id] = computeStatus(r);
+      // Enforce: rows with no data on any side are never confirmed
+      if (rowStatuses[r.id] === 'unknown') r.confirmedSource = null;
       if (r.newDocument) expandedRows.add(r.id);
     });
 
@@ -3512,15 +3562,12 @@
     updateCounts();
   }
 
-  function openPayslip(event) {
+  function openPayslip(event, scenario) {
     event.preventDefault();
     event.stopPropagation();
-    const html = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>Gehaltsabrechnung Januar 2026</title>
-<style>
+    scenario = scenario || 'fall1';
+
+    const sharedStyles = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #111; background: white; padding: 40px; max-width: 680px; margin: 0 auto; }
   .co { font-size: 15px; font-weight: bold; margin-bottom: 3px; }
@@ -3530,7 +3577,7 @@
   .emp .val { font-size: 12px; font-weight: 600; }
   .emp .sub { font-size: 10px; color: #555; margin-top: 2px; }
   h1 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #111; padding-bottom: 6px; margin-bottom: 14px; }
-  .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+  .meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 22px; }
   .mi .lbl { font-size: 9px; text-transform: uppercase; color: #888; margin-bottom: 2px; }
   .mi .val { font-size: 11px; font-weight: 500; }
   table { width: 100%; border-collapse: collapse; }
@@ -3541,26 +3588,21 @@
   tr:nth-child(even) td { background: #f9f9f9; }
   .sec td { background: none !important; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #888; padding: 10px 8px 3px; border-bottom: none; }
   .net td { background: #111 !important; color: #fff; font-weight: 700; font-size: 13px; padding: 8px 8px; border: none; }
-  .footer { margin-top: 20px; font-size: 9px; color: #bbb; border-top: 1px solid #ddd; padding-top: 8px; }
-</style>
-</head>
+  .iban-row { margin-top: 16px; background: #efefef; padding: 12px 8px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #ccc; }
+  .iban-row .iban-lbl { font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
+  .iban-row .iban-val { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Courier New', Courier, monospace; }
+  .footer { margin-top: 16px; font-size: 9px; color: #bbb; border-top: 1px solid #ddd; padding-top: 8px; }`;
+
+    const fall1Html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Gehaltsabrechnung Januar 2026</title><style>${sharedStyles}</style></head>
 <body>
 <div class="hdr">
-  <div>
-    <div class="co">Datevmuster GmbH</div>
-    <div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div>
-  </div>
-  <div class="emp">
-    <div class="lbl">Arbeitnehmer</div>
-    <div class="val">Test Data Verif</div>
-    <div class="sub">Personalnr. 10042 · Steuerklasse 1</div>
-  </div>
+  <div><div class="co">Datevmuster GmbH</div><div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div></div>
+  <div class="emp"><div class="lbl">Arbeitnehmer</div><div class="val">Test Data Verif</div><div class="sub">Personalnr. 10042 · Steuerklasse 1</div></div>
 </div>
 <h1>Gehaltsabrechnung</h1>
 <div class="meta">
   <div class="mi"><div class="lbl">Abrechnungszeitraum</div><div class="val">Januar 2026</div></div>
   <div class="mi"><div class="lbl">Auszahlungsdatum</div><div class="val">31.01.2026</div></div>
-  <div class="mi"><div class="lbl">IBAN</div><div class="val">DE89 3704 0044 0532 0130 00</div></div>
 </div>
 <table>
   <thead><tr><th colspan="2">Position</th><th>Betrag</th></tr></thead>
@@ -3578,8 +3620,42 @@
   </tbody>
 </table>
 <div class="footer">Datevmuster GmbH · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
-</body>
-</html>`;
+</body></html>`;
+
+    const fall2Html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Gehaltsabrechnung Januar 2026</title><style>${sharedStyles}</style></head>
+<body>
+<div class="hdr">
+  <div><div class="co">Datevmuster GmbH</div><div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div></div>
+  <div class="emp"><div class="lbl">Arbeitnehmer</div><div class="val">Test Data Verif</div><div class="sub">Personalnr. 10042 · Steuerklasse 1</div></div>
+</div>
+<h1>Gehaltsabrechnung</h1>
+<div class="meta">
+  <div class="mi"><div class="lbl">Abrechnungszeitraum</div><div class="val">Januar 2026</div></div>
+  <div class="mi"><div class="lbl">Auszahlungsdatum</div><div class="val">31.01.2026</div></div>
+</div>
+<table>
+  <thead><tr><th colspan="2">Position</th><th>Betrag</th></tr></thead>
+  <tbody>
+    <tr class="sec"><td colspan="3">Bruttobezüge</td></tr>
+    <tr><td colspan="2">Bruttogehalt</td><td>5.558,60 €</td></tr>
+    <tr class="sec"><td colspan="3">Abzüge</td></tr>
+    <tr><td colspan="2">Lohnsteuer</td><td>892,00 €</td></tr>
+    <tr><td colspan="2">Solidaritätszuschlag</td><td>0,00 €</td></tr>
+    <tr><td colspan="2">Krankenversicherung (AN-Anteil)</td><td>404,60 €</td></tr>
+    <tr><td colspan="2">Rentenversicherung (AN-Anteil)</td><td>510,60 €</td></tr>
+    <tr><td colspan="2">Pflegeversicherung (AN-Anteil)</td><td>80,60 €</td></tr>
+    <tr><td colspan="2">Arbeitslosenversicherung (AN-Anteil)</td><td>62,40 €</td></tr>
+    <tr class="net"><td colspan="2">Nettoverdienst</td><td>3.608,40 €</td></tr>
+  </tbody>
+</table>
+<div class="iban-row">
+  <span class="iban-lbl">IBAN (Überweisungskonto)</span>
+  <span class="iban-val">DE89 3704 0044 0532 0131 00</span>
+</div>
+<div class="footer">Datevmuster GmbH · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
+</body></html>`;
+
+    const html = scenario === 'fall2' ? fall2Html : fall1Html;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
