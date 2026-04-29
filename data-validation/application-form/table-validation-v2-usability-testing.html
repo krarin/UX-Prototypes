@@ -2922,7 +2922,7 @@
           <td class="note-cell">
             <div style="display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;">
 
-              ${(isConfirmed && currentScenario !== 'standard') ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
+              ${(isConfirmed && currentScenario !== 'standard' && currentScenario !== 'standard0') ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
                 <button
                   class="lock-btn ${isLocked ? 'locked' : 'unlocked'}"
                   onclick="toggleLock(${row.id}, event)"
@@ -3476,6 +3476,12 @@
           source: 'Gehaltsabrechnung Jan 2026',
           openPayslipScenario: 'fall2',
           confirmedSource: null, manuellerWert: ''
+        };
+      }
+      if (r.id === 15 && r.subRows) {
+        return {
+          ...r,
+          subRows: r.subRows.map(sub => ({ ...sub, label: 'Gehaltsabrechnung' }))
         };
       }
       const hasCust = hasVal(r.customerInput);
