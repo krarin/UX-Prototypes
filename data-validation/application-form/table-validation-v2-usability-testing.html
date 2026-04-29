@@ -2314,7 +2314,8 @@
       </div>
       <div class="modal-header-pills-row">
         <div class="scenario-pills">
-          <button class="scenario-pill active" onclick="switchScenario('standard', this)">Standard</button>
+          <button class="scenario-pill active" onclick="switchScenario('standard0', this)">Standard 0</button>
+          <button class="scenario-pill" onclick="switchScenario('standard', this)">Standard 1</button>
           <button class="scenario-pill" onclick="switchScenario('standard2', this)">Standard 2</button>
           <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
           <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
@@ -2632,7 +2633,7 @@
   ];
 
   let currentFilter = 'all';
-  let currentScenario = 'standard';
+  let currentScenario = 'standard0';
   let selectedIds = new Set();
   let rowStatuses = {};
   let expandedRows = new Set();
