@@ -976,6 +976,10 @@
       color: #78909c;
     }
 
+    /* Hide Manueller Wert column in Standard 0 */
+    #validationTable.no-manual th:nth-child(5),
+    #validationTable.no-manual td:nth-child(5) { display: none; }
+
     /* Manueller Wert inline input */
     .manual-input-wrap {
       display: flex;
@@ -3481,6 +3485,7 @@
       if (r.id === 15 && r.subRows) {
         return {
           ...r,
+          newDocument: false,
           subRows: r.subRows.map(sub => ({ ...sub, label: 'Gehaltsabrechnung' }))
         };
       }
@@ -3542,6 +3547,7 @@
     currentScenario = name;
     document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
+    document.getElementById('validationTable').classList.toggle('no-manual', name === 'standard0');
 
     // Full state reset
     currentFilter = 'all';
@@ -3697,6 +3703,7 @@
   }
 
   // Initial render
+  document.getElementById('validationTable').classList.toggle('no-manual', currentScenario === 'standard0');
   renderTable();
   updateCounts();
 
