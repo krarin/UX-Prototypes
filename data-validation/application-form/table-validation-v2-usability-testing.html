@@ -1050,6 +1050,25 @@
     .iban-msg.error { color: #c62828; }
     .iban-msg.success { color: #2e7d32; }
 
+    /* Character-diff highlighting (IBAN mismatch) */
+    .char-diff {
+      white-space: nowrap;
+    }
+    .char-diff .cd-wrong {
+      background: #ffcdd2;
+      color: #b71c1c;
+      border-radius: 2px;
+      padding: 0 1px;
+      font-weight: 700;
+    }
+    .char-diff .cd-right {
+      background: #c8e6c9;
+      color: #1b5e20;
+      border-radius: 2px;
+      padding: 0 1px;
+      font-weight: 700;
+    }
+
     /* Pflichtfeld indicator */
     .pflicht-col { width: 32px; min-width: 32px; padding: 0 4px 0 8px !important; text-align: center; }
 
@@ -2787,14 +2806,23 @@
       const custBtnClass = (confirmed === 'customer' || confirmed === 'both') ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
       const sysBtnClass  = (confirmed === 'system'  || confirmed === 'both') ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
 
+      // Character-diff for IBAN in Fall 2
+      const _useCharDiff = row.id === 6 && currentScenario === 'fall2'
+        && custRaw !== '–' && row.systemValue !== '–';
+      const _diff = _useCharDiff ? charDiffHtml(custRaw, row.systemValue) : null;
+
       const custValueHtml = custRaw === '–'
         ? `<span class="dash ${custStruck ? 'value-struck' : ''}">–</span>`
-        : `<span class="${custStruck ? 'value-struck' : ''}">${custRaw}</span>`;
+        : _diff
+          ? `<span class="${custStruck ? 'value-struck' : ''}">${_diff.custHtml}</span>`
+          : `<span class="${custStruck ? 'value-struck' : ''}">${custRaw}</span>`;
       const sysValue = row.systemValue === '–' ? dash : row.systemValue;
       const newDocIcon = row.newDocument ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e53935" stroke="none" style="flex-shrink:0;margin-right:5px;vertical-align:middle;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>` : '';
       const sysValueHtml = row.systemValue === '–'
         ? dash
-        : `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${newDocIcon}${row.systemValue}</span>`;
+        : _diff
+          ? `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${_diff.sysHtml}</span>`
+          : `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${newDocIcon}${row.systemValue}</span>`;
       let sourceHtml;
       if (row.sourceWarning) {
         sourceHtml = `<div style="display:flex;flex-direction:column;gap:2px;">
@@ -3664,6 +3692,43 @@
   // Initial render
   renderTable();
   updateCounts();
+
+  // ─── CHARACTER DIFF ───────────────────────────────────────────────────────
+  // Returns {custHtml, sysHtml} with differing chars highlighted.
+  // Non-alphanumeric chars (spaces, dashes) are treated as separators and
+  // never highlighted — only the actual digit/letter positions are compared.
+  function charDiffHtml(custStr, sysStr) {
+    // Build arrays of {char, isAlnum} for both strings
+    function tokenise(s) {
+      return s.split('').map(c => ({ char: c, alnum: /[A-Za-z0-9]/.test(c) }));
+    }
+    const cTokens = tokenise(custStr);
+    const sTokens = tokenise(sysStr);
+
+    // Align by index — IBAN strings are always the same length after formatting
+    const len = Math.max(cTokens.length, sTokens.length);
+    let custHtml = '';
+    let sysHtml  = '';
+
+    for (let i = 0; i < len; i++) {
+      const c = cTokens[i] || { char: '', alnum: false };
+      const s = sTokens[i] || { char: '', alnum: false };
+      const differ = c.alnum && s.alnum && c.char !== s.char;
+
+      if (differ) {
+        custHtml += `<span class="cd-wrong">${c.char}</span>`;
+        sysHtml  += `<span class="cd-right">${s.char}</span>`;
+      } else {
+        custHtml += c.char;
+        sysHtml  += s.char;
+      }
+    }
+
+    return {
+      custHtml: `<span class="char-diff">${custHtml}</span>`,
+      sysHtml:  `<span class="char-diff">${sysHtml}</span>`
+    };
+  }
 
   // ─── IBAN VALIDATION ──────────────────────────────────────────────────────
   const IBAN_LENGTHS = {
