@@ -827,7 +827,6 @@
     .scenario-pills {
       display: flex;
       gap: 4px;
-      margin: 0 16px;
     }
     .scenario-pill {
       padding: 4px 12px;
@@ -2281,23 +2280,27 @@
 <div class="modal-overlay" id="validationModal" onclick="handleModalOverlayClick(event)" style="display:none">
   <div class="modal-dialog">
     <div class="modal-header">
-      <div class="modal-header-left">
-        <div>
-          <div class="modal-title">Antragsvalidierung</div>
-          <div class="modal-subtitle">Mr Test Data Verif · Case ID 408 · 231.710,00 €</div>
+      <div class="modal-header-top">
+        <div class="modal-header-left">
+          <div>
+            <div class="modal-title">Antragsvalidierung</div>
+            <div class="modal-subtitle">Mr Test Data Verif · Case ID 408 · 231.710,00 €</div>
+          </div>
+          <span class="modal-badge">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            beta
+          </span>
         </div>
-        <span class="modal-badge">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-          beta
-        </span>
+        <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
       </div>
-      <div class="scenario-pills">
-        <button class="scenario-pill active" onclick="switchScenario('standard', this)">Standard</button>
-        <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
-        <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
-        <button class="scenario-pill" onclick="switchScenario('fall3', this)">Fall 3</button>
+      <div class="modal-header-pills-row">
+        <div class="scenario-pills">
+          <button class="scenario-pill active" onclick="switchScenario('standard', this)">Standard</button>
+          <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
+          <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
+          <button class="scenario-pill" onclick="switchScenario('fall3', this)">Fall 3</button>
+        </div>
       </div>
-      <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
     </div>
 
     <div class="modal-body">
