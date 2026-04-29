@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Validation (beta) – Prototype</title>
+  <title>Data Validation – V2 Usability Testing</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
@@ -220,7 +220,7 @@
       pointer-events: all;
     }
     .modal-dialog {
-      background: #f5f7f8;
+      background: #ffffff;
       border-radius: 10px;
       box-shadow: 0 16px 56px rgba(0,0,0,0.22);
       width: 100%;
@@ -238,16 +238,27 @@
     .modal-header {
       background: white;
       border-bottom: 1px solid #eceff1;
-      padding: 16px 24px;
+      padding: 12px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .modal-header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-shrink: 0;
+      padding-bottom: 10px;
     }
     .modal-header-left {
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+    .modal-header-pills-row {
+      display: flex;
+      align-items: center;
+      padding-bottom: 12px;
     }
     .modal-title {
       font-size: 16px;
@@ -715,8 +726,8 @@
     tbody tr.selected td { background: #e0f2f1; }
 
     /* Row striping — every second row gets a very subtle gray tint */
-    tbody tr:nth-child(even):not(.section-row) td { background: #fafbfc; }
-    tbody tr:nth-child(even):not(.section-row):hover td { background: #f2f4f5; }
+    tbody tr:nth-child(even):not(.section-row):not(.sub-row) td { background: #fafbfc; }
+    tbody tr:nth-child(even):not(.section-row):not(.sub-row):hover td { background: #f2f4f5; }
 
     tbody td {
       padding: 7px 12px;
@@ -770,22 +781,29 @@
       gap: 4px;
     }
     .badge-error .material-symbols-outlined,
+    .badge-no-system .material-symbols-outlined,
     .badge-unknown .material-symbols-outlined,
     .badge-confirmed .material-symbols-outlined {
       font-size: 13px;
       line-height: 1;
       letter-spacing: 0;
     }
-    /* Keine angabe → light blue-gray, blue text */
-    .badge-unknown {
-      background: #eff1fb;
-      color: #2558d9;
+    /* Kein Systemwert → light amber, warm text */
+    .badge-no-system {
+      background: #fff3e0;
+      color: #e65100;
       gap: 4px;
     }
-    /* Neu → light red, dark red text */
+    /* Keine Angabe → light gray, dark neutral/400 text */
+    .badge-unknown {
+      background: #eceff1;
+      color: #546e7a;
+      gap: 4px;
+    }
+    /* Neu → light blue, blue text */
     .badge-new {
-      background: #ffebee;
-      color: #b71c1c;
+      background: #e8eeff;
+      color: #0a43c9;
       gap: 4px;
     }
     .badge-new .material-symbols-outlined {
@@ -805,20 +823,35 @@
     /* Offen → amber (same hue, distinct label) */
     .badge-open { background: #ff9f1a; color: white; }
 
-    /* Confirmed-by avatar — same shape as badge, outlined dark purple */
-    .confirmed-avatar {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: transparent;
-      border: 1.5px solid #9575cd;
-      color: #90a4ae;
+    /* Scenario switcher pills */
+    .scenario-pills {
+      display: flex;
+      gap: 4px;
+      margin: 0 16px;
+    }
+    .scenario-pill {
+      padding: 4px 12px;
       font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0;
+      font-weight: 500;
+      border-radius: 20px;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #546e7a;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
       white-space: nowrap;
-      flex-shrink: 0;
+    }
+    .scenario-pill:hover { background: #f5f7f8; border-color: #78909c; }
+    .scenario-pill.active { background: #009688; border-color: #009688; color: white; }
+    /* Placeholder for unavailable scenarios */
+    #scenarioPlaceholder {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 0;
+      color: #90a4ae;
+      font-size: 14px;
     }
 
     /* Status column — fixed width so it never jumps */
@@ -990,6 +1023,23 @@
       color: #b0bec5;
       cursor: not-allowed;
     }
+    .manual-confirm-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid #009688;
+      background: #009688;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .manual-confirm-btn:hover { background: #00796b; border-color: #00796b; }
+    .manual-confirm-btn svg { width: 11px; height: 11px; pointer-events: none; }
 
     /* IBAN validation message */
     .iban-msg {
@@ -1268,15 +1318,15 @@
     tbody tr.sub-row td:nth-child(even),
     tbody tr.sub-row:hover td,
     tbody tr.sub-row:hover td:nth-child(even) {
-      background: #f5f7f8;
-      border-bottom: 1px solid #eceff1;
-      padding-top: 7px;
-      padding-bottom: 7px;
+      background: #eceff1;
+      border-bottom: 1px solid #dde2e5;
+      padding: 7px 12px;
+      height: 44px;
       color: #37474f;
       font-size: 12px;
     }
 
-    tr.sub-row:last-child td { border-bottom: 1px solid #eceff1; }
+    tr.sub-row:last-child td { border-bottom: 1px solid #dde2e5; }
 
     .sub-row-indent {
       padding-left: 28px;
@@ -1293,8 +1343,9 @@
     /* ─── SECTION HEADER ROWS ─────────────────────────────── */
     .section-row td {
       background: #ffffff;
-      padding: 9px 16px;
-      border-top: 2px solid #dde3e6;
+      padding: 7px 12px;
+      height: 44px;
+      border-top: 1px solid #dde3e6;
       border-bottom: 1px solid #dde3e6;
       font-size: 0; /* collapse whitespace */
       white-space: nowrap;
@@ -1463,6 +1514,81 @@
       color: #b0bec5;
       font-style: italic;
     }
+
+    /* ─── LOCK CONFIRM DIALOG ───────────────────────────────── */
+    .lock-confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+    .lock-confirm-overlay.open { display: flex; }
+
+    .lock-confirm-dialog {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 24px;
+      max-width: 340px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .lock-confirm-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #e0f2f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lock-confirm-msg {
+      font-size: 14px;
+      color: #37474f;
+      line-height: 1.5;
+    }
+
+    .lock-confirm-actions {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .lock-confirm-btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.12s;
+    }
+
+    .lock-confirm-cancel {
+      background: white;
+      border-color: #b0bec5;
+      color: #546e7a;
+    }
+    .lock-confirm-cancel:hover { background: #f5f7f8; }
+
+    .lock-confirm-ok {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+    }
+    .lock-confirm-ok:hover { background: #00796b; }
 
     /* ─── COMMENT DRAWER ─────────────────────────────────────── */
     .comment-overlay {
@@ -1735,8 +1861,8 @@
 
     /* Lock button */
     .lock-btn {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 4px;
       border: 1px solid transparent;
       display: inline-flex;
@@ -1748,13 +1874,13 @@
       padding: 0;
     }
 
-    .lock-btn svg { width: 13px; height: 13px; pointer-events: none; }
+    .lock-btn svg { width: 14px; height: 14px; pointer-events: none; }
 
     .lock-btn.unlocked { background: #f5f7f8; border-color: #b0bec5; color: #546e7a; }
     .lock-btn.unlocked:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
 
-    .lock-btn.locked { background: #f5f7f8; border-color: #b0bec5; color: #546e7a; }
-    .lock-btn.locked:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+    .lock-btn.locked { background: #009688; border-color: #009688; color: white; }
+    .lock-btn.locked:hover { background: #00796b; border-color: #00796b; color: white; }
 
     /* Overwrite button */
     .overwrite-btn {
@@ -2165,6 +2291,12 @@
           beta
         </span>
       </div>
+      <div class="scenario-pills">
+        <button class="scenario-pill active" onclick="switchScenario('standard', this)">Standard</button>
+        <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
+        <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
+        <button class="scenario-pill" onclick="switchScenario('fall3', this)">Fall 3</button>
+      </div>
       <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
     </div>
 
@@ -2189,6 +2321,7 @@
         </div>
       </div>
 
+      <div id="scenarioContent">
       <!-- Table toolbar -->
       <div class="table-toolbar">
         <div class="active-filter-pills" id="activePills"></div>
@@ -2228,27 +2361,16 @@
         </div>
       </div>
 
-      <!-- Status progress bar -->
-      <div class="status-progress-wrap">
-        <div class="status-progress-bar" id="statusProgressBar"></div>
-        <div class="progress-legend" id="progressLegend"></div>
-      </div>
 
       <!-- Filter tabs -->
       <div class="filter-tabs">
         <button class="filter-tab active" onclick="setFilter('all', this)">Alle (41)</button>
         <button class="filter-tab" onclick="setFilter('error', this)">Fehler (21)</button>
         <button class="filter-tab" onclick="setFilter('confirmed', this)">Bestätigt (1)</button>
-        <button class="filter-tab" onclick="setFilter('notsure', this)">Unsicher (0)</button>
+        <button class="filter-tab" onclick="setFilter('no_system', this)">Kein Systemwert (0)</button>
         <button class="filter-tab" onclick="setFilter('unknown', this)">Unbekannt (19)</button>
       </div>
 
-      <!-- Bulk toolbar -->
-      <div class="bulk-toolbar" id="bulkToolbar">
-        <span id="selectedCount">0 rows selected</span>
-        <button class="bulk-btn bulk-confirm" onclick="bulkApplySystemValues()">↙ Systemwerte übernehmen</button>
-        <span class="bulk-clear" onclick="clearSelection()">Auswahl aufheben</span>
-      </div>
 
       <!-- Table -->
       <div class="table-wrap">
@@ -2256,9 +2378,6 @@
           <thead>
             <tr>
               <th class="pflicht-col"></th>
-              <th>
-                <div class="cb cb-all" id="cbAll" onclick="toggleAll()"></div>
-              </th>
               <th class="sortable" onclick="sortBy('field')">
                 Feld
                 <span class="sort-arrows"><span>▲</span><span>▼</span></span>
@@ -2290,6 +2409,8 @@
           </tbody>
         </table>
       </div>
+      </div><!-- /#scenarioContent -->
+      <div id="scenarioPlaceholder">Dieser Fall ist noch nicht verfügbar.</div>
     </div><!-- /.modal-body -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal-overlay -->
@@ -2363,6 +2484,17 @@
 <!-- History popover (global, positioned via JS) -->
 <div id="historyPopover" class="history-popover"></div>
 
+<!-- Lock confirmation dialog -->
+<div id="lockConfirmOverlay" class="lock-confirm-overlay" onclick="cancelLock()">
+  <div class="lock-confirm-dialog" onclick="event.stopPropagation()">
+    <p class="lock-confirm-msg">Neue Dokumente werden erst bei der Einreichung wieder geprüft.</p>
+    <div class="lock-confirm-actions">
+      <button class="lock-confirm-btn lock-confirm-cancel" onclick="cancelLock()">Zurück</button>
+      <button class="lock-confirm-btn lock-confirm-ok" onclick="confirmLock()">Ja, sperren</button>
+    </div>
+  </div>
+</div>
+
 <!-- Comment drawer overlay -->
 <div id="commentOverlay" class="comment-overlay" onclick="closeCommentDrawer()"></div>
 
@@ -2396,7 +2528,7 @@
   // ─── DATA ─────────────────────────────────────────────────────────────────
   const rows = [
     // ── Antragsteller 1 ──────────────────────────────────────────────────────
-    { id:1,  group:'as1', status:'error',     field:'Vorname',                       customerInput:'Test',            systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'–' },
+    { id:1,  group:'as1', status:'error',     field:'Vorname',                       customerInput:'Test',            systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'' },
     { id:2,  group:'as1', status:'error',     field:'Nachname',                      customerInput:'Data Verif',      systemValue:'Mustermann',                  source:'Personalausweis / Reisepass' },
     { id:3,  group:'as1', status:'error',     field:'Geburtsdatum',                  customerInput:'–',               systemValue:'12.08.1983',                  source:'Personalausweis / Reisepass' },
     { id:4,  group:'as1', status:'error',     field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutschland',                 source:'Personalausweis / Reisepass' },
@@ -2414,23 +2546,23 @@
         { label:'Vorheriger Wert', systemValue:'3.200 €', source:'Gehaltsabrechnung Okt 2025' }
       ]
     },
-    { id:16, group:'as1', status:'error',     field:'Bruttogehalt',                  customerInput:'12.000,0 €',      systemValue:'3.799,86 €',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:17, group:'as1', status:'error',     field:'Beschäftigungsart',             customerInput:'Selbstständig',   systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:6,  group:'as1', status:'error',     field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:7,  group:'as1', status:'error',     field:'Firmenname',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:8,  group:'as1', status:'error',     field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:18, group:'as1', status:'error',     field:'Steuerklasse',                  customerInput:'–',               systemValue:'1',                           source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:19, group:'as1', status:'error',     field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:20, group:'as1', status:'error',     field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:21, group:'as1', status:'error',     field:'Kirchensteuer',                 customerInput:'–',               systemValue:'nein',                        source:'Gehaltsabrechnung', manuellerWert:'–' },
-    { id:23, group:'as1', status:'unknown',   field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:24, group:'as1', status:'unknown',   field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:25, group:'as1', status:'unknown',   field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:26, group:'as1', status:'unknown',   field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:27, group:'as1', status:'unknown',   field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:28, group:'as1', status:'unknown',   field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:29, group:'as1', status:'unknown',   field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:30, group:'as1', status:'unknown',   field:'Mieteinnahmen',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:16, group:'as1', status:'error',     field:'Bruttogehalt',                  customerInput:'12.000,0 €',      systemValue:'3.799,86 €',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:17, group:'as1', status:'error',     field:'Beschäftigungsart',             customerInput:'Selbstständig',   systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:6,  group:'as1', status:'error',     field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:7,  group:'as1', status:'error',     field:'Firmenname',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:8,  group:'as1', status:'error',     field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:18, group:'as1', status:'error',     field:'Steuerklasse',                  customerInput:'–',               systemValue:'1',                           source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:19, group:'as1', status:'error',     field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:20, group:'as1', status:'error',     field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:21, group:'as1', status:'error',     field:'Kirchensteuer',                 customerInput:'–',               systemValue:'nein',                        source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:23, group:'as1', status:'unknown',   field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:24, group:'as1', status:'unknown',   field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:25, group:'as1', status:'unknown',   field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:26, group:'as1', status:'unknown',   field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:27, group:'as1', status:'unknown',   field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:28, group:'as1', status:'unknown',   field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:29, group:'as1', status:'unknown',   field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:30, group:'as1', status:'unknown',   field:'Mieteinnahmen',                 customerInput:'1.200 €',          systemValue:'–',                           source:'–', manuellerWert:'' },
     // ── Antragsteller 2 ──────────────────────────────────────────────────────
     { id:42, group:'as2', status:'unknown',   field:'Vorname',                       customerInput:'Sabine',          systemValue:'–',                           source:'–' },
     { id:43, group:'as2', status:'error',     field:'Nachname',                      customerInput:'Richter',         systemValue:'Müller',                      source:'Personalausweis / Reisepass' },
@@ -2443,29 +2575,29 @@
     { id:52, group:'as2', status:'unknown',   field:'Nettogehalt',                   customerInput:'2.700,0 €',       systemValue:'–',                           source:'–' },
     { id:53, group:'as2', status:'unknown',   field:'Bruttogehalt',                  customerInput:'3.800,0 €',       systemValue:'–',                           source:'–' },
     { id:54, group:'as2', status:'unknown',   field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'–',                           source:'–' },
-    { id:47, group:'as2', status:'unknown',   field:'IBAN',                          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:48, group:'as2', status:'unknown',   field:'Firmenname',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:49, group:'as2', status:'unknown',   field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:56, group:'as2', status:'unknown',   field:'Steuerklasse',                  customerInput:'3',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:57, group:'as2', status:'unknown',   field:'Krankenversicherung',           customerInput:'privat',          systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:58, group:'as2', status:'unknown',   field:'Kinderfreibetrag',              customerInput:'1',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:59, group:'as2', status:'unknown',   field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:47, group:'as2', status:'unknown',   field:'IBAN',                          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:48, group:'as2', status:'unknown',   field:'Firmenname',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:49, group:'as2', status:'unknown',   field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:56, group:'as2', status:'unknown',   field:'Steuerklasse',                  customerInput:'3',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:57, group:'as2', status:'unknown',   field:'Krankenversicherung',           customerInput:'privat',          systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:58, group:'as2', status:'unknown',   field:'Kinderfreibetrag',              customerInput:'1',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:59, group:'as2', status:'unknown',   field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
     // ── Gemeinsame Felder ────────────────────────────────────────────────────
     { id:11, group:'shared', status:'error',   field:'Straße',                        customerInput:'–',               systemValue:'HEIDESTRASSE',                source:'Personalausweis / Reisepass' },
     { id:12, group:'shared', status:'error',   field:'Hausnummer',                    customerInput:'–',               systemValue:'17',                          source:'Personalausweis / Reisepass' },
     { id:13, group:'shared', status:'error',   field:'Postleitzahl',                  customerInput:'–',               systemValue:'12345',                       source:'Personalausweis / Reisepass' },
     { id:14, group:'shared', status:'error',   field:'Stadt',                         customerInput:'–',               systemValue:'Berlin',                      source:'Personalausweis / Reisepass' },
-    { id:31, group:'shared', status:'unknown', field:'Immobilientyp',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:32, group:'shared', status:'unknown', field:'Baujahr',                       customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:33, group:'shared', status:'unknown', field:'Wohnfläche',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:34, group:'shared', status:'unknown', field:'Energieeffizienzklasse',        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:35, group:'shared', status:'unknown', field:'Primärenergiebedarf',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:36, group:'shared', status:'unknown', field:'Heizungsart',                   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:37, group:'shared', status:'unknown', field:'Grundstücksfläche',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:38, group:'shared', status:'unknown', field:'Anzahl der Etagen',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:39, group:'shared', status:'unknown', field:'Stellplatz',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:40, group:'shared', status:'unknown', field:'Keller',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
-    { id:41, group:'shared', status:'unknown', field:'Garten',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'–' },
+    { id:31, group:'shared', status:'unknown', field:'Immobilientyp',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:32, group:'shared', status:'unknown', field:'Baujahr',                       customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:33, group:'shared', status:'unknown', field:'Wohnfläche',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:34, group:'shared', status:'unknown', field:'Energieeffizienzklasse',        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:35, group:'shared', status:'unknown', field:'Primärenergiebedarf',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:36, group:'shared', status:'unknown', field:'Heizungsart',                   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:37, group:'shared', status:'unknown', field:'Grundstücksfläche',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:38, group:'shared', status:'unknown', field:'Anzahl der Etagen',             customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:39, group:'shared', status:'unknown', field:'Stellplatz',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:40, group:'shared', status:'unknown', field:'Keller',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:41, group:'shared', status:'unknown', field:'Garten',                        customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
     // ── Immobilie 1 — Mareschstr. 4, 12055 Berlin ───────────────────────────
     { id:60, group:'immo1', status:'confirmed', field:'Netto-Kaltmiete',      fieldSub:'Einnahmen',          customerInput:'500 €',              systemValue:'500 €',              source:['Mietvertrag 2023', 'Kontoauszug Sep 2025'] },
     { id:61, group:'immo1', status:'error',     field:'Aktueller Marktwert',  fieldSub:'Vermögen',           customerInput:'150.000 €',          systemValue:'128.000 €',          source:['Wertgutachten 2024'] },
@@ -2478,6 +2610,7 @@
   ];
 
   let currentFilter = 'all';
+  let currentScenario = 'standard';
   let selectedIds = new Set();
   let rowStatuses = {};
   let expandedRows = new Set();
@@ -2542,8 +2675,9 @@
   function computeStatus(r) {
     if (r.confirmedSource) return 'confirmed';
     const hasVal = v => v && v !== '–' && String(v).trim() !== '';
-    if (hasVal(r.customerInput) || hasVal(r.systemValue)) return 'error'; // Prüfen
-    return 'unknown'; // Keine angabe
+    if (hasVal(r.systemValue)) return 'error'; // Prüfen — system has a value to check
+    if (hasVal(r.customerInput)) return 'no_system'; // customer input exists but no system value
+    return 'unknown'; // Keine Angabe — no data at all
   }
 
   rows.forEach(r => {
@@ -2553,10 +2687,14 @@
     if (r.newDocument) expandedRows.add(r.id);
   });
 
+  // Save a clean snapshot of the standard scenario for reset
+  const _standardSnapshot = JSON.parse(JSON.stringify(rows));
+
   function statusBadge(status) {
     const map = {
       error:     '<span class="badge badge-error"><span class="material-symbols-outlined">schedule</span>Prüfen</span>',
-      unknown:   '<span class="badge badge-unknown"><span class="material-symbols-outlined">help</span>Keine angabe</span>',
+      no_system: '<span class="badge badge-no-system"><span class="material-symbols-outlined">remove_circle_outline</span>Kein Systemwert</span>',
+      unknown:   '<span class="badge badge-unknown"><span class="material-symbols-outlined">help</span>Keine Angabe</span>',
       confirmed: '<span class="badge badge-confirmed"><span class="material-symbols-outlined">check</span>Bestätigt</span>',
       notsure:   '<span class="badge badge-notsure">Unsicher</span>',
       open:      '<span class="badge badge-open">Offen</span>',
@@ -2568,7 +2706,14 @@
   function closeUseCasesModal() { document.getElementById('useCasesModal').style.display = 'none'; }
 
   function filteredRows() {
-    let result = currentFilter === 'all' ? rows : rows.filter(r => rowStatuses[r.id] === currentFilter);
+    let result;
+    if (currentFilter === 'all') {
+      result = rows;
+    } else if (currentFilter === 'no_system') {
+      result = rows.filter(r => !r.systemValue || r.systemValue === '–');
+    } else {
+      result = rows.filter(r => rowStatuses[r.id] === currentFilter);
+    }
     if (antragsphase === 'angebot') {
       result = result.filter(r => angebot_felder.has(r.field));
     }
@@ -2600,23 +2745,28 @@
             ? `${confirmedCount} bestätigt · ${offenCount} offen`
             : groupRows.length + ' Felder');
       return `<tr class="section-row${collapsed ? '' : ' section-row--expanded'}" onclick="toggleGroup('${gk}')" style="cursor:pointer">
-        <td colspan="9"><div class="section-row-inner">
+        <td colspan="8"><div class="section-row-inner">
           ${chevron}
           ${avatarHtml}
-          <span><span class="section-label">${meta.label}</span>${subtitleHtml}</span>
-          ${offenCount > 0 ? `<span class="section-err">${offenCount} Offen</span>` : ''}
-          <span class="section-count">${countHtml}</span>
+          <span><span class="section-label">${meta.label}</span></span>
+          ${offenCount > 0 ? `<span class="section-err">${offenCount} Prüfen</span>` : ''}
         </div></td>
       </tr>`;
     }
 
     let allHtml = '';
+
+    // Fall 1: identify the top row; it will be rendered inside the loop before the first section
+    let fall1TopRowId = null;
+    if (currentScenario === 'fall1') {
+      const topRow = visible.find(r => r.id === 15 && r.newDocument);
+      if (topRow) fall1TopRowId = topRow.id;
+    }
+    let fall1TopRowRendered = false;
+
     for (const gk of groupOrder) {
-      const groupRows = visible.filter(r => (r.group || 'as1') === gk);
-      if (groupRows.length === 0) continue;
-      allHtml += sectionHeaderHtml(gk, groupRows);
-      if (collapsedGroups.has(gk)) continue;
-      allHtml += groupRows.map(row => {
+      // Row builder — defined at the top of each iteration so it's available for Fall 1 top row
+      function buildRowHtml(row) {
       const st = rowStatuses[row.id];
       const isSelected = selectedIds.has(row.id);
       const isExpanded = expandedRows.has(row.id);
@@ -2624,8 +2774,8 @@
       const dash = '<span class="dash">–</span>';
       const custRaw = row.customerInput;
       const confirmed = row.confirmedSource;
-      const custStruck = confirmed === 'system';
-      const sysStruck  = confirmed === 'customer';
+      const custStruck = confirmed === 'system' || confirmed === 'manual';
+      const sysStruck  = confirmed === 'customer' || confirmed === 'manual';
       const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
 
       const custBtnClass = confirmed === 'customer' ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
@@ -2667,10 +2817,7 @@
       const mainRow = `
         <tr class="${isSelected ? 'selected' : ''}${hasSubRows ? ' expandable-row' : ''}${isRowConfirmed ? ' row-confirmed' : ''}" data-id="${row.id}" ${hasSubRows ? `onclick="toggleExpand(${row.id}, event)"` : ''}>
           ${pflichtCell}
-          <td>
-            <div class="cb ${isSelected ? 'checked' : ''}" onclick="toggleRow(${row.id}, event)"></div>
-          </td>
-          <td class="field-cell"><span class="field-name">${row.field}</span><span class="field-sub">${fieldSubLabel}</span></td>
+          <td class="field-cell"><span class="field-name">${row.field}</span></td>
           <td class="value-cell">
             <div style="display:flex;align-items:center;gap:6px;">
               <button
@@ -2690,12 +2837,16 @@
                 ${confirmed === 'customer' ? 'disabled' : ''}
                 title="Systemwert bestätigen"
               >${checkSvg}</button>` : ''}
-              ${hasSubRows && !isExpanded ? `<span style="color:#b0bec5;font-size:12px">${row.subRows.length} Werte</span>` : sysValueHtml}
+              ${hasSubRows ? (() => {
+                const nums = row.subRows.map(s => parseFloat(s.systemValue.replace(/\./g,'').replace(',','.'))).filter(n => !isNaN(n));
+                const avg = nums.length ? (nums.reduce((a,b) => a+b, 0) / nums.length) : null;
+                const avgStr = avg !== null ? ('Ø ' + avg.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €') : (row.subRows.length + ' Werte');
+                return `<span style="color:#546e7a;font-size:12px">${avgStr}</span>`;
+              })() : sysValueHtml}
             </div>
           </td>
           <td class="value-cell">
             <div class="manual-input-wrap${row.confirmedSource ? ' is-disabled' : ''}">
-              <span class="material-symbols-outlined manual-input-icon">edit</span>
               <input
                 class="manual-input"
                 type="text"
@@ -2703,9 +2854,17 @@
                 placeholder="Wert eingeben…"
                 oninput="updateManuellerWert(${row.id}, this.value)${row.id === 6 ? ';ibanCheckChars(this)' : ''}"
                 onblur="${row.id === 6 ? 'ibanValidate(this)' : ''}"
+                onkeydown="if(event.key==='Enter'){event.stopPropagation();confirmManuellerWert(${row.id}, event);}"
                 onclick="event.stopPropagation()"
                 ${row.confirmedSource ? 'disabled' : ''}
               />
+              <button
+                id="manualConfirm_${row.id}"
+                class="manual-confirm-btn"
+                style="display:${row.manuellerWert && !row.confirmedSource ? 'inline-flex' : 'none'}"
+                onclick="confirmManuellerWert(${row.id}, event)"
+                title="Bestätigen"
+              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
             </div>
             ${row.id === 6 ? '<div id="ibanMsg" class="iban-msg"></div>' : ''}
           </td>
@@ -2713,7 +2872,7 @@
           <td class="status-td">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;">
               <div class="status-wrap">
-                <span onclick="toggleStatusDropdown(${row.id}, event)">${statusBadge(st)}</span>
+                <span ${st !== 'confirmed' ? `onclick="toggleStatusDropdown(${row.id}, event)" style="cursor:pointer"` : ''}>${statusBadge(st)}</span>
                 <div class="status-dropdown" id="statusDd_${row.id}">
                   ${['error','confirmed','open','notsure','unknown'].map(s => `
                     <div class="status-option ${st === s ? 'current' : ''}" onclick="setStatus(${row.id}, '${s}', event)">
@@ -2722,7 +2881,6 @@
                 </div>
               </div>
               ${row.newDocument ? `<span class="badge badge-new"><span class="material-symbols-outlined">error</span>Neu</span>` : ''}
-              ${row.confirmedSource ? `<span class="confirmed-avatar" title="Bestätigt von KH">KH</span>` : ''}
             </div>
           </td>
           <td class="note-cell">
@@ -2762,27 +2920,49 @@
         </tr>`;
 
       const subRowsHtml = (hasSubRows && isExpanded)
-        ? row.subRows.map(sub => `
+        ? row.subRows.map(sub => {
+          const subValHtml = sub.isNew
+            ? `<strong>${sub.systemValue}</strong>&nbsp;<span class="badge badge-new" style="font-size:10px;padding:1px 6px;gap:2px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>`
+            : sub.systemValue;
+          const subSrcHtml = sub.openPayslip
+            ? `<a class="source-link" href="#" onclick="openPayslip(event)">${sub.source}</a>`
+            : (sub.source === '–' ? '–' : `<a class="source-link" href="#">${sub.source}</a>`);
+          return `
           <tr class="sub-row">
-            <td></td>
             <td></td>
             <td class="sub-row-indent">${sub.label || row.field}</td>
             <td></td>
-            <td class="sub-row-value">${sub.systemValue}</td>
+            <td class="sub-row-value">${subValHtml}</td>
             <td></td>
-            <td><a class="source-link" href="#">${sub.source}</a></td>
+            <td>${subSrcHtml}</td>
             <td></td>
             <td></td>
-          </tr>`).join('')
+          </tr>`;
+        }).join('')
         : '';
 
       return mainRow + subRowsHtml;
-      }).join('');
+      }
+
+      // Fall 1: render Nettogehalt before the first section header (once only)
+      if (currentScenario === 'fall1' && fall1TopRowId !== null && !fall1TopRowRendered) {
+        const topRow = rows.find(r => r.id === fall1TopRowId);
+        if (topRow) {
+          allHtml += buildRowHtml(topRow);
+          fall1TopRowRendered = true;
+        }
+      }
+
+      const groupRows = visible
+        .filter(r => (r.group || 'as1') === gk)
+        .filter(r => r.id !== fall1TopRowId);
+      if (groupRows.length === 0) continue;
+      allHtml += sectionHeaderHtml(gk, groupRows);
+      if (collapsedGroups.has(gk)) continue;
+      allHtml += groupRows.map(buildRowHtml).join('');
     }
     tbody.innerHTML = allHtml;
 
-    updateBulkToolbar();
-    updateSelectAll();
   }
 
   function toggleRow(id, event) {
@@ -2837,13 +3017,17 @@
   }
 
   function updateCounts() {
-    const counts = { all: rows.length, error: 0, confirmed: 0, notsure: 0, unknown: 0 };
-    rows.forEach(r => { counts[rowStatuses[r.id]]++; });
+    const counts = { all: rows.length, error: 0, confirmed: 0, no_system: 0, unknown: 0 };
+    rows.forEach(r => {
+      const st = rowStatuses[r.id];
+      if (counts[st] !== undefined) counts[st]++;
+      if (!r.systemValue || r.systemValue === '–') counts.no_system++;
+    });
 
     // Update filter tab labels
     const tabs = document.querySelectorAll('.filter-tab');
-    const labels = ['all', 'error', 'confirmed', 'notsure', 'unknown'];
-    const display = ['Alle', 'Prüfen', 'Bestätigt', 'Unsicher', 'Keine angabe'];
+    const labels = ['all', 'error', 'confirmed', 'no_system', 'unknown'];
+    const display = ['Alle', 'Prüfen', 'Bestätigt', 'Kein Systemwert', 'Keine Angabe'];
     tabs.forEach((tab, i) => {
       tab.textContent = `${display[i]} (${counts[labels[i]]})`;
     });
@@ -3048,16 +3232,35 @@
     updateCounts();
   }
 
+  let pendingLockId = null;
+
   function toggleLock(id, event) {
     event.stopPropagation();
     if (lockedRows.has(id)) {
+      // Unlock immediately — no confirmation needed
       lockedRows.delete(id);
       logChange(id, 'Zeile entsperrt');
+      renderTable();
     } else {
-      lockedRows.add(id);
-      logChange(id, 'Zeile gesperrt');
+      // Show confirmation before locking
+      pendingLockId = id;
+      document.getElementById('lockConfirmOverlay').classList.add('open');
     }
-    renderTable();
+  }
+
+  function confirmLock() {
+    if (pendingLockId !== null) {
+      lockedRows.add(pendingLockId);
+      logChange(pendingLockId, 'Zeile gesperrt');
+      pendingLockId = null;
+      renderTable();
+    }
+    document.getElementById('lockConfirmOverlay').classList.remove('open');
+  }
+
+  function cancelLock() {
+    pendingLockId = null;
+    document.getElementById('lockConfirmOverlay').classList.remove('open');
   }
 
   function confirmSource(id, source, event) {
@@ -3074,7 +3277,6 @@
       const val = source === 'customer' ? row.customerInput : row.systemValue;
       if (val !== '–') row.manuellerWert = val;
       rowStatuses[id] = 'confirmed';
-      lockedRows.add(id);
       if (row.newDocument) row.newDocument = false;
       const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
       logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
@@ -3094,6 +3296,8 @@
     const lockWrap = document.getElementById(`lockWrap_${id}`);
     const show = val.trim().length > 0;
     if (lockWrap) lockWrap.style.display = show ? 'inline-flex' : 'none';
+    const confirmBtn = document.getElementById(`manualConfirm_${id}`);
+    if (confirmBtn) confirmBtn.style.display = show ? 'inline-flex' : 'none';
     if (show) manuallyEditedRows.add(id);
     else manuallyEditedRows.delete(id);
     // Debounced history log (only record after 800ms of no typing)
@@ -3105,6 +3309,17 @@
         logChange(id, 'Manueller Wert geleert');
       }
     }, 800);
+  }
+
+  function confirmManuellerWert(id, event) {
+    if (event) event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row || !row.manuellerWert || !row.manuellerWert.trim()) return;
+    row.confirmedSource = 'manual';
+    rowStatuses[id] = 'confirmed';
+    logChange(id, `Manueller Wert bestätigt: „${row.manuellerWert}"`);
+    renderTable();
+    updateCounts();
   }
 
   function applySystemValue(id, event) {
@@ -3212,6 +3427,160 @@
     renderTable();
   }
 
+
+  // ─── SCENARIO MANAGEMENT ─────────────────────────────────────────────────
+
+  function buildFall1Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    // All rows get confirmedSource:'system' except id:15
+    const result = base
+      .filter(r => r.id !== 15)
+      .map(r => ({ ...r, confirmedSource: 'system', newDocument: false }));
+
+    // Special Nettogehalt row for Fall 1
+    result.push({
+      id: 15, group: 'as1', field: 'Nettogehalt', fieldSub: 'Einkommen',
+      customerInput: '3.200 €', systemValue: '4.000 €',
+      source: 'Gehaltsabrechnung Jan 2026',
+      manuellerWert: '', confirmedSource: null, newDocument: true,
+      subRows: [
+        { label: 'Januar 2026',   systemValue: '4.000 €', source: 'Gehaltsabrechnung Jan 2026', isNew: true, openPayslip: true },
+        { label: 'Dezember 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Dez 2025' },
+        { label: 'November 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
+        { label: 'Oktober 2025',  systemValue: '3.200 €', source: 'Gehaltsabrechnung Okt 2025' },
+      ]
+    });
+    return result;
+  }
+
+  function switchScenario(name, btn) {
+    currentScenario = name;
+    document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Full state reset
+    currentFilter = 'all';
+    selectedIds.clear();
+    expandedRows.clear();
+    lockedRows.clear();
+    manuallyEditedRows.clear();
+    rowHistory = {};
+    rowComments = {};
+    rowStatuses = {};
+    collapsedGroups.clear();
+    antragsphase = 'alle';
+    pflichtfelder = 'nein';
+    document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;
+    document.getElementById('phaseBtnValue').textContent = 'Alle';
+    document.getElementById('pflichtToggle').checked = false;
+    updatePills();
+
+    // Reset filter tabs to "Alle"
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.filter-tab').classList.add('active');
+
+    const content = document.getElementById('scenarioContent');
+    const placeholder = document.getElementById('scenarioPlaceholder');
+
+    if (name === 'fall2' || name === 'fall3') {
+      content.style.display = 'none';
+      placeholder.style.display = 'flex';
+      return;
+    }
+
+    content.style.display = '';
+    placeholder.style.display = 'none';
+
+    // Rebuild rows array
+    rows.length = 0;
+    const newRows = name === 'fall1'
+      ? buildFall1Rows()
+      : JSON.parse(JSON.stringify(_standardSnapshot));
+    newRows.forEach(r => rows.push(r));
+
+    rows.forEach(r => {
+      if (!r.manuellerWert) r.manuellerWert = '';
+      if (r.confirmedSource === undefined) r.confirmedSource = null;
+      rowStatuses[r.id] = computeStatus(r);
+      if (r.newDocument) expandedRows.add(r.id);
+    });
+
+    renderTable();
+    updateCounts();
+  }
+
+  function openPayslip(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Gehaltsabrechnung Januar 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #111; background: white; padding: 40px; max-width: 680px; margin: 0 auto; }
+  .co { font-size: 15px; font-weight: bold; margin-bottom: 3px; }
+  .co-addr { font-size: 10px; color: #555; margin-bottom: 20px; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .emp .lbl { font-size: 9px; text-transform: uppercase; color: #777; margin-bottom: 2px; }
+  .emp .val { font-size: 12px; font-weight: 600; }
+  .emp .sub { font-size: 10px; color: #555; margin-top: 2px; }
+  h1 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #111; padding-bottom: 6px; margin-bottom: 14px; }
+  .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+  .mi .lbl { font-size: 9px; text-transform: uppercase; color: #888; margin-bottom: 2px; }
+  .mi .val { font-size: 11px; font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; }
+  table th { font-size: 9px; text-transform: uppercase; color: #888; padding: 4px 8px; border-bottom: 1px solid #ccc; text-align: left; }
+  table th:last-child { text-align: right; }
+  table td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 11px; }
+  table td:last-child { text-align: right; font-weight: 500; }
+  tr:nth-child(even) td { background: #f9f9f9; }
+  .sec td { background: none !important; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #888; padding: 10px 8px 3px; border-bottom: none; }
+  .net td { background: #111 !important; color: #fff; font-weight: 700; font-size: 13px; padding: 8px 8px; border: none; }
+  .footer { margin-top: 20px; font-size: 9px; color: #bbb; border-top: 1px solid #ddd; padding-top: 8px; }
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <div class="co">Datevmuster GmbH</div>
+    <div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div>
+  </div>
+  <div class="emp">
+    <div class="lbl">Arbeitnehmer</div>
+    <div class="val">Test Data Verif</div>
+    <div class="sub">Personalnr. 10042 · Steuerklasse 1</div>
+  </div>
+</div>
+<h1>Gehaltsabrechnung</h1>
+<div class="meta">
+  <div class="mi"><div class="lbl">Abrechnungszeitraum</div><div class="val">Januar 2026</div></div>
+  <div class="mi"><div class="lbl">Auszahlungsdatum</div><div class="val">31.01.2026</div></div>
+  <div class="mi"><div class="lbl">IBAN</div><div class="val">DE89 3704 0044 0532 0130 00</div></div>
+</div>
+<table>
+  <thead><tr><th colspan="2">Position</th><th>Betrag</th></tr></thead>
+  <tbody>
+    <tr class="sec"><td colspan="3">Bruttobezüge</td></tr>
+    <tr><td colspan="2">Bruttogehalt</td><td>5.950,20 €</td></tr>
+    <tr class="sec"><td colspan="3">Abzüge</td></tr>
+    <tr><td colspan="2">Lohnsteuer</td><td>892,00 €</td></tr>
+    <tr><td colspan="2">Solidaritätszuschlag</td><td>0,00 €</td></tr>
+    <tr><td colspan="2">Krankenversicherung (AN-Anteil)</td><td>404,60 €</td></tr>
+    <tr><td colspan="2">Rentenversicherung (AN-Anteil)</td><td>510,60 €</td></tr>
+    <tr><td colspan="2">Pflegeversicherung (AN-Anteil)</td><td>80,60 €</td></tr>
+    <tr><td colspan="2">Arbeitslosenversicherung (AN-Anteil)</td><td>62,40 €</td></tr>
+    <tr class="net"><td colspan="2">Nettoverdienst</td><td>4.000,00 €</td></tr>
+  </tbody>
+</table>
+<div class="footer">Datevmuster GmbH · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
+</body>
+</html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  }
 
   // Initial render
   renderTable();
