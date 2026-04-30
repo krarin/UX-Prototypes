@@ -3142,6 +3142,7 @@
     modal.offsetHeight;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    applyToggleState(currentScenario !== 'standard0');
   }
 
   function closeValidationModal() {
@@ -3176,6 +3177,11 @@
       tableWrap.style.display = 'none';
       bulkToolbar.style.display = 'none';
     }
+  }
+
+  function applyToggleState(checked) {
+    const cb = document.querySelector('#betaNotice input[type="checkbox"]');
+    if (cb) { cb.checked = checked; toggleContent(cb); }
   }
 
   // ─── COMMENT DRAWER ───────────────────────────────────────────────────────
@@ -3573,6 +3579,7 @@
     document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('validationTable').classList.toggle('no-manual', name === 'standard0');
+    applyToggleState(name !== 'standard0');
 
     // Full state reset
     currentFilter = 'all';
