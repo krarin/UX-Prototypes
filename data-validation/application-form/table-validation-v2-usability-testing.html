@@ -1474,6 +1474,23 @@
     .history-btn.has-history { background: #e0f2f1; border-color: #80cbc4; color: #009688; }
     .history-btn.has-history:hover { background: #b2dfdb; border-color: #4db6ac; color: #00796b; }
 
+    /* JS-driven tooltip (appended to body, escapes all stacking contexts) */
+    #uiTooltip {
+      position: fixed;
+      background: #263238;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.3;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+    #uiTooltip.visible { opacity: 1; }
+
     /* History popover */
     .history-popover {
       position: fixed;
@@ -1617,7 +1634,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.18);
-      z-index: 900;
+      z-index: 1050;
       display: none;
     }
     .comment-overlay.open { display: block; }
@@ -1630,7 +1647,7 @@
       width: 360px;
       background: white;
       box-shadow: -4px 0 32px rgba(0,0,0,0.14);
-      z-index: 901;
+      z-index: 1051;
       display: flex;
       flex-direction: column;
       transform: translateX(100%);
@@ -2334,9 +2351,7 @@
         <div class="beta-notice-content">
           <div class="beta-notice-title">Data validation (beta)</div>
           <div class="beta-notice-text">
-            This function makes it possible to read out data from ID cards/passports, salary statements, energy certificates and exposés.
-            A few minutes after the upload and categorization in the Document Center, the data is transferred to the application.
-            You can decide whether you want to transfer the data.
+            Diese Funktion liest Daten automatisch aus Personalausweisen, Reisepässen, Gehaltsabrechnungen, Energieausweisen und Exposés aus. Bitte prüfen Sie jeden Wert anhand des Originaldokuments, bevor Sie ihn bestätigen.
           </div>
         </div>
         <div class="toggle-wrap">
@@ -2526,6 +2541,9 @@
 <!-- Comment drawer overlay -->
 <div id="commentOverlay" class="comment-overlay" onclick="closeCommentDrawer()"></div>
 
+<!-- Global tooltip -->
+<div id="uiTooltip"></div>
+
 <!-- Comment drawer -->
 <div id="commentDrawer" class="comment-drawer">
   <div class="comment-drawer-header">
@@ -2562,7 +2580,7 @@
     { id:4,  group:'as1', field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutsch',                     source:'Personalausweis / Reisepass' },
     { id:9,  group:'as1', field:'Dokumentennummer',              customerInput:'–',               systemValue:'L01X00T47',                   source:'Personalausweis / Reisepass' },
     { id:10, group:'as1', field:'Ablaufdatum',                   customerInput:'–',               systemValue:'01.08.2031',                  source:'Personalausweis / Reisepass' },
-    { id:22, group:'as1', field:'E-Mail-Adresse',                customerInput:'Erika_M@gmail.com', systemValue:'Erika_M@gmail.com',         source:'Kundeneingabe' },
+    { id:22, group:'as1', field:'E-Mail-Adresse',                customerInput:'Erika_M@gmail.com', systemValue:'Erika_M@gmail.com',         source:'Kundenprofil' },
     { id:5,  group:'as1', field:'Einnahmen (Monatlich)',         customerInput:'3.200 €',         systemValue:'3.200 €, 3.450 €',            source:'Gehaltsabrechnung',
       subRows: [
         { systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
@@ -2811,8 +2829,8 @@
       const custBtnClass = (confirmed === 'customer' || confirmed === 'both') ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
       const sysBtnClass  = (confirmed === 'system'  || confirmed === 'both') ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
 
-      // Character-diff for IBAN in Fall 2
-      const _useCharDiff = row.id === 6 && currentScenario === 'fall2'
+      // Character-diff for IBAN in Fall 3 only
+      const _useCharDiff = row.id === 6 && currentScenario === 'fall3'
         && custRaw !== '–' && row.systemValue !== '–';
       const _diff = _useCharDiff ? charDiffHtml(custRaw, row.systemValue) : null;
 
@@ -2839,7 +2857,13 @@
       } else if (row.openPayslipScenario) {
         sourceHtml = `<a class="source-link" href="#" onclick="openPayslip(event,'${row.openPayslipScenario}')">${row.source}</a>`;
       } else {
-        sourceHtml = row.source === '–' ? dash : `<a class="source-link" href="#">${row.source}</a>`;
+        if (row.source === '–') {
+          sourceHtml = dash;
+        } else if (typeof row.source === 'string' && row.source.startsWith('Gehaltsabrechnung')) {
+          sourceHtml = `<a class="source-link" href="#" onclick="openPayslip(event)">${row.source}</a>`;
+        } else {
+          sourceHtml = `<a class="source-link" href="#">${row.source}</a>`;
+        }
       }
 
       const isConfirmed = st === 'confirmed';
@@ -2940,7 +2964,7 @@
                 onmouseenter="showHistoryPopover(${row.id}, this)"
                 onmouseleave="hideHistoryPopover()"
                 onclick="event.stopPropagation()"
-                title="Verlauf"
+                data-tooltip="Verlauf"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/>
@@ -2950,7 +2974,7 @@
               <button
                 class="table-icon-btn note-btn ${(rowComments[row.id] && rowComments[row.id].length > 0) ? 'has-note' : ''}"
                 onclick="openCommentDrawer(${row.id}, event)"
-                title="Notiz hinzufügen"
+                data-tooltip="Notiz hinzufügen"
               >
                 <span class="material-symbols-outlined" style="font-size:15px;letter-spacing:0;line-height:1;">comment</span>
                 ${(rowComments[row.id] && rowComments[row.id].length > 0) ? `<span class="note-dot"></span>` : ''}
@@ -2964,9 +2988,10 @@
           const subValHtml = sub.isNew
             ? `<strong>${sub.systemValue}</strong>&nbsp;<span class="badge badge-new" style="font-size:10px;padding:1px 6px;gap:2px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>`
             : sub.systemValue;
-          const subSrcHtml = sub.openPayslip
-            ? `<a class="source-link" href="#" onclick="openPayslip(event)">${sub.source}</a>`
-            : (sub.source === '–' ? '–' : `<a class="source-link" href="#">${sub.source}</a>`);
+          const subSrcHtml = sub.source === '–' ? '–'
+            : (sub.openPayslip || sub.openPayslipScenario || (typeof sub.source === 'string' && sub.source.startsWith('Gehaltsabrechnung')))
+              ? `<a class="source-link" href="#" onclick="openPayslip(event, '${sub.openPayslipScenario || ''}')">${sub.source}</a>`
+              : `<a class="source-link" href="#">${sub.source}</a>`;
           return `
           <tr class="sub-row">
             <td></td>
@@ -3535,9 +3560,9 @@
       manuellerWert: '', confirmedSource: null, newDocument: true,
       subRows: [
         { label: 'Januar 2026',   systemValue: '4.000 €', source: 'Gehaltsabrechnung Jan 2026', isNew: true, openPayslip: true },
-        { label: 'Dezember 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Dez 2025' },
-        { label: 'November 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
-        { label: 'Oktober 2025',  systemValue: '3.200 €', source: 'Gehaltsabrechnung Okt 2025' },
+        { label: 'Dezember 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Dez 2025', openPayslipScenario: 'historical' },
+        { label: 'November 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025', openPayslipScenario: 'historical' },
+        { label: 'Oktober 2025',  systemValue: '3.200 €', source: 'Gehaltsabrechnung Okt 2025', openPayslipScenario: 'historical' },
       ]
     };
     return [fall1Nettogehalt, ...rest];
@@ -3573,12 +3598,6 @@
     const content = document.getElementById('scenarioContent');
     const placeholder = document.getElementById('scenarioPlaceholder');
 
-    if (name === 'fall3') {
-      content.style.display = 'none';
-      placeholder.style.display = 'flex';
-      return;
-    }
-
     content.style.display = '';
     placeholder.style.display = 'none';
 
@@ -3586,6 +3605,7 @@
     rows.length = 0;
     const newRows = name === 'fall1'     ? buildFall1Rows()
                   : name === 'fall2'     ? buildFall2Rows()
+                  : name === 'fall3'     ? buildFall2Rows()
                   : name === 'standard2' ? buildStandard2Rows()
                   : JSON.parse(JSON.stringify(_standardSnapshot));
     newRows.forEach(r => rows.push(r));
@@ -3606,101 +3626,285 @@
   function openPayslip(event, scenario) {
     event.preventDefault();
     event.stopPropagation();
-    scenario = scenario || 'fall1';
+    const eff = (scenario && scenario !== '') ? scenario : currentScenario;
 
-    const sharedStyles = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #111; background: white; padding: 40px; max-width: 680px; margin: 0 auto; }
-  .co { font-size: 15px; font-weight: bold; margin-bottom: 3px; }
-  .co-addr { font-size: 10px; color: #555; margin-bottom: 20px; }
-  .hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-  .emp .lbl { font-size: 9px; text-transform: uppercase; color: #777; margin-bottom: 2px; }
-  .emp .val { font-size: 12px; font-weight: 600; }
-  .emp .sub { font-size: 10px; color: #555; margin-top: 2px; }
-  h1 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #111; padding-bottom: 6px; margin-bottom: 14px; }
-  .meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 22px; }
-  .mi .lbl { font-size: 9px; text-transform: uppercase; color: #888; margin-bottom: 2px; }
-  .mi .val { font-size: 11px; font-weight: 500; }
-  table { width: 100%; border-collapse: collapse; }
-  table th { font-size: 9px; text-transform: uppercase; color: #888; padding: 4px 8px; border-bottom: 1px solid #ccc; text-align: left; }
-  table th:last-child { text-align: right; }
-  table td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 11px; }
-  table td:last-child { text-align: right; font-weight: 500; }
-  tr:nth-child(even) td { background: #f9f9f9; }
-  .sec td { background: none !important; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #888; padding: 10px 8px 3px; border-bottom: none; }
-  .net td { background: #111 !important; color: #fff; font-weight: 700; font-size: 13px; padding: 8px 8px; border: none; }
-  .iban-row { margin-top: 16px; background: #efefef; padding: 12px 8px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #ccc; }
-  .iban-row .iban-lbl { font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
-  .iban-row .iban-val { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Courier New', Courier, monospace; }
-  .footer { margin-top: 16px; font-size: 9px; color: #bbb; border-top: 1px solid #ddd; padding-top: 8px; }`;
+    // ── Payslip configs ──────────────────────────────────────────────────────
+    const cfgs = {
+      standard: {
+        period: 'Oktober 2025', payDate: '31.10.2025',
+        gehalt: 5200.20, fahrk: 120.00,
+        steuerbrutto: 5200.20, svbrutto: 5320.20,
+        lohnsteuer: 900.00, kv: 390.00, rv: 450.20, pv: 87.00, av: 43.00,
+        netto: 3450.00, iban: 'DE89 3704 0044 0532 0130 00'
+      },
+      fall1: {
+        period: 'Januar 2026', payDate: '31.01.2026',
+        gehalt: 5830.20, fahrk: 120.00,
+        steuerbrutto: 5830.20, svbrutto: 5512.50,
+        lohnsteuer: 950.00, kv: 410.00, rv: 465.60, pv: 81.60, av: 43.00,
+        netto: 4000.00, iban: 'DE89 3704 0044 0532 0130 00'
+      },
+      fall2: {
+        period: 'Januar 2026', payDate: '31.01.2026',
+        gehalt: 5438.60, fahrk: 120.00,
+        steuerbrutto: 5438.60, svbrutto: 5512.50,
+        lohnsteuer: 950.00, kv: 410.00, rv: 465.60, pv: 81.60, av: 43.00,
+        netto: 3608.40, iban: 'DE89 3704 0044 0532 0131 00'
+      },
+      historical: {
+        period: 'Oktober 2025', payDate: '31.10.2025',
+        gehalt: 4850.20, fahrk: 120.00,
+        steuerbrutto: 4850.20, svbrutto: 4970.20,
+        lohnsteuer: 850.00, kv: 376.20, rv: 430.00, pv: 71.00, av: 43.00,
+        netto: 3200.00, iban: 'DE89 3704 0044 0532 0130 00'
+      }
+    };
+    const cfg = cfgs[eff === 'fall3' ? 'fall2' : eff in cfgs ? eff : 'standard'];
+    const f = n => n.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const gesamtbrutto = cfg.gehalt + cfg.fahrk;
+    const svTotal = cfg.kv + cfg.rv + cfg.pv + cfg.av;
 
-    const fall1Html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Gehaltsabrechnung Januar 2026</title><style>${sharedStyles}</style></head>
+    const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Abrechnung der Brutto/Netto-Bezüge – ${cfg.period}</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5px; color: #111; background: white; padding: 20px 24px; max-width: 790px; margin: 0 auto; line-height: 1.3; }
+.doc-title { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
+.doc-title-main { font-size: 11px; font-weight: bold; }
+.admin-tbl { width: 100%; border-collapse: collapse; margin-bottom: 2px; }
+.admin-tbl td { border: 1px solid #888; padding: 1px 3px; vertical-align: top; }
+.f-lbl { font-size: 7px; color: #555; display: block; white-space: nowrap; }
+.f-val { font-size: 8.5px; font-weight: bold; }
+.kv-tbl { width: 100%; border-collapse: collapse; margin-bottom: 3px; }
+.kv-tbl td { border: 1px solid #888; padding: 1px 4px; font-size: 8px; }
+.addr-row { display: flex; border: 1px solid #888; margin-bottom: 4px; }
+.addr-emp { flex: 0 0 220px; padding: 5px 8px; border-right: 1px solid #888; font-size: 8.5px; line-height: 1.7; }
+.addr-notes { flex: 1; padding: 5px 8px; font-size: 8.5px; line-height: 1.7; }
+.notes-hdr { font-weight: bold; margin-bottom: 2px; }
+.sec-hdr { background: #c8c8c8; border: 1px solid #888; border-bottom: none; font-weight: bold; font-size: 8.5px; padding: 2px 5px; margin-top: 4px; }
+.dt { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.dt th { border: 1px solid #888; background: #e0e0e0; padding: 1px 4px; font-size: 7.5px; font-weight: bold; text-align: left; white-space: nowrap; }
+.dt th.r { text-align: right; }
+.dt td { border: 1px solid #bbb; padding: 1px 4px; }
+.dt td.r { text-align: right; }
+.dt .tot-row td { background: #e4e4e4; font-weight: bold; border-top: 2px solid #666; }
+.sv-tbl { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.sv-tbl th { border: 1px solid #888; background: #e0e0e0; padding: 1px 4px; font-size: 7.5px; text-align: center; font-weight: bold; white-space: nowrap; }
+.sv-tbl td { border: 1px solid #bbb; padding: 1px 4px; text-align: right; }
+.sv-tbl td.c { text-align: center; font-weight: bold; }
+.sv-tbl td.s { background: #e4e4e4; font-weight: bold; }
+.verd-wrap { display: flex; border: 1px solid #888; font-size: 8.5px; margin-top: 0; }
+.verd-left { flex: 1; padding: 4px 6px; border-right: 1px solid #888; }
+.verd-right { flex: 0 0 220px; padding: 4px 6px; }
+.verd-title { font-size: 7.5px; font-weight: bold; text-transform: uppercase; color: #555; margin-bottom: 3px; }
+.vl { display: flex; justify-content: space-between; padding: 0.5px 0; }
+.vl.tot { font-weight: bold; border-top: 1px solid #888; margin-top: 3px; padding-top: 2px; }
+.netto-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #000; padding: 5px 10px; margin: 5px 0; background: #f5f5f5; }
+.netto-lbl { font-size: 12px; font-weight: bold; }
+.netto-amt { font-size: 15px; font-weight: bold; }
+.bank-tbl { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.bank-tbl th { border: 1px solid #888; background: #e0e0e0; padding: 1px 5px; font-size: 7.5px; font-weight: bold; }
+.bank-tbl td { border: 1px solid #bbb; padding: 2px 5px; }
+.bank-tbl .iban-val { font-family: 'Courier New', Courier, monospace; font-weight: bold; letter-spacing: 0.5px; font-size: 9.5px; }
+.bank-tbl td.r { text-align: right; font-weight: bold; }
+.footer { margin-top: 8px; font-size: 7px; color: #999; border-top: 1px solid #ddd; padding-top: 4px; }
+</style>
+</head>
 <body>
-<div class="hdr">
-  <div><div class="co">Datevmuster GmbH</div><div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div></div>
-  <div class="emp"><div class="lbl">Arbeitnehmer</div><div class="val">Test Data Verif</div><div class="sub">Personalnr. 10042 · Steuerklasse 1</div></div>
+
+<div class="doc-title">
+  <span class="doc-title-main">Abrechnung der Brutto/Netto-Bezüge &nbsp;&nbsp; für ${cfg.period}</span>
+  <span>${cfg.payDate} &nbsp;&nbsp; Ent. 1</span>
 </div>
-<h1>Gehaltsabrechnung</h1>
-<div class="meta">
-  <div class="mi"><div class="lbl">Abrechnungszeitraum</div><div class="val">Januar 2026</div></div>
-  <div class="mi"><div class="lbl">Auszahlungsdatum</div><div class="val">31.01.2026</div></div>
+
+<table class="admin-tbl">
+  <tr>
+    <td style="width:70px"><span class="f-lbl">Firma</span><span class="f-val">0001</span></td>
+    <td style="width:45px"><span class="f-lbl">Werk</span><span class="f-val">001</span></td>
+    <td style="width:45px"><span class="f-lbl">Abt.</span><span class="f-val">30</span></td>
+    <td style="width:70px"><span class="f-lbl">PA-Bereich</span><span class="f-val">DE</span></td>
+    <td style="width:70px"><span class="f-lbl">Abr.-Kreis</span><span class="f-val">01</span></td>
+    <td style="width:95px"><span class="f-lbl">Personalnummer</span><span class="f-val">00010042</span></td>
+    <td style="width:75px"><span class="f-lbl">Kostenstelle</span><span class="f-val">3000</span></td>
+    <td><span class="f-lbl">Pers.-Gruppe</span><span class="f-val">1 – Angestellte</span></td>
+  </tr>
+</table>
+
+<table class="kv-tbl">
+  <tr>
+    <td style="width:40px"><b>5909:</b></td>
+    <td style="width:200px">BKK Datevmuster Krankenkasse</td>
+    <td style="width:190px">KV-Nummer: 1049101 1112 % 30</td>
+    <td style="width:75px">Ang. Tage: 30</td>
+    <td style="width:85px">Urlaub Tage: –</td>
+    <td>Krank Tg: –</td>
+  </tr>
+</table>
+
+<div class="addr-row">
+  <div class="addr-emp">
+    <div style="font-size:7px;color:#888;margin-bottom:3px;">PERS.-NR. 00010042</div>
+    <div style="font-weight:bold;">Erika Mustermann</div>
+    <div>Hauptstraße 42</div>
+    <div>90429 Nürnberg</div>
+  </div>
+  <div class="addr-notes">
+    <div class="notes-hdr">Hinweise zur Abrechnung:</div>
+    <div>Woch.Arb.Zt. 38,50 &nbsp; Erstellnr. 01.01.2019</div>
+    <div>Steuerklasse I &nbsp; Kinderfreibeträge: 0</div>
+    <div>AN-PV-%-Satz: 0,00 % &nbsp; Kirchensteuer: nein</div>
+  </div>
 </div>
-<table>
-  <thead><tr><th colspan="2">Position</th><th>Betrag</th></tr></thead>
+
+<div class="sec-hdr">Brutto-Bezüge</div>
+<table class="dt">
+  <thead>
+    <tr>
+      <th style="width:55px">Lohnart</th>
+      <th>Bezeichnung</th>
+      <th style="width:55px">Einheit</th>
+      <th style="width:40px" class="r">Menge</th>
+      <th style="width:90px" class="r">Faktor/Proz.</th>
+      <th style="width:25px">G/B</th>
+      <th style="width:85px" class="r">Betrag</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr class="sec"><td colspan="3">Bruttobezüge</td></tr>
-    <tr><td colspan="2">Bruttogehalt</td><td>5.950,20 €</td></tr>
-    <tr class="sec"><td colspan="3">Abzüge</td></tr>
-    <tr><td colspan="2">Lohnsteuer</td><td>892,00 €</td></tr>
-    <tr><td colspan="2">Solidaritätszuschlag</td><td>0,00 €</td></tr>
-    <tr><td colspan="2">Krankenversicherung (AN-Anteil)</td><td>404,60 €</td></tr>
-    <tr><td colspan="2">Rentenversicherung (AN-Anteil)</td><td>510,60 €</td></tr>
-    <tr><td colspan="2">Pflegeversicherung (AN-Anteil)</td><td>80,60 €</td></tr>
-    <tr><td colspan="2">Arbeitslosenversicherung (AN-Anteil)</td><td>62,40 €</td></tr>
-    <tr class="net"><td colspan="2">Nettoverdienst</td><td>4.000,00 €</td></tr>
+    <tr>
+      <td>040</td><td>Fahrkostenzuschuss §3 Nr. 13 EStG</td><td></td><td class="r">–</td><td class="r">P F J</td><td>J</td><td class="r">${f(cfg.fahrk)} €</td>
+    </tr>
+    <tr>
+      <td>030</td><td>Gehalt</td><td></td><td class="r">–</td><td class="r">L L J</td><td>J</td><td class="r">${f(cfg.gehalt)} €</td>
+    </tr>
+    <tr class="tot-row">
+      <td colspan="6">Gesamtbrutto</td><td class="r">${f(gesamtbrutto)} €</td>
+    </tr>
   </tbody>
 </table>
-<div class="footer">Datevmuster GmbH · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
-</body></html>`;
 
-    const fall2Html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Gehaltsabrechnung Januar 2026</title><style>${sharedStyles}</style></head>
-<body>
-<div class="hdr">
-  <div><div class="co">Datevmuster GmbH</div><div class="co-addr">Musterstraße 1 · 12345 Musterstadt</div></div>
-  <div class="emp"><div class="lbl">Arbeitnehmer</div><div class="val">Test Data Verif</div><div class="sub">Personalnr. 10042 · Steuerklasse 1</div></div>
-</div>
-<h1>Gehaltsabrechnung</h1>
-<div class="meta">
-  <div class="mi"><div class="lbl">Abrechnungszeitraum</div><div class="val">Januar 2026</div></div>
-  <div class="mi"><div class="lbl">Auszahlungsdatum</div><div class="val">31.01.2026</div></div>
-</div>
-<table>
-  <thead><tr><th colspan="2">Position</th><th>Betrag</th></tr></thead>
+<div class="sec-hdr">Steuer / Sozialversicherung</div>
+<table class="sv-tbl">
+  <thead>
+    <tr>
+      <th style="width:30px">St/SV</th>
+      <th>Steuer-Brutto</th>
+      <th>Lohnsteuer</th>
+      <th>Kirchensteuer</th>
+      <th>Solidaritätszuschlag</th>
+      <th class="s">Steuerl. Abgaben</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr class="sec"><td colspan="3">Bruttobezüge</td></tr>
-    <tr><td colspan="2">Bruttogehalt</td><td>5.558,60 €</td></tr>
-    <tr class="sec"><td colspan="3">Abzüge</td></tr>
-    <tr><td colspan="2">Lohnsteuer</td><td>892,00 €</td></tr>
-    <tr><td colspan="2">Solidaritätszuschlag</td><td>0,00 €</td></tr>
-    <tr><td colspan="2">Krankenversicherung (AN-Anteil)</td><td>404,60 €</td></tr>
-    <tr><td colspan="2">Rentenversicherung (AN-Anteil)</td><td>510,60 €</td></tr>
-    <tr><td colspan="2">Pflegeversicherung (AN-Anteil)</td><td>80,60 €</td></tr>
-    <tr><td colspan="2">Arbeitslosenversicherung (AN-Anteil)</td><td>62,40 €</td></tr>
-    <tr class="net"><td colspan="2">Nettoverdienst</td><td>3.608,40 €</td></tr>
+    <tr>
+      <td class="c">L</td>
+      <td>${f(cfg.steuerbrutto)} €</td>
+      <td>${f(cfg.lohnsteuer)} €</td>
+      <td>–</td>
+      <td>0,00 €</td>
+      <td class="s">${f(cfg.lohnsteuer)} €</td>
+    </tr>
   </tbody>
 </table>
-<div class="iban-row">
-  <span class="iban-lbl">IBAN (Überweisungskonto)</span>
-  <span class="iban-val">DE89 3704 0044 0532 0131 00</span>
-</div>
-<div class="footer">Datevmuster GmbH · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
-</body></html>`;
+<table class="sv-tbl" style="margin-bottom:4px;">
+  <thead>
+    <tr>
+      <th style="width:30px">St/SV</th>
+      <th>KV-Brutto</th>
+      <th>RV-Brutto</th>
+      <th>KV-Betrag (AN)</th>
+      <th>RV-Betrag (AN)</th>
+      <th>AV-Betrag (AN)</th>
+      <th>PV-Betrag (AN)</th>
+      <th class="s">SV monatl. Abg.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="c">SV</td>
+      <td>${f(cfg.svbrutto)} €</td>
+      <td>${f(cfg.svbrutto)} €</td>
+      <td>${f(cfg.kv)} €</td>
+      <td>${f(cfg.rv)} €</td>
+      <td>${f(cfg.av)} €</td>
+      <td>${f(cfg.pv)} €</td>
+      <td class="s">${f(svTotal)} €</td>
+    </tr>
+  </tbody>
+</table>
 
-    const html = scenario === 'fall2' ? fall2Html : fall1Html;
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+<div class="sec-hdr">Verdienst / Verrechnungen</div>
+<div class="verd-wrap">
+  <div class="verd-left">
+    <div class="verd-title">Brutto / Steuer / SV</div>
+    <div class="vl"><span>Gesamtbrutto</span><span>${f(gesamtbrutto)} €</span></div>
+    <div class="vl"><span>Steuer-Brutto</span><span>${f(cfg.steuerbrutto)} €</span></div>
+    <div class="vl"><span>Lohnsteuer</span><span>− ${f(cfg.lohnsteuer)} €</span></div>
+    <div class="vl"><span>SV-Brutto</span><span>${f(cfg.svbrutto)} €</span></div>
+    <div class="vl"><span>KV-Betrag (AN)</span><span>− ${f(cfg.kv)} €</span></div>
+    <div class="vl"><span>RV-Betrag (AN)</span><span>− ${f(cfg.rv)} €</span></div>
+    <div class="vl"><span>AV-Betrag (AN)</span><span>− ${f(cfg.av)} €</span></div>
+    <div class="vl"><span>PV-Betrag (AN)</span><span>− ${f(cfg.pv)} €</span></div>
+  </div>
+  <div class="verd-right">
+    <div class="verd-title">Netto-Bezüge</div>
+    <div class="vl"><span>Gesamtbrutto</span><span>${f(gesamtbrutto)} €</span></div>
+    <div class="vl"><span>− Lohnsteuer</span><span>${f(cfg.lohnsteuer)} €</span></div>
+    <div class="vl"><span>− SV-Abzüge (AN)</span><span>${f(svTotal)} €</span></div>
+    <div class="vl tot"><span>Netto-Verdienst</span><span>${f(cfg.netto)} €</span></div>
+  </div>
+</div>
+
+<div class="netto-box">
+  <span class="netto-lbl">Netto-Verdienst</span>
+  <span class="netto-amt">${f(cfg.netto)} €</span>
+</div>
+
+<table class="bank-tbl">
+  <thead>
+    <tr><th>Bank</th><th>IBAN (Überweisungskonto)</th><th>Auszahlungsbetrag</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Commerzbank AG Nürnberg</td>
+      <td class="iban-val">${cfg.iban}</td>
+      <td class="r">${f(cfg.netto)} €</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">Datevmuster GmbH · Musterstraße 1 · 12345 Musterstadt · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
+</body>
+</html>`;
+
+    window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank');
   }
+
+  // ─── TOOLTIP ─────────────────────────────────────────────────────────────
+  (function() {
+    const tip = document.getElementById('uiTooltip');
+    let hideTimer;
+    document.addEventListener('mouseenter', e => {
+      const btn = e.target.closest('[data-tooltip]');
+      if (!btn) return;
+      clearTimeout(hideTimer);
+      const rect = btn.getBoundingClientRect();
+      tip.textContent = btn.dataset.tooltip;
+      tip.classList.add('visible');
+      // Position below the button, centred
+      const tipW = tip.offsetWidth;
+      const left = Math.round(rect.left + rect.width / 2 - tipW / 2);
+      const top  = Math.round(rect.bottom + 6);
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    }, true);
+    document.addEventListener('mouseleave', e => {
+      if (!e.target.closest('[data-tooltip]')) return;
+      hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+    }, true);
+  })();
 
   // Initial render
   document.getElementById('validationTable').classList.toggle('no-manual', currentScenario === 'standard0');
