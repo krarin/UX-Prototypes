@@ -28,6 +28,7 @@
     .phase-btn {
       display: inline-flex;
       align-items: center;
+      gap: 6px;
       padding: 8px 12px;
       font-family: var(--font-family);
       font-size: 14px;
@@ -48,6 +49,16 @@
       background: var(--color-primary-100);
       color: var(--color-primary-600);
       border-color: var(--color-primary-500);
+      border-width: 1.5px;
+    }
+    .phase-btn .phase-check {
+      display: none;
+      font-size: 16px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+    }
+    .phase-btn.active .phase-check {
+      display: inline-flex;
     }
 
     /* ── Field highlighting ── */
@@ -230,10 +241,9 @@
           <!-- ── Phase chips ── -->
           <div class="antrag-controls">
             <span style="font-size:14px;color:var(--color-neutral-dark-400);font-weight:var(--font-weight-medium);white-space:nowrap;">Felder hervorheben für</span>
-            <button class="phase-btn" onclick="selectPhase('basisdaten', this)">Basisdaten</button>
-            <button class="phase-btn" onclick="selectPhase('angebotssuche', this)">Angebotssuche</button>
-            <button class="phase-btn" onclick="selectPhase('kreditentscheidung', this)">Kreditentscheidung</button>
-            <button class="phase-btn active" id="phase-btn-alle" onclick="selectPhase('alle', this)">Alle</button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('basisdaten', this)">Basisdaten<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('angebotssuche', this)">Angebotssuche<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('kreditentscheidung', this)">Kreditentscheidung<span class="phase-check material-symbols-outlined">check</span></button>
           </div>
 
           <!-- ── Card 0: Persönliche Details ── -->
@@ -642,7 +652,7 @@
   }
 
   /* ── State ── */
-  var activePhase       = null;
+  var activePhases      = new Set();
   var activeKreditgeber = null;
 
   /* ── Phase → field map ── */
@@ -674,15 +684,20 @@
     'isb':             ['Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum','IBAN']
   };
 
+  /* ── Chip helper ── */
+  function setChipState(btn, on) {
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
   /* ── Phase chip selection ── */
   function selectPhase(value, el) {
-    document.querySelectorAll('.phase-btn').forEach(c => c.classList.remove('active'));
-    if (value === 'alle' || activePhase === value) {
-      activePhase = null;
-      document.getElementById('phase-btn-alle').classList.add('active');
-    } else {
-      activePhase = value;
-      el.classList.add('active');
+    var wasOn = el.getAttribute('aria-pressed') === 'true';
+    activePhases.clear();
+    document.querySelectorAll('.phase-btn').forEach(function(btn) { setChipState(btn, false); });
+    if (!wasOn) {
+      activePhases.add(value);
+      setChipState(el, true);
     }
     applyHighlights();
   }
@@ -691,9 +706,14 @@
   function applyHighlights() {
     clearHighlights();
 
-    var phaseFields      = activePhase       ? (FIELD_FILTER_MAP[activePhase]            || []) : [];
-    var kreditgeberFields= activeKreditgeber  ? (KREDITGEBER_FIELD_MAP[activeKreditgeber] || []) : [];
-    var hasFilter        = activePhase || activeKreditgeber;
+    var phaseFields = [];
+    activePhases.forEach(function(phase) {
+      (FIELD_FILTER_MAP[phase] || []).forEach(function(f) {
+        if (phaseFields.indexOf(f) === -1) phaseFields.push(f);
+      });
+    });
+    var kreditgeberFields = activeKreditgeber ? (KREDITGEBER_FIELD_MAP[activeKreditgeber] || []) : [];
+    var hasFilter         = phaseFields.length > 0 || activeKreditgeber;
 
     document.querySelectorAll('.form-field').forEach(function(fieldEl) {
       var labelEl = fieldEl.querySelector('.form-field-label');
