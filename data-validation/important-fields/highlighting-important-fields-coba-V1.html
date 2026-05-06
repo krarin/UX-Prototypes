@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Highlighting Important Fields V2</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ── Phase buttons ── */
+    .antrag-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space-s);
+      margin-bottom: var(--space-m);
+      flex-wrap: wrap;
+    }
+    .phase-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-dark-200);
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    }
+    .phase-btn:hover {
+      background: var(--color-neutral-light-100);
+      border-color: var(--color-neutral-dark-300);
+    }
+    .phase-btn.active {
+      background: var(--color-primary-100);
+      color: var(--color-primary-600);
+      border-color: var(--color-primary-500);
+    }
+
+    /* ── Field highlighting ── */
+    .form-field.field-highlighted {
+      border-left: 3px solid var(--color-primary-500);
+      padding-left: calc(var(--space-s) - 3px);
+    }
+    /* ── Antragsvalidierung banner ── */
+    .validation-banner {
+      border: 1px solid var(--color-neutral-light-500);
+      border-left: 3px solid #7986CB;
+      border-radius: var(--radius-s);
+      padding: var(--space-m) var(--space-l);
+      margin-bottom: var(--space-m);
+      background: var(--color-neutral-light-000);
+    }
+    .validation-banner-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-s);
+    }
+    .validation-banner-title {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+    .validation-banner-desc {
+      font-size: var(--body-regular-size);
+      line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-600);
+      margin: 0;
+    }
+    .validation-toggle-wrap {
+      display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0;
+    }
+    .validation-toggle-label {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-600);
+    }
+    .toggle-switch {
+      position: relative; display: inline-block; width: 38px; height: 22px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--color-neutral-light-500);
+      border-radius: 22px;
+      transition: background var(--transition-base);
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; left: 3px; bottom: 3px;
+      background: var(--color-neutral-light-000);
+      border-radius: 50%;
+      transition: transform var(--transition-base);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--color-primary-500); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* ── Section nav: smaller text + highlight state ── */
+    #section-nav .section-nav-item {
+      font-size: 12px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    #section-nav .section-nav-heading {
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-500);
+      margin-top: var(--space-xs);
+      padding-top: var(--space-s);
+      padding-bottom: var(--space-s);
+    }
+    #section-nav .section-nav-heading::before { display: none; }
+    #section-nav .section-nav-item.nav-section-highlighted {
+      border-left: 3px solid var(--color-primary-500);
+      color: var(--color-primary-600);
+      background: var(--color-primary-100);
+      padding-left: calc(var(--space-xl) - 3px);
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 1,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check", id: "btn-validate" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+        <!-- SectionNav -->
+        <nav class="section-sidebar" id="section-nav" aria-label="Antragsabschnitte">
+          <div class="section-nav-client">
+            <span class="section-nav-client-dot" aria-hidden="true"></span>
+            <span class="section-nav-client-name">Maxs details</span>
+          </div>
+          <button class="section-nav-item indented active" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Persönliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kontakte und Adresse</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Berufliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">SCHUFA</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Bonität</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Einnahmen (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Rentenansprüche (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Ausgaben (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Kredite</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Vermögen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienvermögen</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Objekt</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilieninfos</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienmerkmale</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Darlehen des Finanzierungsobjekts</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Grundschulden</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Finanzierung</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Anschaffungskosten</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Finanzierungswunsch</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Abweichende wirtschaftliche Berechtigter</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Kundenhinweis</button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Zusätzliche Informationen</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">KWP Fragen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kundennummer</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Sonstiges</span>
+          </button>
+        </nav>
+
+        <!-- MainContentArea -->
+        <div class="content-inner">
+          <div id="antrag-view">
+
+          <!-- ── Phase chips ── -->
+          <div class="antrag-controls">
+            <span style="font-size:14px;color:var(--color-neutral-dark-400);font-weight:var(--font-weight-medium);white-space:nowrap;">Felder hervorheben für</span>
+            <button class="phase-btn" onclick="selectPhase('basisdaten', this)">Basisdaten</button>
+            <button class="phase-btn" onclick="selectPhase('angebotssuche', this)">Angebotssuche</button>
+            <button class="phase-btn" onclick="selectPhase('kreditentscheidung', this)">Kreditentscheidung</button>
+            <button class="phase-btn active" id="phase-btn-alle" onclick="selectPhase('alle', this)">Alle</button>
+          </div>
+
+          <!-- ── Card 0: Persönliche Details ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Persönliche Details</h2>
+            <div class="field-grid-4">
+              <div class="form-field">
+                <label class="form-field-label">Andrede</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option>Herr</option><option>Frau</option><option>Divers</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Akademischer Titel</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option>Dr.</option><option>Prof.</option><option>Prof. Dr.</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Vorname *</label>
+                <div class="form-input-wrap">
+                  <input class="form-input" type="text" value="Max" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Nachname *</label>
+                <div class="form-input-wrap">
+                  <input class="form-input" type="text" value="Mustermann" />
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsname</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Geburtsdatum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="01.02.1980" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Geburtsort</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsland</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Staatsangehörigkeit</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="" />
+                  <span class="form-input-search-icon material-symbols-outlined">search</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Aufenthaltsstatus *</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option>Deutsche Staatsangehörigkeit</option>
+                    <option>Niederlassungserlaubnis</option>
+                    <option>Aufenthaltserlaubnis</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Familienstand</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option>Ledig</option><option>Verheiratet</option>
+                    <option>Geschieden</option><option>Verwitwet</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Personen im Haushalt</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Steueridentifikationsnummer</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">IBAN</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Kontoinhaber</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+            </div>
+            <div class="form-footer-row">
+              Kinder <a href="#" class="form-link">+ Hinzufügen</a>
+            </div>
+          </div>
+
+          <!-- ── Card 1: Einnahmen (monatlich) ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Einnahmen (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Einnahmen</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Gehalt (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="5.200" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Anzahl Monatsgehälter</label>
+                  <div class="form-input-wrap">
+                    <span class="form-field-error-dot" aria-label="Fehler"></span>
+                    <input class="form-input" type="text" value="12" />
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Variable Einkünfte (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="4.000" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div></div>
+              </div>
+              <div class="form-links">
+                <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+                <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+                <span class="form-summary-value">8.000 €</span>
+              </div>
+            </div>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Annas Einnahmen</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Gehalt (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="4.000" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Anzahl Monatsgehälter</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="12" /></div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Variable Einkünfte (netto)</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="4.000" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div></div>
+              </div>
+              <div class="form-links">
+                <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+                <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+                <span class="form-summary-value">8.000 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Card 2: Rentenansprüche (monatlich) ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Rentenansprüche (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Rentenansprüche</p></div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten-Eintrittsdatum</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Gesetzliche Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Private Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Annas Rentenansprüche</p></div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten-Eintrittsdatum</label>
+                  <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Gesetzliche Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Private Rente</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Card 3: Ausgaben (monatlich) ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Ausgaben (monatlich)</h2>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Maxs Ausgaben</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Derzeitige Mietkosten</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" />
+                    <span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Entfallen Mietkosten künftig?</label>
+                  <div class="form-radio-group">
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="ja" checked /> Ja</label>
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="nein" /> Nein</label>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten- und Lebensversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Private Krankenversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Berufsunfähigkeitsversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Unterhaltsverpflichtungen</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Sparpläne</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bausparvertrag</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Weitere Ausgaben</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bestehende Kreditverträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Gesamtausgaben:</span>
+                <span class="form-summary-value">0 €</span>
+              </div>
+            </div>
+            <div class="form-subsection">
+              <div class="section-header"><p class="section-header-label">Annas Ausgaben</p></div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Derzeitige Mietkosten</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Entfallen Mietkosten künftig?</label>
+                  <div class="form-radio-group">
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-anna" value="ja" checked /> Ja</label>
+                    <label class="form-radio-option"><input type="radio" name="mietkosten-anna" value="nein" /> Nein</label>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Renten- und Lebensversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Private Krankenversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Berufsunfähigkeitsversicherungsbeiträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-3">
+                <div class="form-field">
+                  <label class="form-field-label">Unterhaltsverpflichtungen</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Sparpläne</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bausparvertrag</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field-grid-2">
+                <div class="form-field">
+                  <label class="form-field-label">Weitere Ausgaben</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-field-label">Bestehende Kreditverträge</label>
+                  <div class="form-input-wrap">
+                    <input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-summary">
+                <span class="form-summary-label">Gesamtausgaben:</span>
+                <span class="form-summary-value">0 €</span>
+              </div>
+            </div>
+          </div>
+
+          </div><!-- #antrag-view -->
+        </div><!-- .content-inner -->
+
+</div><!-- #proto-content -->
+
+<script>
+  /* ── Shell navigation ── */
+  function setActive(btn) {
+    document.querySelectorAll('#global-sidebar .sidebar-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function setActiveSection(clicked) {
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(el => el.classList.remove('active'));
+    clicked.classList.add('active');
+  }
+  function setActiveTab(tab) {
+    document.querySelectorAll('.tab-nav .tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+  }
+
+  /* ── State ── */
+  var activePhase       = null;
+  var activeKreditgeber = null;
+
+  /* ── Phase → field map ── */
+  var FIELD_FILTER_MAP = {
+    'basisdaten':       ['Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','IBAN','Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'],
+    'angebotssuche':    ['Gehalt (netto)','Variable Einkünfte (netto)','Unterhaltsverpflichtungen','Familienstand'],
+    'kreditentscheidung': [
+      'Vorname','Nachname','Geburtsdatum','Geburtsort','Geburtsland',
+      'Staatsangehörigkeit','Aufenthaltsstatus','Familienstand',
+      'Steueridentifikationsnummer','IBAN','Kontoinhaber',
+      'Gehalt (netto)','Anzahl Monatsgehälter','Variable Einkünfte (netto)',
+      'Renten-Eintrittsdatum','Gesetzliche Rente',
+      'Derzeitige Mietkosten','Entfallen Mietkosten künftig?',
+      'Renten- und Lebensversicherungsbeiträge','Private Krankenversicherungsbeiträge',
+      'Berufsunfähigkeitsversicherungsbeiträge','Unterhaltsverpflichtungen',
+      'Bestehende Kreditverträge'
+    ]
+  };
+
+/* ── Kreditgeber → field map ── */
+  var KREDITGEBER_FIELD_MAP = {
+    'europace':        ['Gehalt (netto)','IBAN','Staatsangehörigkeit'],
+    'commerzbank':     ['Steueridentifikationsnummer','Familienstand','Geburtsdatum'],
+    'deutsche-bank':   ['Steueridentifikationsnummer','Geburtsland','Staatsangehörigkeit'],
+    'dkb':             ['IBAN','Gehalt (netto)','Variable Einkünfte (netto)'],
+    'dsl-bank':        ['Geburtsdatum','Geburtsort','Unterhaltsverpflichtungen'],
+    'hypovereinsbank': ['Steueridentifikationsnummer','Familienstand','Derzeitige Mietkosten'],
+    'ing':             ['IBAN','Kontoinhaber','Unterhaltsverpflichtungen','Gehalt (netto)'],
+    'isb':             ['Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum','IBAN']
+  };
+
+  /* ── Phase chip selection ── */
+  function selectPhase(value, el) {
+    document.querySelectorAll('.phase-btn').forEach(c => c.classList.remove('active'));
+    if (value === 'alle' || activePhase === value) {
+      activePhase = null;
+      document.getElementById('phase-btn-alle').classList.add('active');
+    } else {
+      activePhase = value;
+      el.classList.add('active');
+    }
+    applyHighlights();
+  }
+
+  /* ── Apply all highlights ── */
+  function applyHighlights() {
+    clearHighlights();
+
+    var phaseFields      = activePhase       ? (FIELD_FILTER_MAP[activePhase]            || []) : [];
+    var kreditgeberFields= activeKreditgeber  ? (KREDITGEBER_FIELD_MAP[activeKreditgeber] || []) : [];
+    var hasFilter        = activePhase || activeKreditgeber;
+
+    document.querySelectorAll('.form-field').forEach(function(fieldEl) {
+      var labelEl = fieldEl.querySelector('.form-field-label');
+      if (!labelEl) return;
+      var baseText = (labelEl.childNodes[0] ? labelEl.childNodes[0].textContent : '').trim().replace(/\s*\*$/, '');
+
+      var inPhase = phaseFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      var inBank  = kreditgeberFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+
+      if (inPhase || inBank) {
+        fieldEl.classList.add('field-highlighted');
+      }
+    });
+    updateSidebarHighlights();
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.form-field.field-highlighted').forEach(function(el) { el.classList.remove('field-highlighted'); });
+    clearSidebarHighlights();
+  }
+
+  function updateSidebarHighlights() {
+    clearSidebarHighlights();
+    document.querySelectorAll('.form-card').forEach(function(card) {
+      if (!card.querySelector('.field-highlighted')) return;
+      var headingEl = card.querySelector('.form-card-heading');
+      if (!headingEl) return;
+      var cardTitle = headingEl.textContent.trim();
+      document.querySelectorAll('#section-nav .section-nav-item .section-nav-item-label').forEach(function(labelEl) {
+        if (labelEl.textContent.trim() === cardTitle) {
+          labelEl.closest('.section-nav-item').classList.add('nav-section-highlighted');
+        }
+      });
+    });
+  }
+
+  function clearSidebarHighlights() {
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-highlighted').forEach(function(el) {
+      el.classList.remove('nav-section-highlighted');
+    });
+  }
+
+  /* ── Drawer top (for any future fixed panels) ── */
+  function setDrawerTop() {
+    var c = document.querySelector('.content');
+    if (c) document.documentElement.style.setProperty('--drawer-top', c.getBoundingClientRect().top + 'px');
+  }
+  setDrawerTop();
+  window.addEventListener('resize', setDrawerTop);
+  document.addEventListener('shell:ready', setDrawerTop);
+</script>
+
+</body>
+</html>

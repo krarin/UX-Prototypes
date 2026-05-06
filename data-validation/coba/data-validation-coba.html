@@ -1,0 +1,4185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Validation – V2 Usability Testing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f7f8;
+      color: #37474f;
+      font-size: 14px;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      width: 64px;
+      background: #1e2235;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .sidebar .logo {
+      width: 36px;
+      height: 36px;
+      background: #009688;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .sidebar .badge-wrap {
+      position: relative;
+      width: 44px;
+      height: 44px;
+    }
+
+    .sidebar .nav-item {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #8b93b0;
+      transition: background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .sidebar .nav-item:hover { background: #2a3050; color: #c5cadd; }
+    .sidebar .nav-item.active { background: #2a3050; color: #ffffff; }
+    .sidebar .nav-item svg { width: 20px; height: 20px; }
+
+    .sidebar .badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: #ef4444;
+      color: white;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      line-height: 1;
+    }
+
+    .sidebar .nav-label {
+      font-size: 9px;
+      color: #8b93b0;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .sidebar .nav-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      width: 100%;
+    }
+
+    /* ─── MAIN AREA ────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top notification bar */
+    .notify-bar {
+      background: #fef9ec;
+      border-bottom: 1px solid #f0e4bc;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: #92600a;
+    }
+
+    .notify-bar svg { color: #d97706; flex-shrink: 0; }
+    .notify-bar a { color: #009688; text-decoration: none; font-weight: 500; }
+    .notify-bar a:hover { text-decoration: underline; }
+    .notify-bar .close-btn {
+      margin-left: auto;
+      cursor: pointer;
+      color: #aaa;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .notify-bar .close-btn:hover { color: #666; }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      padding: 14px 24px 0;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: #263238;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title .amount {
+      font-size: 15px;
+      font-weight: 500;
+      color: #78909c;
+    }
+
+    .header-title .case-id {
+      font-size: 13px;
+      font-weight: 400;
+      color: #b0bec5;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #4b5961;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .btn:hover { background: #f5f7f8; border-color: #78909c; }
+    .btn svg { width: 14px; height: 14px; }
+
+    .btn-validate {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+      font-weight: 600;
+    }
+    .btn-validate:hover { background: #00796b; border-color: #00796b; }
+    .btn-validate svg { stroke: white; }
+
+    /* ─── VALIDATION MODAL ─────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 34, 53, 0.55);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.22);
+      width: 100%;
+      max-width: 1280px;
+      max-height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(-16px);
+      transition: transform 0.2s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal-dialog {
+      transform: translateY(0);
+    }
+    .modal-header {
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      padding: 12px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .modal-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+    }
+    .modal-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-header-pills-row {
+      display: flex;
+      align-items: center;
+      padding-bottom: 12px;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #263238;
+    }
+    .modal-subtitle {
+      font-size: 13px;
+      color: #90a4ae;
+    }
+    .modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      background: #e0f2f1;
+      color: #00796b;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #eceff1;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #78909c;
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.12s, color 0.12s;
+    }
+    .modal-close:hover { background: #eceff1; color: #37474f; }
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+    }
+
+    /* ─── USE CASES MODAL ──────────────────────────────────── */
+    .uc-modal-dialog {
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .uc-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px 28px;
+    }
+    .uc-section { margin-bottom: 24px; }
+    .uc-section:last-child { margin-bottom: 0; }
+    .uc-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #37474f;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .uc-section-title .uc-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .uc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .uc-list li {
+      font-size: 13px;
+      color: #546e7a;
+      line-height: 1.55;
+      padding-left: 16px;
+      position: relative;
+    }
+    .uc-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #b0bec5;
+    }
+    .uc-list li strong { color: #37474f; font-weight: 600; }
+    .uc-divider {
+      border: none;
+      border-top: 1px solid #eceff1;
+      margin: 20px 0;
+    }
+
+    .btn-more {
+      padding: 7px 10px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      cursor: pointer;
+      color: #4b5961;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-expand {
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      cursor: pointer;
+      color: #4b5961;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Tags row */
+    .tags-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .tag-green {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .tag-gray {
+      background: #eceff1;
+      color: #546e7a;
+      border: 1px solid #b0bec5;
+    }
+
+    .tag-add {
+      background: none;
+      border: none;
+      color: #78909c;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .tag-add:hover { background: #eceff1; color: #37474f; }
+
+    /* Sub-breadcrumb / app selector */
+    .app-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 1px solid #b0bec5;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #4b5961;
+      background: white;
+      cursor: pointer;
+    }
+
+    .app-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #20bf6b; }
+
+    /* Tab nav */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: none;
+      overflow-x: auto;
+    }
+
+    .tab-nav::-webkit-scrollbar { display: none; }
+
+    .tab-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #78909c;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.12s, border-color 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+
+    .tab-item:hover { color: #37474f; }
+
+    .tab-item.active {
+      color: #009688;
+      border-bottom-color: #009688;
+    }
+
+    .tab-item .ext-icon {
+      width: 11px;
+      height: 11px;
+      color: #b0bec5;
+    }
+
+    /* ─── CONTENT AREA ─────────────────────────────────────── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      background: #f5f7f8;
+    }
+
+    /* Beta notice */
+    .beta-notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .beta-notice-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .beta-notice-text {
+      font-size: 12.5px;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
+    .beta-notice .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      color: #78350f;
+      font-weight: 500;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .toggle input { display: none; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #b0bec5;
+      border-radius: 11px;
+      transition: background 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track { background: #009688; }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: left 0.2s;
+    }
+
+    .toggle input:checked ~ .toggle-thumb { left: 21px; }
+
+    /* ─── STATUS PROGRESS BAR ──────────────────────────────── */
+    .status-progress-wrap {
+      margin-bottom: 14px;
+    }
+
+    .status-progress-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #eceff1;
+      margin-bottom: 8px;
+    }
+
+    .progress-seg {
+      height: 100%;
+      transition: width 0.4s ease;
+      min-width: 0;
+    }
+
+    .progress-seg--error    { background: #f59e0b; }
+    .progress-seg--confirmed { background: #009688; }
+    .progress-seg--unknown  { background: #5c6bc0; }
+    .progress-seg--notsure  { background: #fb923c; }
+
+    .progress-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .progress-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #546e7a;
+      cursor: pointer;
+      padding: 1px 0;
+    }
+
+    .progress-legend-item:hover .progress-legend-label { color: #263238; }
+
+    .progress-legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .progress-legend-dot--error    { background: #f59e0b; }
+    .progress-legend-dot--confirmed { background: #009688; }
+    .progress-legend-dot--unknown  { background: #5c6bc0; }
+    .progress-legend-dot--notsure  { background: #fb923c; }
+
+    .progress-legend-label { font-weight: 500; }
+    .progress-legend-count { color: #90a4ae; font-weight: 400; }
+
+    /* ─── FILTER TABS (Figma: rectangular pill-buttons) ────── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #4b5961;
+      transition: all 0.12s;
+      line-height: 20px;
+    }
+
+    .filter-tab:hover { border-color: #78909c; background: #f5f7f8; }
+
+    .filter-tab.active {
+      background: #eceff1;
+      border-color: #b0bec5;
+      color: #37474f;
+      font-weight: 500;
+    }
+
+    /* ─── TABLE ─────────────────────────────────────────────── */
+    .table-wrap {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #eceff1;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: #f5f7f8;
+      border-bottom: 1px solid #eceff1;
+    }
+
+    thead th {
+      padding: 16px 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: #37474f;
+      user-select: none;
+      white-space: nowrap;
+      height: 52px;
+      border-right: 1px solid #eceff1;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+
+    thead th:last-child { border-right: none; }
+    thead th:first-child { width: 40px; padding: 16px 0 16px 12px; }
+    thead th.sortable { cursor: pointer; }
+    thead th.sortable:hover { color: #263238; }
+
+    /* Sort arrows inline */
+    .sort-arrows {
+      display: inline-flex;
+      flex-direction: column;
+      margin-left: 4px;
+      vertical-align: middle;
+      gap: 1px;
+    }
+    .sort-arrows span {
+      font-size: 8px;
+      line-height: 1;
+      color: #b0bec5;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #eceff1;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover td { background: #f5f7f8; }
+    tbody tr.selected td { background: #e0f2f1; }
+
+    /* Row striping — every second row gets a very subtle gray tint */
+    tbody tr:nth-child(even):not(.section-row):not(.sub-row) td { background: #fafbfc; }
+    tbody tr:nth-child(even):not(.section-row):not(.sub-row):hover td { background: #f2f4f5; }
+
+    tbody td {
+      padding: 7px 12px;
+      font-size: 12px;
+      color: #37474f;
+      vertical-align: middle;
+      border-right: 1px solid #eceff1;
+    }
+
+    tbody td:last-child { border-right: none; }
+    tbody td:first-child { padding: 7px 0 7px 12px; width: 40px; }
+
+    /* Custom checkbox */
+    .cb {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #b0bec5;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+      flex-shrink: 0;
+      background: white;
+    }
+
+    .cb:hover { border-color: #78909c; }
+    .cb.checked { background: #009688; border-color: #009688; }
+    .cb.checked::after { content: "✓"; color: white; font-size: 10px; font-weight: 700; }
+    .cb-all.partial { background: #009688; border-color: #009688; }
+    .cb-all.partial::after { content: "—"; color: white; font-size: 10px; font-weight: 700; }
+
+    /* ─── STATUS BADGES (Figma: solid color, white text) ────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    /* Prüfen → light amber, orange text */
+    .badge-error {
+      background: #fff3e0;
+      color: #c75b00;
+      gap: 4px;
+    }
+    .badge-error .material-symbols-outlined,
+    .badge-no-system .material-symbols-outlined,
+    .badge-unknown .material-symbols-outlined,
+    .badge-confirmed .material-symbols-outlined {
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    /* Kein Systemwert → light amber, warm text */
+    .badge-no-system {
+      background: #fff3e0;
+      color: #e65100;
+      gap: 4px;
+    }
+    /* Keine Angabe → light gray, dark neutral/400 text */
+    .badge-unknown {
+      background: #eceff1;
+      color: #546e7a;
+      gap: 4px;
+    }
+    /* Neu → light blue, blue text */
+    .badge-new {
+      background: #e8eeff;
+      color: #0a43c9;
+      gap: 4px;
+    }
+    .badge-new .material-symbols-outlined {
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    /* Bestätigt → light green, dark green text */
+    .badge-confirmed {
+      background: #eaf7ee;
+      color: #1a7a45;
+      gap: 4px;
+    }
+    /* Unsicher → solid amber */
+    .badge-notsure { background: #ff9f1a; color: white; }
+    /* Offen → amber (same hue, distinct label) */
+    .badge-open { background: #ff9f1a; color: white; }
+
+    /* Confidence score tags */
+    .konfidenz-tag {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 600;
+      border-radius: 10px; padding: 2px 8px;
+      white-space: nowrap;
+    }
+    .konfidenz-high { background: #eaf7ee; color: #1a7a45; }
+    .konfidenz-mid  { background: #fff3e0; color: #e65100; }
+
+    /* Scenario switcher pills */
+    .scenario-pills {
+      display: flex;
+      gap: 4px;
+    }
+    .scenario-pill {
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 20px;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #546e7a;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      white-space: nowrap;
+    }
+    .scenario-pill:hover { background: #f5f7f8; border-color: #78909c; }
+    .scenario-pill.active { background: #009688; border-color: #009688; color: white; }
+    /* Placeholder for unavailable scenarios */
+    #scenarioPlaceholder {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 0;
+      color: #90a4ae;
+      font-size: 14px;
+    }
+
+    /* Status column — fixed width so it never jumps */
+    .status-td {
+      width: 180px;
+      min-width: 180px;
+      max-width: 180px;
+    }
+
+    /* Field category subtitle */
+    .field-sub {
+      display: block;
+      font-size: 10px;
+      color: #90a4ae;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      margin-top: 1px;
+    }
+
+    /* Warning text in source cell */
+    .source-warning {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #ff9f1a;
+      font-size: 12px;
+    }
+    .source-warning svg { flex-shrink: 0; }
+
+    /* "Dokument anfordern" micro-button */
+    .doc-request-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 500;
+      color: #009688;
+      background: transparent;
+      border: 1px solid #009688;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .doc-request-btn:hover { background: #e0f2f1; }
+
+    /* Section header subtitle (second line) */
+    .section-subtitle {
+      font-size: 10px;
+      color: #90a4ae;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0.3px;
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* Source link — teal, medium weight */
+    .source-link {
+      color: #009688;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .source-link:hover { text-decoration: underline; color: #00796b; }
+
+    /* Empty / dash */
+    .dash { color: #b0bec5; }
+
+    .field-cell { min-width: 160px; }
+    .value-cell { min-width: 140px; }
+    .source-cell { min-width: 140px; }
+
+    /* Bold field name */
+    .field-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+      line-height: 1.3;
+    }
+
+
+    /* Confirm button */
+    .confirm-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid #b0bec5;
+      background: white;
+      color: #b0bec5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      vertical-align: middle;
+      padding: 0;
+    }
+    .confirm-btn svg { width: 12px; height: 12px; pointer-events: none; }
+    .confirm-btn:hover:not(.confirmed):not(.rejected) {
+      background: #e0f2f1;
+      border-color: #80cbc4;
+      color: #009688;
+    }
+    .confirm-btn.confirmed {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+      cursor: default;
+    }
+    .confirm-btn.rejected {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+    .value-struck {
+      text-decoration: line-through;
+      color: #78909c;
+    }
+
+    /* Hide Manueller Wert column in Standard 0 */
+    #validationTable.no-manual th:nth-child(5),
+    #validationTable.no-manual td:nth-child(5) { display: none; }
+
+    /* Manueller Wert inline input */
+    .manual-input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1px solid #b0bec5;
+      border-radius: 4px;
+      background: white;
+      padding: 0 8px;
+      gap: 5px;
+      min-width: 120px;
+      width: 100%;
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .manual-input-wrap:focus-within {
+      border-color: #009688;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+    .manual-input-wrap.is-disabled {
+      background: #f5f7f8;
+      border-color: #eceff1;
+    }
+    .manual-input-icon {
+      font-size: 14px;
+      color: #90a4ae;
+      flex-shrink: 0;
+      line-height: 1;
+      user-select: none;
+    }
+    .manual-input {
+      border: none;
+      border-radius: 0;
+      padding: 4px 0;
+      font-size: 12px;
+      font-family: 'Roboto', sans-serif;
+      color: #37474f;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      line-height: 20px;
+    }
+    .manual-input:focus { box-shadow: none; }
+    .manual-input::placeholder { color: #b0bec5; }
+    .manual-input:disabled {
+      color: #b0bec5;
+      cursor: not-allowed;
+    }
+    .manual-confirm-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid #009688;
+      background: #009688;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .manual-confirm-btn:hover { background: #00796b; border-color: #00796b; }
+    .manual-confirm-btn svg { width: 11px; height: 11px; pointer-events: none; }
+
+    /* IBAN validation message */
+    .iban-msg {
+      font-size: 11px;
+      line-height: 1.4;
+      margin-top: 4px;
+      min-height: 0;
+    }
+    .iban-msg.error { color: #c62828; }
+    .iban-msg.success { color: #2e7d32; }
+
+    /* Character-diff highlighting (IBAN mismatch) */
+    .char-diff {
+      white-space: nowrap;
+    }
+    .char-diff .cd-wrong {
+      background: #ffcdd2;
+      color: #b71c1c;
+      border-radius: 2px;
+      padding: 0 1px;
+      font-weight: 700;
+    }
+    .char-diff .cd-right {
+      background: #c8e6c9;
+      color: #1b5e20;
+      border-radius: 2px;
+      padding: 0 1px;
+      font-weight: 700;
+    }
+
+    /* Pflichtfeld indicator */
+    .pflicht-col { width: 32px; min-width: 32px; padding: 0 4px 0 8px !important; text-align: center; }
+
+    .pflicht-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e64d4d;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: default;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .pflicht-icon .pflicht-tooltip {
+      display: none;
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 5px);
+      transform: translateX(-50%);
+      background: #263238;
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .pflicht-icon .pflicht-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-bottom-color: #263238;
+    }
+
+    .pflicht-icon:hover .pflicht-tooltip { display: block; }
+
+    /* Table toolbar */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    /* 3-dot menu */
+    .dot-menu-wrap { position: relative; }
+
+    .phase-btn {
+      height: 32px;
+      padding: 0 10px 0 12px;
+      border-radius: 4px;
+      border: 1px solid #eceff1;
+      background: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #37474f;
+      font-family: inherit;
+      font-size: 13px;
+      white-space: nowrap;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .phase-btn:hover, .phase-btn.open {
+      background: #f5f7f8;
+      border-color: #b0bec5;
+    }
+
+    .phase-btn-label { color: #78909c; }
+    .phase-btn-label strong { color: #37474f; font-weight: 600; }
+
+    .phase-btn-chevron {
+      font-size: 18px;
+      color: #78909c;
+      transition: transform 0.15s ease;
+      line-height: 1;
+    }
+
+    .phase-btn.open .phase-btn-chevron { transform: rotate(180deg); }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: #37474f;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input { display: none; }
+
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: #b0bec5;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: left 0.2s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-track { background: #009688; }
+    .toggle-switch input:checked + .toggle-track .toggle-thumb { left: 18px; }
+
+    .dot-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: white;
+      border: 1px solid #eceff1;
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      z-index: 200;
+      min-width: 230px;
+      padding: 6px 0;
+      animation: fadeIn 0.12s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .dot-dropdown.open { display: block; }
+
+    .dropdown-section {
+      padding: 8px 12px 6px;
+    }
+
+    .dropdown-section + .dropdown-section {
+      border-top: 1px solid #f5f7f8;
+      margin-top: 2px;
+      padding-top: 10px;
+    }
+
+    .dropdown-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b0bec5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .dropdown-options {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dropdown-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #37474f;
+      transition: background 0.1s;
+    }
+
+    .dropdown-option:hover { background: #f5f7f8; }
+
+    .dropdown-option input[type="radio"] {
+      accent-color: #009688;
+      width: 14px; height: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dropdown-option.selected { color: #009688; font-weight: 500; }
+
+    /* Active filter pills on toolbar */
+    .active-filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .active-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 10px;
+      border-radius: 20px;
+      background: #e0f2f1;
+      border: 1px solid #80cbc4;
+      font-size: 11.5px;
+      color: #00695c;
+      font-weight: 500;
+    }
+
+    .active-pill .pill-remove {
+      cursor: pointer;
+      color: #80cbc4;
+      font-size: 13px;
+      line-height: 1;
+      margin-left: 1px;
+    }
+
+    .active-pill .pill-remove:hover { color: #009688; }
+
+    /* Sub-rows */
+    .expand-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #009688;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.12s, transform 0.18s;
+      line-height: 1;
+    }
+
+    .expand-btn svg { pointer-events: none; transition: transform 0.18s ease; }
+    .expand-btn.open svg { transform: rotate(90deg); }
+    .expand-btn:hover { color: #00695c; }
+
+    tr.expandable-row { cursor: pointer; }
+
+    tr.sub-row td,
+    tbody tr.sub-row td:nth-child(even),
+    tbody tr.sub-row:hover td,
+    tbody tr.sub-row:hover td:nth-child(even) {
+      background: #eceff1;
+      border-bottom: 1px solid #dde2e5;
+      padding: 7px 12px;
+      height: 44px;
+      color: #37474f;
+      font-size: 12px;
+    }
+
+    tr.sub-row:last-child td { border-bottom: 1px solid #dde2e5; }
+
+    .sub-row-indent {
+      padding-left: 28px;
+      color: #37474f;
+      font-size: 12px;
+    }
+
+    .sub-row-value {
+      color: #37474f;
+      font-size: 12px;
+      padding-left: 30px;
+    }
+
+    /* ─── SECTION HEADER ROWS ─────────────────────────────── */
+    .section-row td {
+      background: #ffffff;
+      padding: 7px 12px;
+      height: 44px;
+      border-top: 1px solid #dde3e6;
+      border-bottom: 1px solid #dde3e6;
+      font-size: 0; /* collapse whitespace */
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .section-row-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+      text-transform: none;
+      letter-spacing: 0.2px;
+    }
+    .section-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+    .section-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: #90a4ae;
+      transition: transform 0.18s ease;
+    }
+    .section-chevron.collapsed { transform: rotate(-90deg); }
+    .section-row:hover td { background: #f5f7f8; }
+    .section-row--expanded td { background: #f0f4f5; }
+    .section-row--expanded:hover td { background: #e8edef; }
+    .section-label { letter-spacing: 0.2px; }
+    .section-err {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 7px;
+      background: #fff3e0;
+      color: #c75b00;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .section-count {
+      color: #90a4ae;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* Note button */
+    .note-cell { width: auto; text-align: right; padding-right: 12px !important; }
+
+    /* ── Base style for all icon-only buttons inside table rows ── */
+    .table-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;   /* Light neutral/500 */
+      background: #f5f7f8;          /* Light neutral/200 */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #546e7a;               /* Dark-neutral/Gray-600 */
+      transition: all 0.12s;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .table-icon-btn svg  { width: 14px; height: 14px; pointer-events: none; }
+    .table-icon-btn:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+
+    /* Note button */
+    .note-cell { width: auto; text-align: right; padding-right: 12px !important; }
+
+    .note-btn {
+      position: relative;
+    }
+    .note-btn.has-note { background: #fef3c7; border-color: #fde68a; color: #d97706; }
+    .note-btn.has-note:hover { background: #fde68a; border-color: #f59e0b; color: #b45309; }
+
+    .note-dot {
+      position: absolute;
+      top: 3px; right: 3px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 1.5px solid white;
+    }
+
+    /* History button */
+    .history-btn.has-history { background: #e0f2f1; border-color: #80cbc4; color: #009688; }
+    .history-btn.has-history:hover { background: #b2dfdb; border-color: #4db6ac; color: #00796b; }
+
+
+    /* JS-driven tooltip (appended to body, escapes all stacking contexts) */
+    #uiTooltip {
+      position: fixed;
+      background: #263238;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.3;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+    #uiTooltip.visible { opacity: 1; }
+
+    /* History popover */
+    .history-popover {
+      position: fixed;
+      z-index: 9999;
+      background: #ffffff;
+      border: 1px solid rgba(38,50,56,0.08);
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(38,50,56,0.04), 0 8px 24px rgba(38,50,56,0.10), 0 24px 48px rgba(38,50,56,0.08);
+      padding: 14px 16px 12px;
+      min-width: 300px;
+      max-width: 360px;
+      pointer-events: none;
+      display: none;
+      opacity: 0;
+      transform: translateY(2px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .history-popover.visible { opacity: 1; transform: translateY(0); }
+    .history-popover-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #78909c;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding-bottom: 10px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #eceff1;
+    }
+    .history-timeline {
+      position: relative;
+      padding-left: 18px;
+    }
+    .history-timeline::before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 14px; bottom: 14px;
+      width: 1.5px;
+      background: linear-gradient(to bottom, #cfd8dc 0%, #eceff1 100%);
+    }
+    .history-entry {
+      position: relative;
+      padding: 10px 0;
+    }
+    .history-entry:first-child { padding-top: 6px; }
+    .history-entry:last-child  { padding-bottom: 2px; }
+    .history-entry-marker {
+      position: absolute;
+      left: -18px; top: 16px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #b0bec5;
+      box-shadow: 0 0 0 3px #ffffff;
+    }
+    .history-entry.is-auto .history-entry-marker  { background: #80cbc4; }
+    .history-entry.is-manual .history-entry-marker { background: #b0bec5; }
+    .history-entry:last-child .history-entry-marker { background: #cfd8dc; }
+    .history-entry:first-child .history-entry-marker {
+      left: -20px; top: 13px;
+      width: 13px; height: 13px;
+      background: #ffffff;
+      border: 2.5px solid #009688;
+      box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(0,150,136,0.15);
+      animation: history-pulse 2s ease-in-out infinite;
+    }
+    @keyframes history-pulse {
+      0%,100% { box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(0,150,136,0.15); }
+      50%     { box-shadow: 0 0 0 3px #ffffff, 0 0 0 8px rgba(0,150,136,0.05); }
+    }
+    .history-entry-current-badge {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+      color: #00796b; background: #e0f2f1;
+      border-radius: 4px; padding: 2px 6px;
+      margin-left: 8px; vertical-align: 2px;
+    }
+    .history-entry:first-child .history-entry-text { color: #1e2235; font-weight: 600; }
+    .history-entry-text {
+      font-size: 13px; color: #263238; line-height: 1.45; font-weight: 500;
+    }
+    .history-entry-meta {
+      display: flex; align-items: center; gap: 8px; margin-top: 6px;
+    }
+    .history-entry-actor {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: #546e7a; font-weight: 500;
+    }
+    .history-entry-avatar {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: #ffffff; flex-shrink: 0;
+    }
+    .history-entry.is-auto .history-entry-avatar   { background: #4db6ac; }
+    .history-entry.is-manual .history-entry-avatar { background: #78909c; }
+    .history-entry-sep {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: #cfd8dc; flex-shrink: 0;
+    }
+    .history-entry-time { font-size: 11px; color: #90a4ae; }
+    .history-empty { font-size: 13px; color: #b0bec5; font-style: italic; padding: 4px 0; }
+
+    /* ─── LOCK CONFIRM DIALOG ───────────────────────────────── */
+    .lock-confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+    .lock-confirm-overlay.open { display: flex; }
+
+    .lock-confirm-dialog {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 24px;
+      max-width: 340px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .lock-confirm-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #e0f2f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lock-confirm-msg {
+      font-size: 14px;
+      color: #37474f;
+      line-height: 1.5;
+    }
+
+    .lock-confirm-actions {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .lock-confirm-btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.12s;
+    }
+
+    .lock-confirm-cancel {
+      background: white;
+      border-color: #b0bec5;
+      color: #546e7a;
+    }
+    .lock-confirm-cancel:hover { background: #f5f7f8; }
+
+    .lock-confirm-ok {
+      background: #009688;
+      border-color: #009688;
+      color: white;
+    }
+    .lock-confirm-ok:hover { background: #00796b; }
+
+    /* ─── COMMENT DRAWER ─────────────────────────────────────── */
+    .comment-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 1050;
+      display: none;
+    }
+    .comment-overlay.open { display: block; }
+
+    .comment-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 360px;
+      background: white;
+      box-shadow: -4px 0 32px rgba(0,0,0,0.14);
+      z-index: 1051;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+    }
+    .comment-drawer.open { transform: translateX(0); }
+
+    .comment-drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eceff1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .comment-drawer-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #263238;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .comment-drawer-title .material-symbols-outlined {
+      font-size: 18px;
+      color: #009688;
+      letter-spacing: 0;
+    }
+    .comment-drawer-field-label {
+      font-size: 11px;
+      color: #90a4ae;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .comment-drawer-field-name {
+      font-size: 12px;
+      color: #37474f;
+      font-weight: 600;
+    }
+    .comment-drawer-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #90a4ae;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .comment-drawer-close:hover { background: #f5f7f8; color: #37474f; }
+
+    .comment-thread {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .comment-empty {
+      color: #b0bec5;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 48px;
+      font-style: italic;
+    }
+    .comment-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comment-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .comment-bubble {
+      flex: 1;
+      background: #f5f7f8;
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .comment-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .comment-author {
+      font-size: 12px;
+      font-weight: 600;
+      color: #37474f;
+    }
+    .comment-time {
+      font-size: 11px;
+      color: #90a4ae;
+    }
+    .comment-text {
+      font-size: 13px;
+      color: #37474f;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    /* Composer */
+    .comment-composer-area {
+      border-top: 1px solid #eceff1;
+      padding: 14px 20px;
+      flex-shrink: 0;
+      background: #fafbfc;
+    }
+    .comment-composer {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comment-composer-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .comment-input {
+      flex: 1;
+      border: 1px solid #b0bec5;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+      color: #263238;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      height: 72px;
+      background: white;
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .comment-input:focus {
+      border-color: #009688;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+    .comment-input::placeholder { color: #b0bec5; }
+    .comment-submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .comment-submit-btn {
+      padding: 6px 18px;
+      border-radius: 4px;
+      border: none;
+      background: #009688;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.12s;
+    }
+    .comment-submit-btn:hover { background: #00796b; }
+
+    /* Editor initials tag */
+    .editor-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      height: 20px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1.5px solid #b0bec5;
+      color: #78909c;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    /* Status dropdown */
+    .status-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .status-wrap .badge {
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.12s;
+    }
+
+    .status-wrap .badge:hover { opacity: 0.85; }
+
+    .status-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      background: white;
+      border: 1px solid #eceff1;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      z-index: 300;
+      min-width: 140px;
+      padding: 4px;
+      animation: fadeIn 0.12s ease;
+    }
+
+    .status-dropdown.open { display: block; }
+
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: #37474f;
+      transition: background 0.1s;
+    }
+
+    .status-option:hover { background: #f5f7f8; }
+    .status-option.current { background: #eceff1; font-weight: 600; }
+
+    /* Lock button */
+    .lock-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      padding: 0;
+    }
+
+    .lock-btn svg { width: 14px; height: 14px; pointer-events: none; }
+
+    .lock-btn.unlocked { background: #f5f7f8; border-color: #b0bec5; color: #546e7a; }
+    .lock-btn.unlocked:hover { background: #eceff1; border-color: #78909c; color: #37474f; }
+
+    .lock-btn.locked { background: #009688; border-color: #009688; color: white; }
+    .lock-btn.locked:hover { background: #00796b; border-color: #00796b; color: white; }
+
+    /* Overwrite button */
+    .overwrite-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid #b0bec5;
+      background: white;
+      color: #78909c;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      vertical-align: middle;
+    }
+
+    .overwrite-btn:hover:not(:disabled) {
+      background: #e0f2f1;
+      border-color: #80cbc4;
+      color: #009688;
+    }
+
+    .overwrite-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .overwrite-btn svg { width: 12px; height: 12px; pointer-events: none; }
+
+    .sys-value-cell {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* Inline edit */
+    .editable-cell {
+      cursor: text;
+      border-radius: 4px;
+      padding: 2px 4px;
+      margin: -2px -4px;
+      min-width: 80px;
+      display: inline-block;
+    }
+
+    .editable-cell:hover {
+      background: #e0f2f1;
+      outline: 1px dashed #80cbc4;
+    }
+
+    .editable-cell .edit-hint {
+      display: none;
+      margin-left: 5px;
+      color: #80cbc4;
+      font-size: 11px;
+    }
+
+    .editable-cell:hover .edit-hint { display: inline; }
+
+    .inline-input {
+      border: 1.5px solid #009688;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      color: #263238;
+      background: white;
+      outline: none;
+      width: 100%;
+      min-width: 120px;
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.12);
+    }
+
+    .inline-input:focus { border-color: #00796b; }
+
+    .inline-edit-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .inline-save-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #80cbc4;
+      background: #e0f2f1;
+      color: #00695c;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .inline-save-btn:hover { background: #b2dfdb; }
+
+    .inline-cancel-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      cursor: pointer;
+      border: 1px solid #eceff1;
+      background: white;
+      color: #b0bec5;
+      flex-shrink: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .inline-cancel-btn:hover { background: #f5f7f8; color: #78909c; }
+
+    .inline-validation-error {
+      font-size: 11.5px;
+      color: #e64d4d;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .inline-input.has-error {
+      border-color: #e64d4d;
+      box-shadow: 0 0 0 3px rgba(230,77,77,0.12);
+    }
+
+    /* Scrollbar styling */
+    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 3px; }
+
+    /* Action toolbar (appears when rows selected) */
+    .bulk-toolbar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #e0f2f1;
+      border-bottom: 1px solid #80cbc4;
+      font-size: 12.5px;
+      color: #00695c;
+      font-weight: 500;
+    }
+
+    .bulk-toolbar.visible { display: flex; }
+
+    .bulk-btn {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .bulk-confirm { background: #e0f2f1; border-color: #80cbc4; color: #00695c; }
+    .bulk-confirm:hover { background: #b2dfdb; }
+    .bulk-reject { background: white; border-color: #eceff1; color: #78909c; }
+    .bulk-reject:hover { background: #fde8e8; border-color: #f5a5a5; color: #e64d4d; }
+
+    .bulk-clear { margin-left: auto; cursor: pointer; color: #78909c; font-size: 12px; }
+    .bulk-clear:hover { color: #37474f; text-decoration: underline; }
+
+    /* User avatar area in top right */
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 24px 8px;
+      background: white;
+      border-bottom: 1px solid #eceff1;
+      justify-content: flex-end;
+      font-size: 12.5px;
+      color: #37474f;
+    }
+
+    .topbar-right .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-right .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #009688;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .topbar-right .icon-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #78909c;
+      position: relative;
+    }
+
+    .topbar-right .icon-btn:hover { background: #f5f7f8; }
+
+    .topbar-right .notif-badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─────────────────────────── -->
+<aside class="sidebar">
+  <div class="logo">L</div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="nav-label">My Day</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item active" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="badge">39</span>
+    </div>
+    <div class="nav-label">Loans</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="badge">1</span>
+    </div>
+    <div class="nav-label">Leads</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </div>
+    <div class="nav-label">Sources</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+    <div class="nav-label">Accounting</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <div class="nav-label">Reporting</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </div>
+    <div class="nav-label">Lead-Shop</div>
+  </div>
+
+  <div class="nav-group" style="margin-top: auto;">
+    <div class="nav-item" onclick="setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <div class="nav-label">Email</div>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─────────────────────────────── -->
+<div class="main">
+
+  <!-- Notification bar -->
+  <div class="notify-bar" id="notifyBar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    This applicant doesn't have an active account and doesn't have access to the client portal.&nbsp;
+    <a href="#">Activate account</a>
+    <span class="close-btn" onclick="document.getElementById('notifyBar').style.display='none'">×</span>
+  </div>
+
+  <!-- Top right bar -->
+  <div class="topbar-right">
+    <div class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge">3</span>
+    </div>
+    <span style="color:#b0bec5">EN</span>
+    <div class="user-info">
+      <div class="avatar">LA</div>
+      <div>
+        <div style="font-weight:600;font-size:12.5px;color:#263238">Loanlink Admin Advisor</div>
+        <div style="font-size:11px;color:#b0bec5">Administrator</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-title">
+          Mr Test Data Verif
+          <span class="amount">231.710,00 €</span>
+          <span class="case-id">Case ID: 408</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" onclick="openUseCasesModal()">Use Cases</button>
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Loan simulator
+        </button>
+        <button class="btn btn-validate" onclick="openValidationModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/></svg>
+          Antrag validieren
+        </button>
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Client view
+        </button>
+        <button class="btn-more btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+        <button class="btn-expand btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="tags-row">
+      <div class="app-badge">
+        <span class="dot"></span>
+        Property found
+      </div>
+      <div class="app-badge" style="font-size:12px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+        Onboarding: LoanLink24 Mortgage GmbH
+      </div>
+      <button class="tag-add">+ add new</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <div class="tab-item active" onclick="setTab(this)">Übersicht</div>
+      <div class="tab-item" onclick="setTab(this)">Antrag</div>
+      <div class="tab-item" onclick="setTab(this)">Antragsvalidierung (beta)</div>
+      <div class="tab-item" onclick="setTab(this)">Manuelle Angebote</div>
+      <div class="tab-item" onclick="setTab(this)">Immobilienbewertung</div>
+      <div class="tab-item" onclick="setTab(this)">
+        Dokumente
+        <svg class="ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+      <div class="tab-item" onclick="setTab(this)">PDF</div>
+    </div>
+  </div>
+
+  <!-- Content: Übersicht placeholder -->
+  <div class="content">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;color:#90a4ae;padding-bottom:60px;">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#b0bec5" stroke-width="1.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      <div style="text-align:center;">
+        <div style="font-size:15px;font-weight:600;color:#78909c;margin-bottom:6px;">Übersicht</div>
+        <div style="font-size:13px;color:#b0bec5;">Dieser Bereich ist noch nicht verfügbar.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── VALIDATION MODAL ─────────────────────────────────────────────── -->
+<div class="modal-overlay" id="validationModal" onclick="handleModalOverlayClick(event)" style="display:none">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div class="modal-header-left">
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="modal-title">Antragsvalidierung</span>
+            </div>
+            <span class="modal-subtitle">Mr Test Data Verif · Case ID 408 · 231.710,00 €</span>
+          </div>
+          <span class="modal-badge">
+            beta
+          </span>
+        </div>
+        <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <!-- Beta notice -->
+      <div class="beta-notice" id="betaNotice">
+        <div class="beta-notice-content">
+          <div class="beta-notice-text">
+            Diese Funktion liest Daten automatisch aus Personalausweisen, Reisepässen, Gehaltsabrechnungen, Energieausweisen und Exposés aus. Bitte prüfen Sie jeden Wert anhand des Originaldokuments, bevor Sie ihn bestätigen.
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <span class="toggle-label">Show</span>
+          <label class="toggle">
+            <input type="checkbox" checked onchange="toggleContent(this)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <div id="scenarioContent">
+      <!-- Table toolbar -->
+      <div class="table-toolbar">
+        <div class="active-filter-pills" id="activePills"></div>
+        <div class="dot-menu-wrap">
+          <button class="phase-btn" id="dotMenuBtn" onclick="toggleDotMenu()" title="Antragsphase wählen">
+            <span class="phase-btn-label">Antragsphase: <strong id="phaseBtnValue">Alle</strong></span>
+            <span class="material-symbols-outlined phase-btn-chevron" style="letter-spacing:0;">expand_more</span>
+          </button>
+          <div class="dot-dropdown" id="dotDropdown">
+            <div class="dropdown-section">
+              <div class="dropdown-section-label">Antragsphase</div>
+              <div class="dropdown-options">
+                <label class="dropdown-option" id="opt-alle">
+                  <input type="radio" name="antragsphase" value="alle" checked onchange="setAntragsphase('alle')">
+                  Alle
+                </label>
+                <label class="dropdown-option" id="opt-angebot">
+                  <input type="radio" name="antragsphase" value="angebot" onchange="setAntragsphase('angebot')">
+                  Angebot erstellen
+                </label>
+                <label class="dropdown-option" id="opt-einreichen">
+                  <input type="radio" name="antragsphase" value="einreichen" onchange="setAntragsphase('einreichen')">
+                  Antrag einreichen
+                </label>
+              </div>
+            </div>
+            <div class="dropdown-section">
+              <div class="toggle-row">
+                <span class="toggle-label">Pflichtfelder hervorheben</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="pflichtToggle" onchange="setPflichtfelder(this.checked ? 'ja' : 'nein')">
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all', this)">Alle (41)</button>
+        <button class="filter-tab" onclick="setFilter('error', this)">Fehler (21)</button>
+        <button class="filter-tab" onclick="setFilter('confirmed', this)">Bestätigt (1)</button>
+        <button class="filter-tab" onclick="setFilter('no_system', this)">Kein Systemwert (0)</button>
+        <button class="filter-tab" onclick="setFilter('unknown', this)">Unbekannt (19)</button>
+      </div>
+
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table id="validationTable">
+          <thead>
+            <tr>
+              <th class="pflicht-col"></th>
+              <th class="sortable" onclick="sortBy('field')">
+                Feld
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Kundeneingabe
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Systemwert
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Manueller Wert
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th>
+                Quelle
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th class="sortable status-td" onclick="sortBy('status')">
+                Status
+                <span class="sort-arrows"><span>▲</span><span>▼</span></span>
+              </th>
+              <th style="width:90px">Konfidenz</th>
+              <th style="width:48px">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+          </tbody>
+        </table>
+      </div>
+      </div><!-- /#scenarioContent -->
+      <div id="scenarioPlaceholder">Dieser Fall ist noch nicht verfügbar.</div>
+    </div><!-- /.modal-body -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal-overlay -->
+
+<!-- ─── USE CASES MODAL ──────────────────────────────────────────────── -->
+<div class="modal-overlay" id="useCasesModal" onclick="if(event.target===this)closeUseCasesModal()" style="display:none">
+  <div class="uc-modal-dialog">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-title">Use Cases</div>
+        <div class="modal-subtitle">Was der Berater in jeder Zeile sieht</div>
+      </div>
+      <button class="modal-close" onclick="closeUseCasesModal()" title="Schließen">×</button>
+    </div>
+    <div class="uc-modal-body">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-confirmed" style="padding:2px 8px;border-radius:10px;font-size:11px;">Bestätigt</span>
+          Erfolgreiche Validierungen
+        </div>
+        <ul class="uc-list">
+          <li><strong>Netto-Kaltmiete (500 €):</strong> Das System hat den Mietbetrag aus zwei unabhängigen Quellen gezogen – dem Mietvertrag und dem Kontoauszug September. Wenn die angegebene Zahl, der Vertrag und die tatsächlichen Banküberweisungen übereinstimmen, ist das eine starke Bestätigung.</li>
+          <li><strong>Nominalzins (2,45 %):</strong> Direkt aus dem Darlehensvertrag-PDF extrahiert. Keine Kreuzprüfung nötig, da der Vertrag die maßgebliche Quelle ist.</li>
+          <li><strong>Wohnfläche (100 m²):</strong> Stimmt exakt mit der Wohnflächenberechnung überein.</li>
+          <li><strong>Eigentumsverhältnis:</strong> Der Grundbuchauszug bestätigt beide Antragsteller als Eigentümer (je 1/2 Miteigentum). Das System hat den einfachen Eintrag „Beide Antragsteller" mit dem genauen Rechtsanteil angereichert.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-error" style="padding:2px 8px;border-radius:10px;font-size:11px;">Fehler</span>
+          Validierungsfehler
+        </div>
+        <ul class="uc-list">
+          <li><strong>Marktwert:</strong> Kunde gab 150.000 € an, aber das hochgeladene Wertgutachten von 2024 nennt 128.000 €. Eine ~17 %ige Überbewertung verändert den LTV des neuen Darlehens wesentlich – der Berater muss entweder den niedrigeren Wert akzeptieren oder ein aktuelles Gutachten anfordern.</li>
+          <li><strong>Restschuld:</strong> Kunde gab 85.000 € an, die Saldenbestätigung der Commerzbank (Oktober 2025) zeigt hingegen 83.420 €. Kleine Differenz, wahrscheinlich veraltete Kundendaten – muss jedoch abgestimmt werden, bevor die Bank den gesicherten/ungesicherten Anteil berechnet.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">
+          <span class="uc-badge badge-open" style="padding:2px 8px;border-radius:10px;font-size:11px;">Offen</span>
+          Noch nicht validierbar
+        </div>
+        <ul class="uc-list">
+          <li><strong>Endenergiewert (300 kWh/m²):</strong> Kein Energieausweis hochgeladen. Der Berater kann das ohne das Dokument nicht bestätigen – und es ist ohnehin eine gesetzliche Anforderung für Mietobjekte.</li>
+          <li><strong>Modernisierungsjahr (2015):</strong> Die Angabe ist plausibel, aber ungeprüft – ohne Rechnungen oder Handwerkerbelege kann das Bewertungsmodell den angesetzten Modernisierungsabschlag auf den Marktwert nicht bestätigen.</li>
+        </ul>
+      </div>
+
+      <hr class="uc-divider">
+
+      <div class="uc-section">
+        <div class="uc-section-title">Design-Hinweise</div>
+        <ul class="uc-list">
+          <li>Die Spalte <strong>Manueller Wert</strong> ermöglicht dem Berater, sowohl Kundenwert als auch Systemwert zu überschreiben – nützlich, wenn der Berater Informationen aus einem Telefonat hat oder weiß, dass der Wert einen Abschlag braucht.</li>
+          <li>Der Button <strong>„Dokument anfordern"</strong> in der Quellen-Spalte ist ein natürlicher Ansatzpunkt, um ein LLM zur Erstellung einer Dokumentenanforderungs-E-Mail an die Antragsteller einzubinden.</li>
+          <li>Die farblich kodierte <strong>Status-Pille</strong> rechts erlaubt dem Berater, ein langes Formular zu überfliegen und direkt zu den Zeilen zu springen, die Aufmerksamkeit erfordern.</li>
+        </ul>
+      </div>
+
+    </div><!-- /.uc-modal-body -->
+  </div><!-- /.uc-modal-dialog -->
+</div><!-- /#useCasesModal -->
+
+<!-- History popover (global, positioned via JS) -->
+<div id="historyPopover" class="history-popover"></div>
+
+<!-- Lock confirmation dialog -->
+<div id="lockConfirmOverlay" class="lock-confirm-overlay" onclick="cancelLock()">
+  <div class="lock-confirm-dialog" onclick="event.stopPropagation()">
+    <p class="lock-confirm-msg">Neue Dokumente werden erst bei der Einreichung wieder geprüft.</p>
+    <div class="lock-confirm-actions">
+      <button class="lock-confirm-btn lock-confirm-cancel" onclick="cancelLock()">Zurück</button>
+      <button class="lock-confirm-btn lock-confirm-ok" onclick="confirmLock()">Ja, sperren</button>
+    </div>
+  </div>
+</div>
+
+<!-- Comment drawer overlay -->
+<div id="commentOverlay" class="comment-overlay" onclick="closeCommentDrawer()"></div>
+
+<!-- Global tooltip -->
+<div id="uiTooltip"></div>
+
+<!-- Comment drawer -->
+<div id="commentDrawer" class="comment-drawer">
+  <div class="comment-drawer-header">
+    <div>
+      <div class="comment-drawer-title">
+        <span class="material-symbols-outlined">comment</span>
+        Kommentare
+      </div>
+      <span class="comment-drawer-field-label">Feld: </span><span id="commentDrawerField" class="comment-drawer-field-name"></span>
+    </div>
+    <button class="comment-drawer-close" onclick="closeCommentDrawer()">×</button>
+  </div>
+  <div class="comment-thread" id="commentThread">
+    <div class="comment-empty">Noch keine Kommentare</div>
+  </div>
+  <div class="comment-composer-area">
+    <div class="comment-composer">
+      <div class="comment-composer-avatar">KH</div>
+      <textarea id="commentInput" class="comment-input" placeholder="Kommentar schreiben… (Strg+Enter zum Senden)" onkeydown="handleCommentKey(event)"></textarea>
+    </div>
+    <div class="comment-submit-row">
+      <button class="comment-submit-btn" onclick="submitComment()">Senden</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── DATA ─────────────────────────────────────────────────────────────────
+  const rows = [
+    // ── Antragsteller 1 ──────────────────────────────────────────────────────
+    { id:1,  group:'as1', field:'Vorname',                       customerInput:'Erika',           systemValue:'Erika',                       source:'Personalausweis / Reisepass', manuellerWert:'' },
+    { id:2,  group:'as1', field:'Nachname',                      customerInput:'Mustermann',      systemValue:'Mustermann',                  source:'Personalausweis / Reisepass' },
+    { id:3,  group:'as1', field:'Geburtsdatum',                  customerInput:'12.08.1983',      systemValue:'12.08.1983',                  source:'Personalausweis / Reisepass' },
+    { id:4,  group:'as1', field:'Staatsangehörigkeit',           customerInput:'–',               systemValue:'Deutsch',                     source:'Personalausweis / Reisepass' },
+    { id:9,  group:'as1', field:'Dokumentennummer',              customerInput:'–',               systemValue:'L01X00T47',                   source:'Personalausweis / Reisepass' },
+    { id:10, group:'as1', field:'Ablaufdatum',                   customerInput:'–',               systemValue:'01.08.2031',                  source:'Personalausweis / Reisepass' },
+    { id:22, group:'as1', field:'E-Mail-Adresse',                customerInput:'Erika_M@gmail.com', systemValue:'Erika_M@gmail.com',         source:'Kundenprofil' },
+    { id:5,  group:'as1', field:'Einnahmen (Monatlich)',         customerInput:'3.200 €',         systemValue:'3.200 €, 3.450 €',            source:['PSD2-Kontodaten', 'Gehaltsabrechnung'],
+      subRows: [
+        { systemValue: '3.200 €', source: 'PSD2-Kontodaten Nov 2025' },
+        { systemValue: '3.450 €', source: 'PSD2-Kontodaten Dez 2025' },
+      ]
+    },
+    { id:15, group:'as1', newDocument:true,    field:'Nettogehalt',                   fieldSub:'Einkommen',            customerInput:'3.200 €',       systemValue:'3.450 €',  source:['PSD2-Kontodaten', 'Gehaltsabrechnung'], manuellerWert:'',
+      subRows: [
+        { label:'Vorheriger Wert', systemValue:'3.200 €', source:'PSD2-Kontodaten Okt 2025' }
+      ]
+    },
+    { id:17, group:'as1', field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:6,  group:'as1', field:'IBAN',                          customerInput:'–',               systemValue:'DE89 3704 0044 0532 0130 00',  source:'–', manuellerWert:'' },
+    { id:7,  group:'as1', field:'Arbeitgeber',                    customerInput:'–',               systemValue:'Datevmuster GmbH',             source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:8,  group:'as1', field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'45678912349',                 source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:18, group:'as1', field:'Steuerklasse',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:19, group:'as1', field:'Krankenversicherung',           customerInput:'–',               systemValue:'gesetzlich',                  source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:20, group:'as1', field:'Kinderfreibetrag',              customerInput:'–',               systemValue:'0',                           source:'Gehaltsabrechnung', manuellerWert:'' },
+    { id:21, group:'as1', field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:23, group:'as1', field:'Vertragsende',                  customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:24, group:'as1', field:'Startdatum',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:25, group:'as1', field:'Beschäftigungsdauer',           customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:26, group:'as1', field:'Bonuszahlungen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:27, group:'as1', field:'Überstundenvergütung',          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:28, group:'as1', field:'Nebeneinkommen',                customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:29, group:'as1', field:'Renteneinkommen',               customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:30, group:'as1', field:'Mieteinnahmen',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    // ── Antragsteller 2 ──────────────────────────────────────────────────────
+    { id:42, group:'as2', status:'unknown',   field:'Vorname',                       customerInput:'Sabine',          systemValue:'–',                           source:'–' },
+    { id:43, group:'as2', status:'error',     field:'Nachname',                      customerInput:'Richter',         systemValue:'Müller',                      source:'Personalausweis / Reisepass' },
+    { id:44, group:'as2', status:'unknown',   field:'Geburtsdatum',                  customerInput:'15.05.1980',      systemValue:'–',                           source:'–' },
+    { id:45, group:'as2', status:'unknown',   field:'Staatsangehörigkeit',           customerInput:'Deutsch',         systemValue:'–',                           source:'–' },
+    { id:50, group:'as2', status:'error',     field:'Dokumentennummer',              customerInput:'KX9A00B34',       systemValue:'KX9A12B34',                   source:'Personalausweis / Reisepass' },
+    { id:51, group:'as2', status:'unknown',   field:'Ablaufdatum',                   customerInput:'–',               systemValue:'20.11.2027',                  source:'Personalausweis / Reisepass' },
+    { id:55, group:'as2', status:'unknown',   field:'E-Mail-Adresse',                customerInput:'s.richter@web.de',systemValue:'–',                           source:'–' },
+    { id:46, group:'as2', status:'unknown',   field:'Monatliches Einkommen',         customerInput:'3.200,0 €',       systemValue:'–',                           source:'–' },
+    { id:52, group:'as2', status:'unknown',   field:'Nettogehalt',                   customerInput:'2.700,0 €',       systemValue:'–',                           source:'–' },
+    { id:53, group:'as2', status:'unknown',   field:'Bruttogehalt',                  customerInput:'3.800,0 €',       systemValue:'–',                           source:'–' },
+    { id:54, group:'as2', status:'unknown',   field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'–',                           source:'–' },
+    { id:47, group:'as2', status:'unknown',   field:'IBAN',                          customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:48, group:'as2', status:'unknown',   field:'Arbeitgeber',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:49, group:'as2', status:'unknown',   field:'Steueridentifikationsnummer',   customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:56, group:'as2', status:'unknown',   field:'Steuerklasse',                  customerInput:'3',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:57, group:'as2', status:'unknown',   field:'Krankenversicherung',           customerInput:'privat',          systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:58, group:'as2', status:'unknown',   field:'Kinderfreibetrag',              customerInput:'1',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:59, group:'as2', status:'unknown',   field:'Kirchensteuer',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    // ── Gemeinsame Felder ────────────────────────────────────────────────────
+    { id:11, group:'shared', status:'error',   field:'Straße',                        customerInput:'–',               systemValue:'HEIDESTRASSE',                source:'Personalausweis / Reisepass' },
+    { id:12, group:'shared', status:'error',   field:'Hausnummer',                    customerInput:'–',               systemValue:'17',                          source:'Personalausweis / Reisepass' },
+    { id:13, group:'shared', status:'error',   field:'Postleitzahl',                  customerInput:'–',               systemValue:'12345',                       source:'Personalausweis / Reisepass' },
+    { id:14, group:'shared', status:'error',   field:'Stadt',                         customerInput:'–',               systemValue:'Berlin',                      source:'Personalausweis / Reisepass' },
+    { id:31, group:'shared', status:'unknown', field:'Immobilientyp',                 customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:32, group:'shared', status:'unknown', field:'Baujahr',                       customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:33, group:'shared', status:'unknown', field:'Wohnfläche',                    customerInput:'–',               systemValue:'–',                           source:'–', manuellerWert:'' },
+    { id:34, group:'shared', status:'unknown', field:'Energieeffizienzklasse',        customerInput:'–',               systemValue:'E',                           source:'Energieausweis/Credium', manuellerWert:'' },
+    { id:35, group:'shared', status:'unknown', field:'Primärenergiebedarf',           customerInput:'–',               systemValue:'158 kWh/(m²·a)',               source:'Energieausweis/Credium', manuellerWert:'' },
+    { id:36, group:'shared', status:'unknown', field:'Heizungsart',                   customerInput:'–',               systemValue:'Zentralheizung (Gas)',         source:'Energieausweis/Credium', manuellerWert:'' },
+    { id:37, group:'shared', status:'unknown', field:'Grundstücksfläche',             customerInput:'–',               systemValue:'320 m²',                      source:'Credium / Flurkarte', manuellerWert:'' },
+    { id:38, group:'shared', status:'unknown', field:'Anzahl der Etagen',             customerInput:'–',               systemValue:'2',                           source:'Credium', manuellerWert:'' },
+    { id:39, group:'shared', status:'unknown', field:'Stellplatz',                    customerInput:'–',               systemValue:'1 Außenstellplatz',            source:'Credium', manuellerWert:'' },
+    { id:40, group:'shared', status:'unknown', field:'Keller',                        customerInput:'–',               systemValue:'Ja, unterkellert',            source:'Credium', manuellerWert:'' },
+    { id:41, group:'shared', status:'unknown', field:'Garten',                        customerInput:'–',               systemValue:'Ja',                          source:'Credium', manuellerWert:'' },
+    // ── Immobilie 1 — Mareschstr. 4, 12055 Berlin ───────────────────────────
+    { id:60, group:'immo1', status:'confirmed', field:'Netto-Kaltmiete',      fieldSub:'Einnahmen',          customerInput:'500 €',              systemValue:'500 €',              source:['Mietvertrag 2023', 'Kontoauszug Sep 2025'] },
+    { id:61, group:'immo1', status:'error',     field:'Aktueller Marktwert',  fieldSub:'Vermögen',           customerInput:'150.000 €',          systemValue:'128.000 €',          source:['Wertgutachten 2024'] },
+    { id:62, group:'immo1', status:'error',     field:'Aktuelle Restschuld',  fieldSub:'Verbindlichkeit',    customerInput:'85.000 €',           systemValue:'83.420 €',           source:['Saldenbestätigung Okt 2025', 'Jahreskontoauszug 2024'] },
+    { id:63, group:'immo1', status:'confirmed', field:'Nominalzins',          fieldSub:'Darlehenskondition', customerInput:'2,45 %',             systemValue:'2,45 %',             source:['Darlehensvertrag Commerzbank'] },
+    { id:64, group:'immo1', status:'confirmed', field:'Wohnfläche',           fieldSub:'Objektdetail',       customerInput:'100 m²',             systemValue:'100 m²',             source:['Wohnflächenberechnung'] },
+    { id:65, group:'immo1', status:'confirmed', field:'Eigentumsverhältnis',  fieldSub:'Grundbuch',          customerInput:'Beide Antragsteller',systemValue:'Je 1/2 Miteigentum', source:['Grundbuchauszug Aug 2025'] },
+    { id:66, group:'immo1', status:'open',      field:'Endenergiewert',       fieldSub:'Objektdetail',       customerInput:'300 kWh/m²',         systemValue:'–',                  sourceWarning:'Energieausweis fehlt' },
+    { id:67, group:'immo1', status:'open',      field:'Modernisierungsjahr',  fieldSub:'Objektdetail',       customerInput:'2015',               systemValue:'–',                  sourceWarning:'Modernisierungsnachweise fehlen' },
+  ];
+
+  let currentFilter = 'all';
+  let currentScenario = 'standard0';
+  let selectedIds = new Set();
+  let rowStatuses = {};
+  let expandedRows = new Set();
+  let lockedRows = new Set();
+
+  let manuallyEditedRows = new Set();
+  let rowHistory = {
+    1:  [
+      { text: 'Mit Personalausweis automatisch bestätigt.', author: 'System', time: 'Heute, 09:42' },
+      { text: 'Durch Berater manuell geändert.',            author: 'Max Mustermann', time: 'Vor 4 Tagen, 14:18' },
+      { text: 'Mittels Gehaltsabrechnung automatisch befüllt.', author: 'System', time: '24.04.2026, 11:03' }
+    ],
+    2:  [
+      { text: 'Mit Personalausweis automatisch bestätigt.', author: 'System', time: 'Heute, 09:42' },
+      { text: 'Automatisch ausgelesen.',                    author: 'System', time: '24.04.2026, 10:58' }
+    ],
+    3:  [
+      { text: 'Mit Personalausweis automatisch bestätigt.', author: 'System', time: 'Heute, 09:42' },
+      { text: 'Durch Berater manuell geändert.',            author: 'Max Mustermann', time: 'Vor 4 Tagen, 14:18' },
+      { text: 'Mittels Gehaltsnachweis automatisch befüllt.', author: 'System', time: '24.04.2026, 11:03' }
+    ],
+    5:  [
+      { text: 'PSD2-Kontodaten automatisch befüllt.',       author: 'System', time: 'Heute, 09:40' },
+      { text: 'Wert manuell angepasst.',                    author: 'Max Mustermann', time: 'Vor 3 Tagen, 16:22' }
+    ],
+    15: [
+      { text: 'Mittels Gehaltsabrechnung automatisch befüllt.', author: 'System', time: 'Heute, 09:45' },
+      { text: 'Durch Berater manuell geändert.',            author: 'Max Mustermann', time: 'Vor 2 Tagen, 11:30' },
+      { text: 'PSD2-Kontodaten ausgelesen.',                author: 'System', time: '20.04.2026, 08:00' }
+    ],
+    17: [
+      { text: 'Mittels Gehaltsabrechnung automatisch befüllt.', author: 'System', time: 'Heute, 09:45' },
+      { text: 'Kundenwert übernommen.',                     author: 'System', time: '23.04.2026, 09:00' }
+    ],
+    22: [
+      { text: 'Aus Kundenprofil automatisch übernommen.',   author: 'System', time: 'Heute, 09:38' }
+    ],
+    43: [
+      { text: 'Abweichender Wert erkannt – Prüfung erforderlich.', author: 'System', time: 'Heute, 09:43' },
+      { text: 'Kundenwert eingetragen.',                    author: 'Max Mustermann', time: 'Vor 1 Tag, 13:55' }
+    ],
+    11: [ { text: 'Mit Personalausweis automatisch ausgelesen.', author: 'System', time: 'Heute, 09:42' } ],
+    12: [ { text: 'Mit Personalausweis automatisch ausgelesen.', author: 'System', time: 'Heute, 09:42' } ],
+    13: [ { text: 'Mit Personalausweis automatisch ausgelesen.', author: 'System', time: 'Heute, 09:42' } ],
+    14: [ { text: 'Mit Personalausweis automatisch ausgelesen.', author: 'System', time: 'Heute, 09:42' } ],
+    60: [
+      { text: 'Mietvertrag automatisch bestätigt.',         author: 'System', time: 'Heute, 09:50' },
+      { text: 'Kontoauszug abgeglichen.',                   author: 'System', time: '28.04.2026, 14:00' }
+    ],
+    61: [
+      { text: 'Abweichung zum Wertgutachten erkannt.',      author: 'System', time: 'Heute, 09:50' },
+      { text: 'Kundenwert eingetragen.',                    author: 'Max Mustermann', time: 'Vor 1 Tag, 10:20' }
+    ],
+  };
+  let manuellerWertDebounce = {};
+  let collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
+
+  // ─── HISTORY HELPERS ──────────────────────────────────────────────────────
+  function logChange(id, text) {
+    if (!rowHistory[id]) rowHistory[id] = [];
+    const now = new Date();
+    const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    rowHistory[id].unshift({ text, time });
+    // Update button class without full re-render
+    const btn = document.getElementById(`historyBtn_${id}`);
+    if (btn) btn.classList.add('has-history');
+  }
+
+  function showHistoryPopover(id, el) {
+    const history = rowHistory[id] || [];
+    const popover = document.getElementById('historyPopover');
+
+    function getInitials(name) {
+      if (!name || name === 'System') return 'S';
+      return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    }
+
+    const entriesHtml = history.length === 0
+      ? '<div class="history-empty">Noch keine Änderungen aufgezeichnet.</div>'
+      : '<div class="history-timeline">' + history.map((e, i) => {
+          const isCurrent = i === 0;
+          const isAuto = !e.author || e.author === 'System';
+          const entryClass = 'history-entry ' + (isAuto ? 'is-auto' : 'is-manual');
+          const badge = isCurrent ? '<span class="history-entry-current-badge">Aktuell</span>' : '';
+          const initials = getInitials(e.author);
+          return `
+          <div class="${entryClass}">
+            <div class="history-entry-marker"></div>
+            <div class="history-entry-text">${e.text}${badge}</div>
+            <div class="history-entry-meta">
+              <div class="history-entry-actor">
+                ${e.author || 'System'}
+              </div>
+              <div class="history-entry-sep"></div>
+              <span class="history-entry-time">${e.time}</span>
+            </div>
+          </div>`;
+        }).join('') + '</div>';
+
+    popover.classList.remove('visible');
+    popover.style.display = 'block';
+    popover.innerHTML = `<div class="history-popover-title">Verlauf</div>${entriesHtml}`;
+
+    // Position above the button (flip below if not enough space)
+    const rect = el.getBoundingClientRect();
+    const popW = popover.offsetWidth;
+    const popH = popover.offsetHeight;
+    let top = rect.top - popH - 8;
+    let left = rect.right - popW;
+    if (top < 8) top = rect.bottom + 8;
+    if (left < 8) left = 8;
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+    requestAnimationFrame(() => popover.classList.add('visible'));
+  }
+
+  function hideHistoryPopover() {
+    const popover = document.getElementById('historyPopover');
+    popover.classList.remove('visible');
+    setTimeout(() => { if (!popover.classList.contains('visible')) popover.style.display = 'none'; }, 150);
+  }
+
+  function computeStatus(r) {
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    const hasCust   = hasVal(r.customerInput);
+    const hasSys    = hasVal(r.systemValue);
+    const hasManual = hasVal(r.manuellerWert);
+    // No data on any side → always Keine Angabe, even if confirmedSource is set
+    if (!hasCust && !hasSys && !hasManual) return 'unknown';
+    if (r.confirmedSource) return 'confirmed';
+    if (hasSys)  return 'error';      // Prüfen — system has a value to check
+    if (hasCust) return 'no_system';  // Kein Systemwert
+    return 'unknown';
+  }
+
+  rows.forEach(r => {
+    if (!r.manuellerWert) r.manuellerWert = '';
+    if (!r.confirmedSource) r.confirmedSource = null; // null | 'customer' | 'system'
+    rowStatuses[r.id] = computeStatus(r);
+    // Enforce: rows with no data on any side are never confirmed
+    if (rowStatuses[r.id] === 'unknown') r.confirmedSource = null;
+    if (r.newDocument) expandedRows.add(r.id);
+  });
+
+  // Save a clean snapshot of the standard scenario for reset
+  const _standardSnapshot = JSON.parse(JSON.stringify(rows));
+
+  function statusBadge(status) {
+    const map = {
+      error:     '<span class="badge badge-error"><span class="material-symbols-outlined">schedule</span>Prüfen</span>',
+      no_system: '<span class="badge badge-no-system"><span class="material-symbols-outlined">remove_circle_outline</span>Kein Systemwert</span>',
+      unknown:   '<span class="badge badge-unknown"><span class="material-symbols-outlined">help</span>Keine Angabe</span>',
+      confirmed: '<span class="badge badge-confirmed"><span class="material-symbols-outlined">check</span>Bestätigt</span>',
+      notsure:   '<span class="badge badge-notsure">Unsicher</span>',
+      open:      '<span class="badge badge-open">Offen</span>',
+    };
+    return map[status] || '';
+  }
+
+  function konfidenzBadge(status, rowId) {
+    if (status === 'confirmed') {
+      return '<span class="konfidenz-tag konfidenz-high">100 %</span>';
+    }
+    if (status === 'error') {
+      const score = (rowId % 2 === 0) ? 80 : 70;
+      return `<span class="konfidenz-tag konfidenz-mid">${score} %</span>`;
+    }
+    return '';
+  }
+
+  function openUseCasesModal()  { document.getElementById('useCasesModal').style.display = 'flex'; }
+  function closeUseCasesModal() { document.getElementById('useCasesModal').style.display = 'none'; }
+
+  function filteredRows() {
+    let result;
+    if (currentFilter === 'all') {
+      result = rows;
+    } else if (currentFilter === 'no_system') {
+      result = rows.filter(r => !r.systemValue || r.systemValue === '–');
+    } else {
+      result = rows.filter(r => rowStatuses[r.id] === currentFilter);
+    }
+    if (antragsphase === 'angebot') {
+      result = result.filter(r => angebot_felder.has(r.field));
+    }
+    return result;
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const visible = filteredRows();
+
+    const groupOrder = ['as1', 'as2', 'shared', 'immo1'];
+    const groupMeta = {
+      as1:    { label: 'Antragsteller 1',                              icon: 'person', color: '#009688' },
+      as2:    { label: 'Antragsteller 2',                              icon: 'person', color: '#546e7a' },
+      shared: { label: 'Gemeinsame Felder',                            icon: 'group',  color: '#78909c' },
+      immo1:  { label: 'Immobilie 1 — Mareschstr. 4, 12055 Berlin',   icon: 'home',   color: '#795548', subtitle: 'Zusatzsicherheit · Vermietet · Beide Antragsteller' },
+    };
+
+    function sectionHeaderHtml(gk, groupRows) {
+      const meta = groupMeta[gk];
+      const collapsed = collapsedGroups.has(gk);
+      const confirmedCount = groupRows.filter(r => rowStatuses[r.id] === 'confirmed').length;
+      const offenCount     = groupRows.filter(r => rowStatuses[r.id] !== 'confirmed').length;
+      const avatarHtml = `<span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:#37474f;flex-shrink:0;letter-spacing:0;">${meta.icon}</span>`;
+      const chevron = `<svg class="section-chevron ${collapsed ? 'collapsed' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+      const subtitleHtml = meta.subtitle ? `<span class="section-subtitle">${meta.subtitle}</span>` : '';
+      const hasNew = groupRows.some(r => r.newDocument);
+      const countHtml = collapsed ? 'eingeklappt'
+        : (meta.subtitle
+            ? `${confirmedCount} bestätigt · ${offenCount} offen`
+            : groupRows.length + ' Felder');
+      return `<tr class="section-row${collapsed ? '' : ' section-row--expanded'}" onclick="toggleGroup('${gk}')" style="cursor:pointer">
+        <td colspan="9"><div class="section-row-inner">
+          ${chevron}
+          ${avatarHtml}
+          <span><span class="section-label">${meta.label}</span></span>
+          ${(hasNew && currentScenario === 'fall1') ? `<span class="badge badge-new" style="font-size:10px;padding:2px 7px;gap:3px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>` : ''}
+          ${offenCount > 0 ? `<span class="section-err">${offenCount} Prüfen</span>` : ''}
+        </div></td>
+      </tr>`;
+    }
+
+    let allHtml = '';
+
+    for (const gk of groupOrder) {
+      function buildRowHtml(row) {
+      const _hv = v => v && v !== '–' && String(v).trim() !== '';
+      const _hasAnyVal = _hv(row.customerInput) || _hv(row.systemValue) || _hv(row.manuellerWert);
+      // Hard guard: if no data exists anywhere, row can never be Bestätigt
+      const st = _hasAnyVal ? rowStatuses[row.id] : 'unknown';
+      const confirmed = _hasAnyVal ? row.confirmedSource : null;
+      const isSelected = selectedIds.has(row.id);
+      const isExpanded = expandedRows.has(row.id);
+      const hasSubRows = row.subRows && row.subRows.length > 0;
+      const dash = '<span class="dash">–</span>';
+      const custRaw = row.customerInput;
+      const custStruck = confirmed === 'system' || confirmed === 'manual';
+      const sysStruck  = confirmed === 'customer' || confirmed === 'manual';
+      const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      const custBtnClass = (confirmed === 'customer' || confirmed === 'both') ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
+      const sysBtnClass  = (confirmed === 'system'  || confirmed === 'both') ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
+
+      // Character-diff for IBAN in Fall 3 only
+      const _useCharDiff = row.id === 6 && currentScenario === 'fall3'
+        && custRaw !== '–' && row.systemValue !== '–';
+      const _diff = _useCharDiff ? charDiffHtml(custRaw, row.systemValue) : null;
+
+      const custValueHtml = custRaw === '–'
+        ? `<span class="dash ${custStruck ? 'value-struck' : ''}">–</span>`
+        : _diff
+          ? `<span class="${custStruck ? 'value-struck' : ''}">${_diff.custHtml}</span>`
+          : `<span class="${custStruck ? 'value-struck' : ''}">${custRaw}</span>`;
+      const sysValue = row.systemValue === '–' ? dash : row.systemValue;
+      const newDocIcon = row.newDocument ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e53935" stroke="none" style="flex-shrink:0;margin-right:5px;vertical-align:middle;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>` : '';
+      const sysValueHtml = row.systemValue === '–'
+        ? dash
+        : _diff
+          ? `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${_diff.sysHtml}</span>`
+          : `<span class="${sysStruck ? 'value-struck' : ''}" style="display:inline-flex;align-items:center;">${newDocIcon}${row.systemValue}</span>`;
+      let sourceHtml;
+      if (row.sourceWarning) {
+        sourceHtml = `<div style="display:flex;flex-direction:column;gap:2px;">
+          <span class="source-warning"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>${row.sourceWarning}</span>
+          <button class="doc-request-btn" onclick="event.stopPropagation()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Dokument anfordern</button>
+        </div>`;
+      } else if (Array.isArray(row.source)) {
+        sourceHtml = row.source.map(s => `<a class="source-link" href="#" style="display:block">${s}</a>`).join('');
+      } else if (row.openPayslipScenario) {
+        sourceHtml = `<a class="source-link" href="#" onclick="openPayslip(event,'${row.openPayslipScenario}')">${row.source}</a>`;
+      } else {
+        if (row.source === '–') {
+          sourceHtml = dash;
+        } else if (typeof row.source === 'string' && row.source.startsWith('Gehaltsabrechnung')) {
+          sourceHtml = `<a class="source-link" href="#" onclick="openPayslip(event)">${row.source}</a>`;
+        } else {
+          sourceHtml = `<a class="source-link" href="#">${row.source}</a>`;
+        }
+      }
+
+      const isConfirmed = st === 'confirmed';
+      const isLocked = lockedRows.has(row.id);
+
+      const isPflicht = pflichtfelder === 'ja' && pflichtfelder_set.has(row.field);
+      const pflichtCell = `<td class="pflicht-col">${hasSubRows
+        ? `<button class="expand-btn ${isExpanded ? 'open' : ''}" onclick="toggleExpand(${row.id}, event)" title="${isExpanded ? 'Subzeilen ausblenden' : 'Subzeilen anzeigen'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>`
+        : isPflicht ? `<span class="pflicht-icon">!<span class="pflicht-tooltip">Pflichtfeld</span></span>` : ''
+      }</td>`;
+
+      const groupLabel = (groupMeta[row.group] || groupMeta['as1']).label.split(' — ')[0];
+      const fieldSubLabel = row.fieldSub || groupLabel;
+      const isRowConfirmed = confirmed !== null;
+
+      const mainRow = `
+        <tr class="${isSelected ? 'selected' : ''}${hasSubRows ? ' expandable-row' : ''}${isRowConfirmed ? ' row-confirmed' : ''}" data-id="${row.id}" ${hasSubRows ? `onclick="toggleExpand(${row.id}, event)"` : ''}>
+          ${pflichtCell}
+          <td class="field-cell"><span class="field-name">${row.field}</span></td>
+          <td class="value-cell">
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${row.customerInput !== '–' ? `<button
+                class="confirm-btn ${custBtnClass}"
+                onclick="confirmSource(${row.id}, 'customer', event)"
+                ${confirmed === 'system' ? 'disabled' : ''}
+                title="Kundeneingabe bestätigen"
+              >${checkSvg}</button>` : ''}
+              ${custValueHtml}
+            </div>
+          </td>
+          <td class="value-cell">
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${row.systemValue !== '–' ? `<button
+                class="confirm-btn ${sysBtnClass}"
+                onclick="confirmSource(${row.id}, 'system', event)"
+                ${confirmed === 'customer' ? 'disabled' : ''}
+                title="Systemwert bestätigen"
+              >${checkSvg}</button>` : ''}
+              ${hasSubRows ? (() => {
+                const nums = row.subRows.map(s => parseFloat(s.systemValue.replace(/\./g,'').replace(',','.'))).filter(n => !isNaN(n));
+                const avg = nums.length ? (nums.reduce((a,b) => a+b, 0) / nums.length) : null;
+                const avgStr = avg !== null ? ('Ø ' + avg.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €') : (row.subRows.length + ' Werte');
+                return `<span style="color:#546e7a;font-size:12px">${avgStr}</span>`;
+              })() : sysValueHtml}
+            </div>
+          </td>
+          <td class="value-cell">
+            <div class="manual-input-wrap">
+              <input
+                class="manual-input"
+                type="text"
+                value="${row.manuellerWert || ''}"
+                placeholder="Wert eingeben…"
+                oninput="updateManuellerWert(${row.id}, this.value)${row.id === 6 ? ';ibanCheckChars(this)' : ''}"
+                onblur="${row.id === 6 ? 'ibanValidate(this)' : ''}"
+                onkeydown="if(event.key==='Enter'){event.stopPropagation();confirmManuellerWert(${row.id}, event);}"
+                onclick="event.stopPropagation()"
+              />
+              <button
+                id="manualConfirm_${row.id}"
+                class="manual-confirm-btn"
+                style="display:${row.manuellerWert ? 'inline-flex' : 'none'}"
+                onclick="confirmManuellerWert(${row.id}, event)"
+                title="Bestätigen"
+              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+            ${row.id === 6 ? '<div id="ibanMsg" class="iban-msg"></div>' : ''}
+          </td>
+          <td class="source-cell">${sourceHtml}</td>
+          <td class="status-td">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;">
+              <div class="status-wrap">
+                <span ${st !== 'confirmed' ? `onclick="toggleStatusDropdown(${row.id}, event)" style="cursor:pointer"` : ''}>${statusBadge(st)}</span>
+                <div class="status-dropdown" id="statusDd_${row.id}">
+                  ${['error','confirmed','open','notsure','unknown'].map(s => `
+                    <div class="status-option ${st === s ? 'current' : ''}" onclick="setStatus(${row.id}, '${s}', event)">
+                      ${statusBadge(s)}
+                    </div>`).join('')}
+                </div>
+              </div>
+              ${row.newDocument ? `<span class="badge badge-new"><span class="material-symbols-outlined">error</span>Neu</span>` : ''}
+            </div>
+          </td>
+          <td style="text-align:center;">${konfidenzBadge(st, row.id)}</td>
+          <td class="note-cell">
+            <div style="display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;">
+
+              ${(isConfirmed && currentScenario !== 'standard' && currentScenario !== 'standard0') ? `<span id="lockWrap_${row.id}" style="display:inline-flex;align-items:center;">
+                <button
+                  class="lock-btn ${isLocked ? 'locked' : 'unlocked'}"
+                  onclick="toggleLock(${row.id}, event)"
+                  title="${isLocked ? 'Gesperrt' : 'Entsperrt'}"
+                  style="margin:0"
+                >${isLocked ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>` : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}</button>
+              </span>` : `<span id="lockWrap_${row.id}" style="display:none"></span>`}
+              <button
+                id="historyBtn_${row.id}"
+                class="table-icon-btn history-btn ${(rowHistory[row.id] && rowHistory[row.id].length > 0) ? 'has-history' : ''}"
+                onmouseenter="showHistoryPopover(${row.id}, this)"
+                onmouseleave="hideHistoryPopover()"
+                onclick="event.stopPropagation()"
+                data-tooltip="Verlauf"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </button>
+              <button
+                class="table-icon-btn note-btn ${(rowComments[row.id] && rowComments[row.id].length > 0) ? 'has-note' : ''}"
+                onclick="openCommentDrawer(${row.id}, event)"
+                data-tooltip="Notiz hinzufügen"
+              >
+                <span class="material-symbols-outlined" style="font-size:15px;letter-spacing:0;line-height:1;">comment</span>
+                ${(rowComments[row.id] && rowComments[row.id].length > 0) ? `<span class="note-dot"></span>` : ''}
+              </button>
+            </div>
+          </td>
+        </tr>`;
+
+      const subRowsHtml = (hasSubRows && isExpanded)
+        ? row.subRows.map(sub => {
+          const subValHtml = sub.isNew
+            ? `<strong>${sub.systemValue}</strong>&nbsp;<span class="badge badge-new" style="font-size:10px;padding:1px 6px;gap:2px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>`
+            : sub.systemValue;
+          const subSrcHtml = sub.source === '–' ? '–'
+            : (sub.openPayslip || sub.openPayslipScenario || (typeof sub.source === 'string' && sub.source.startsWith('Gehaltsabrechnung')))
+              ? `<a class="source-link" href="#" onclick="openPayslip(event, '${sub.openPayslipScenario || ''}')">${sub.source}</a>`
+              : `<a class="source-link" href="#">${sub.source}</a>`;
+          return `
+          <tr class="sub-row">
+            <td></td>
+            <td class="sub-row-indent">${sub.label || row.field}</td>
+            <td></td>
+            <td class="sub-row-value">${subValHtml}</td>
+            <td></td>
+            <td>${subSrcHtml}</td>
+            <td></td>
+            <td></td>
+          </tr>`;
+        }).join('')
+        : '';
+
+      return mainRow + subRowsHtml;
+      }
+
+      const groupRows = visible
+        .filter(r => (r.group || 'as1') === gk);
+      if (groupRows.length === 0) continue;
+      allHtml += sectionHeaderHtml(gk, groupRows);
+      if (collapsedGroups.has(gk)) continue;
+      allHtml += groupRows.map(buildRowHtml).join('');
+    }
+    tbody.innerHTML = allHtml;
+
+  }
+
+  function toggleRow(id, event) {
+    event.stopPropagation();
+    if (selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+    renderTable();
+  }
+
+  function toggleAll() {
+    const visible = filteredRows();
+    const allSelected = visible.every(r => selectedIds.has(r.id));
+    if (allSelected) visible.forEach(r => selectedIds.delete(r.id));
+    else visible.forEach(r => selectedIds.add(r.id));
+    renderTable();
+  }
+
+  function updateSelectAll() {
+    const visible = filteredRows();
+    const cbAll = document.getElementById('cbAll');
+    const allSelected = visible.length > 0 && visible.every(r => selectedIds.has(r.id));
+    const someSelected = visible.some(r => selectedIds.has(r.id));
+    cbAll.className = 'cb cb-all';
+    if (allSelected) cbAll.className += ' checked';
+    else if (someSelected) cbAll.className += ' partial';
+  }
+
+  function updateBulkToolbar() {
+    const toolbar = document.getElementById('bulkToolbar');
+    const count = selectedIds.size;
+    document.getElementById('selectedCount').textContent = `${count} Zeile${count !== 1 ? 'n' : ''} ausgewählt`;
+    toolbar.className = count > 0 ? 'bulk-toolbar visible' : 'bulk-toolbar';
+  }
+
+  function bulkApplySystemValues() {
+    selectedIds.forEach(id => {
+      const row = rows.find(r => r.id === id);
+      if (row && row.systemValue !== '–') {
+        row.confirmedSource = 'system';
+        rowStatuses[id] = 'confirmed';
+      }
+    });
+    selectedIds.clear();
+    renderTable();
+    updateCounts();
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    renderTable();
+  }
+
+  function updateCounts() {
+    const counts = { all: rows.length, error: 0, confirmed: 0, no_system: 0, unknown: 0 };
+    rows.forEach(r => {
+      const st = rowStatuses[r.id];
+      if (counts[st] !== undefined) counts[st]++;
+      if (!r.systemValue || r.systemValue === '–') counts.no_system++;
+    });
+
+    // Update filter tab labels
+    const tabs = document.querySelectorAll('.filter-tab');
+    const labels = ['all', 'error', 'confirmed', 'no_system', 'unknown'];
+    const display = ['Alle', 'Prüfen', 'Bestätigt', 'Kein Systemwert', 'Keine Angabe'];
+    tabs.forEach((tab, i) => {
+      tab.textContent = `${display[i]} (${counts[labels[i]]})`;
+    });
+
+    // Update progress bar
+    const total = counts.all || 1;
+    const segments = [
+      { key: 'error',     label: 'Prüfen',       cls: 'error' },
+      { key: 'confirmed', label: 'Bestätigt',     cls: 'confirmed' },
+      { key: 'unknown',   label: 'Keine angabe',  cls: 'unknown' },
+      { key: 'notsure',   label: 'Unsicher',      cls: 'notsure' },
+    ];
+
+    const bar = document.getElementById('statusProgressBar');
+    const legend = document.getElementById('progressLegend');
+
+    bar.innerHTML = segments
+      .filter(s => counts[s.key] > 0)
+      .map(s => {
+        const pct = (counts[s.key] / total * 100).toFixed(1);
+        return `<div class="progress-seg progress-seg--${s.cls}" style="width:${pct}%" title="${s.label}: ${counts[s.key]}"></div>`;
+      }).join('');
+
+    legend.innerHTML = segments
+      .filter(s => counts[s.key] > 0)
+      .map(s => `
+        <span class="progress-legend-item" onclick="setFilter('${s.key}', document.querySelector('.filter-tab:nth-child(${labels.indexOf(s.key) + 1})'))" title="${s.label} filtern">
+          <span class="progress-legend-dot progress-legend-dot--${s.cls}"></span>
+          <span class="progress-legend-label">${s.label}</span>
+          <span class="progress-legend-count">${counts[s.key]}</span>
+        </span>`
+      ).join('');
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    selectedIds.clear();
+    renderTable();
+  }
+
+  function setNav(el) {
+    document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function setTab(el) {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ─── VALIDATION MODAL ────────────────────────────────────────────────────
+  function openValidationModal() {
+    const modal = document.getElementById('validationModal');
+    modal.style.display = 'flex';
+    // Force reflow so transition fires
+    modal.offsetHeight;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    applyToggleState(currentScenario !== 'standard0');
+  }
+
+  function closeValidationModal() {
+    const modal = document.getElementById('validationModal');
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    modal.addEventListener('transitionend', () => {
+      if (!modal.classList.contains('open')) modal.style.display = 'none';
+    }, { once: true });
+  }
+
+  function handleModalOverlayClick(e) {
+    if (e.target === document.getElementById('validationModal')) {
+      closeValidationModal();
+    }
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeValidationModal();
+  });
+
+  function toggleContent(checkbox) {
+    const filterTabs = document.querySelector('.filter-tabs');
+    const tableWrap = document.querySelector('.table-wrap');
+    const bulkToolbar = document.getElementById('bulkToolbar');
+    if (checkbox.checked) {
+      filterTabs.style.display = '';
+      tableWrap.style.display = '';
+    } else {
+      filterTabs.style.display = 'none';
+      tableWrap.style.display = 'none';
+      bulkToolbar.style.display = 'none';
+    }
+  }
+
+  function applyToggleState(checked) {
+    const cb = document.querySelector('#betaNotice input[type="checkbox"]');
+    if (cb) { cb.checked = checked; toggleContent(cb); }
+  }
+
+  // ─── COMMENT DRAWER ───────────────────────────────────────────────────────
+  let rowComments = {};
+  let activeCommentId = null;
+
+  function openCommentDrawer(id, event) {
+    event.stopPropagation();
+    activeCommentId = id;
+    const row = rows.find(r => r.id === id);
+    document.getElementById('commentDrawerField').textContent = row ? row.field : '';
+    renderCommentThread(id);
+    document.getElementById('commentDrawer').classList.add('open');
+    document.getElementById('commentOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('commentInput').focus(), 50);
+  }
+
+  function closeCommentDrawer() {
+    document.getElementById('commentDrawer').classList.remove('open');
+    document.getElementById('commentOverlay').classList.remove('open');
+    activeCommentId = null;
+  }
+
+  function renderCommentThread(id) {
+    const thread = document.getElementById('commentThread');
+    const comments = rowComments[id] || [];
+    if (comments.length === 0) {
+      thread.innerHTML = '<div class="comment-empty">Noch keine Kommentare</div>';
+      return;
+    }
+    thread.innerHTML = comments.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar">${c.author}</div>
+        <div class="comment-bubble">
+          <div class="comment-meta">
+            <span class="comment-author">${c.author}</span>
+            <span class="comment-time">${c.timestamp}</span>
+          </div>
+          <div class="comment-text">${c.text.replace(/</g,'&lt;')}</div>
+        </div>
+      </div>
+    `).join('');
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function submitComment() {
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (!text || activeCommentId === null) return;
+    const now = new Date();
+    const date = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const timestamp = `${date} · ${time}`;
+    if (!rowComments[activeCommentId]) rowComments[activeCommentId] = [];
+    rowComments[activeCommentId].push({ text, timestamp, author: 'KH' });
+    input.value = '';
+    renderCommentThread(activeCommentId);
+    renderTable();
+  }
+
+  function handleCommentKey(event) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      submitComment();
+    }
+  }
+
+  let openStatusId = null;
+
+  function toggleStatusDropdown(id, event) {
+    event.stopPropagation();
+    const dd = document.getElementById(`statusDd_${id}`);
+    if (!dd) return;
+    const isOpen = dd.classList.contains('open');
+    if (openStatusId !== null) {
+      const prev = document.getElementById(`statusDd_${openStatusId}`);
+      if (prev) prev.classList.remove('open');
+    }
+    if (isOpen) {
+      dd.classList.remove('open');
+      openStatusId = null;
+      document.removeEventListener('mousedown', closeStatusDropdown);
+    } else {
+      dd.classList.add('open');
+      openStatusId = id;
+      setTimeout(() => document.addEventListener('mousedown', closeStatusDropdown), 0);
+    }
+  }
+
+  function closeStatusDropdown(e) {
+    if (openStatusId === null) return;
+    const dd = document.getElementById(`statusDd_${openStatusId}`);
+    if (dd && !dd.contains(e.target)) {
+      dd.classList.remove('open');
+      openStatusId = null;
+      document.removeEventListener('mousedown', closeStatusDropdown);
+    }
+  }
+
+  function setStatus(id, status, event) {
+    event.stopPropagation();
+    const statusLabels = { error: 'Prüfen', confirmed: 'Bestätigt', notsure: 'Unsicher', unknown: 'Keine angabe' };
+    logChange(id, `Status gesetzt: ${statusLabels[status] || status}`);
+    rowStatuses[id] = status;
+    openStatusId = null;
+    document.removeEventListener('mousedown', closeStatusDropdown);
+    renderTable();
+    updateCounts();
+  }
+
+  let pendingLockId = null;
+
+  function toggleLock(id, event) {
+    event.stopPropagation();
+    if (lockedRows.has(id)) {
+      // Unlock immediately — no confirmation needed
+      lockedRows.delete(id);
+      logChange(id, 'Zeile entsperrt');
+      renderTable();
+    } else {
+      // Show confirmation before locking
+      pendingLockId = id;
+      document.getElementById('lockConfirmOverlay').classList.add('open');
+    }
+  }
+
+  function confirmLock() {
+    if (pendingLockId !== null) {
+      lockedRows.add(pendingLockId);
+      logChange(pendingLockId, 'Zeile gesperrt');
+      pendingLockId = null;
+      renderTable();
+    }
+    document.getElementById('lockConfirmOverlay').classList.remove('open');
+  }
+
+  function cancelLock() {
+    pendingLockId = null;
+    document.getElementById('lockConfirmOverlay').classList.remove('open');
+  }
+
+  function confirmSource(id, source, event) {
+    event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+    // Toggle off: clicking active button or either button when 'both' deselects
+    if (row.confirmedSource === 'both' || row.confirmedSource === source) {
+      row.confirmedSource = null;
+      logChange(id, 'Bestätigung aufgehoben');
+    } else {
+      // Check if both values are identical (non-empty, non-'–')
+      const _hv = v => v && v !== '–' && String(v).trim() !== '';
+      const bothMatch = _hv(row.customerInput) && _hv(row.systemValue) &&
+                        row.customerInput.trim() === row.systemValue.trim();
+      if (bothMatch) {
+        row.confirmedSource = 'both';
+        rowStatuses[id] = 'confirmed';
+        if (row.newDocument) row.newDocument = false;
+        logChange(id, `Kundeneingabe und Systemwert stimmen überein – bestätigt: „${row.customerInput}"`);
+      } else {
+        row.confirmedSource = source;
+        const val = source === 'customer' ? row.customerInput : row.systemValue;
+        rowStatuses[id] = 'confirmed';
+        if (row.newDocument) row.newDocument = false;
+        const label = source === 'customer' ? 'Kundeneingabe' : 'Systemwert';
+        logChange(id, `${label} bestätigt: „${val !== '–' ? val : '–'}"`);
+      }
+    }
+    if (!row.confirmedSource) {
+      lockedRows.delete(id);
+      rowStatuses[id] = computeStatus(row);
+    }
+    renderTable();
+    updateCounts();
+  }
+
+  function updateManuellerWert(id, val) {
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+    row.manuellerWert = val;
+    const lockWrap = document.getElementById(`lockWrap_${id}`);
+    const show = val.trim().length > 0;
+    if (lockWrap) lockWrap.style.display = show ? 'inline-flex' : 'none';
+    const confirmBtn = document.getElementById(`manualConfirm_${id}`);
+    if (confirmBtn) confirmBtn.style.display = show ? 'inline-flex' : 'none';
+    if (show) manuallyEditedRows.add(id);
+    else manuallyEditedRows.delete(id);
+    // Debounced history log (only record after 800ms of no typing)
+    clearTimeout(manuellerWertDebounce[id]);
+    manuellerWertDebounce[id] = setTimeout(() => {
+      if (val.trim().length > 0) {
+        logChange(id, `Manueller Wert gesetzt: „${val}"`);
+      } else {
+        logChange(id, 'Manueller Wert geleert');
+      }
+    }, 800);
+  }
+
+  function confirmManuellerWert(id, event) {
+    if (event) event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row || !row.manuellerWert || !row.manuellerWert.trim()) return;
+    row.confirmedSource = 'manual';
+    rowStatuses[id] = 'confirmed';
+    logChange(id, `Manueller Wert bestätigt: „${row.manuellerWert}"`);
+    renderTable();
+    updateCounts();
+  }
+
+  function applySystemValue(id, event) {
+    event.stopPropagation();
+    const row = rows.find(r => r.id === id);
+    if (!row || row.systemValue === '–') return;
+    row.manuellerWert = row.systemValue;
+    renderTable();
+  }
+
+  function syncStatus(row) {
+    if (row.manuellerWert && row.manuellerWert !== '–' && row.manuellerWert === row.systemValue) {
+      rowStatuses[row.id] = 'confirmed';
+    }
+  }
+
+  function toggleGroup(gk) {
+    if (collapsedGroups.has(gk)) collapsedGroups.delete(gk);
+    else collapsedGroups.add(gk);
+    renderTable();
+  }
+
+  function toggleExpand(id, event) {
+    event.stopPropagation();
+    if (expandedRows.has(id)) expandedRows.delete(id);
+    else expandedRows.add(id);
+    renderTable();
+  }
+
+  function sortBy(col) { renderTable(); }
+
+  // ─── 3-DOT MENU ──────────────────────────────────────────────────────────
+  const pflichtfelder_set = new Set(['Vorname', 'Nachname', 'Geburtsdatum', 'Monatliches Einkommen', 'Postleitzahl', 'Stadt']);
+  const angebot_felder = new Set(['Vorname', 'Nachname', 'Monatliches Einkommen', 'Staatsangehörigkeit', 'Postleitzahl', 'Stadt', 'Beschäftigungsart']);
+
+  let antragsphase = 'alle';
+  let pflichtfelder = 'nein';
+
+  function toggleDotMenu() {
+    const btn = document.getElementById('dotMenuBtn');
+    const dd  = document.getElementById('dotDropdown');
+    const isOpen = dd.classList.contains('open');
+    dd.classList.toggle('open');
+    btn.classList.toggle('open');
+    if (!isOpen) {
+      setTimeout(() => document.addEventListener('mousedown', closeDotMenuOutside), 0);
+    }
+  }
+
+  function closeDotMenuOutside(e) {
+    if (!e.target.closest('.dot-menu-wrap')) {
+      document.getElementById('dotDropdown').classList.remove('open');
+      document.getElementById('dotMenuBtn').classList.remove('open');
+      document.removeEventListener('mousedown', closeDotMenuOutside);
+    }
+  }
+
+  function setAntragsphase(val) {
+    antragsphase = val;
+    const labels = { alle: 'Alle', angebot: 'Angebot erstellen', einreichen: 'Antrag einreichen' };
+    document.getElementById('phaseBtnValue').textContent = labels[val];
+    updatePills();
+    renderTable();
+  }
+
+  function setPflichtfelder(val) {
+    pflichtfelder = val;
+    updatePills();
+    renderTable();
+  }
+
+  function updatePills() {
+    const wrap = document.getElementById('activePills');
+    const pills = [];
+    if (antragsphase !== 'alle') {
+      const labels = { angebot: 'Angebot erstellen', einreichen: 'Antrag einreichen' };
+      pills.push(`
+        <span class="active-pill">
+          ${labels[antragsphase]}
+          <span class="pill-remove" onclick="resetAntragsphase()" title="Zurücksetzen">×</span>
+        </span>`);
+    }
+    if (pflichtfelder === 'ja') {
+      pills.push(`
+        <span class="active-pill">
+          Pflichtfelder
+          <span class="pill-remove" onclick="resetPflichtfelder()" title="Zurücksetzen">×</span>
+        </span>`);
+    }
+    wrap.innerHTML = pills.join('');
+  }
+
+  function resetAntragsphase() {
+    antragsphase = 'alle';
+    document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;
+    document.getElementById('phaseBtnValue').textContent = 'Alle';
+    updatePills();
+    renderTable();
+  }
+
+  function resetPflichtfelder() {
+    pflichtfelder = 'nein';
+    document.getElementById('pflichtToggle').checked = false;
+    updatePills();
+    renderTable();
+  }
+
+
+  // ─── SCENARIO MANAGEMENT ─────────────────────────────────────────────────
+
+  function buildFall2Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    return base.map(r => {
+      if (r.id === 6) {
+        return {
+          id: 6, group: 'as1', field: 'IBAN', fieldSub: 'Antragsteller 1',
+          customerInput: 'DE89 3704 0044 0532 0130 00',
+          systemValue:   'DE89 3704 0044 0532 0131 00',
+          source: 'Gehaltsabrechnung Jan 2026',
+          openPayslipScenario: 'fall2',
+          confirmedSource: null, manuellerWert: ''
+        };
+      }
+      if (r.id === 15 && r.subRows) {
+        return {
+          ...r,
+          newDocument: false,
+          subRows: r.subRows.map(sub => ({ ...sub, label: 'Gehaltsabrechnung' }))
+        };
+      }
+      const hasCust = hasVal(r.customerInput);
+      const hasSys  = hasVal(r.systemValue);
+      const bothMatch = hasCust && hasSys && r.customerInput.trim() === r.systemValue.trim();
+      const confirmedSource = bothMatch        ? 'both'
+                            : (hasCust && !hasSys) ? 'customer'
+                            : (!hasCust && hasSys) ? 'system'
+                            : null;
+      return { ...r, confirmedSource, newDocument: false, manuellerWert: '' };
+    });
+  }
+
+  function buildStandard2Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    return base.map(r => {
+      const bothMatch = hasVal(r.customerInput) && hasVal(r.systemValue) &&
+                        r.customerInput.trim() === r.systemValue.trim();
+      return bothMatch ? { ...r, confirmedSource: 'both', manuellerWert: '' } : { ...r, manuellerWert: '' };
+    });
+  }
+
+  function buildFall1Rows() {
+    const base = JSON.parse(JSON.stringify(_standardSnapshot));
+    // Auto-confirm based on which side has a value:
+    // only customerInput → 'customer', only systemValue → 'system',
+    // both → null (needs manual decision), neither → null (Keine Angabe)
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    const rest = base
+      .filter(r => r.id !== 15)
+      .map(r => {
+        const hasCust = hasVal(r.customerInput);
+        const hasSys  = hasVal(r.systemValue);
+        const confirmedSource = (hasCust && !hasSys) ? 'customer'
+                              : (!hasCust && hasSys) ? 'system'
+                              : null;
+        return { ...r, confirmedSource, newDocument: false, manuellerWert: '' };
+      });
+
+    // Special Nettogehalt row — prepended so it appears first in the AS1 section
+    const fall1Nettogehalt = {
+      id: 15, group: 'as1', field: 'Nettogehalt', fieldSub: 'Einkommen',
+      customerInput: '3.200 €', systemValue: '4.000 €',
+      source: 'Gehaltsabrechnung Jan 2026',
+      manuellerWert: '', confirmedSource: null, newDocument: true,
+      subRows: [
+        { label: 'Januar 2026',   systemValue: '4.000 €', source: 'Gehaltsabrechnung Jan 2026', isNew: true, openPayslip: true },
+        { label: 'Dezember 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Dez 2025', openPayslipScenario: 'historical' },
+        { label: 'November 2025', systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025', openPayslipScenario: 'historical' },
+        { label: 'Oktober 2025',  systemValue: '3.200 €', source: 'Gehaltsabrechnung Okt 2025', openPayslipScenario: 'historical' },
+      ]
+    };
+    return [fall1Nettogehalt, ...rest];
+  }
+
+  function switchScenario(name, btn) {
+    currentScenario = name;
+    document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('validationTable').classList.toggle('no-manual', name === 'standard0');
+    applyToggleState(name !== 'standard0');
+
+    // Full state reset
+    currentFilter = 'all';
+    selectedIds.clear();
+    expandedRows.clear();
+    lockedRows.clear();
+    manuallyEditedRows.clear();
+    rowHistory = {};
+    rowComments = {};
+    rowStatuses = {};
+    collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
+    antragsphase = 'alle';
+    pflichtfelder = 'nein';
+    document.querySelector('input[name="antragsphase"][value="alle"]').checked = true;
+    document.getElementById('phaseBtnValue').textContent = 'Alle';
+    document.getElementById('pflichtToggle').checked = false;
+    updatePills();
+
+    // Reset filter tabs to "Alle"
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.filter-tab').classList.add('active');
+
+    const content = document.getElementById('scenarioContent');
+    const placeholder = document.getElementById('scenarioPlaceholder');
+
+    content.style.display = '';
+    placeholder.style.display = 'none';
+
+    // Rebuild rows array
+    rows.length = 0;
+    const newRows = name === 'fall1'     ? buildFall1Rows()
+                  : name === 'fall2'     ? buildFall2Rows()
+                  : name === 'fall3'     ? buildFall2Rows()
+                  : name === 'standard2' ? buildStandard2Rows()
+                  : JSON.parse(JSON.stringify(_standardSnapshot));
+    newRows.forEach(r => rows.push(r));
+
+    rows.forEach(r => {
+      if (!r.manuellerWert) r.manuellerWert = '';
+      if (r.confirmedSource === undefined) r.confirmedSource = null;
+      rowStatuses[r.id] = computeStatus(r);
+      // Enforce: rows with no data on any side are never confirmed
+      if (rowStatuses[r.id] === 'unknown') r.confirmedSource = null;
+      if (r.newDocument) expandedRows.add(r.id);
+    });
+
+    renderTable();
+    updateCounts();
+  }
+
+  function openPayslip(event, scenario) {
+    event.preventDefault();
+    event.stopPropagation();
+    const eff = (scenario && scenario !== '') ? scenario : currentScenario;
+
+    // ── Payslip configs ──────────────────────────────────────────────────────
+    const cfgs = {
+      standard: {
+        period: 'Oktober 2025', payDate: '31.10.2025',
+        gehalt: 5200.20, fahrk: 120.00,
+        steuerbrutto: 5200.20, svbrutto: 5320.20,
+        lohnsteuer: 900.00, kv: 390.00, rv: 450.20, pv: 87.00, av: 43.00,
+        netto: 3450.00, iban: 'DE89 3704 0044 0532 0130 00'
+      },
+      fall1: {
+        period: 'Januar 2026', payDate: '31.01.2026',
+        gehalt: 5830.20, fahrk: 120.00,
+        steuerbrutto: 5830.20, svbrutto: 5512.50,
+        lohnsteuer: 950.00, kv: 410.00, rv: 465.60, pv: 81.60, av: 43.00,
+        netto: 4000.00, iban: 'DE89 3704 0044 0532 0130 00'
+      },
+      fall2: {
+        period: 'Januar 2026', payDate: '31.01.2026',
+        gehalt: 5438.60, fahrk: 120.00,
+        steuerbrutto: 5438.60, svbrutto: 5512.50,
+        lohnsteuer: 950.00, kv: 410.00, rv: 465.60, pv: 81.60, av: 43.00,
+        netto: 3608.40, iban: 'DE89 3704 0044 0532 0131 00'
+      },
+      historical: {
+        period: 'Oktober 2025', payDate: '31.10.2025',
+        gehalt: 4850.20, fahrk: 120.00,
+        steuerbrutto: 4850.20, svbrutto: 4970.20,
+        lohnsteuer: 850.00, kv: 376.20, rv: 430.00, pv: 71.00, av: 43.00,
+        netto: 3200.00, iban: 'DE89 3704 0044 0532 0130 00'
+      }
+    };
+    const cfg = cfgs[eff === 'fall3' ? 'fall2' : eff in cfgs ? eff : 'standard'];
+    const f = n => n.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const gesamtbrutto = cfg.gehalt + cfg.fahrk;
+    const svTotal = cfg.kv + cfg.rv + cfg.pv + cfg.av;
+
+    const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Abrechnung der Brutto/Netto-Bezüge – ${cfg.period}</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5px; color: #111; background: white; padding: 20px 24px; max-width: 790px; margin: 0 auto; line-height: 1.3; }
+.doc-title { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
+.doc-title-main { font-size: 11px; font-weight: bold; }
+.admin-tbl { width: 100%; border-collapse: collapse; margin-bottom: 2px; }
+.admin-tbl td { border: 1px solid #888; padding: 1px 3px; vertical-align: top; }
+.f-lbl { font-size: 7px; color: #555; display: block; white-space: nowrap; }
+.f-val { font-size: 8.5px; font-weight: bold; }
+.kv-tbl { width: 100%; border-collapse: collapse; margin-bottom: 3px; }
+.kv-tbl td { border: 1px solid #888; padding: 1px 4px; font-size: 8px; }
+.addr-row { display: flex; border: 1px solid #888; margin-bottom: 4px; }
+.addr-emp { flex: 0 0 220px; padding: 5px 8px; border-right: 1px solid #888; font-size: 8.5px; line-height: 1.7; }
+.addr-notes { flex: 1; padding: 5px 8px; font-size: 8.5px; line-height: 1.7; }
+.notes-hdr { font-weight: bold; margin-bottom: 2px; }
+.sec-hdr { background: #c8c8c8; border: 1px solid #888; border-bottom: none; font-weight: bold; font-size: 8.5px; padding: 2px 5px; margin-top: 4px; }
+.dt { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.dt th { border: 1px solid #888; background: #e0e0e0; padding: 1px 4px; font-size: 7.5px; font-weight: bold; text-align: left; white-space: nowrap; }
+.dt th.r { text-align: right; }
+.dt td { border: 1px solid #bbb; padding: 1px 4px; }
+.dt td.r { text-align: right; }
+.dt .tot-row td { background: #e4e4e4; font-weight: bold; border-top: 2px solid #666; }
+.sv-tbl { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.sv-tbl th { border: 1px solid #888; background: #e0e0e0; padding: 1px 4px; font-size: 7.5px; text-align: center; font-weight: bold; white-space: nowrap; }
+.sv-tbl td { border: 1px solid #bbb; padding: 1px 4px; text-align: right; }
+.sv-tbl td.c { text-align: center; font-weight: bold; }
+.sv-tbl td.s { background: #e4e4e4; font-weight: bold; }
+.verd-wrap { display: flex; border: 1px solid #888; font-size: 8.5px; margin-top: 0; }
+.verd-left { flex: 1; padding: 4px 6px; border-right: 1px solid #888; }
+.verd-right { flex: 0 0 220px; padding: 4px 6px; }
+.verd-title { font-size: 7.5px; font-weight: bold; text-transform: uppercase; color: #555; margin-bottom: 3px; }
+.vl { display: flex; justify-content: space-between; padding: 0.5px 0; }
+.vl.tot { font-weight: bold; border-top: 1px solid #888; margin-top: 3px; padding-top: 2px; }
+.netto-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #000; padding: 5px 10px; margin: 5px 0; background: #f5f5f5; }
+.netto-lbl { font-size: 12px; font-weight: bold; }
+.netto-amt { font-size: 15px; font-weight: bold; }
+.bank-tbl { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+.bank-tbl th { border: 1px solid #888; background: #e0e0e0; padding: 1px 5px; font-size: 7.5px; font-weight: bold; }
+.bank-tbl td { border: 1px solid #bbb; padding: 2px 5px; }
+.bank-tbl .iban-val { font-family: 'Courier New', Courier, monospace; font-weight: bold; letter-spacing: 0.5px; font-size: 9.5px; }
+.bank-tbl td.r { text-align: right; font-weight: bold; }
+.footer { margin-top: 8px; font-size: 7px; color: #999; border-top: 1px solid #ddd; padding-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="doc-title">
+  <span class="doc-title-main">Abrechnung der Brutto/Netto-Bezüge &nbsp;&nbsp; für ${cfg.period}</span>
+  <span>${cfg.payDate} &nbsp;&nbsp; Ent. 1</span>
+</div>
+
+<table class="admin-tbl">
+  <tr>
+    <td style="width:70px"><span class="f-lbl">Firma</span><span class="f-val">0001</span></td>
+    <td style="width:45px"><span class="f-lbl">Werk</span><span class="f-val">001</span></td>
+    <td style="width:45px"><span class="f-lbl">Abt.</span><span class="f-val">30</span></td>
+    <td style="width:70px"><span class="f-lbl">PA-Bereich</span><span class="f-val">DE</span></td>
+    <td style="width:70px"><span class="f-lbl">Abr.-Kreis</span><span class="f-val">01</span></td>
+    <td style="width:95px"><span class="f-lbl">Personalnummer</span><span class="f-val">00010042</span></td>
+    <td style="width:75px"><span class="f-lbl">Kostenstelle</span><span class="f-val">3000</span></td>
+    <td><span class="f-lbl">Pers.-Gruppe</span><span class="f-val">1 – Angestellte</span></td>
+  </tr>
+</table>
+
+<table class="kv-tbl">
+  <tr>
+    <td style="width:40px"><b>5909:</b></td>
+    <td style="width:200px">BKK Datevmuster Krankenkasse</td>
+    <td style="width:190px">KV-Nummer: 1049101 1112 % 30</td>
+    <td style="width:75px">Ang. Tage: 30</td>
+    <td style="width:85px">Urlaub Tage: –</td>
+    <td>Krank Tg: –</td>
+  </tr>
+</table>
+
+<div class="addr-row">
+  <div class="addr-emp">
+    <div style="font-size:7px;color:#888;margin-bottom:3px;">PERS.-NR. 00010042</div>
+    <div style="font-weight:bold;">Erika Mustermann</div>
+    <div>Hauptstraße 42</div>
+    <div>90429 Nürnberg</div>
+  </div>
+  <div class="addr-notes">
+    <div class="notes-hdr">Hinweise zur Abrechnung:</div>
+    <div>Woch.Arb.Zt. 38,50 &nbsp; Erstellnr. 01.01.2019</div>
+    <div>Steuerklasse I &nbsp; Kinderfreibeträge: 0</div>
+    <div>AN-PV-%-Satz: 0,00 % &nbsp; Kirchensteuer: nein</div>
+  </div>
+</div>
+
+<div class="sec-hdr">Brutto-Bezüge</div>
+<table class="dt">
+  <thead>
+    <tr>
+      <th style="width:55px">Lohnart</th>
+      <th>Bezeichnung</th>
+      <th style="width:55px">Einheit</th>
+      <th style="width:40px" class="r">Menge</th>
+      <th style="width:90px" class="r">Faktor/Proz.</th>
+      <th style="width:25px">G/B</th>
+      <th style="width:85px" class="r">Betrag</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>040</td><td>Fahrkostenzuschuss §3 Nr. 13 EStG</td><td></td><td class="r">–</td><td class="r">P F J</td><td>J</td><td class="r">${f(cfg.fahrk)} €</td>
+    </tr>
+    <tr>
+      <td>030</td><td>Gehalt</td><td></td><td class="r">–</td><td class="r">L L J</td><td>J</td><td class="r">${f(cfg.gehalt)} €</td>
+    </tr>
+    <tr class="tot-row">
+      <td colspan="6">Gesamtbrutto</td><td class="r">${f(gesamtbrutto)} €</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="sec-hdr">Steuer / Sozialversicherung</div>
+<table class="sv-tbl">
+  <thead>
+    <tr>
+      <th style="width:30px">St/SV</th>
+      <th>Steuer-Brutto</th>
+      <th>Lohnsteuer</th>
+      <th>Kirchensteuer</th>
+      <th>Solidaritätszuschlag</th>
+      <th class="s">Steuerl. Abgaben</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="c">L</td>
+      <td>${f(cfg.steuerbrutto)} €</td>
+      <td>${f(cfg.lohnsteuer)} €</td>
+      <td>–</td>
+      <td>0,00 €</td>
+      <td class="s">${f(cfg.lohnsteuer)} €</td>
+    </tr>
+  </tbody>
+</table>
+<table class="sv-tbl" style="margin-bottom:4px;">
+  <thead>
+    <tr>
+      <th style="width:30px">St/SV</th>
+      <th>KV-Brutto</th>
+      <th>RV-Brutto</th>
+      <th>KV-Betrag (AN)</th>
+      <th>RV-Betrag (AN)</th>
+      <th>AV-Betrag (AN)</th>
+      <th>PV-Betrag (AN)</th>
+      <th class="s">SV monatl. Abg.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="c">SV</td>
+      <td>${f(cfg.svbrutto)} €</td>
+      <td>${f(cfg.svbrutto)} €</td>
+      <td>${f(cfg.kv)} €</td>
+      <td>${f(cfg.rv)} €</td>
+      <td>${f(cfg.av)} €</td>
+      <td>${f(cfg.pv)} €</td>
+      <td class="s">${f(svTotal)} €</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="sec-hdr">Verdienst / Verrechnungen</div>
+<div class="verd-wrap">
+  <div class="verd-left">
+    <div class="verd-title">Brutto / Steuer / SV</div>
+    <div class="vl"><span>Gesamtbrutto</span><span>${f(gesamtbrutto)} €</span></div>
+    <div class="vl"><span>Steuer-Brutto</span><span>${f(cfg.steuerbrutto)} €</span></div>
+    <div class="vl"><span>Lohnsteuer</span><span>− ${f(cfg.lohnsteuer)} €</span></div>
+    <div class="vl"><span>SV-Brutto</span><span>${f(cfg.svbrutto)} €</span></div>
+    <div class="vl"><span>KV-Betrag (AN)</span><span>− ${f(cfg.kv)} €</span></div>
+    <div class="vl"><span>RV-Betrag (AN)</span><span>− ${f(cfg.rv)} €</span></div>
+    <div class="vl"><span>AV-Betrag (AN)</span><span>− ${f(cfg.av)} €</span></div>
+    <div class="vl"><span>PV-Betrag (AN)</span><span>− ${f(cfg.pv)} €</span></div>
+  </div>
+  <div class="verd-right">
+    <div class="verd-title">Netto-Bezüge</div>
+    <div class="vl"><span>Gesamtbrutto</span><span>${f(gesamtbrutto)} €</span></div>
+    <div class="vl"><span>− Lohnsteuer</span><span>${f(cfg.lohnsteuer)} €</span></div>
+    <div class="vl"><span>− SV-Abzüge (AN)</span><span>${f(svTotal)} €</span></div>
+    <div class="vl tot"><span>Netto-Verdienst</span><span>${f(cfg.netto)} €</span></div>
+  </div>
+</div>
+
+<div class="netto-box">
+  <span class="netto-lbl">Netto-Verdienst</span>
+  <span class="netto-amt">${f(cfg.netto)} €</span>
+</div>
+
+<table class="bank-tbl">
+  <thead>
+    <tr><th>Bank</th><th>IBAN (Überweisungskonto)</th><th>Auszahlungsbetrag</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Commerzbank AG Nürnberg</td>
+      <td class="iban-val">${cfg.iban}</td>
+      <td class="r">${f(cfg.netto)} €</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">Datevmuster GmbH · Musterstraße 1 · 12345 Musterstadt · Steuernummer 123/456/78901 · Musterdokument für Demonstrationszwecke</div>
+</body>
+</html>`;
+
+    window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank');
+  }
+
+  // ─── TOOLTIP ─────────────────────────────────────────────────────────────
+  (function() {
+    const tip = document.getElementById('uiTooltip');
+    let hideTimer;
+    document.addEventListener('mouseenter', e => {
+      const btn = e.target.closest('[data-tooltip]');
+      if (!btn) return;
+      clearTimeout(hideTimer);
+      const rect = btn.getBoundingClientRect();
+      tip.textContent = btn.dataset.tooltip;
+      tip.classList.add('visible');
+      // Position below the button, centred
+      const tipW = tip.offsetWidth;
+      const left = Math.round(rect.left + rect.width / 2 - tipW / 2);
+      const top  = Math.round(rect.bottom + 6);
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    }, true);
+    document.addEventListener('mouseleave', e => {
+      if (!e.target.closest('[data-tooltip]')) return;
+      hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+    }, true);
+  })();
+
+  // ─── COBA INIT ────────────────────────────────────────────────────────────
+  (function() {
+    // Use a neutral scenario so toggle shows table by default
+    currentScenario = 'standard';
+    document.getElementById('validationTable').classList.remove('no-manual');
+
+    // Keep only specific AS1 rows; remove all AS2
+    const keepIds = new Set([1, 2, 3, 4, 9, 10, 22, 5, 15, 6]);
+    const hideIds = new Set([31, 32, 33]);
+    const kept = rows.filter(r => {
+      if (r.group === 'as2') return false;
+      if (r.group === 'as1') return keepIds.has(r.id);
+      if (hideIds.has(r.id)) return false;
+      return true;
+    });
+    rows.length = 0;
+    kept.forEach(r => rows.push(r));
+
+    // Blank out IBAN values
+    const ibanRow = rows.find(r => r.id === 6);
+    if (ibanRow) { ibanRow.customerInput = '–'; ibanRow.systemValue = '–'; ibanRow.confirmedSource = null; }
+
+    // Set statuses
+    const hasVal = v => v && v !== '–' && String(v).trim() !== '';
+    rows.forEach(r => {
+      if (r.id === 9 || r.id === 10) {
+        r.confirmedSource = null;
+        rowStatuses[r.id] = 'error';
+      } else if (r.id === 6) {
+        r.confirmedSource = null;
+        rowStatuses[r.id] = 'unknown';
+      } else {
+        const hasCust = hasVal(r.customerInput);
+        const hasSys  = hasVal(r.systemValue);
+        if (hasCust && hasSys) {
+          r.confirmedSource = r.customerInput.trim() === r.systemValue.trim() ? 'both' : 'system';
+        } else if (hasSys) {
+          r.confirmedSource = 'system';
+        } else if (hasCust) {
+          r.confirmedSource = 'customer';
+        }
+        rowStatuses[r.id] = 'confirmed';
+      }
+    });
+
+    renderTable();
+    updateCounts();
+  })();
+
+  // ─── CHARACTER DIFF ───────────────────────────────────────────────────────
+  // Returns {custHtml, sysHtml} with differing chars highlighted.
+  // Non-alphanumeric chars (spaces, dashes) are treated as separators and
+  // never highlighted — only the actual digit/letter positions are compared.
+  function charDiffHtml(custStr, sysStr) {
+    // Build arrays of {char, isAlnum} for both strings
+    function tokenise(s) {
+      return s.split('').map(c => ({ char: c, alnum: /[A-Za-z0-9]/.test(c) }));
+    }
+    const cTokens = tokenise(custStr);
+    const sTokens = tokenise(sysStr);
+
+    // Align by index — IBAN strings are always the same length after formatting
+    const len = Math.max(cTokens.length, sTokens.length);
+    let custHtml = '';
+    let sysHtml  = '';
+
+    for (let i = 0; i < len; i++) {
+      const c = cTokens[i] || { char: '', alnum: false };
+      const s = sTokens[i] || { char: '', alnum: false };
+      const differ = c.alnum && s.alnum && c.char !== s.char;
+
+      if (differ) {
+        custHtml += `<span class="cd-wrong">${c.char}</span>`;
+        sysHtml  += `<span class="cd-right">${s.char}</span>`;
+      } else {
+        custHtml += c.char;
+        sysHtml  += s.char;
+      }
+    }
+
+    return {
+      custHtml: `<span class="char-diff">${custHtml}</span>`,
+      sysHtml:  `<span class="char-diff">${sysHtml}</span>`
+    };
+  }
+
+  // ─── IBAN VALIDATION ──────────────────────────────────────────────────────
+  const IBAN_LENGTHS = {
+    DE:22, FR:27, GB:22, NL:18, ES:24, IT:27, BE:16, CH:21,
+    AT:20, DK:18, FI:18, NO:15, PL:28, PT:25, SE:24
+  };
+  const IBAN_COUNTRY_NAMES = {
+    DE:'Germany', FR:'France', GB:'United Kingdom', NL:'Netherlands',
+    ES:'Spain', IT:'Italy', BE:'Belgium', CH:'Switzerland',
+    AT:'Austria', DK:'Denmark', FI:'Finland', NO:'Norway',
+    PL:'Poland', PT:'Portugal', SE:'Sweden'
+  };
+
+  function ibanSetMsg(text, type) {
+    const el = document.getElementById('ibanMsg');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'iban-msg' + (type ? ' ' + type : '');
+  }
+
+  // Fires on every keystroke — checks for invalid characters only
+  function ibanCheckChars(input) {
+    const stripped = input.value.replace(/\s/g, '');
+    if (!stripped) { ibanSetMsg('', ''); return; }
+    if (!/^[A-Za-z0-9]+$/.test(stripped)) {
+      ibanSetMsg('Only letters and numbers are allowed', 'error');
+    } else {
+      ibanSetMsg('', '');
+    }
+  }
+
+  // Fires on blur — length check, then checksum
+  function ibanValidate(input) {
+    const stripped = input.value.replace(/\s/g, '').toUpperCase();
+    if (!stripped) { ibanSetMsg('', ''); return; }
+
+    // Priority 1: invalid characters
+    if (!/^[A-Z0-9]+$/.test(stripped)) {
+      ibanSetMsg('Only letters and numbers are allowed', 'error');
+      return;
+    }
+
+    // Priority 2: wrong length
+    const cc = stripped.slice(0, 2);
+    const expected = IBAN_LENGTHS[cc];
+    if (expected && stripped.length !== expected) {
+      const name = IBAN_COUNTRY_NAMES[cc] || cc;
+      ibanSetMsg(`This IBAN should be ${expected} characters for ${name}. You've entered ${stripped.length}.`, 'error');
+      return;
+    }
+
+    // Priority 3: checksum (mod-97) — only when length is confirmed correct
+    if (expected && stripped.length === expected) {
+      const rearranged = stripped.slice(4) + stripped.slice(0, 4);
+      const numeric = rearranged.split('').map(c => {
+        const code = c.charCodeAt(0);
+        return code >= 65 ? (code - 55).toString() : c;
+      }).join('');
+      let remainder = 0;
+      for (const digit of numeric) {
+        remainder = (remainder * 10 + parseInt(digit, 10)) % 97;
+      }
+      if (remainder !== 1) {
+        ibanSetMsg('This IBAN is invalid. Please check for typos.', 'error');
+        return;
+      }
+    }
+
+    ibanSetMsg('✓ Valid IBAN', 'success');
+  }
+</script>
+</body>
+</html>
