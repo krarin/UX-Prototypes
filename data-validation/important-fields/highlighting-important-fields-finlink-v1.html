@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Highlighting Important Fields V4</title>
+  <title>Highlighting Important Fields V3</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,14 +16,108 @@
   <link rel="stylesheet" href="../../design-system/components.css" />
 
   <style>
+    /* ── Phase buttons ── */
+    .antrag-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      margin-bottom: var(--space-l);
+      min-height: 36px;
+      width: 100%;
+    }
+    .antrag-controls-label {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      white-space: nowrap;
+    }
+    .phase-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-dark-200);
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    }
+    .phase-btn:hover {
+      background: var(--color-neutral-light-100);
+      border-color: var(--color-neutral-dark-300);
+    }
+    .phase-btn.active {
+      background: var(--color-primary-100);
+      color: var(--color-primary-600);
+      border-color: var(--color-primary-500);
+      border-width: 1.5px;
+    }
+    .phase-btn .phase-check {
+      display: none;
+      font-size: 16px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+    }
+    .phase-btn.active .phase-check { display: inline-flex; }
+
+    /* ── Kreditgeber dropdown ── */
+    .kreditgeber-control { position: relative; flex-shrink: 0; margin-left: auto; }
+    .kreditgeber-trigger {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: var(--space-s);
+      width: 200px; padding: 7px var(--space-s);
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-regular); color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); cursor: pointer; text-align: left;
+      transition: border-color var(--transition-base);
+    }
+    .kreditgeber-trigger:hover { border-color: var(--color-neutral-dark-300); }
+    .kreditgeber-trigger.open { border-color: var(--color-primary-500); }
+    .kreditgeber-trigger svg { color: var(--color-neutral-dark-400); flex-shrink: 0; }
+    .kreditgeber-placeholder { color: var(--color-neutral-dark-300); }
+    .kreditgeber-trigger-content { display: flex; align-items: center; gap: 6px; overflow: hidden; flex: 1; }
+    .kreditgeber-trigger-logo { width: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .kreditgeber-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0; width: 300px;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m); box-shadow: var(--shadow-m);
+      z-index: var(--z-overlay); display: none;
+    }
+    .kreditgeber-dropdown.open { display: block; }
+    .kreditgeber-search-wrap { position: relative; padding: var(--space-m); border-bottom: 1px solid var(--color-neutral-light-300); }
+    .kreditgeber-search {
+      width: 100%; padding: 8px 36px 8px 12px;
+      border: 1.5px solid var(--color-neutral-dark-200); border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-800); outline: none; box-sizing: border-box;
+      background: var(--color-neutral-light-000);
+    }
+    .kreditgeber-search::placeholder { color: var(--color-neutral-dark-300); }
+    .kreditgeber-search:focus { border-color: var(--color-primary-500); }
+    .kreditgeber-search-icon { position: absolute; right: calc(var(--space-m) + 10px); top: 50%; transform: translateY(-50%); color: var(--color-neutral-dark-300); pointer-events: none; }
+    .kreditgeber-list { padding: var(--space-xs) 0; max-height: 320px; overflow-y: auto; }
+    .kreditgeber-item {
+      display: flex; align-items: center; gap: var(--space-m);
+      padding: 10px var(--space-m); cursor: pointer;
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-800); transition: background var(--transition-base);
+    }
+    .kreditgeber-item:hover { background: var(--color-neutral-light-100); }
+    .kreditgeber-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--color-primary-500); cursor: pointer; flex-shrink: 0; }
+    .kreditgeber-item-logo { width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .kreditgeber-item[data-hidden="true"] { display: none; }
+
     /* ── Field highlighting ── */
     .form-field.field-highlighted {
       border-left: 3px solid var(--color-primary-500);
       padding-left: calc(var(--space-s) - 3px);
-    }
-    /* Unfilled field — orange override */
-    .form-field.field-highlighted.field-needs-attention {
-      border-left-color: #ff9800;
     }
     .field-filter-tag {
       display: inline-flex; align-items: center;
@@ -35,16 +129,6 @@
       border-radius: 3px; padding: 1px 5px;
       margin-left: 6px; vertical-align: middle;
       line-height: 1.4;
-    }
-    /* Tag: filled — checkmark prefix */
-    .field-filter-tag.tag-ok::before {
-      content: '✓ ';
-    }
-    /* Tag: unfilled — orange */
-    .field-filter-tag.tag-missing {
-      color: #bf360c;
-      background: #fff3e0;
-      border-color: #ffb74d;
     }
     .field-filter-tag--bank {
       color: #1565c0;
@@ -102,75 +186,6 @@
     }
     .toggle-switch input:checked + .toggle-slider { background: var(--color-primary-500); }
     .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
-
-    /* ── Bank tab bar ── */
-    .bank-tab-bar {
-      display: inline-flex; align-items: stretch;
-      border: 1px solid var(--color-neutral-light-500);
-      border-radius: var(--radius-s);
-      overflow: hidden;
-      margin-bottom: var(--space-m);
-      background: var(--color-neutral-light-000);
-    }
-    .bank-tab {
-      display: inline-flex; align-items: center; gap: var(--space-s);
-      padding: var(--space-s) var(--space-l);
-      font-family: var(--font-family); font-size: var(--body-regular-size);
-      font-weight: var(--font-weight-regular); color: var(--color-neutral-dark-700);
-      background: none; border: none;
-      border-right: 1px solid var(--color-neutral-light-500);
-      cursor: pointer;
-      transition: background var(--transition-base), color var(--transition-base);
-      white-space: nowrap;
-    }
-    .bank-tab:hover:not(.active) { background: var(--color-neutral-light-100); }
-    .bank-tab.active {
-      background: var(--color-primary-100);
-      color: var(--color-primary-700, #00695c);
-      font-weight: var(--font-weight-medium);
-    }
-    .bank-tab-logo { display: flex; align-items: center; flex-shrink: 0; }
-    .bank-add-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: var(--space-s) var(--space-m);
-      margin-left: var(--space-s);
-      font-family: var(--font-family); font-size: var(--body-regular-size);
-      color: var(--color-primary-600); background: none; border: none; cursor: pointer;
-    }
-    .bank-add-plus { font-size: 18px; line-height: 1; }
-
-    /* ── Step cards ── */
-    .step-cards {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-m); margin-bottom: var(--space-l);
-    }
-    .step-card {
-      border: 1px solid var(--color-neutral-light-500);
-      border-radius: var(--radius-s);
-      padding: var(--space-m);
-      background: var(--color-neutral-light-000);
-      cursor: pointer;
-      transition: box-shadow var(--transition-base), border-color var(--transition-base);
-    }
-    .step-card:hover { box-shadow: var(--shadow-s); }
-    .step-card.active {
-      border-color: var(--color-primary-500);
-      box-shadow: 0 0 0 1px var(--color-primary-500);
-    }
-    .step-card-header {
-      display: flex; justify-content: space-between; align-items: baseline;
-      margin-bottom: var(--space-s);
-    }
-    .step-card-title { font-size: var(--h4-size); font-weight: var(--h4-weight); color: var(--color-neutral-dark-900); }
-    .step-card-count { font-size: var(--body-small-size); color: var(--color-neutral-dark-400); }
-    .step-progress-track {
-      height: 6px; border-radius: var(--radius-full);
-      background: var(--color-neutral-light-300); overflow: hidden;
-    }
-    .step-progress-fill { height: 100%; border-radius: var(--radius-full); transition: width 0.3s ease; }
-    .step-green  { background: #4caf50; }
-    .step-orange { background: #ff9800; }
-    .step-red    { background: #ef5350; }
 
     /* ── Section nav: smaller text + highlight state ── */
     #section-nav .section-nav-item {
@@ -292,57 +307,40 @@
         <div class="content-inner">
           <div id="antrag-view">
 
-          <!-- ── Bank tab bar ── -->
-          <div class="bank-tab-bar">
-            <button class="bank-tab active" data-bank="dkb" onclick="selectBank(this,'dkb')">
-              <span class="bank-tab-logo"><span style="font-size:12px;font-weight:800;color:#005CA9;letter-spacing:0.5px;">DKB</span></span>
-              DKB
-            </button>
-            <button class="bank-tab" data-bank="commerzbank" onclick="selectBank(this,'commerzbank')">
-              <span class="bank-tab-logo">
-                <svg width="16" height="16" viewBox="0 0 22 22">
-                  <polygon points="11,1 21,11 11,21 1,11" fill="#F5A300"/>
-                  <polygon points="11,6 16,11 11,16 6,11" fill="#D48900"/>
+          <!-- ── Phase chips ── -->
+          <div class="antrag-controls">
+            <span class="antrag-controls-label">Felder hervorheben für</span>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('basisdaten', this)">Basisdaten<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('zinsindikation', this)">Zinsindikation<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('kreditentscheidung', this)">Kreditentscheidung<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('finanzierung-bestaetigt', this)">Finanzierung bestätigt<span class="phase-check material-symbols-outlined">check</span></button>
+            <div class="kreditgeber-control" id="kreditgeber-control">
+              <button class="kreditgeber-trigger" id="kreditgeber-trigger" onclick="toggleKreditgeberDropdown()">
+                <span class="kreditgeber-trigger-content">
+                  <span id="kreditgeber-selected-logo" class="kreditgeber-trigger-logo"></span>
+                  <span id="kreditgeber-selected-label" class="kreditgeber-placeholder">Kreditgeber wählen</span>
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
                 </svg>
-              </span>
-              Commerzbank
-            </button>
-            <button class="bank-tab" data-bank="ing" onclick="selectBank(this,'ing')">
-              <span class="bank-tab-logo"><span style="font-size:13px;font-weight:800;color:#FF6200;letter-spacing:0.5px;">ING</span></span>
-              ING
-            </button>
-            <button class="bank-add-btn">
-              <span class="bank-add-plus">+</span> Bank hinzufügen
-            </button>
-          </div>
-
-          <!-- ── Process step cards ── -->
-          <div class="step-cards">
-            <div class="step-card" id="step-basisdaten" onclick="selectStep(this,'basisdaten')">
-              <div class="step-card-header">
-                <span class="step-card-title">Basisdaten</span>
-                <span class="step-card-count">10/10</span>
-              </div>
-              <div class="step-progress-track">
-                <div class="step-progress-fill step-green" style="width:100%"></div>
-              </div>
-            </div>
-            <div class="step-card" id="step-zinssuche" onclick="selectStep(this,'zinssuche')">
-              <div class="step-card-header">
-                <span class="step-card-title">Zinssuche starten</span>
-                <span class="step-card-count">10/12</span>
-              </div>
-              <div class="step-progress-track">
-                <div class="step-progress-fill step-orange" style="width:83%"></div>
-              </div>
-            </div>
-            <div class="step-card" id="step-einreichung" onclick="selectStep(this,'einreichung')">
-              <div class="step-card-header">
-                <span class="step-card-title">Einreichung</span>
-                <span class="step-card-count">10/25</span>
-              </div>
-              <div class="step-progress-track">
-                <div class="step-progress-fill step-red" style="width:40%"></div>
+              </button>
+              <div class="kreditgeber-dropdown" id="kreditgeber-dropdown">
+                <div class="kreditgeber-search-wrap">
+                  <input class="kreditgeber-search" type="text" placeholder="Search" id="kreditgeber-search" oninput="filterKreditgeber(this.value)" />
+                  <svg class="kreditgeber-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </div>
+                <div class="kreditgeber-list" id="kreditgeber-list">
+                  <label class="kreditgeber-item" data-value="europace"><input type="checkbox" value="europace" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"></span><span>Europace</span></label>
+                  <label class="kreditgeber-item" data-value="commerzbank"><input type="checkbox" value="commerzbank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><polygon points="11,1 21,11 11,21 1,11" fill="#F5A300"/><polygon points="11,6 16,11 11,16 6,11" fill="#D48900"/></svg></span><span>Commerzbank</span></label>
+                  <label class="kreditgeber-item" data-value="deutsche-bank"><input type="checkbox" value="deutsche-bank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><rect width="22" height="22" rx="2" fill="#0018A8"/><line x1="4" y1="18" x2="18" y2="4" stroke="white" stroke-width="3.5"/></svg></span><span>Deutsche Bank</span></label>
+                  <label class="kreditgeber-item" data-value="dkb"><input type="checkbox" value="dkb" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:12px;font-weight:800;color:#005CA9;">DKB</span></span><span>DKB</span></label>
+                  <label class="kreditgeber-item" data-value="dsl-bank"><input type="checkbox" value="dsl-bank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:8px;font-weight:600;color:#666;">DSL|Bank</span></span><span>DSL Bank</span></label>
+                  <label class="kreditgeber-item" data-value="hypovereinsbank"><input type="checkbox" value="hypovereinsbank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="11" fill="#CC0000"/><path d="M11,0.5 A10.5,10.5 0 0 1 21.5,11 L11,11 Z" fill="white"/></svg></span><span>Hypovereinsbank</span></label>
+                  <label class="kreditgeber-item" data-value="ing"><input type="checkbox" value="ing" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:14px;font-weight:800;color:#FF6200;">ING</span></span><span>ING</span></label>
+                  <label class="kreditgeber-item" data-value="isb"><input type="checkbox" value="isb" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:11px;font-weight:700;color:#4A0017;">ISB</span></span><span>ISB</span></label>
+                </div>
               </div>
             </div>
           </div>
@@ -754,26 +752,15 @@
 
   /* ── State ── */
   var activePhase       = null;
-  var activeKreditgeber = 'dkb';
-  var activeBank        = 'dkb';
-  var activeStep        = null;
+  var activeKreditgeber = null;
 
-  /* ── Step → field map ── */
+  /* ── Phase → field map ── */
   var FIELD_FILTER_MAP = {
-    'basisdaten': [
-      'Vorname','Nachname','Geburtsdatum','Familienstand',
-      'Staatsangehörigkeit','Aufenthaltsstatus','IBAN',
-      'Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'
-    ],
-    'zinssuche': [
-      'Gehalt (netto)','Variable Einkünfte (netto)','Familienstand',
-      'Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum',
-      'IBAN','Kontoinhaber','Steueridentifikationsnummer',
-      'Derzeitige Mietkosten','Unterhaltsverpflichtungen','Geburtsname'
-    ],
-    'einreichung': [
-      'Vorname','Nachname','Geburtsdatum','Geburtsort','Geburtsland','Geburtsname',
-      'Staatsangehörigkeit','Aufenthaltsstatus','Familienstand','Personen im Haushalt',
+    'basisdaten':            ['Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','IBAN','Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'],
+    'zinsindikation':        ['Gehalt (netto)','Variable Einkünfte (netto)','Unterhaltsverpflichtungen','Familienstand'],
+    'kreditentscheidung':    [
+      'Vorname','Nachname','Geburtsdatum','Geburtsort','Geburtsland',
+      'Staatsangehörigkeit','Aufenthaltsstatus','Familienstand',
       'Steueridentifikationsnummer','IBAN','Kontoinhaber',
       'Gehalt (netto)','Anzahl Monatsgehälter','Variable Einkünfte (netto)',
       'Renten-Eintrittsdatum','Gesetzliche Rente',
@@ -781,13 +768,8 @@
       'Renten- und Lebensversicherungsbeiträge','Private Krankenversicherungsbeiträge',
       'Berufsunfähigkeitsversicherungsbeiträge','Unterhaltsverpflichtungen',
       'Bestehende Kreditverträge'
-    ]
-  };
-
-  var PHASE_TAG_LABELS = {
-    'basisdaten':  'Basisdaten',
-    'zinssuche':   'Zinssuche',
-    'einreichung': 'Einreichung'
+    ],
+    'finanzierung-bestaetigt': ['IBAN','Kontoinhaber']
   };
 
   /* ── Kreditgeber → field map ── */
@@ -802,32 +784,77 @@
     'isb':             ['Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum','IBAN']
   };
 
-  /* ── Bank tab selection ── */
-  function selectBank(el, bankValue) {
-    document.querySelectorAll('.bank-tab').forEach(function(t) { t.classList.remove('active'); });
-    el.classList.add('active');
-    activeBank = bankValue;
-    activeKreditgeber = bankValue;
-    applyHighlights();
-  }
-
-  /* ── Step card selection ── */
-  function selectStep(el, stepValue) {
-    if (el.classList.contains('active')) {
-      el.classList.remove('active');
-      activeStep = null;
+  /* ── Phase chip selection (mutually exclusive) ── */
+  function selectPhase(value, el) {
+    var wasOn = el.getAttribute('aria-pressed') === 'true';
+    document.querySelectorAll('.phase-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    if (!wasOn) {
+      activePhase = value;
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
+    } else {
       activePhase = null;
-      applyHighlights();
-      return;
     }
-    document.querySelectorAll('.step-card').forEach(function(c) { c.classList.remove('active'); });
-    el.classList.add('active');
-    activeStep = stepValue;
-    activePhase = stepValue;
     applyHighlights();
   }
 
   /* ── Apply all highlights ── */
+  /* ── Kreditgeber dropdown ── */
+  function toggleKreditgeberDropdown() {
+    var dd = document.getElementById('kreditgeber-dropdown');
+    var trigger = document.getElementById('kreditgeber-trigger');
+    dd.classList.toggle('open');
+    trigger.classList.toggle('open', dd.classList.contains('open'));
+    if (dd.classList.contains('open')) {
+      document.getElementById('kreditgeber-search').value = '';
+      filterKreditgeber('');
+      setTimeout(function() { document.getElementById('kreditgeber-search').focus(); }, 50);
+    }
+  }
+
+  function filterKreditgeber(query) {
+    var q = query.toLowerCase();
+    document.querySelectorAll('#kreditgeber-list .kreditgeber-item').forEach(function(item) {
+      var name = item.querySelector('span:last-child').textContent.toLowerCase();
+      item.dataset.hidden = (q && !name.includes(q)) ? 'true' : 'false';
+    });
+  }
+
+  function selectKreditgeberOption(cb) {
+    document.querySelectorAll('#kreditgeber-list input[type="checkbox"]').forEach(function(other) {
+      if (other !== cb) other.checked = false;
+    });
+    activeKreditgeber = cb.checked ? cb.value : null;
+    var labelEl = document.getElementById('kreditgeber-selected-label');
+    var logoEl  = document.getElementById('kreditgeber-selected-logo');
+    if (activeKreditgeber) {
+      var selectedItem = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + activeKreditgeber + '"]');
+      var nameSpan = selectedItem ? selectedItem.querySelector('span:last-child') : null;
+      labelEl.textContent = nameSpan ? nameSpan.textContent : activeKreditgeber;
+      labelEl.classList.remove('kreditgeber-placeholder');
+      var sourceLogo = selectedItem ? selectedItem.querySelector('.kreditgeber-item-logo') : null;
+      logoEl.innerHTML = sourceLogo ? sourceLogo.innerHTML : '';
+    } else {
+      labelEl.textContent = 'Kreditgeber wählen';
+      labelEl.classList.add('kreditgeber-placeholder');
+      logoEl.innerHTML = '';
+    }
+    applyHighlights();
+    document.getElementById('kreditgeber-dropdown').classList.remove('open');
+    document.getElementById('kreditgeber-trigger').classList.remove('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    var control = document.getElementById('kreditgeber-control');
+    if (control && !control.contains(e.target)) {
+      var dd = document.getElementById('kreditgeber-dropdown');
+      if (dd) dd.classList.remove('open');
+    }
+  });
+
   function applyHighlights() {
     clearHighlights();
 
@@ -845,35 +872,13 @@
 
       if (inPhase || inBank) {
         fieldEl.classList.add('field-highlighted');
-        if (inPhase) {
-          var filled = isFieldFilled(fieldEl);
-          var tag = document.createElement('span');
-          if (filled) {
-            fieldEl.classList.remove('field-needs-attention');
-            tag.className = 'field-filter-tag tag-ok';
-          } else {
-            fieldEl.classList.add('field-needs-attention');
-            tag.className = 'field-filter-tag tag-missing';
-          }
-          tag.textContent = PHASE_TAG_LABELS[activePhase];
-          labelEl.appendChild(tag);
-        }
       }
     });
     updateSidebarHighlights();
   }
 
-  function isFieldFilled(fieldEl) {
-    var input = fieldEl.querySelector('.form-input');
-    if (!input) return false;
-    if (input.tagName === 'SELECT') return input.value !== '';
-    return input.value.trim() !== '';
-  }
-
   function clearHighlights() {
-    document.querySelectorAll('.form-field.field-highlighted').forEach(function(el) {
-      el.classList.remove('field-highlighted', 'field-needs-attention');
-    });
+    document.querySelectorAll('.form-field.field-highlighted').forEach(function(el) { el.classList.remove('field-highlighted'); });
     document.querySelectorAll('.field-filter-tag').forEach(function(t) { t.remove(); });
     clearSidebarHighlights();
   }
@@ -907,9 +912,6 @@
   setDrawerTop();
   window.addEventListener('resize', setDrawerTop);
   document.addEventListener('shell:ready', setDrawerTop);
-
-  /* ── Init: DKB pre-selected ── */
-  applyHighlights();
 </script>
 
 </body>
