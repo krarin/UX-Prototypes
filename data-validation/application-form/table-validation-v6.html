@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Validation – V2 Usability Testing</title>
+  <title>Data Validation – V6</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
@@ -782,11 +782,16 @@
     }
     .badge-error .material-symbols-outlined,
     .badge-no-system .material-symbols-outlined,
-    .badge-unknown .material-symbols-outlined,
+    .badge-unknown .material-symbols-outlined {
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
     .badge-confirmed .material-symbols-outlined {
       font-size: 13px;
       line-height: 1;
       letter-spacing: 0;
+      font-variation-settings: 'wght' 700;
     }
     /* Kein Systemwert → light amber, warm text */
     .badge-no-system {
@@ -818,17 +823,17 @@
       color: #1a7a45;
       gap: 4px;
     }
-    /* Automatisch bestätigt → same green family, slightly richer */
+    /* Automatisch bestätigt → same as Bestätigt */
     .badge-auto-confirmed {
-      background: #d4edda;
-      color: #155724;
+      background: #eaf7ee;
+      color: #1a7a45;
       gap: 4px;
     }
     .badge-auto-confirmed .material-symbols-outlined {
       font-size: 13px;
       line-height: 1;
       letter-spacing: 0;
-      color: #28a745;
+      font-variation-settings: 'wght' 700;
     }
     /* Unsicher → solid amber */
     .badge-notsure { background: #ff9f1a; color: white; }
@@ -974,9 +979,9 @@
       color: #009688;
     }
     .confirm-btn.confirmed {
-      background: #009688;
-      border-color: #009688;
-      color: white;
+      background: #b2d48a;
+      border-color: #b2d48a;
+      color: #1a2e0a;
       cursor: default;
     }
     .confirm-btn.rejected {
@@ -1046,14 +1051,14 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      border: 1.5px solid #009688;
-      background: #009688;
-      color: white;
+      border: 1.5px solid #b2d48a;
+      background: #b2d48a;
+      color: #1a2e0a;
       cursor: pointer;
       padding: 0;
       transition: background 0.12s, border-color 0.12s;
     }
-    .manual-confirm-btn:hover { background: #00796b; border-color: #00796b; }
+    .manual-confirm-btn:hover { background: #9ec470; border-color: #9ec470; }
     .manual-confirm-btn svg { width: 11px; height: 11px; pointer-events: none; }
 
     /* IBAN validation message */
@@ -2158,6 +2163,69 @@
       align-items: center;
       justify-content: center;
     }
+    /* ── Coach Hint (static tooltip above table) ── */
+    @keyframes coach-pulse {
+      0%   { transform: scale(1);   opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    .coach-hint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fffbf2;
+      border: 1px solid #f0d090;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--color-neutral-dark-900);
+      line-height: 1.4;
+    }
+    .coach-hint-icon {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+    .coach-hint-check {
+      position: absolute;
+      inset: 0;
+      background: #b2d48a;
+      border-radius: 50%;
+      color: #1a2e0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .coach-hint-check svg {
+      width: 14px;
+      height: 14px;
+    }
+    .coach-hint-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid #ef9f27;
+      pointer-events: none;
+      animation: coach-pulse 1.5s ease-out infinite;
+    }
+    .coach-hint-text {
+      flex: 1;
+    }
+    .coach-dismiss {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      background: var(--color-primary-500);
+      color: white;
+      border: none;
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+      font-family: var(--font-family);
+      white-space: nowrap;
+    }
+    .coach-dismiss:hover { background: var(--color-primary-600); }
   </style>
 </head>
 <body>
@@ -2347,16 +2415,6 @@
         </div>
         <button class="modal-close" onclick="closeValidationModal()" title="Schließen">×</button>
       </div>
-      <div class="modal-header-pills-row">
-        <div class="scenario-pills">
-          <button class="scenario-pill active" onclick="switchScenario('standard0', this)">Standard 0</button>
-          <button class="scenario-pill" onclick="switchScenario('standard', this)">Standard 1</button>
-          <button class="scenario-pill" onclick="switchScenario('standard2', this)">Standard 2</button>
-          <button class="scenario-pill" onclick="switchScenario('fall1', this)">Fall 1</button>
-          <button class="scenario-pill" onclick="switchScenario('fall2', this)">Fall 2</button>
-          <button class="scenario-pill" onclick="switchScenario('fall3', this)">Fall 3</button>
-        </div>
-      </div>
     </div>
 
     <div class="modal-body">
@@ -2420,15 +2478,19 @@
 
 
       <!-- Filter tabs -->
-      <div class="filter-tabs">
-        <button class="filter-tab active" onclick="setFilter('all', this)">Alle (41)</button>
-        <button class="filter-tab" onclick="setFilter('auto_confirmed', this)">Automatisch bestätigt (0)</button>
-        <button class="filter-tab" onclick="setFilter('error', this)">Zu prüfen (21)</button>
-        <button class="filter-tab" onclick="setFilter('confirmed', this)">Bestätigt (1)</button>
-        <button class="filter-tab" onclick="setFilter('no_system', this)">Kein Systemwert (0)</button>
-        <button class="filter-tab" onclick="setFilter('unknown', this)">Unbekannt (19)</button>
-      </div>
 
+
+      <!-- Coach hint -->
+      <div class="coach-hint" id="coachHint" style="display:none">
+        <div class="coach-hint-icon">
+          <span class="coach-hint-ring"></span>
+          <span class="coach-hint-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+        </div>
+        <span class="coach-hint-text">Checkmark anklicken, um einen Wert zu bestätigen.</span>
+        <button class="coach-dismiss" onclick="dismissCoach()">Verstanden</button>
+      </div>
 
       <!-- Table -->
       <div class="table-wrap">
@@ -2670,7 +2732,7 @@
   ];
 
   let currentFilter = 'all';
-  let currentScenario = 'standard0';
+  let currentScenario = 'standard2';
   let selectedIds = new Set();
   let rowStatuses = {};
   let expandedRows = new Set();
@@ -2680,6 +2742,7 @@
   let rowHistory = {};
   let manuellerWertDebounce = {};
   let collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
+  let manuallyOverridden = new Set(); // rows manually reverted to Prüfen
 
   // ─── HISTORY HELPERS ──────────────────────────────────────────────────────
   function logChange(id, text) {
@@ -2740,6 +2803,7 @@
     // No data on any side → always Keine Angabe, even if confirmedSource is set
     if (!hasCust && !hasSys && !hasManual) return 'unknown';
     // Matching customer and system values → auto-confirmed
+    if (manuallyOverridden.has(r.id)) return 'error'; // user explicitly reverted
     if (hasCust && hasSys && r.customerInput === r.systemValue) return 'auto_confirmed';
     if (r.confirmedSource) return 'confirmed';
     if (hasSys)  return 'error';      // Prüfen — system has a value to check
@@ -2762,10 +2826,10 @@
   function statusBadge(status) {
     const map = {
       error:          '<span class="badge badge-error"><span class="material-symbols-outlined">schedule</span>Prüfen</span>',
-      no_system:      '<span class="badge badge-no-system"><span class="material-symbols-outlined">remove_circle_outline</span>Kein Systemwert</span>',
+      no_system:      '<span class="badge badge-no-system"><span class="material-symbols-outlined">remove_circle_outline</span>Prüfen</span>',
       unknown:        '<span class="badge badge-unknown"><span class="material-symbols-outlined">help</span>Keine Angabe</span>',
       confirmed:      '<span class="badge badge-confirmed"><span class="material-symbols-outlined">check</span>Bestätigt</span>',
-      auto_confirmed: '<span class="badge badge-auto-confirmed"><span class="material-symbols-outlined">check</span><span class="material-symbols-outlined">check</span>Automatisch bestätigt</span>',
+      auto_confirmed: '<span class="badge badge-auto-confirmed"><span class="material-symbols-outlined">check</span>Automatisch bestätigt</span>',
       notsure:        '<span class="badge badge-notsure">Unsicher</span>',
       open:           '<span class="badge badge-open">Offen</span>',
     };
@@ -2842,7 +2906,7 @@
       const custRaw = row.customerInput;
       const custStruck = confirmed === 'system' || confirmed === 'manual';
       const sysStruck  = confirmed === 'customer' || confirmed === 'manual';
-      const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+      const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 
       const custBtnClass = st === 'auto_confirmed' ? 'confirmed' : (confirmed === 'customer' || confirmed === 'both') ? 'confirmed' : confirmed === 'system' ? 'rejected' : '';
       const sysBtnClass  = st === 'auto_confirmed' ? 'confirmed' : (confirmed === 'system'  || confirmed === 'both') ? 'confirmed' : confirmed === 'customer' ? 'rejected' : '';
@@ -2897,7 +2961,7 @@
 
       const groupLabel = (groupMeta[row.group] || groupMeta['as1']).label.split(' — ')[0];
       const fieldSubLabel = row.fieldSub || groupLabel;
-      const isRowConfirmed = confirmed !== null;
+      const isRowConfirmed = confirmed !== null || st === 'auto_confirmed';
 
       const mainRow = `
         <tr class="${isSelected ? 'selected' : ''}${hasSubRows ? ' expandable-row' : ''}${isRowConfirmed ? ' row-confirmed' : ''}" data-id="${row.id}" ${hasSubRows ? `onclick="toggleExpand(${row.id}, event)"` : ''}>
@@ -2931,12 +2995,13 @@
             </div>
           </td>
           <td class="value-cell">
-            <div class="manual-input-wrap">
+            <div class="manual-input-wrap ${isRowConfirmed ? 'is-disabled' : ''}">
               <input
                 class="manual-input"
                 type="text"
                 value="${row.manuellerWert || ''}"
                 placeholder="Wert eingeben…"
+                ${isRowConfirmed ? 'disabled' : ''}
                 oninput="updateManuellerWert(${row.id}, this.value)${row.id === 6 ? ';ibanCheckChars(this)' : ''}"
                 onblur="${row.id === 6 ? 'ibanValidate(this)' : ''}"
                 onkeydown="if(event.key==='Enter'){event.stopPropagation();confirmManuellerWert(${row.id}, event);}"
@@ -2948,14 +3013,22 @@
                 style="display:${row.manuellerWert ? 'inline-flex' : 'none'}"
                 onclick="confirmManuellerWert(${row.id}, event)"
                 title="Bestätigen"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
+              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
             </div>
             ${row.id === 6 ? '<div id="ibanMsg" class="iban-msg"></div>' : ''}
           </td>
           <td class="source-cell">${sourceHtml}</td>
           <td class="status-td">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;">
-              ${statusBadge(st)}
+              ${(st === 'confirmed' || st === 'auto_confirmed') ? `
+                <div class="status-wrap">
+                  <span onclick="toggleStatusDropdown(${row.id}, event)" style="cursor:pointer">${statusBadge(st)}</span>
+                  <div class="status-dropdown" id="statusDd_${row.id}">
+                    <div class="status-option" onclick="setStatus(${row.id}, 'error', event)">
+                      ${statusBadge('error')}
+                    </div>
+                  </div>
+                </div>` : statusBadge(st)}
               ${row.newDocument ? `<span class="badge badge-new"><span class="material-symbols-outlined">error</span>Neu</span>` : ''}
             </div>
           </td>
@@ -3154,7 +3227,7 @@
     modal.offsetHeight;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    applyToggleState(currentScenario !== 'standard0');
+    applyToggleState(false);
   }
 
   function closeValidationModal() {
@@ -3177,23 +3250,31 @@
     if (e.key === 'Escape') closeValidationModal();
   });
 
+  let _applyingToggleState = false;
+
   function toggleContent(checkbox) {
     const filterTabs = document.querySelector('.filter-tabs');
     const tableWrap = document.querySelector('.table-wrap');
     const bulkToolbar = document.getElementById('bulkToolbar');
+    const coachHint = document.getElementById('coachHint');
     if (checkbox.checked) {
-      filterTabs.style.display = '';
-      tableWrap.style.display = '';
+      if (filterTabs) filterTabs.style.display = '';
+      if (tableWrap) tableWrap.style.display = '';
+      if (coachHint && !_applyingToggleState && coachHint.style.display === 'none' && !coachHint.dataset.dismissed) {
+        coachHint.style.display = '';
+      }
     } else {
-      filterTabs.style.display = 'none';
-      tableWrap.style.display = 'none';
-      bulkToolbar.style.display = 'none';
+      if (filterTabs) filterTabs.style.display = 'none';
+      if (tableWrap) tableWrap.style.display = 'none';
+      if (bulkToolbar) bulkToolbar.style.display = 'none';
     }
   }
 
   function applyToggleState(checked) {
+    _applyingToggleState = true;
     const cb = document.querySelector('#betaNotice input[type="checkbox"]');
     if (cb) { cb.checked = checked; toggleContent(cb); }
+    _applyingToggleState = false;
   }
 
   // ─── COMMENT DRAWER ───────────────────────────────────────────────────────
@@ -3295,9 +3376,15 @@
 
   function setStatus(id, status, event) {
     event.stopPropagation();
+    const row = rows.find(r => r.id === id);
     const statusLabels = { error: 'Prüfen', confirmed: 'Bestätigt', notsure: 'Unsicher', unknown: 'Keine angabe' };
-    logChange(id, `Status gesetzt: ${statusLabels[status] || status}`);
+    logChange(id, `Status zurückgesetzt auf: ${statusLabels[status] || status}`);
     rowStatuses[id] = status;
+    if (status === 'error' && row) {
+      row.confirmedSource = null;
+      lockedRows.delete(id);
+      manuallyOverridden.add(id);
+    }
     openStatusId = null;
     document.removeEventListener('mousedown', closeStatusDropdown);
     renderTable();
@@ -3348,6 +3435,7 @@
       const _hv = v => v && v !== '–' && String(v).trim() !== '';
       const bothMatch = _hv(row.customerInput) && _hv(row.systemValue) &&
                         row.customerInput.trim() === row.systemValue.trim();
+      manuallyOverridden.delete(id); // user re-confirmed, clear any manual override
       if (bothMatch) {
         row.confirmedSource = 'both';
         rowStatuses[id] = 'confirmed';
@@ -3418,7 +3506,8 @@
   }
 
   function toggleGroup(gk) {
-    if (collapsedGroups.has(gk)) collapsedGroups.delete(gk);
+    const wasCollapsed = collapsedGroups.has(gk);
+    if (wasCollapsed) collapsedGroups.delete(gk);
     else collapsedGroups.add(gk);
     renderTable();
   }
@@ -3612,7 +3701,8 @@
 
     // Reset filter tabs to "Alle"
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.filter-tab').classList.add('active');
+    const firstTab = document.querySelector('.filter-tab');
+    if (firstTab) firstTab.classList.add('active');
 
     const content = document.getElementById('scenarioContent');
     const placeholder = document.getElementById('scenarioPlaceholder');
@@ -3925,8 +4015,15 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5px; color: #111;
     }, true);
   })();
 
-  // Initial render
+  // Initial render — load Standard 2 rows
+  (function() {
+    const s2 = buildStandard2Rows();
+    rows.length = 0;
+    s2.forEach(r => rows.push(r));
+    rows.forEach(r => { rowStatuses[r.id] = computeStatus(r); });
+  })();
   document.getElementById('validationTable').classList.toggle('no-manual', currentScenario === 'standard0');
+  applyToggleState(false);
   renderTable();
   updateCounts();
 
@@ -4035,6 +4132,11 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5px; color: #111;
     }
 
     ibanSetMsg('✓ Valid IBAN', 'success');
+  }
+
+  function dismissCoach() {
+    const hint = document.getElementById('coachHint');
+    if (hint) { hint.style.display = 'none'; hint.dataset.dismissed = '1'; }
   }
 </script>
 </body>

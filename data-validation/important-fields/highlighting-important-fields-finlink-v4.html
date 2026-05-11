@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Highlighting Important Fields FinLink V4</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ── Phase buttons ── */
+    .antrag-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      margin-bottom: var(--space-l);
+      min-height: 36px;
+      width: 100%;
+    }
+    .antrag-controls-label {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      white-space: nowrap;
+    }
+    .phase-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-dark-200);
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    }
+    .phase-btn:hover {
+      background: var(--color-neutral-light-100);
+      border-color: var(--color-neutral-dark-300);
+    }
+    .phase-btn.active {
+      background: var(--color-primary-100);
+      color: var(--color-primary-600);
+      border-color: var(--color-primary-500);
+      border-width: 1.5px;
+    }
+    .phase-btn .phase-check {
+      display: none;
+      font-size: 16px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+    }
+    .phase-btn.active .phase-check { display: inline-flex; }
+
+    /* ── Kreditgeber dropdown ── */
+    .kreditgeber-control { position: relative; flex-shrink: 0; margin-left: auto; }
+    .kreditgeber-trigger {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: var(--space-s);
+      width: 200px; padding: 7px var(--space-s);
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-regular); color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); cursor: pointer; text-align: left;
+      transition: border-color var(--transition-base);
+    }
+    .kreditgeber-trigger:hover { border-color: var(--color-neutral-dark-300); }
+    .kreditgeber-trigger.open { border-color: var(--color-primary-500); }
+    .kreditgeber-trigger svg { color: var(--color-neutral-dark-400); flex-shrink: 0; }
+    .kreditgeber-placeholder { color: var(--color-neutral-dark-300); }
+    .kreditgeber-trigger-content { display: flex; align-items: center; gap: 6px; overflow: hidden; flex: 1; }
+    .kreditgeber-trigger-logo { width: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .kreditgeber-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0; width: 300px;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m); box-shadow: var(--shadow-m);
+      z-index: var(--z-overlay); display: none;
+    }
+    .kreditgeber-dropdown.open { display: block; }
+    .kreditgeber-search-wrap { position: relative; padding: var(--space-m); border-bottom: 1px solid var(--color-neutral-light-300); }
+    .kreditgeber-search {
+      width: 100%; padding: 8px 36px 8px 12px;
+      border: 1.5px solid var(--color-neutral-dark-200); border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-800); outline: none; box-sizing: border-box;
+      background: var(--color-neutral-light-000);
+    }
+    .kreditgeber-search::placeholder { color: var(--color-neutral-dark-300); }
+    .kreditgeber-search:focus { border-color: var(--color-primary-500); }
+    .kreditgeber-search-icon { position: absolute; right: calc(var(--space-m) + 10px); top: 50%; transform: translateY(-50%); color: var(--color-neutral-dark-300); pointer-events: none; }
+    .kreditgeber-list { padding: var(--space-xs) 0; max-height: 320px; overflow-y: auto; }
+    .kreditgeber-item {
+      display: flex; align-items: center; gap: var(--space-m);
+      padding: 10px var(--space-m); cursor: pointer;
+      font-family: var(--font-family); font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-800); transition: background var(--transition-base);
+    }
+    .kreditgeber-item:hover { background: var(--color-neutral-light-100); }
+    .kreditgeber-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--color-primary-500); cursor: pointer; flex-shrink: 0; }
+    .kreditgeber-item-logo { width: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .kreditgeber-item[data-hidden="true"] { display: none; }
+
+    /* ── Compact outlined-label fields ── */
+    .field-grid-2, .field-grid-3, .field-grid-4 {
+      grid-template-columns: 1fr 1fr;
+      padding-top: 10px;
+      gap: var(--space-m);
+      margin-bottom: var(--space-m);
+    }
+    .form-card { padding: var(--space-m); }
+    .form-card-heading { font-size: 13px; margin-bottom: var(--space-s); }
+
+    /* PLZ + Stadt (or any pair) that share one grid cell */
+    .field-sub-row {
+      display: flex;
+      gap: var(--space-s);
+    }
+    .field-sub-row .form-field { flex: 1; }
+    .field-sub-row .form-field--narrow { flex: 0 0 100px; }
+
+    /* Two-column layout for Persönliche Details */
+    .pers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-m);
+      padding-top: 10px;
+      margin-bottom: var(--space-s);
+    }
+    .pers-col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-m);
+    }
+
+    .form-field {
+      position: relative;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: 5px var(--space-s) 5px;
+      background: var(--color-neutral-light-000);
+      transition: border-color var(--transition-base);
+    }
+    .form-field:focus-within { border-color: var(--color-primary-500); }
+
+    .form-field-label {
+      position: absolute;
+      top: -8px;
+      left: 8px;
+      background: var(--color-neutral-light-000);
+      padding: 0 3px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0;
+      color: var(--color-neutral-dark-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: calc(100% - 16px);
+    }
+
+    .form-field .form-input-wrap { position: static; display: block; }
+    .form-field .form-input {
+      border: none !important;
+      border-radius: 0;
+      padding: 2px 0;
+      font-size: 12px;
+      height: 24px;
+      line-height: 24px;
+      background: transparent;
+      box-shadow: none;
+      width: 100%;
+    }
+    .form-field .form-input:focus { outline: none; }
+    select.form-field .form-input, .form-field select.form-input {
+      height: 24px;
+      padding: 0;
+    }
+
+    /* ── Field highlighting ── */
+    .form-field.field-highlighted {
+      border-color: var(--color-primary-500);
+      border-left-width: 2px;
+    }
+    .form-field.field-highlighted .form-field-label {
+      color: var(--color-primary-600);
+    }
+    .field-filter-tag {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0;
+      color: var(--color-primary-600);
+      background: var(--color-primary-100);
+      border: 1px solid #80cbc4;
+      border-radius: 3px; padding: 1px 5px;
+      margin-left: 6px; vertical-align: middle;
+      line-height: 1.4;
+    }
+    .field-filter-tag--bank {
+      color: #1565c0;
+      background: #e3f2fd;
+      border-color: #90caf9;
+    }
+    /* ── Antragsvalidierung banner ── */
+    .validation-banner {
+      border: 1px solid var(--color-neutral-light-500);
+      border-left: 3px solid #7986CB;
+      border-radius: var(--radius-s);
+      padding: var(--space-m) var(--space-l);
+      margin-bottom: var(--space-m);
+      background: var(--color-neutral-light-000);
+    }
+    .validation-banner-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-s);
+    }
+    .validation-banner-title {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+    .validation-banner-desc {
+      font-size: var(--body-regular-size);
+      line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-600);
+      margin: 0;
+    }
+    .validation-toggle-wrap {
+      display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0;
+    }
+    .validation-toggle-label {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-600);
+    }
+    .toggle-switch {
+      position: relative; display: inline-block; width: 38px; height: 22px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--color-neutral-light-500);
+      border-radius: 22px;
+      transition: background var(--transition-base);
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; left: 3px; bottom: 3px;
+      background: var(--color-neutral-light-000);
+      border-radius: 50%;
+      transition: transform var(--transition-base);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--color-primary-500); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* ── Section nav: smaller text + highlight state ── */
+    #section-nav .section-nav-item {
+      font-size: 12px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    #section-nav .section-nav-heading {
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-500);
+      margin-top: var(--space-xs);
+      padding-top: var(--space-s);
+      padding-bottom: var(--space-s);
+    }
+    #section-nav .section-nav-heading::before { display: none; }
+    #section-nav .section-nav-item.nav-section-highlighted {
+      border-left: 3px solid var(--color-primary-500);
+      color: var(--color-primary-600);
+      background: var(--color-primary-100);
+      padding-left: calc(20px + 14px - 3px);
+    }
+
+    /* ── Section nav tree connector ── */
+    /* slightly different tone from the dark icon sidebar */
+    .section-nav-group {
+      margin-left: 21px;
+      border-left: 1px solid var(--color-neutral-light-600);
+      padding-bottom: var(--space-xs);
+    }
+    .section-nav-group .section-nav-item {
+      position: relative;
+      padding-left: calc(14px + var(--space-s));  /* indented from group left */
+    }
+    .section-nav-group .section-nav-item::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 12px;
+      height: 1px;
+      background: var(--color-neutral-light-600);
+    }
+    /* checkmark — right-aligned, hidden until .done */
+    .section-nav-check {
+      font-size: 16px;
+      color: var(--color-success);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .section-nav-item:not(.done) .section-nav-check { display: none; }
+    /* done item label color */
+    .section-nav-item.done .section-nav-item-label {
+      color: var(--color-neutral-dark-600);
+    }
+
+    /* ── Person layout: half-width card + aside ── */
+    .person-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-l);
+      align-items: start;
+      margin-bottom: var(--space-l);
+    }
+    .person-card {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+    }
+    .person-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      background: var(--color-neutral-light-100);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .person-card-name {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+    .person-card-icon {
+      font-size: 18px;
+      color: var(--color-neutral-dark-400);
+    }
+
+    /* ── Accordion ── */
+    .accordion-section {
+      padding: var(--space-s) var(--space-s) 0;
+    }
+    .accordion-section:last-child { padding-bottom: var(--space-s); }
+    .accordion-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space-s);
+      width: 100%;
+      padding: 8px var(--space-s);
+      background: var(--color-neutral-light-200);
+      border-radius: var(--radius-s);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      text-align: left;
+      transition: background var(--transition-base);
+    }
+    .accordion-trigger:hover { background: var(--color-neutral-light-300); }
+    .accordion-chevron {
+      font-size: 18px;
+      color: var(--color-neutral-dark-500);
+      transition: transform var(--transition-base);
+      flex-shrink: 0;
+      order: -1;
+      transform: rotate(-90deg);
+    }
+    .accordion-section.open .accordion-chevron { transform: rotate(0deg); }
+    .accordion-body {
+      display: none;
+      padding: var(--space-m) var(--space-s) var(--space-m) var(--space-m);
+    }
+    .accordion-section.open .accordion-body { display: block; }
+
+    /* ── Horizontal fields (label left, input right) ── */
+    .h-field {
+      display: flex;
+      align-items: center;
+      gap: var(--space-m);
+      min-height: 30px;
+    }
+    .h-field + .h-field { margin-top: var(--space-s); }
+    .h-field-label {
+      width: 150px;
+      flex-shrink: 0;
+      font-size: 13px;
+      color: var(--color-neutral-dark-600);
+      text-align: right;
+      line-height: 1.4;
+    }
+    .h-field-input, .h-field-select {
+      flex: 1;
+      height: 28px;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: 0 var(--space-s);
+      font-family: var(--font-family);
+      font-size: 13px;
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-000);
+      outline: none;
+      transition: border-color var(--transition-base);
+    }
+    .h-field-input:focus, .h-field-select:focus { border-color: var(--color-primary-500); }
+    .h-field.field-highlighted .h-field-label { color: var(--color-primary-600); font-weight: var(--font-weight-medium); }
+    .h-field.field-highlighted .h-field-input,
+    .h-field.field-highlighted .h-field-select {
+      border-color: var(--color-primary-500);
+      border-left-width: 2px;
+    }
+
+    /* ── Add person aside ── */
+    .person-aside {
+      padding-top: var(--space-s);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-m);
+    }
+    .btn-add-person {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      border: 1.5px dashed var(--color-neutral-dark-200);
+      border-radius: var(--radius-s);
+      background: none;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      color: var(--color-primary-600);
+      cursor: pointer;
+      transition: border-color var(--transition-base), background var(--transition-base);
+    }
+    .btn-add-person:hover { background: var(--color-primary-100); border-color: var(--color-primary-500); }
+    .btn-add-person .material-symbols-outlined { font-size: 18px; }
+
+    /* ── h-field with € suffix ── */
+    .h-field-wrap {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      overflow: hidden;
+      transition: border-color var(--transition-base);
+    }
+    .h-field-wrap:focus-within { border-color: var(--color-primary-500); }
+    .h-field-wrap .h-field-input {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      flex: 1;
+    }
+    .h-suffix {
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-s);
+      font-size: 13px;
+      color: var(--color-neutral-dark-400);
+      background: var(--color-neutral-light-100);
+      border-left: 1px solid var(--color-neutral-light-300);
+      flex-shrink: 0;
+    }
+
+    /* ── h-field radio group ── */
+    .h-radio-group {
+      flex: 1;
+      display: flex;
+      gap: var(--space-m);
+      align-items: center;
+    }
+    .h-radio-option {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: var(--color-neutral-dark-800);
+      cursor: pointer;
+    }
+
+    /* ── h-field add links + summary ── */
+    .h-links {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: var(--space-s);
+      padding-left: 166px;
+    }
+    .h-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--space-m);
+      padding-top: var(--space-s);
+      border-top: 1px solid var(--color-neutral-light-300);
+      font-size: 13px;
+    }
+    .h-summary-label { color: var(--color-neutral-dark-600); }
+    .h-summary-value { font-weight: var(--font-weight-medium); color: var(--color-neutral-dark-900); }
+
+    /* ── Sub-card: nested collapsible within an accordion body ── */
+    /* ── Sub-card tree connector ── */
+    .h-sub-tree {
+      margin-top: var(--space-m);
+      margin-left: 20px;
+      padding-left: var(--space-m);
+      border-left: 1px solid var(--color-neutral-light-600);
+    }
+    .h-sub-tree .h-sub-card {
+      position: relative;
+      margin-top: var(--space-s);
+      margin-left: 0;
+    }
+    .h-sub-tree .h-sub-card:first-child { margin-top: 0; }
+    /* horizontal branch line — sits on the trigger, not clipped by card overflow */
+    .h-sub-tree .h-sub-card-trigger::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: calc(-1 * var(--space-m) - 1px);
+      width: var(--space-m);
+      height: 1px;
+      background: var(--color-neutral-light-600);
+    }
+
+    .h-sub-card {
+      margin-top: var(--space-m);
+      margin-left: var(--space-m);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      overflow: hidden;
+    }
+    .h-sub-card-trigger {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      width: 100%;
+      padding: 7px var(--space-s);
+      background: var(--color-neutral-light-100);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      text-align: left;
+      transition: background var(--transition-base);
+    }
+    .h-sub-card-trigger:hover { background: var(--color-neutral-light-200); }
+    .h-sub-card-chevron {
+      font-size: 16px;
+      color: var(--color-neutral-dark-500);
+      transition: transform var(--transition-base);
+      flex-shrink: 0;
+      order: -1;
+      transform: rotate(-90deg);
+    }
+    .h-sub-card.open .h-sub-card-chevron { transform: rotate(0deg); }
+    .h-sub-card-body {
+      display: none;
+      padding: var(--space-s) var(--space-m) var(--space-m);
+      border-top: 1px solid var(--color-neutral-light-300);
+    }
+    .h-sub-card.open .h-sub-card-body { display: block; }
+
+    /* ── Textarea field ── */
+    .h-field--top { align-items: flex-start; }
+    .h-field--top .h-field-label { padding-top: 4px; }
+    .h-field-textarea {
+      flex: 1;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: var(--space-s);
+      font-family: var(--font-family);
+      font-size: 13px;
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-000);
+      resize: vertical;
+      min-height: 72px;
+      outline: none;
+      transition: border-color var(--transition-base);
+    }
+    .h-field-textarea:focus { border-color: var(--color-primary-500); }
+
+    /* ── Empty section placeholder ── */
+    .sec-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-s);
+      padding: var(--space-xxl) var(--space-xl);
+      color: var(--color-neutral-dark-300);
+      text-align: center;
+    }
+    .sec-placeholder-icon { font-size: 40px; }
+    .sec-placeholder-title { font-size: var(--h4-size); font-weight: var(--h4-weight); color: var(--color-neutral-dark-400); margin: 0; }
+    .sec-placeholder-desc  { font-size: var(--body-regular-size); color: var(--color-neutral-dark-300); margin: 0; }
+
+    /* ── Highlighted h-field-wrap ── */
+    .h-field.field-highlighted .h-field-wrap {
+      border-color: var(--color-primary-500);
+      border-left-width: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 1,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check", id: "btn-validate" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+        <!-- SectionNav -->
+        <nav class="section-sidebar" id="section-nav" aria-label="Antragsabschnitte">
+          <div class="section-nav-client">
+            <span class="section-nav-client-dot" aria-hidden="true"></span>
+            <span class="section-nav-client-name">Maxs details</span>
+          </div>
+          <div class="section-nav-group">
+            <button class="section-nav-item indented done active" data-section="sec-person" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Persönliche Details</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented done" data-section="sec-person" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Kontakte und Adresse</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-person" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Berufliche Details</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-person" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">SCHUFA</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+          </div>
+
+          <button class="section-nav-heading" data-section="sec-bonitaet" onclick="setActiveSection(this)">Bonität</button>
+          <div class="section-nav-group">
+            <button class="section-nav-item indented done" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Einnahmen (monatlich)</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Rentenansprüche (monatlich)</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Ausgaben (monatlich)</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Bestehende Kredite</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Vermögen</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-bonitaet" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Immobilienvermögen</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+          </div>
+
+          <button class="section-nav-heading" data-section="sec-objekt" onclick="setActiveSection(this)">Objekt</button>
+          <div class="section-nav-group">
+            <button class="section-nav-item indented" data-section="sec-objekt" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Immobilieninfos</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-objekt" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Immobilienmerkmale</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-objekt" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Darlehen des Finanzierungsobjekts</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-objekt" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Bestehende Grundschulden</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+          </div>
+
+          <button class="section-nav-heading" data-section="sec-finanzierung" onclick="setActiveSection(this)">Finanzierung</button>
+          <div class="section-nav-group">
+            <button class="section-nav-item indented" data-section="sec-finanzierung" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Anschaffungskosten</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-finanzierung" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Finanzierungswunsch</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-finanzierung" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Abweichende wirtschaftliche Berechtigter</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+          </div>
+
+          <button class="section-nav-heading" data-section="sec-kundenhinweis" onclick="setActiveSection(this)">Kundenhinweis</button>
+
+          <button class="section-nav-heading" data-section="sec-sonstiges" onclick="setActiveSection(this)">Zusätzliche Informationen</button>
+          <div class="section-nav-group">
+            <button class="section-nav-item indented" data-section="sec-sonstiges" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">KWP Fragen</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-sonstiges" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Kundennummer</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+            <button class="section-nav-item indented" data-section="sec-sonstiges" onclick="setActiveSection(this)">
+              <span class="section-nav-item-label">Sonstiges</span>
+              <span class="material-symbols-outlined section-nav-check">check_circle</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- MainContentArea -->
+        <div class="content-inner">
+          <div id="antrag-view">
+
+          <!-- ── Phase chips ── -->
+          <div class="antrag-controls">
+            <span class="antrag-controls-label">Felder hervorheben für</span>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('basisdaten', this)">Basisdaten<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('zinsindikation', this)">Zinsindikation<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('kreditentscheidung', this)">Kreditentscheidung<span class="phase-check material-symbols-outlined">check</span></button>
+            <button class="phase-btn" aria-pressed="false" onclick="selectPhase('finanzierung-bestaetigt', this)">Finanzierung bestätigt<span class="phase-check material-symbols-outlined">check</span></button>
+            <div class="kreditgeber-control" id="kreditgeber-control">
+              <button class="kreditgeber-trigger" id="kreditgeber-trigger" onclick="toggleKreditgeberDropdown()">
+                <span class="kreditgeber-trigger-content">
+                  <span id="kreditgeber-selected-logo" class="kreditgeber-trigger-logo"></span>
+                  <span id="kreditgeber-selected-label" class="kreditgeber-placeholder">Kreditgeber wählen</span>
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              <div class="kreditgeber-dropdown" id="kreditgeber-dropdown">
+                <div class="kreditgeber-search-wrap">
+                  <input class="kreditgeber-search" type="text" placeholder="Search" id="kreditgeber-search" oninput="filterKreditgeber(this.value)" />
+                  <svg class="kreditgeber-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </div>
+                <div class="kreditgeber-list" id="kreditgeber-list">
+                  <label class="kreditgeber-item" data-value="europace"><input type="checkbox" value="europace" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"></span><span>Europace</span></label>
+                  <label class="kreditgeber-item" data-value="commerzbank"><input type="checkbox" value="commerzbank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><polygon points="11,1 21,11 11,21 1,11" fill="#F5A300"/><polygon points="11,6 16,11 11,16 6,11" fill="#D48900"/></svg></span><span>Commerzbank</span></label>
+                  <label class="kreditgeber-item" data-value="deutsche-bank"><input type="checkbox" value="deutsche-bank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><rect width="22" height="22" rx="2" fill="#0018A8"/><line x1="4" y1="18" x2="18" y2="4" stroke="white" stroke-width="3.5"/></svg></span><span>Deutsche Bank</span></label>
+                  <label class="kreditgeber-item" data-value="dkb"><input type="checkbox" value="dkb" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:12px;font-weight:800;color:#005CA9;">DKB</span></span><span>DKB</span></label>
+                  <label class="kreditgeber-item" data-value="dsl-bank"><input type="checkbox" value="dsl-bank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:8px;font-weight:600;color:#666;">DSL|Bank</span></span><span>DSL Bank</span></label>
+                  <label class="kreditgeber-item" data-value="hypovereinsbank"><input type="checkbox" value="hypovereinsbank" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="11" fill="#CC0000"/><path d="M11,0.5 A10.5,10.5 0 0 1 21.5,11 L11,11 Z" fill="white"/></svg></span><span>Hypovereinsbank</span></label>
+                  <label class="kreditgeber-item" data-value="ing"><input type="checkbox" value="ing" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:14px;font-weight:800;color:#FF6200;">ING</span></span><span>ING</span></label>
+                  <label class="kreditgeber-item" data-value="isb"><input type="checkbox" value="isb" onchange="selectKreditgeberOption(this)" /><span class="kreditgeber-item-logo"><span style="font-size:11px;font-weight:700;color:#4A0017;">ISB</span></span><span>ISB</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Section: Persönliche Details / Person ── -->
+          <div class="antrag-section" id="sec-person">
+
+          <!-- ── Person layout ── -->
+          <div class="person-layout">
+
+            <!-- Left: Erica's accordion card -->
+            <div class="person-card">
+              <div class="person-card-header">
+                <span class="material-symbols-outlined person-card-icon">person</span>
+                <span class="person-card-name">Erica's Details</span>
+              </div>
+
+              <!-- Persönliche Details -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Persönliche Details</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Anrede</label>
+                    <select class="h-field-select"><option value=""></option><option>Herr</option><option>Frau</option><option>Divers</option></select>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Akademischer Titel</label>
+                    <select class="h-field-select"><option value=""></option><option>Dr.</option><option>Prof.</option><option>Prof. Dr.</option></select>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Vorname</label>
+                    <input class="h-field-input" type="text" value="Erica" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Nachname</label>
+                    <input class="h-field-input" type="text" value="Mustermann" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Geburtsname</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Geburtsdatum</label>
+                    <input class="h-field-input" type="text" value="01.02.1980" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Geburtsort</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Geburtsland</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Staatsangehörigkeit</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Aufenthaltsstatus</label>
+                    <select class="h-field-select"><option>Deutsche Staatsangehörigkeit</option><option>Niederlassungserlaubnis</option><option>Aufenthaltserlaubnis</option></select>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Familienstand</label>
+                    <select class="h-field-select"><option value=""></option><option>Ledig</option><option>Verheiratet</option><option>Geschieden</option><option>Verwitwet</option></select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kontakt und Adresse -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Kontakt und Adresse</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Straße und Nr.</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">PLZ</label>
+                    <input class="h-field-input" type="text" value="" style="max-width:90px;flex:0 0 90px;" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Stadt</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Bundesland</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Telefon</label>
+                    <input class="h-field-input" type="tel" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">E-Mail</label>
+                    <input class="h-field-input" type="email" value="" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Berufliche Details -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Berufliche Details</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Beschäftigungsstatus</label>
+                    <select class="h-field-select"><option value=""></option><option>Angestellt</option><option>Selbstständig</option><option>Beamter</option><option>Rentner</option></select>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Arbeitgeber</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Beschäftigt seit</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Branche</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Zahlungen -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Zahlungen</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">IBAN</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Kontoinhaber</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Steuern und SCHUFA -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Steuern und SCHUFA</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Steuer-ID</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Personen im Haushalt</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">SCHUFA-Auskunft</label>
+                    <select class="h-field-select"><option value=""></option><option>Einwilligung erteilt</option><option>Ausstehend</option></select>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- .person-card -->
+
+            <!-- Right: add a child -->
+            <div class="person-aside">
+              <button class="btn-add-person">
+                <span class="material-symbols-outlined">add</span>
+                Kind hinzufügen
+              </button>
+            </div>
+
+          </div><!-- .person-layout -->
+
+          </div><!-- #sec-person -->
+
+          <!-- ── Section: Bonität ── -->
+          <div class="antrag-section" id="sec-bonitaet" style="display:none">
+
+          <!-- ── Bonität ── -->
+          <div class="person-layout">
+
+            <!-- Left: Max's Bonität -->
+            <div class="person-card">
+              <div class="person-card-header">
+                <span class="material-symbols-outlined person-card-icon">person</span>
+                <span class="person-card-name">Max's Bonität</span>
+              </div>
+
+              <!-- Einnahmen (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Einnahmen (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Gehalt (netto)</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="5.200" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Anzahl Monatsgehälter</label>
+                    <input class="h-field-input" type="text" value="12" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Variable Einkünfte (netto)</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="4.000" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+                    <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+                  </div>
+                  <div class="h-summary">
+                    <span class="h-summary-label">Summe monatlicher Einnahmen</span>
+                    <span class="h-summary-value">8.000 €</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rentenansprüche (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Rentenansprüche (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Renten-Eintrittsdatum</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Gesetzliche Rente</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Private Rente</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ausgaben (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Ausgaben (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Derzeitige Mietkosten</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Mietkosten entfallen künftig?</label>
+                    <div class="h-radio-group">
+                      <label class="h-radio-option"><input type="radio" name="mietkosten-max" value="ja" checked /> Ja</label>
+                      <label class="h-radio-option"><input type="radio" name="mietkosten-max" value="nein" /> Nein</label>
+                    </div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Lebensversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Private Krankenversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Berufsunfähigkeitsversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Unterhaltsverpflichtungen</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Sparpläne</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Bausparvertrag</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Weitere Ausgaben</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Bestehende Kreditverträge</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-summary">
+                    <span class="h-summary-label">Gesamtausgaben</span>
+                    <span class="h-summary-value">0 €</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bestehende Kredite -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Bestehende Kredite</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Kreditbetrag</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Monatliche Rate</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Weiteren Kredit hinzufügen</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vermögen -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Vermögen</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Guthaben / Sparguthaben</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Wertpapiere</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Sonstiges Vermögen</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Immobilienvermögen -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Immobilienvermögen</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Immobilienwert</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Restschuld</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Monatliche Belastung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Immobilie hinzufügen</a>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- .person-card (Max) -->
+
+            <!-- Right: Anna's Bonität -->
+            <div class="person-card">
+              <div class="person-card-header">
+                <span class="material-symbols-outlined person-card-icon">person</span>
+                <span class="person-card-name">Anna's Bonität</span>
+              </div>
+
+              <!-- Einnahmen (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Einnahmen (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Gehalt (netto)</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="4.000" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Anzahl Monatsgehälter</label>
+                    <input class="h-field-input" type="text" value="12" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Variable Einkünfte (netto)</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="4.000" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+                    <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+                  </div>
+                  <div class="h-summary">
+                    <span class="h-summary-label">Summe monatlicher Einnahmen</span>
+                    <span class="h-summary-value">8.000 €</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rentenansprüche (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Rentenansprüche (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Renten-Eintrittsdatum</label>
+                    <input class="h-field-input" type="text" value="" />
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Gesetzliche Rente</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Private Rente</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ausgaben (monatlich) -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Ausgaben (monatlich)</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Derzeitige Mietkosten</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Mietkosten entfallen künftig?</label>
+                    <div class="h-radio-group">
+                      <label class="h-radio-option"><input type="radio" name="mietkosten-anna" value="ja" checked /> Ja</label>
+                      <label class="h-radio-option"><input type="radio" name="mietkosten-anna" value="nein" /> Nein</label>
+                    </div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Lebensversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Private Krankenversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Berufsunfähigkeitsversicherung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Unterhaltsverpflichtungen</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Sparpläne</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Bausparvertrag</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Weitere Ausgaben</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Bestehende Kreditverträge</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-summary">
+                    <span class="h-summary-label">Gesamtausgaben</span>
+                    <span class="h-summary-value">0 €</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bestehende Kredite -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Bestehende Kredite</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Kreditbetrag</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Monatliche Rate</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Weiteren Kredit hinzufügen</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vermögen -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Vermögen</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Guthaben / Sparguthaben</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Wertpapiere</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Sonstiges Vermögen</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Immobilienvermögen -->
+              <div class="accordion-section open">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  <span>Immobilienvermögen</span>
+                  <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                </button>
+                <div class="accordion-body">
+                  <div class="h-field">
+                    <label class="h-field-label">Immobilienwert</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Restschuld</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-field">
+                    <label class="h-field-label">Monatliche Belastung</label>
+                    <div class="h-field-wrap"><input class="h-field-input" type="text" value="" /><span class="h-suffix">€</span></div>
+                  </div>
+                  <div class="h-links">
+                    <a href="#" class="form-link">+ Immobilie hinzufügen</a>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- .person-card (Anna) -->
+
+          </div><!-- .person-layout Bonität -->
+
+          </div><!-- #sec-bonitaet -->
+
+          <!-- ── Section: Objekt ── -->
+          <div class="antrag-section" id="sec-objekt" style="display:none">
+            <div class="person-layout">
+
+              <div class="person-card">
+                <div class="person-card-header">
+                  <span class="material-symbols-outlined person-card-icon">home</span>
+                  <span class="person-card-name">Objekt</span>
+                </div>
+
+                <!-- Immobilieninfos -->
+                <div class="accordion-section open">
+                  <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>Immobilieninfos</span>
+                    <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                  </button>
+                  <div class="accordion-body">
+                    <div class="h-field">
+                      <label class="h-field-label">Finanzierungsprojekt *</label>
+                      <select class="h-field-select"><option>Kauf einer bestehenden Immobilie</option><option>Kauf einer neuen Immobilie</option><option>Modernisierung</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Immobilie gefunden</label>
+                      <select class="h-field-select"><option>Ja</option><option>Nein</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Nutzung</label>
+                      <select class="h-field-select"><option>Selbst nutzen</option><option>Vermieten</option><option>Teils vermieten</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Objektart</label>
+                      <select class="h-field-select"><option>Einfamilienhaus</option><option>Mehrfamilienhaus</option><option>Eigentumswohnung</option><option>Reihenhaus</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Bauweise</label>
+                      <select class="h-field-select"><option>Blockbauweise</option><option>Massivbauweise</option><option>Holzständerbauweise</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Erbbaurecht</label>
+                      <select class="h-field-select"><option>Nein</option><option>Ja</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Effizienzhaus-Standard</label>
+                      <select class="h-field-select"><option value=""></option><option>KfW 40</option><option>KfW 55</option><option>KfW 70</option><option>KfW 85</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Endenergiewert (kWh/m²)</label>
+                      <input class="h-field-input" type="text" value="" />
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Baujahr</label>
+                      <input class="h-field-input" type="text" value="2000" />
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Modernisierungsjahr</label>
+                      <input class="h-field-input" type="text" value="2020" />
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Umfang der Modernisierung</label>
+                      <select class="h-field-select"><option value=""></option><option>Gering</option><option selected>Mittel</option><option>Umfangreich</option></select>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Grundstücksfläche</label>
+                      <div class="h-field-wrap"><input class="h-field-input" type="text" value="500" /><span class="h-suffix">m²</span></div>
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Stockwerke (ohne DG/KG)</label>
+                      <input class="h-field-input" type="text" value="2" />
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Anzahl Zimmer</label>
+                      <input class="h-field-input" type="text" value="5" />
+                    </div>
+                    <div class="h-field">
+                      <label class="h-field-label">Wohnfläche</label>
+                      <div class="h-field-wrap"><input class="h-field-input" type="text" value="200" /><span class="h-suffix">m²</span></div>
+                    </div>
+
+                    <!-- Sub-cards tree -->
+                    <div class="h-sub-tree">
+
+                    <!-- Sub-card: Adresse des Objekts -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Adresse des Objekts</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-field">
+                          <label class="h-field-label">Straße</label>
+                          <input class="h-field-input" type="text" value="Elsa-Brandstorm-Str" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Hausnummer</label>
+                          <input class="h-field-input" type="text" value="2" style="max-width:80px;flex:0 0 80px;" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">PLZ</label>
+                          <input class="h-field-input" type="text" value="13189" style="max-width:90px;flex:0 0 90px;" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Stadt</label>
+                          <input class="h-field-input" type="text" value="Berlin" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Bundesland</label>
+                          <input class="h-field-input" type="text" value="Berlin" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-card: Grundbuchdetail -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Grundbuchdetail</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-field">
+                          <label class="h-field-label">Grundbuch von</label>
+                          <input class="h-field-input" type="text" value="" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Blatt</label>
+                          <input class="h-field-input" type="text" value="" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Band</label>
+                          <input class="h-field-input" type="text" value="" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Amtsgericht</label>
+                          <input class="h-field-input" type="text" value="" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">(Künftiger) Eigentümer</label>
+                          <select class="h-field-select"><option value=""></option><option>Max Mustermann</option><option>Anna Mustermann</option></select>
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Vorlasten Abt. II</label>
+                          <div class="h-radio-group">
+                            <label class="h-radio-option"><input type="radio" name="vorlasten" value="ja" /> Ja</label>
+                            <label class="h-radio-option"><input type="radio" name="vorlasten" value="nein" checked /> Nein</label>
+                          </div>
+                        </div>
+                        <div class="h-links" style="padding-left:0;margin-top:var(--space-s)">
+                          <a href="#" class="form-link">+ Details Bestandsverzeichnis</a>
+                        </div>
+                        <div class="h-field h-field--top" style="margin-top:var(--space-s)">
+                          <label class="h-field-label">Weitere Anmerkungen</label>
+                          <textarea class="h-field-textarea"></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-card: Mithaftende Objekte -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Mithaftende Objekte</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-links" style="padding-left:0">
+                          <a href="#" class="form-link">+ Mithaftendes Objekt</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-card: Abweichend wirtschaftlich Berechtigte -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Abweichend wirtschaftlich Berechtigte</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-links" style="padding-left:0">
+                          <a href="#" class="form-link">+ Abweichend wirtschaftlich Berechtigte</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-card: Verkäufer der Immobilie -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Verkäufer der Immobilie</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-field">
+                          <label class="h-field-label">Anrede</label>
+                          <select class="h-field-select"><option value=""></option><option selected>Herr</option><option>Frau</option><option>Divers</option></select>
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Vorname</label>
+                          <input class="h-field-input" type="text" value="Patrick" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Nachname</label>
+                          <input class="h-field-input" type="text" value="Ritzinger" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Geburtsdatum</label>
+                          <input class="h-field-input" type="text" value="01.01.1960" placeholder="TT.MM.JJJJ" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Unternehmen</label>
+                          <input class="h-field-input" type="text" value="RitzingerGmbH" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Straße</label>
+                          <input class="h-field-input" type="text" value="Ritzingerstr" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Hausnummer</label>
+                          <input class="h-field-input" type="text" value="1" style="max-width:80px;flex:0 0 80px;" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">PLZ</label>
+                          <input class="h-field-input" type="text" value="13189" style="max-width:90px;flex:0 0 90px;" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Stadt</label>
+                          <input class="h-field-input" type="text" value="Berlin" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Bundesland</label>
+                          <input class="h-field-input" type="text" value="Berlin" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">E-Mail</label>
+                          <input class="h-field-input" type="email" value="" />
+                        </div>
+                        <div class="h-field">
+                          <label class="h-field-label">Telefonnummer</label>
+                          <input class="h-field-input" type="tel" value="" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-card: Stellplätze -->
+                    <div class="h-sub-card open">
+                      <button class="h-sub-card-trigger" onclick="toggleSubCard(this)">
+                        <span>Stellplätze</span>
+                        <span class="material-symbols-outlined h-sub-card-chevron">expand_more</span>
+                      </button>
+                      <div class="h-sub-card-body">
+                        <div class="h-links" style="padding-left:0">
+                          <a href="#" class="form-link">+ Stellplatz hinzufügen</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    </div><!-- /.h-sub-tree -->
+                  </div>
+                </div>
+
+                <!-- Immobilienmerkmale -->
+                <div class="accordion-section open">
+                  <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>Immobilienmerkmale</span>
+                    <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                  </button>
+                  <div class="accordion-body">
+                    <p style="font-size:13px;color:var(--color-neutral-dark-300);margin:0;">Felder folgen im nächsten Schritt.</p>
+                  </div>
+                </div>
+
+                <!-- Darlehen des Finanzierungsobjekts -->
+                <div class="accordion-section open">
+                  <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>Darlehen des Finanzierungsobjekts</span>
+                    <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                  </button>
+                  <div class="accordion-body">
+                    <p style="font-size:13px;color:var(--color-neutral-dark-300);margin:0;">Felder folgen im nächsten Schritt.</p>
+                  </div>
+                </div>
+
+                <!-- Bestehende Grundschulden -->
+                <div class="accordion-section open">
+                  <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                    <span>Bestehende Grundschulden</span>
+                    <span class="material-symbols-outlined accordion-chevron">expand_more</span>
+                  </button>
+                  <div class="accordion-body">
+                    <p style="font-size:13px;color:var(--color-neutral-dark-300);margin:0;">Felder folgen im nächsten Schritt.</p>
+                  </div>
+                </div>
+
+              </div><!-- .person-card -->
+
+              <div class="person-aside"></div>
+
+            </div><!-- .person-layout -->
+          </div>
+
+          <!-- ── Section: Finanzierung ── -->
+          <div class="antrag-section" id="sec-finanzierung" style="display:none">
+            <div class="sec-placeholder">
+              <span class="material-symbols-outlined sec-placeholder-icon">account_balance</span>
+              <p class="sec-placeholder-title">Finanzierung</p>
+              <p class="sec-placeholder-desc">Dieser Bereich wird noch ausgefüllt.</p>
+            </div>
+          </div>
+
+          <!-- ── Section: Kundenhinweis ── -->
+          <div class="antrag-section" id="sec-kundenhinweis" style="display:none">
+            <div class="sec-placeholder">
+              <span class="material-symbols-outlined sec-placeholder-icon">info</span>
+              <p class="sec-placeholder-title">Kundenhinweis</p>
+              <p class="sec-placeholder-desc">Dieser Bereich wird noch ausgefüllt.</p>
+            </div>
+          </div>
+
+          <!-- ── Section: Sonstiges ── -->
+          <div class="antrag-section" id="sec-sonstiges" style="display:none">
+            <div class="sec-placeholder">
+              <span class="material-symbols-outlined sec-placeholder-icon">more_horiz</span>
+              <p class="sec-placeholder-title">Zusätzliche Informationen</p>
+              <p class="sec-placeholder-desc">Dieser Bereich wird noch ausgefüllt.</p>
+            </div>
+          </div>
+
+          </div><!-- #antrag-view -->
+        </div><!-- .content-inner -->
+
+</div><!-- #proto-content -->
+
+<script>
+  /* ── Accordion ── */
+  function toggleAccordion(triggerBtn) {
+    triggerBtn.closest('.accordion-section').classList.toggle('open');
+  }
+
+  /* ── Sub-card ── */
+  function toggleSubCard(triggerBtn) {
+    triggerBtn.closest('.h-sub-card').classList.toggle('open');
+  }
+
+  /* ── Shell navigation ── */
+  function setActive(btn) {
+    document.querySelectorAll('#global-sidebar .sidebar-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function setActiveSection(clicked) {
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(el => el.classList.remove('active'));
+    clicked.classList.add('active');
+    var targetId = clicked.dataset.section;
+    if (targetId) {
+      document.querySelectorAll('.antrag-section').forEach(function(s) {
+        s.style.display = (s.id === targetId) ? 'block' : 'none';
+      });
+    }
+  }
+  function setActiveTab(tab) {
+    document.querySelectorAll('.tab-nav .tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+  }
+
+  /* ── State ── */
+  var activePhase       = null;
+  var activeKreditgeber = null;
+
+  /* ── Phase → field map ── */
+  var FIELD_FILTER_MAP = {
+    'basisdaten':            ['Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','IBAN','Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'],
+    'zinsindikation':        ['Gehalt (netto)','Variable Einkünfte (netto)','Unterhaltsverpflichtungen','Familienstand'],
+    'kreditentscheidung':    [
+      'Vorname','Nachname','Geburtsdatum','Geburtsort','Geburtsland',
+      'Staatsangehörigkeit','Aufenthaltsstatus','Familienstand',
+      'Steueridentifikationsnummer','IBAN','Kontoinhaber',
+      'Gehalt (netto)','Anzahl Monatsgehälter','Variable Einkünfte (netto)',
+      'Renten-Eintrittsdatum','Gesetzliche Rente',
+      'Derzeitige Mietkosten','Entfallen Mietkosten künftig?',
+      'Renten- und Lebensversicherungsbeiträge','Private Krankenversicherungsbeiträge',
+      'Berufsunfähigkeitsversicherungsbeiträge','Unterhaltsverpflichtungen',
+      'Bestehende Kreditverträge'
+    ],
+    'finanzierung-bestaetigt': ['IBAN','Kontoinhaber']
+  };
+
+  /* ── Kreditgeber → field map ── */
+  var KREDITGEBER_FIELD_MAP = {
+    'europace':        ['Gehalt (netto)','IBAN','Staatsangehörigkeit'],
+    'commerzbank':     ['Steueridentifikationsnummer','Familienstand','Geburtsdatum'],
+    'deutsche-bank':   ['Steueridentifikationsnummer','Geburtsland','Staatsangehörigkeit'],
+    'dkb':             ['IBAN','Gehalt (netto)','Variable Einkünfte (netto)'],
+    'dsl-bank':        ['Geburtsdatum','Geburtsort','Unterhaltsverpflichtungen'],
+    'hypovereinsbank': ['Steueridentifikationsnummer','Familienstand','Derzeitige Mietkosten'],
+    'ing':             ['IBAN','Kontoinhaber','Unterhaltsverpflichtungen','Gehalt (netto)'],
+    'isb':             ['Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum','IBAN']
+  };
+
+  /* ── Phase chip selection (mutually exclusive) ── */
+  function selectPhase(value, el) {
+    var wasOn = el.getAttribute('aria-pressed') === 'true';
+    document.querySelectorAll('.phase-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    if (!wasOn) {
+      activePhase = value;
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
+    } else {
+      activePhase = null;
+    }
+    applyHighlights();
+  }
+
+  /* ── Apply all highlights ── */
+  /* ── Kreditgeber dropdown ── */
+  function toggleKreditgeberDropdown() {
+    var dd = document.getElementById('kreditgeber-dropdown');
+    var trigger = document.getElementById('kreditgeber-trigger');
+    dd.classList.toggle('open');
+    trigger.classList.toggle('open', dd.classList.contains('open'));
+    if (dd.classList.contains('open')) {
+      document.getElementById('kreditgeber-search').value = '';
+      filterKreditgeber('');
+      setTimeout(function() { document.getElementById('kreditgeber-search').focus(); }, 50);
+    }
+  }
+
+  function filterKreditgeber(query) {
+    var q = query.toLowerCase();
+    document.querySelectorAll('#kreditgeber-list .kreditgeber-item').forEach(function(item) {
+      var name = item.querySelector('span:last-child').textContent.toLowerCase();
+      item.dataset.hidden = (q && !name.includes(q)) ? 'true' : 'false';
+    });
+  }
+
+  function selectKreditgeberOption(cb) {
+    document.querySelectorAll('#kreditgeber-list input[type="checkbox"]').forEach(function(other) {
+      if (other !== cb) other.checked = false;
+    });
+    activeKreditgeber = cb.checked ? cb.value : null;
+    var labelEl = document.getElementById('kreditgeber-selected-label');
+    var logoEl  = document.getElementById('kreditgeber-selected-logo');
+    if (activeKreditgeber) {
+      var selectedItem = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + activeKreditgeber + '"]');
+      var nameSpan = selectedItem ? selectedItem.querySelector('span:last-child') : null;
+      labelEl.textContent = nameSpan ? nameSpan.textContent : activeKreditgeber;
+      labelEl.classList.remove('kreditgeber-placeholder');
+      var sourceLogo = selectedItem ? selectedItem.querySelector('.kreditgeber-item-logo') : null;
+      logoEl.innerHTML = sourceLogo ? sourceLogo.innerHTML : '';
+    } else {
+      labelEl.textContent = 'Kreditgeber wählen';
+      labelEl.classList.add('kreditgeber-placeholder');
+      logoEl.innerHTML = '';
+    }
+    applyHighlights();
+    document.getElementById('kreditgeber-dropdown').classList.remove('open');
+    document.getElementById('kreditgeber-trigger').classList.remove('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    var control = document.getElementById('kreditgeber-control');
+    if (control && !control.contains(e.target)) {
+      var dd = document.getElementById('kreditgeber-dropdown');
+      if (dd) dd.classList.remove('open');
+    }
+  });
+
+  function applyHighlights() {
+    clearHighlights();
+
+    var phaseFields      = activePhase       ? (FIELD_FILTER_MAP[activePhase]            || []) : [];
+    var kreditgeberFields= activeKreditgeber  ? (KREDITGEBER_FIELD_MAP[activeKreditgeber] || []) : [];
+    var hasFilter        = activePhase || activeKreditgeber;
+
+    document.querySelectorAll('.form-field').forEach(function(fieldEl) {
+      var labelEl = fieldEl.querySelector('.form-field-label');
+      if (!labelEl) return;
+      var baseText = (labelEl.childNodes[0] ? labelEl.childNodes[0].textContent : '').trim().replace(/\s*\*$/, '');
+      var inPhase = phaseFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      var inBank  = kreditgeberFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      if (inPhase || inBank) { fieldEl.classList.add('field-highlighted'); }
+    });
+
+    document.querySelectorAll('.h-field').forEach(function(fieldEl) {
+      var labelEl = fieldEl.querySelector('.h-field-label');
+      if (!labelEl) return;
+      var baseText = labelEl.textContent.trim().replace(/\s*\*$/, '');
+      var inPhase = phaseFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      var inBank  = kreditgeberFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      if (inPhase || inBank) { fieldEl.classList.add('field-highlighted'); }
+    });
+    updateSidebarHighlights();
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.form-field.field-highlighted, .h-field.field-highlighted').forEach(function(el) { el.classList.remove('field-highlighted'); });
+    document.querySelectorAll('.field-filter-tag').forEach(function(t) { t.remove(); });
+    clearSidebarHighlights();
+  }
+
+  function updateSidebarHighlights() {
+    clearSidebarHighlights();
+    document.querySelectorAll('.form-card').forEach(function(card) {
+      if (!card.querySelector('.field-highlighted')) return;
+      var headingEl = card.querySelector('.form-card-heading');
+      if (!headingEl) return;
+      var cardTitle = headingEl.textContent.trim();
+      document.querySelectorAll('#section-nav .section-nav-item .section-nav-item-label').forEach(function(labelEl) {
+        if (labelEl.textContent.trim() === cardTitle) {
+          labelEl.closest('.section-nav-item').classList.add('nav-section-highlighted');
+        }
+      });
+    });
+  }
+
+  function clearSidebarHighlights() {
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-highlighted').forEach(function(el) {
+      el.classList.remove('nav-section-highlighted');
+    });
+  }
+
+  /* ── Drawer top (for any future fixed panels) ── */
+  function setDrawerTop() {
+    var c = document.querySelector('.content');
+    if (c) document.documentElement.style.setProperty('--drawer-top', c.getBoundingClientRect().top + 'px');
+  }
+  setDrawerTop();
+  window.addEventListener('resize', setDrawerTop);
+  document.addEventListener('shell:ready', setDrawerTop);
+</script>
+
+</body>
+</html>
