@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Highlighting Important Fields V6</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ── Field highlighting — Design 1 (side strip) ── */
+    .form-field.field-highlighted {
+      border-left: 3px solid var(--color-primary-500);
+      padding-left: calc(var(--space-s) - 3px);
+    }
+    .form-field.field-highlighted.field-needs-attention {
+      border-left-color: #ff9800;
+    }
+    .form-field.field-highlighted.field-needs-attention .form-input {
+      border-color: #ff9800;
+    }
+
+    /* ── Field highlighting — Design 2 (input border + inline label icon) ── */
+    .design-2 .form-field.field-highlighted,
+    .design-2 .form-field.field-highlighted.field-needs-attention {
+      border-left: none;
+      padding-left: 0;
+    }
+    .design-2 .form-field.field-highlighted .form-input {
+      border-color: var(--color-primary-500);
+    }
+    .design-2 .form-field.field-highlighted.field-needs-attention .form-input {
+      border-color: #f4511e;
+    }
+    .design-2 .form-field.field-highlighted .form-field-label {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .field-indicator {
+      font-family: 'Material Symbols Outlined';
+      font-size: 18px; line-height: 1;
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .field-indicator-ok    { color: var(--color-primary-500); }
+    .field-indicator-missing { color: #f4511e; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+
+    /* ── Field highlighting — Design 3 (checkmark inside input + orange strip/border for missing) ── */
+    .design-3 .form-field.field-highlighted:not(.field-needs-attention) {
+      border-left: none;
+      padding-left: 0;
+    }
+    .design-3 .form-field.field-highlighted.field-needs-attention {
+      border-left-color: #f4511e;
+    }
+    .design-3 .form-field.field-highlighted.field-needs-attention .form-input {
+      border-color: #f4511e;
+    }
+    /* Bold checkmark injected inside .form-input-wrap */
+    .field-check-inner {
+      position: absolute;
+      font-family: 'Material Symbols Outlined';
+      font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 20;
+      font-size: 16px; line-height: 1;
+      color: var(--color-primary-500);
+      -webkit-text-stroke: 0.8px var(--color-primary-500);
+      paint-order: stroke fill;
+      pointer-events: none;
+      top: 50%; transform: translateY(-50%);
+      z-index: 2;
+      right: var(--space-s);
+    }
+    /* Left of native select arrow (~24px wide) */
+    .field-check-inner.in-select { right: 28px; }
+    /* Left of € suffix (suffix sits at right: 16px, is ~10px wide) */
+    .field-check-inner.in-suffix { right: calc(var(--space-xl) + 4px); }
+    /* Extra right padding on plain inputs so text doesn't slide under checkmark */
+    .design-3 .form-field.field-highlighted:not(.field-needs-attention) .form-input:not(select):not(.has-suffix) {
+      padding-right: 26px;
+    }
+
+    /* ── Design toggle ── */
+    .tab-bar .design-toggle { margin-left: auto; align-self: center; }
+    .design-toggle {
+      display: inline-flex;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--color-neutral-light-000);
+    }
+    .design-btn {
+      background: transparent;
+      border: none;
+      padding: 6px 14px;
+      font-size: var(--body-small-size);
+      font-family: inherit;
+      color: var(--color-neutral-dark-400);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .design-btn + .design-btn { border-left: 1px solid var(--color-neutral-light-500); }
+    .design-btn.active {
+      background: var(--color-primary-500);
+      color: #fff;
+      font-weight: var(--font-weight-medium);
+    }
+    .field-filter-tag {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0;
+      color: var(--color-primary-600);
+      background: var(--color-primary-100);
+      border: 1px solid #80cbc4;
+      border-radius: 3px; padding: 1px 5px;
+      margin-left: 6px; vertical-align: middle;
+      line-height: 1.4;
+    }
+    /* Tag: filled — checkmark prefix */
+    .field-filter-tag.tag-ok::before {
+      content: '✓ ';
+    }
+    /* Tag: unfilled — orange */
+    .field-filter-tag.tag-missing {
+      color: #bf360c;
+      background: #fff3e0;
+      border-color: #ffb74d;
+    }
+    .field-filter-tag--bank {
+      color: #1565c0;
+      background: #e3f2fd;
+      border-color: #90caf9;
+    }
+    /* ── Antragsvalidierung banner ── */
+    .validation-banner {
+      border: 1px solid var(--color-neutral-light-500);
+      border-left: 3px solid #7986CB;
+      border-radius: var(--radius-s);
+      padding: var(--space-m) var(--space-l);
+      margin-bottom: var(--space-m);
+      background: var(--color-neutral-light-000);
+    }
+    .validation-banner-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-s);
+    }
+    .validation-banner-title {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+    }
+    .validation-banner-desc {
+      font-size: var(--body-regular-size);
+      line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-600);
+      margin: 0;
+    }
+    .validation-toggle-wrap {
+      display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0;
+    }
+    .validation-toggle-label {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-600);
+    }
+    .toggle-switch {
+      position: relative; display: inline-block; width: 38px; height: 22px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--color-neutral-light-500);
+      border-radius: 22px;
+      transition: background var(--transition-base);
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; left: 3px; bottom: 3px;
+      background: var(--color-neutral-light-000);
+      border-radius: 50%;
+      transition: transform var(--transition-base);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--color-primary-500); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* ── Sticky progress bar ── */
+    .content-inner { padding-top: 0 !important; }
+    .sticky-progress {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--color-neutral-light-200);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin: 0 calc(-1 * var(--space-l)) var(--space-l);
+      padding: var(--space-m) var(--space-l);
+    }
+    .progress-segments {
+      display: flex;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      overflow: hidden;
+      background: var(--color-neutral-light-000);
+    }
+    .progress-step-item {
+      flex: 1;
+      padding: 10px var(--space-m);
+      border-right: 1px solid var(--color-neutral-light-500);
+      cursor: pointer;
+      transition: background var(--transition-base);
+      min-width: 0;
+    }
+    .progress-step-item:last-child { border-right: none; }
+    .progress-step-item:hover:not(.active) { background: var(--color-neutral-light-200); }
+    .progress-step-item.active { background: var(--color-primary-100); box-shadow: inset 0 0 0 2px var(--color-primary-500); }
+    .progress-step-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .progress-step-name {
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+    }
+    .progress-step-item.active .progress-step-name { color: var(--color-primary-700, #00695c); }
+    .progress-step-count {
+      font-size: 11px;
+      color: var(--color-neutral-dark-400);
+    }
+    .progress-step-item.active .progress-step-count { color: var(--color-primary-600); }
+    .progress-track-sm {
+      height: 4px;
+      border-radius: var(--radius-full);
+      background: var(--color-neutral-light-400);
+      overflow: hidden;
+    }
+    .progress-step-item.active .progress-track-sm { background: var(--color-neutral-light-500); }
+    .progress-fill-sm {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-500);
+      transition: width 0.3s ease;
+    }
+    /* ── Phase status indicator ── */
+    .progress-step-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1;
+      min-height: 14px;
+    }
+    .progress-step-status .status-icon {
+      font-family: 'Material Symbols Outlined';
+      font-size: 12px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    .progress-step-status.status-ok      { color: #2e7d32; }
+    .progress-step-status.status-missing { color: #e65100; }
+
+    /* ── Bank multi-select ── */
+    .bank-select-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-m);
+      margin-bottom: var(--space-l);
+      flex-wrap: wrap;
+    }
+    .bank-select-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .bank-select-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      background: var(--color-neutral-light-000);
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-700);
+      min-width: 210px;
+      user-select: none;
+      transition: border-color var(--transition-base);
+    }
+    .bank-select-trigger:hover { border-color: var(--color-neutral-dark-300); }
+    .bank-select-trigger.open { border-color: var(--color-primary-500); }
+    .bank-select-label { flex: 1; }
+    .bank-select-arrow {
+      font-size: 18px;
+      color: var(--color-neutral-dark-400);
+      transition: transform var(--transition-base);
+    }
+    .bank-select-trigger.open .bank-select-arrow { transform: rotate(180deg); }
+    .bank-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-s);
+      box-shadow: var(--shadow-m);
+      z-index: 200;
+      min-width: 210px;
+    }
+    .bank-dropdown.open { display: block; }
+    .bank-search-wrap {
+      padding: var(--space-s) var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .bank-search {
+      width: 100%;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: 5px var(--space-s);
+      font-size: var(--body-small-size);
+      font-family: var(--font-family);
+      color: var(--color-neutral-dark-900);
+      outline: none;
+    }
+    .bank-search:focus { border-color: var(--color-primary-500); }
+    .bank-options-list { padding: var(--space-xs) 0; }
+    .bank-option.hidden { display: none; }
+    .bank-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding: var(--space-s) var(--space-m);
+      cursor: pointer;
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-900);
+      transition: background var(--transition-fast);
+    }
+    .bank-option:hover { background: var(--color-neutral-light-100); }
+    .bank-option input[type="checkbox"] { accent-color: var(--color-primary-500); width: 14px; height: 14px; cursor: pointer; }
+    .bank-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-s);
+      flex: 1;
+    }
+    .bank-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 6px 4px 10px;
+      background: var(--color-primary-100);
+      border: 1px solid #80cbc4;
+      border-radius: var(--radius-full);
+      font-size: var(--body-small-size);
+      color: var(--color-primary-700, #00695c);
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
+    .bank-tag-remove {
+      display: flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px;
+      background: none; border: none; padding: 0; cursor: pointer;
+      color: var(--color-primary-600);
+      font-size: 14px; line-height: 1;
+      border-radius: 50%;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .bank-tag-remove:hover { background: #b2dfdb; color: #004d40; }
+
+    /* ── Section nav: smaller text + highlight state ── */
+    #section-nav .section-nav-item {
+      font-size: 12px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    #section-nav .section-nav-heading {
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-500);
+      margin-top: var(--space-xs);
+      padding-top: var(--space-s);
+      padding-bottom: var(--space-s);
+    }
+    #section-nav .section-nav-heading::before { display: none; }
+    #section-nav .section-nav-item.nav-section-highlighted {
+      border-left: 3px solid var(--color-primary-500);
+      color: var(--color-primary-600);
+      background: var(--color-primary-100);
+      padding-left: calc(var(--space-xl) - 3px);
+    }
+    /* ── Person chip on card heading ── */
+    .form-card-heading-row {
+      display: flex; align-items: center; gap: var(--space-s);
+      margin-bottom: var(--space-m);
+    }
+    .form-card-heading-row .form-card-heading { margin-bottom: 0; }
+    .person-chip {
+      display: inline-flex; align-items: center;
+      padding: 2px 10px; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: var(--font-weight-medium);
+    }
+    .person-chip-max  { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .person-chip-anna { background: #fce4ec; color: #ad1457; border: 1px solid #f48fb1; }
+    /* ── Plain subsection label (replaces green banner) ── */
+    .form-section-label {
+      font-size: var(--body-small-size); font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-500);
+      margin-bottom: var(--space-m); margin-top: var(--space-s);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Max Mustermann",
+    subtitle:  "440.000 €",
+    activeNav: "antraege",
+    tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
+    activeTab: 1,
+    actions: [
+      { label: "Antrag validieren", type: "secondary", icon: "fact_check", id: "btn-validate" },
+      { label: "Kundensicht",        type: "secondary", icon: "person" },
+      { label: "",                   type: "ghost",     icon: "more_horiz" }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+        <!-- SectionNav -->
+        <nav class="section-sidebar" id="section-nav" aria-label="Antragsabschnitte">
+          <div class="section-nav-client">
+            <span class="section-nav-client-dot" aria-hidden="true"></span>
+            <span class="section-nav-client-name">Maxs details</span>
+          </div>
+          <button class="section-nav-item indented active" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Persönliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kontakte und Adresse</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Berufliche Details</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">SCHUFA</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Bonität</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Einnahmen (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Rentenansprüche (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Ausgaben (monatlich)</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Kredite</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Vermögen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienvermögen</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Objekt</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilieninfos</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Immobilienmerkmale</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Darlehen des Finanzierungsobjekts</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Bestehende Grundschulden</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Finanzierung</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Anschaffungskosten</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Finanzierungswunsch</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Abweichende wirtschaftliche Berechtigter</span>
+          </button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Kundenhinweis</button>
+          <button class="section-nav-heading" onclick="setActiveSection(this)">Zusätzliche Informationen</button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">KWP Fragen</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Kundennummer</span>
+          </button>
+          <button class="section-nav-item indented" onclick="setActiveSection(this)">
+            <span class="section-nav-item-label">Sonstiges</span>
+          </button>
+        </nav>
+
+        <!-- MainContentArea -->
+        <div class="content-inner">
+          <div id="antrag-view">
+
+          <!-- ── Sticky progress bar ── -->
+          <div class="sticky-progress" id="stickyProgress">
+            <div class="progress-segments">
+              <div class="progress-step-item" id="step-basisdaten" data-step="basisdaten" onclick="selectStep(this,'basisdaten')">
+                <div class="progress-step-top">
+                  <span class="progress-step-name">Basisdaten</span>
+                  <span class="progress-step-count">24/24</span>
+                </div>
+                <div class="progress-track-sm">
+                  <div class="progress-fill-sm" style="width:100%"></div>
+                </div>
+                <div class="progress-step-status" id="status-basisdaten"></div>
+              </div>
+              <div class="progress-step-item" id="step-zinsindikation" data-step="zinsindikation" onclick="selectStep(this,'zinsindikation')">
+                <div class="progress-step-top">
+                  <span class="progress-step-name">Zinsindikation</span>
+                  <span class="progress-step-count">42/44</span>
+                </div>
+                <div class="progress-track-sm">
+                  <div class="progress-fill-sm" style="width:95%"></div>
+                </div>
+                <div class="progress-step-status" id="status-zinsindikation"></div>
+              </div>
+              <div class="progress-step-item" id="step-angebot" data-step="angebot" onclick="selectStep(this,'angebot')">
+                <div class="progress-step-top">
+                  <span class="progress-step-name">Angebot erstellen</span>
+                  <span class="progress-step-count">58/66</span>
+                </div>
+                <div class="progress-track-sm">
+                  <div class="progress-fill-sm" style="width:88%"></div>
+                </div>
+                <div class="progress-step-status" id="status-angebot"></div>
+              </div>
+              <div class="progress-step-item active" id="step-einreichung" data-step="einreichung" onclick="selectStep(this,'einreichung')">
+                <div class="progress-step-top">
+                  <span class="progress-step-name">Einreichung</span>
+                  <span class="progress-step-count">74/92</span>
+                </div>
+                <div class="progress-track-sm">
+                  <div class="progress-fill-sm" style="width:80%"></div>
+                </div>
+                <div class="progress-step-status" id="status-einreichung"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Kreditgeber multi-select ── -->
+          <div class="bank-select-row">
+            <div class="bank-select-wrap" id="bankSelectWrap">
+              <div class="bank-select-trigger" id="bankSelectTrigger" onclick="toggleBankDropdown(event)">
+                <span class="bank-select-label">Kreditgeber auswählen</span>
+                <span class="material-symbols-outlined bank-select-arrow">expand_more</span>
+              </div>
+              <div class="bank-dropdown" id="bankDropdown" onclick="event.stopPropagation()">
+                <div class="bank-search-wrap">
+                  <input class="bank-search" id="bankSearch" type="text" placeholder="Suchen…" oninput="filterBanks(this.value)" />
+                </div>
+                <div class="bank-options-list" id="bankOptionsList">
+                  <label class="bank-option"><input type="checkbox" value="dkb" onchange="toggleBankSelection('dkb',this)"> DKB</label>
+                  <label class="bank-option"><input type="checkbox" value="commerzbank" onchange="toggleBankSelection('commerzbank',this)"> Commerzbank</label>
+                  <label class="bank-option"><input type="checkbox" value="ing" onchange="toggleBankSelection('ing',this)"> ING</label>
+                  <label class="bank-option"><input type="checkbox" value="deutsche-bank" onchange="toggleBankSelection('deutsche-bank',this)"> Deutsche Bank</label>
+                  <label class="bank-option"><input type="checkbox" value="dsl-bank" onchange="toggleBankSelection('dsl-bank',this)"> DSL Bank</label>
+                  <label class="bank-option"><input type="checkbox" value="hypovereinsbank" onchange="toggleBankSelection('hypovereinsbank',this)"> HypoVereinsbank</label>
+                  <label class="bank-option"><input type="checkbox" value="volksbank" onchange="toggleBankSelection('volksbank',this)"> Volksbank</label>
+                  <label class="bank-option"><input type="checkbox" value="sparkasse" onchange="toggleBankSelection('sparkasse',this)"> Sparkasse</label>
+                  <label class="bank-option"><input type="checkbox" value="europace" onchange="toggleBankSelection('europace',this)"> Europace</label>
+                  <label class="bank-option"><input type="checkbox" value="isb" onchange="toggleBankSelection('isb',this)"> ISB</label>
+                </div>
+              </div>
+            </div>
+            <div class="bank-tags" id="bankTags"></div>
+          </div>
+
+          <!-- ── Card 0: Persönliche Details ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Persönliche Details</h2>
+            <div class="field-grid-4">
+              <div class="form-field">
+                <label class="form-field-label">Anrede</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option selected>Herr</option><option>Frau</option><option>Divers</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Akademischer Titel</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option>Dr.</option><option>Prof.</option><option>Prof. Dr.</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Vorname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Max" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Nachname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Mustermann" /></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsname</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Geburtsdatum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="01.02.1980" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Geburtsort</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="München" /></div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Geburtsland</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Deutschland" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Staatsangehörigkeit</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="Deutsch" />
+                  <span class="form-input-search-icon material-symbols-outlined">search</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Aufenthaltsstatus *</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option selected>Deutsche Staatsangehörigkeit</option>
+                    <option>Niederlassungserlaubnis</option>
+                    <option>Aufenthaltserlaubnis</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Familienstand</label>
+                <div class="form-input-wrap">
+                  <select class="form-input">
+                    <option value=""></option><option>Ledig</option><option selected>Verheiratet</option>
+                    <option>Geschieden</option><option>Verwitwet</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Personen im Haushalt</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="4" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Steueridentifikationsnummer</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="12 345 678 901" /></div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">IBAN</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="DE89 3704 0044 0532 0130 00" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Kontoinhaber</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="Max Mustermann" /></div>
+              </div>
+            </div>
+            <div class="form-footer-row">
+              Kinder (2) <a href="#" class="form-link">+ Hinzufügen</a>
+            </div>
+          </div>
+
+          <!-- ── Card 1: Einnahmen (monatlich) – Max ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Einnahmen (monatlich)</h2>
+              <span class="person-chip person-chip-max">Max</span>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Gehalt (netto)</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="5.200" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Anzahl Monatsgehälter</label>
+                <div class="form-input-wrap">
+                  <span class="form-field-error-dot" aria-label="Fehler"></span>
+                  <input class="form-input" type="text" value="12" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Variable Einkünfte (netto)</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="4.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div></div>
+            </div>
+            <div class="form-links">
+              <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+              <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+            </div>
+            <div class="form-summary">
+              <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+              <span class="form-summary-value">8.000 €</span>
+            </div>
+          </div>
+
+          <!-- ── Card 1b: Einnahmen (monatlich) – Anna ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Einnahmen (monatlich)</h2>
+              <span class="person-chip person-chip-anna">Anna</span>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Gehalt (netto)</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="4.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Anzahl Monatsgehälter</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="12" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Variable Einkünfte (netto)</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="4.000" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div></div>
+            </div>
+            <div class="form-links">
+              <a href="#" class="form-link">+ Einkünfte aus selbständiger Tätigkeit</a>
+              <a href="#" class="form-link">+ Zusätzliches Einkommen hinzufügen</a>
+            </div>
+            <div class="form-summary">
+              <span class="form-summary-label">Summe der durchschnittlichen monatlichen Einnahmen:</span>
+              <span class="form-summary-value">8.000 €</span>
+            </div>
+          </div>
+
+          <!-- ── Card 2: Rentenansprüche (monatlich) – Max ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Rentenansprüche (monatlich)</h2>
+              <span class="person-chip person-chip-max">Max</span>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Renten-Eintrittsdatum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="01.02.2045" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Gesetzliche Rente</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="1.800" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Private Rente</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="320" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Card 2b: Rentenansprüche (monatlich) – Anna ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Rentenansprüche (monatlich)</h2>
+              <span class="person-chip person-chip-anna">Anna</span>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Renten-Eintrittsdatum</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" value="15.07.2048" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Gesetzliche Rente</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="1.200" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Private Rente</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="180" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Card 3: Ausgaben (monatlich) – Max ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Ausgaben (monatlich)</h2>
+              <span class="person-chip person-chip-max">Max</span>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Derzeitige Mietkosten</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="1.450" />
+                  <span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Entfallen Mietkosten künftig?</label>
+                <div class="form-radio-group">
+                  <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="ja" checked /> Ja</label>
+                  <label class="form-radio-option"><input type="radio" name="mietkosten-max" value="nein" /> Nein</label>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Renten- und Lebensversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="250" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Private Krankenversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Berufsunfähigkeitsversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="89" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Unterhaltsverpflichtungen</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Sparpläne</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="200" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Bausparvertrag</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Weitere Ausgaben</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Bestehende Kreditverträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-summary">
+              <span class="form-summary-label">Gesamtausgaben:</span>
+              <span class="form-summary-value">1.989 €</span>
+            </div>
+          </div>
+
+          <!-- ── Card 3b: Ausgaben (monatlich) – Anna ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Ausgaben (monatlich)</h2>
+              <span class="person-chip person-chip-anna">Anna</span>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Derzeitige Mietkosten</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Entfallen Mietkosten künftig?</label>
+                <div class="form-radio-group">
+                  <label class="form-radio-option"><input type="radio" name="mietkosten-anna" value="ja" checked /> Ja</label>
+                  <label class="form-radio-option"><input type="radio" name="mietkosten-anna" value="nein" /> Nein</label>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Renten- und Lebensversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="180" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Private Krankenversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Berufsunfähigkeitsversicherungsbeiträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="62" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field">
+                <label class="form-field-label">Unterhaltsverpflichtungen</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Sparpläne</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="150" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Bausparvertrag</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label">Weitere Ausgaben</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label">Bestehende Kreditverträge</label>
+                <div class="form-input-wrap">
+                  <input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-summary">
+              <span class="form-summary-label">Gesamtausgaben:</span>
+              <span class="form-summary-value">392 €</span>
+            </div>
+          </div>
+
+          <!-- ── Kontakte und Adresse ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Kontakte und Adresse</h2>
+            <p class="form-section-label">Aktuelle Anschrift</p>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Straße *</label><div class="form-input-wrap"><input class="form-input" type="text" value="Rosenheimer Straße" /></div></div>
+              <div class="form-field"><label class="form-field-label">Hausnummer *</label><div class="form-input-wrap"><input class="form-input" type="text" value="45" /></div></div>
+              <div class="form-field"><label class="form-field-label">PLZ *</label><div class="form-input-wrap"><input class="form-input" type="text" value="81669" /></div></div>
+              <div class="form-field"><label class="form-field-label">Ort *</label><div class="form-input-wrap"><input class="form-input" type="text" value="München" /></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Land</label><div class="form-input-wrap"><input class="form-input" type="text" value="Deutschland" /></div></div>
+              <div class="form-field"><label class="form-field-label">Wohnhaft seit</label><div class="form-input-wrap"><input class="form-input" type="text" value="01.09.2018" /></div></div>
+              <div class="form-field"><label class="form-field-label">Wohnstatus</label><div class="form-input-wrap"><select class="form-input"><option selected>Mieter</option><option>Eigentümer</option></select></div></div>
+            </div>
+            <p class="form-section-label">Kontaktdaten</p>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">E-Mail *</label><div class="form-input-wrap"><input class="form-input" type="text" value="max.mustermann@email.de" /></div></div>
+              <div class="form-field"><label class="form-field-label">Telefon</label><div class="form-input-wrap"><input class="form-input" type="text" value="+49 89 123 4567" /></div></div>
+              <div class="form-field"><label class="form-field-label">Mobiltelefon</label><div class="form-input-wrap"><input class="form-input" type="text" value="+49 171 234 5678" /></div></div>
+            </div>
+          </div>
+
+          <!-- ── Berufliche Details ── -->
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Berufliche Details</h2>
+              <span class="person-chip person-chip-max">Max</span>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Beschäftigungsverhältnis *</label><div class="form-input-wrap"><select class="form-input"><option selected>Angestellter</option><option>Selbstständig</option><option>Beamter</option><option>Rentner</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Arbeitgeber</label><div class="form-input-wrap"><input class="form-input" type="text" value="TechSolutions GmbH" /></div></div>
+              <div class="form-field"><label class="form-field-label">Beschäftigt seit</label><div class="form-input-wrap"><input class="form-input" type="text" value="01.05.2015" /></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Berufsbezeichnung</label><div class="form-input-wrap"><input class="form-input" type="text" value="Softwareentwickler" /></div></div>
+              <div class="form-field"><label class="form-field-label">Branche</label><div class="form-input-wrap"><input class="form-input" type="text" value="Informationstechnologie" /></div></div>
+              <div class="form-field"><label class="form-field-label">Befristung</label><div class="form-input-wrap"><select class="form-input"><option selected>Unbefristet</option><option>Befristet</option></select></div></div>
+            </div>
+          </div>
+          <div class="form-card">
+            <div class="form-card-heading-row">
+              <h2 class="form-card-heading">Berufliche Details</h2>
+              <span class="person-chip person-chip-anna">Anna</span>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Beschäftigungsverhältnis *</label><div class="form-input-wrap"><select class="form-input"><option selected>Angestellter</option><option>Selbstständig</option><option>Beamter</option><option>Rentner</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Arbeitgeber</label><div class="form-input-wrap"><input class="form-input" type="text" value="Brand &amp; Co. GmbH" /></div></div>
+              <div class="form-field"><label class="form-field-label">Beschäftigt seit</label><div class="form-input-wrap"><input class="form-input" type="text" value="01.03.2017" /></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Berufsbezeichnung</label><div class="form-input-wrap"><input class="form-input" type="text" value="Marketingleiterin" /></div></div>
+              <div class="form-field"><label class="form-field-label">Branche</label><div class="form-input-wrap"><input class="form-input" type="text" value="Marketing &amp; Kommunikation" /></div></div>
+              <div class="form-field"><label class="form-field-label">Befristung</label><div class="form-input-wrap"><select class="form-input"><option selected>Unbefristet</option><option>Befristet</option></select></div></div>
+            </div>
+          </div>
+
+          <!-- ── SCHUFA ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">SCHUFA</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">SCHUFA-Score</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Bonitätsklasse</label><div class="form-input-wrap"><input class="form-input" type="text" value="A" /></div></div>
+              <div class="form-field"><label class="form-field-label">Negative Einträge</label><div class="form-input-wrap"><select class="form-input"><option selected>Keine</option><option>Vorhanden</option></select></div></div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Datum der SCHUFA-Auskunft</label><div class="form-input-wrap"><input class="form-input" type="text" value="03.04.2025" /></div></div>
+              <div class="form-field"><label class="form-field-label">Auskunft liegt vor</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="schufa-vorliegt" value="ja" checked /> Ja</label><label class="form-radio-option"><input type="radio" name="schufa-vorliegt" value="nein" /> Nein</label></div></div>
+            </div>
+          </div>
+
+          <!-- ── Bestehende Kredite ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Bestehende Kredite</h2>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Kreditart</label><div class="form-input-wrap"><select class="form-input"><option value=""></option><option>Ratenkredit</option><option>Immobiliendarlehen</option><option>Autokredit</option><option>Dispositionskredit</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Kreditgeber</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Monatliche Rate</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Restschuld</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="form-footer-row"><a href="#" class="form-link">+ Weiteren Kredit hinzufügen</a></div>
+          </div>
+
+          <!-- ── Vermögen ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Vermögen</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Bargeld / Sparguthaben</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="65.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Wertpapiere / Aktien</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="20.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Bausparvertrag (Guthaben)</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Lebensversicherung (Rückkaufswert)</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="3.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Sonstige Vermögenswerte</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span></div></div>
+              <div></div>
+            </div>
+            <div class="form-summary"><span class="form-summary-label">Gesamtvermögen:</span><span class="form-summary-value">88.000 €</span></div>
+          </div>
+
+          <!-- ── Immobilienvermögen ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Immobilienvermögen</h2>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Objektart</label><div class="form-input-wrap"><select class="form-input"><option value=""></option><option>Eigentumswohnung</option><option>Einfamilienhaus</option><option>Mehrfamilienhaus</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Nutzungsart</label><div class="form-input-wrap"><select class="form-input"><option value=""></option><option>Eigennutzung</option><option>Vermietet</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Marktwert</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Restschuld auf Immobilie</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="form-footer-row"><a href="#" class="form-link">+ Weitere Immobilie hinzufügen</a></div>
+          </div>
+
+          <!-- ── Immobilieninfos ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Immobilieninfos</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Objektart *</label><div class="form-input-wrap"><select class="form-input"><option selected>Einfamilienhaus</option><option>Eigentumswohnung</option><option>Doppelhaushälfte</option><option>Reihenhaus</option><option>Mehrfamilienhaus</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Nutzungsart *</label><div class="form-input-wrap"><select class="form-input"><option value="">Bitte wählen</option><option>Eigennutzung</option><option>Kapitalanlage</option><option>Teilweise Eigennutzung</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Bundesland</label><div class="form-input-wrap"><select class="form-input"><option selected>Bayern</option><option>Berlin</option><option>Hamburg</option><option>Nordrhein-Westfalen</option><option>Baden-Württemberg</option></select></div></div>
+            </div>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Straße</label><div class="form-input-wrap"><input class="form-input" type="text" value="Bergstraße" /></div></div>
+              <div class="form-field"><label class="form-field-label">Hausnummer</label><div class="form-input-wrap"><input class="form-input" type="text" value="12" /></div></div>
+              <div class="form-field"><label class="form-field-label">PLZ *</label><div class="form-input-wrap"><input class="form-input" type="text" value="82031" /></div></div>
+              <div class="form-field"><label class="form-field-label">Ort *</label><div class="form-input-wrap"><input class="form-input" type="text" value="Grünwald" /></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Baujahr</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Wohnfläche *</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">m²</span></div></div>
+              <div class="form-field"><label class="form-field-label">Grundstücksfläche</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="520" /><span class="form-input-suffix">m²</span></div></div>
+            </div>
+          </div>
+
+          <!-- ── Immobilienmerkmale ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Immobilienmerkmale</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Objektzustand</label><div class="form-input-wrap"><select class="form-input"><option selected>Gepflegt</option><option>Renovierungsbedürftig</option><option>Modernisiert</option><option>Neubau</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Ausstattung</label><div class="form-input-wrap"><select class="form-input"><option selected>Mittel</option><option>Einfach</option><option>Gehoben</option><option>Luxus</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Energieeffizienzklasse</label><div class="form-input-wrap"><select class="form-input"><option selected>C</option><option>A+</option><option>A</option><option>B</option><option>D</option><option>E</option><option>F</option></select></div></div>
+            </div>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Anzahl Zimmer</label><div class="form-input-wrap"><input class="form-input" type="text" value="6" /></div></div>
+              <div class="form-field"><label class="form-field-label">Anzahl Badezimmer</label><div class="form-input-wrap"><input class="form-input" type="text" value="2" /></div></div>
+              <div class="form-field"><label class="form-field-label">Garage / Stellplatz</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="garage" value="ja" checked /> Ja</label><label class="form-radio-option"><input type="radio" name="garage" value="nein" /> Nein</label></div></div>
+              <div class="form-field"><label class="form-field-label">Keller</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="keller" value="ja" checked /> Ja</label><label class="form-radio-option"><input type="radio" name="keller" value="nein" /> Nein</label></div></div>
+            </div>
+          </div>
+
+          <!-- ── Darlehen des Finanzierungsobjekts ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Darlehen des Finanzierungsobjekts</h2>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Gläubiger</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Darlehensart</label><div class="form-input-wrap"><select class="form-input"><option value=""></option><option>Annuitätendarlehen</option><option>Tilgungsdarlehen</option><option>Endfälliges Darlehen</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Restschuld</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Monatliche Rate</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="form-footer-row"><a href="#" class="form-link">+ Weiteres Darlehen hinzufügen</a></div>
+          </div>
+
+          <!-- ── Bestehende Grundschulden ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Bestehende Grundschulden</h2>
+            <div class="field-grid-4">
+              <div class="form-field"><label class="form-field-label">Gläubiger</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Betrag</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Rang</label><div class="form-input-wrap"><select class="form-input"><option value=""></option><option>1. Rang</option><option>2. Rang</option><option>Nachrang</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Ablösbar</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="ablösbar" value="ja" /> Ja</label><label class="form-radio-option"><input type="radio" name="ablösbar" value="nein" /> Nein</label></div></div>
+            </div>
+            <div class="form-footer-row"><a href="#" class="form-link">+ Weitere Grundschuld hinzufügen</a></div>
+          </div>
+
+          <!-- ── Anschaffungskosten ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Anschaffungskosten</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Kaufpreis *</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="440.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Grunderwerbsteuer (3,5 %)</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="15.400" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Notarkosten</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="6.600" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Maklerkosten</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Modernisierungskosten</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Sonstige Kosten</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="0" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="form-summary"><span class="form-summary-label">Gesamte Anschaffungskosten:</span><span class="form-summary-value">462.000 €</span></div>
+          </div>
+
+          <!-- ── Finanzierungswunsch ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Finanzierungswunsch</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Darlehensbetrag *</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="374.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Eigenkapital</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="88.000" /><span class="form-input-suffix">€</span></div></div>
+              <div class="form-field"><label class="form-field-label">Zinsbindung</label><div class="form-input-wrap"><select class="form-input"><option>5 Jahre</option><option>10 Jahre</option><option selected>15 Jahre</option><option>20 Jahre</option><option>30 Jahre</option></select></div></div>
+            </div>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Tilgungssatz</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="2,00" /><span class="form-input-suffix">%</span></div></div>
+              <div class="form-field"><label class="form-field-label">Sondertilgungsrecht p.a.</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="5" /><span class="form-input-suffix">%</span></div></div>
+              <div class="form-field"><label class="form-field-label">Gewünschte Monatsrate</label><div class="form-input-wrap"><input class="form-input has-suffix" type="text" value="1.900" /><span class="form-input-suffix">€</span></div></div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Auszahlungsdatum (gewünscht)</label><div class="form-input-wrap"><input class="form-input" type="text" value="01.09.2025" /></div></div>
+              <div class="form-field"><label class="form-field-label">Verwendungszweck</label><div class="form-input-wrap"><select class="form-input"><option selected>Kauf einer selbst genutzten Immobilie</option><option>Kauf einer Kapitalanlage</option><option>Anschlussfinanzierung</option><option>Modernisierung</option></select></div></div>
+            </div>
+          </div>
+
+          <!-- ── Abweichende wirtschaftliche Berechtigter ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Abweichende wirtschaftliche Berechtigter</h2>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Abweichender wirtschaftlicher Berechtigter vorhanden?</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="awb" value="nein" checked /> Nein</label><label class="form-radio-option"><input type="radio" name="awb" value="ja" /> Ja</label></div></div>
+              <div></div>
+            </div>
+          </div>
+
+          <!-- ── KWP Fragen ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">KWP Fragen</h2>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Politisch exponierte Person (PEP)?</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="pep" value="nein" checked /> Nein</label><label class="form-radio-option"><input type="radio" name="pep" value="ja" /> Ja</label></div></div>
+              <div class="form-field"><label class="form-field-label">Nahestehende Person einer PEP?</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="pep-nah" value="nein" checked /> Nein</label><label class="form-radio-option"><input type="radio" name="pep-nah" value="ja" /> Ja</label></div></div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Herkunft der Eigenmittel</label><div class="form-input-wrap"><select class="form-input"><option selected>Erspartes / Bankguthaben</option><option>Schenkung</option><option>Erbschaft</option><option>Verkauf einer Immobilie</option><option>Sonstiges</option></select></div></div>
+              <div class="form-field"><label class="form-field-label">Eigenkapital aus dem Ausland?</label><div class="form-radio-group"><label class="form-radio-option"><input type="radio" name="ek-ausland" value="nein" checked /> Nein</label><label class="form-radio-option"><input type="radio" name="ek-ausland" value="ja" /> Ja</label></div></div>
+            </div>
+          </div>
+
+          <!-- ── Kundennummer ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Kundennummer</h2>
+            <div class="field-grid-3">
+              <div class="form-field"><label class="form-field-label">Kundennummer</label><div class="form-input-wrap"><input class="form-input" type="text" value="KD-2024-38472" /></div></div>
+              <div class="form-field"><label class="form-field-label">Antragsnummer</label><div class="form-input-wrap"><input class="form-input" type="text" value="ANT-2025-00184" /></div></div>
+              <div class="form-field"><label class="form-field-label">Zuständiger Berater</label><div class="form-input-wrap"><input class="form-input" type="text" value="Thomas Meier" /></div></div>
+            </div>
+          </div>
+
+          <!-- ── Sonstiges ── -->
+          <div class="form-card">
+            <h2 class="form-card-heading">Sonstiges</h2>
+            <div class="form-field">
+              <label class="form-field-label">Bemerkungen</label>
+              <div class="form-input-wrap"><textarea class="form-input" rows="4" style="height:auto;resize:vertical;"></textarea></div>
+            </div>
+            <div class="field-grid-2">
+              <div class="form-field"><label class="form-field-label">Empfehlungsgeber</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">Kampagne / Quelle</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+            </div>
+          </div>
+
+          </div><!-- #antrag-view -->
+        </div><!-- .content-inner -->
+
+</div><!-- #proto-content -->
+
+<script>
+  /* ── Shell navigation ── */
+  function setActive(btn) {
+    document.querySelectorAll('#global-sidebar .sidebar-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function setActiveSection(clicked) {
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(el => el.classList.remove('active'));
+    clicked.classList.add('active');
+  }
+  function setActiveTab(tab) {
+    document.querySelectorAll('.tab-nav .tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+  }
+
+  /* ── State ── */
+  var activePhase    = 'einreichung';
+  var selectedBanks  = [];
+  var designMode     = 1;
+
+  function setDesign(n) {
+    designMode = n;
+    ['btn-design1','btn-design2','btn-design3'].forEach(function(id, i) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('active', i + 1 === n);
+    });
+    document.body.classList.toggle('design-2', n === 2);
+    document.body.classList.toggle('design-3', n === 3);
+    applyHighlights();
+  }
+
+  /* ── Step → field map (per-phase — each phase shows only its own required fields) ── */
+  var FIELD_FILTER_MAP = {
+    'basisdaten': [
+      'Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','Familienstand',
+      'Straße','PLZ','Ort','E-Mail',
+      'Kaufpreis','Darlehensbetrag','Eigenkapital','Verwendungszweck'
+    ],
+    'zinsindikation': [
+      'Gehalt (netto)','Anzahl Monatsgehälter','Variable Einkünfte (netto)',
+      'Beschäftigungsverhältnis','Arbeitgeber','Beschäftigt seit',
+      'Derzeitige Mietkosten',
+      'IBAN','Kontoinhaber','Steueridentifikationsnummer',
+      'Zinsbindung','Tilgungssatz','Gewünschte Monatsrate',
+      'SCHUFA-Score','Nutzungsart'
+    ],
+    'angebot': [
+      'Wohnfläche','Grundstücksfläche','Baujahr',
+      'Objektart','Bundesland',
+      'Grunderwerbsteuer (3,5 %)','Notarkosten',
+      'Bonitätsklasse','Negative Einträge',
+      'Bargeld / Sparguthaben','Wertpapiere / Aktien',
+      'Renten-Eintrittsdatum','Gesetzliche Rente',
+      'Renten- und Lebensversicherungsbeiträge','Unterhaltsverpflichtungen'
+    ],
+    'einreichung': [
+      'Geburtsort','Geburtsland','Personen im Haushalt',
+      'Private Krankenversicherungsbeiträge','Berufsunfähigkeitsversicherungsbeiträge',
+      'Bestehende Kreditverträge','Kreditart','Kreditgeber',
+      'Gläubiger','Darlehensart',
+      'Abweichender wirtschaftlicher Berechtigter vorhanden?',
+      'Politisch exponierte Person (PEP)?','Herkunft der Eigenmittel',
+      'Kundennummer','Antragsnummer'
+    ]
+  };
+
+  var PHASE_TAG_LABELS = {
+    'basisdaten':    'Basisdaten',
+    'zinsindikation':'Zinsindikation',
+    'angebot':       'Angebot',
+    'einreichung':   'Einreichung'
+  };
+
+  /* ── Kreditgeber → field map ── */
+  var KREDITGEBER_FIELD_MAP = {
+    'europace':        ['Gehalt (netto)','IBAN','Staatsangehörigkeit'],
+    'commerzbank':     ['Steueridentifikationsnummer','Familienstand','Geburtsdatum'],
+    'deutsche-bank':   ['Steueridentifikationsnummer','Geburtsland','Staatsangehörigkeit'],
+    'dkb':             ['IBAN','Gehalt (netto)','Variable Einkünfte (netto)'],
+    'dsl-bank':        ['Geburtsdatum','Geburtsort','Unterhaltsverpflichtungen'],
+    'hypovereinsbank': ['Steueridentifikationsnummer','Familienstand','Derzeitige Mietkosten'],
+    'ing':             ['IBAN','Kontoinhaber','Unterhaltsverpflichtungen','Gehalt (netto)'],
+    'isb':             ['Staatsangehörigkeit','Aufenthaltsstatus','Geburtsdatum','IBAN'],
+    'volksbank':       ['Gehalt (netto)','Geburtsland','Familienstand','IBAN'],
+    'sparkasse':       ['Vorname','Nachname','Geburtsdatum','Steueridentifikationsnummer']
+  };
+
+  var BANK_LABELS = {
+    'dkb': 'DKB', 'commerzbank': 'Commerzbank', 'ing': 'ING',
+    'deutsche-bank': 'Deutsche Bank', 'dsl-bank': 'DSL Bank',
+    'hypovereinsbank': 'HypoVereinsbank', 'volksbank': 'Volksbank',
+    'sparkasse': 'Sparkasse', 'europace': 'Europace', 'isb': 'ISB'
+  };
+
+  /* ── Bank dropdown ── */
+  function toggleBankDropdown(event) {
+    event.stopPropagation();
+    var trigger  = document.getElementById('bankSelectTrigger');
+    var dropdown = document.getElementById('bankDropdown');
+    var isOpen   = dropdown.classList.contains('open');
+    dropdown.classList.toggle('open');
+    trigger.classList.toggle('open', !isOpen);
+    if (!isOpen) {
+      var search = document.getElementById('bankSearch');
+      if (search) { search.value = ''; filterBanks(''); search.focus(); }
+    }
+  }
+
+  function filterBanks(query) {
+    var q = query.toLowerCase();
+    document.querySelectorAll('#bankOptionsList .bank-option').forEach(function(opt) {
+      var text = opt.textContent.trim().toLowerCase();
+      opt.classList.toggle('hidden', q.length > 0 && text.indexOf(q) === -1);
+    });
+  }
+
+  document.addEventListener('click', function() {
+    var dropdown = document.getElementById('bankDropdown');
+    var trigger  = document.getElementById('bankSelectTrigger');
+    if (dropdown) { dropdown.classList.remove('open'); }
+    if (trigger)  { trigger.classList.remove('open'); }
+  });
+
+  function toggleBankSelection(bankId, checkbox) {
+    if (checkbox.checked) {
+      if (selectedBanks.indexOf(bankId) === -1) selectedBanks.push(bankId);
+    } else {
+      selectedBanks = selectedBanks.filter(function(b) { return b !== bankId; });
+    }
+    renderBankTags();
+    applyHighlights();
+  }
+
+  function removeBankTag(bankId) {
+    selectedBanks = selectedBanks.filter(function(b) { return b !== bankId; });
+    var cb = document.querySelector('#bankDropdown input[value="' + bankId + '"]');
+    if (cb) cb.checked = false;
+    renderBankTags();
+    applyHighlights();
+  }
+
+  function renderBankTags() {
+    var container = document.getElementById('bankTags');
+    container.innerHTML = selectedBanks.map(function(bankId) {
+      return '<span class="bank-tag">'
+        + (BANK_LABELS[bankId] || bankId)
+        + '<button class="bank-tag-remove" onclick="removeBankTag(\'' + bankId + '\')" title="Entfernen">'
+        + '<span class="material-symbols-outlined" style="font-size:14px;line-height:1">close</span>'
+        + '</button></span>';
+    }).join('');
+  }
+
+  /* ── Step selection ── */
+  function selectStep(el, stepValue) {
+    if (el.classList.contains('active')) {
+      el.classList.remove('active');
+      activePhase = null;
+      applyHighlights();
+      return;
+    }
+    document.querySelectorAll('.progress-step-item').forEach(function(c) { c.classList.remove('active'); });
+    el.classList.add('active');
+    activePhase = stepValue;
+    applyHighlights();
+  }
+
+  /* ── Apply all highlights ── */
+  function applyHighlights() {
+    clearHighlights();
+
+    var phaseFields = activePhase ? (FIELD_FILTER_MAP[activePhase] || []) : [];
+    var kreditgeberFields = [];
+    selectedBanks.forEach(function(bankId) {
+      (KREDITGEBER_FIELD_MAP[bankId] || []).forEach(function(f) {
+        if (kreditgeberFields.indexOf(f) === -1) kreditgeberFields.push(f);
+      });
+    });
+    var hasFilter = activePhase || selectedBanks.length > 0;
+
+    document.querySelectorAll('.form-field').forEach(function(fieldEl) {
+      var labelEl = fieldEl.querySelector('.form-field-label');
+      if (!labelEl) return;
+      var baseText = (labelEl.childNodes[0] ? labelEl.childNodes[0].textContent : '').trim().replace(/\s*\*$/, '');
+
+      var inPhase = phaseFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+      var inBank  = kreditgeberFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+
+      if (inPhase || inBank) {
+        fieldEl.classList.add('field-highlighted');
+        if (inPhase) {
+          var filled = isFieldFilled(fieldEl);
+          if (filled) {
+            fieldEl.classList.remove('field-needs-attention');
+          } else {
+            fieldEl.classList.add('field-needs-attention');
+          }
+          if (designMode === 2) {
+            var icon = document.createElement('span');
+            icon.className = 'field-indicator ' + (filled ? 'field-indicator-ok' : 'field-indicator-missing');
+            icon.textContent = filled ? 'check_circle' : 'radio_button_unchecked';
+            labelEl.appendChild(icon);
+          }
+        }
+      }
+    });
+
+    // Design 3: add checkmark to every filled field, regardless of phase
+    if (designMode === 3) {
+      document.querySelectorAll('.form-field').forEach(function(fieldEl) {
+        if (!isFieldFilled(fieldEl)) return;
+        var wrap = fieldEl.querySelector('.form-input-wrap');
+        if (!wrap || wrap.querySelector('.field-check-inner')) return;
+        var chk = document.createElement('span');
+        chk.className = 'field-check-inner material-symbols-outlined';
+        chk.textContent = 'check';
+        if (fieldEl.querySelector('select.form-input')) chk.classList.add('in-select');
+        else if (fieldEl.querySelector('.has-suffix'))  chk.classList.add('in-suffix');
+        wrap.appendChild(chk);
+      });
+    }
+
+    updateSidebarHighlights();
+    updatePhaseStatuses();
+  }
+
+  function isFieldFilled(fieldEl) {
+    var input = fieldEl.querySelector('.form-input');
+    if (!input) return false;
+    if (input.tagName === 'SELECT') return input.value !== '';
+    return input.value.trim() !== '';
+  }
+
+  function updatePhaseStatuses() {
+    ['basisdaten','zinsindikation','angebot','einreichung'].forEach(function(phase) {
+      var statusEl = document.getElementById('status-' + phase);
+      var stepEl   = document.getElementById('step-' + phase);
+      if (!statusEl || !stepEl) return;
+      var countText = (stepEl.querySelector('.progress-step-count') || {}).textContent || '';
+      var parts   = countText.split('/');
+      var filled  = parseInt(parts[0], 10);
+      var total   = parseInt(parts[1], 10);
+      var missing = (isNaN(filled) || isNaN(total)) ? 0 : total - filled;
+      if (missing === 0) {
+        statusEl.className = 'progress-step-status status-ok';
+        statusEl.innerHTML = '<span class="status-icon material-symbols-outlined">check_circle</span><span>Vollständig</span>';
+      } else {
+        statusEl.className = 'progress-step-status status-missing';
+        statusEl.innerHTML = '<span class="status-icon material-symbols-outlined">warning</span><span>' + missing + (missing === 1 ? ' wichtiges Feld fehlt' : ' wichtige Felder fehlen') + '</span>';
+      }
+    });
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.form-field.field-highlighted').forEach(function(el) {
+      el.classList.remove('field-highlighted', 'field-needs-attention');
+    });
+    document.querySelectorAll('.field-indicator, .field-check-inner').forEach(function(b) { b.remove(); });
+    clearSidebarHighlights();
+  }
+
+  function updateSidebarHighlights() {
+    clearSidebarHighlights();
+    document.querySelectorAll('.form-card').forEach(function(card) {
+      if (!card.querySelector('.field-highlighted')) return;
+      var headingEl = card.querySelector('.form-card-heading');
+      if (!headingEl) return;
+      var cardTitle = headingEl.textContent.trim();
+      document.querySelectorAll('#section-nav .section-nav-item .section-nav-item-label').forEach(function(labelEl) {
+        if (labelEl.textContent.trim() === cardTitle) {
+          labelEl.closest('.section-nav-item').classList.add('nav-section-highlighted');
+        }
+      });
+    });
+  }
+
+  function clearSidebarHighlights() {
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-highlighted').forEach(function(el) {
+      el.classList.remove('nav-section-highlighted');
+    });
+  }
+
+  /* ── Drawer top (for any future fixed panels) ── */
+  function setDrawerTop() {
+    var c = document.querySelector('.content');
+    if (c) document.documentElement.style.setProperty('--drawer-top', c.getBoundingClientRect().top + 'px');
+  }
+  function injectDesignToggle() {
+    var tabBar = document.querySelector('.tab-bar');
+    if (!tabBar) return;
+    var toggle = document.createElement('div');
+    toggle.className = 'design-toggle';
+    toggle.innerHTML =
+      '<button class="design-btn active" id="btn-design1" onclick="setDesign(1)">Design 1</button>' +
+      '<button class="design-btn" id="btn-design2" onclick="setDesign(2)">Design 2</button>' +
+      '<button class="design-btn" id="btn-design3" onclick="setDesign(3)">Design 3</button>';
+    tabBar.appendChild(toggle);
+  }
+
+  setDrawerTop();
+  window.addEventListener('resize', setDrawerTop);
+  document.addEventListener('shell:ready', function() {
+    setDrawerTop();
+    injectDesignToggle();
+    applyHighlights();
+  });
+
+  if (document.querySelector('.tab-bar')) injectDesignToggle();
+</script>
+
+</body>
+</html>
