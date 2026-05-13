@@ -385,6 +385,8 @@
       font-size: 12px;
       padding-top: 5px;
       padding-bottom: 5px;
+      display: flex;
+      align-items: center;
     }
     #section-nav .section-nav-heading {
       font-size: 12px;
@@ -401,6 +403,21 @@
       background: var(--color-primary-100);
       padding-left: calc(var(--space-xl) - 3px);
     }
+    body:not(.design-2):not(.design-3) #section-nav .section-nav-item.nav-section-attention {
+      border-left: 3px solid #ff9800;
+      color: #e65100;
+      background: #fff3e0;
+      padding-left: calc(var(--space-xl) - 3px);
+    }
+    .nav-warn-icon {
+      font-family: 'Material Symbols Outlined';
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 14px;
+      line-height: 1;
+      margin-left: auto;
+      flex-shrink: 0;
+      color: #ff9800;
+    }
     /* ── Person chip on card heading ── */
     .form-card-heading-row {
       display: flex; align-items: center; gap: var(--space-s);
@@ -412,8 +429,8 @@
       padding: 2px 10px; border-radius: var(--radius-full);
       font-size: 11px; font-weight: var(--font-weight-medium);
     }
-    .person-chip-max  { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-    .person-chip-anna { background: #fce4ec; color: #ad1457; border: 1px solid #f48fb1; }
+    .person-chip-max  { background: var(--color-primary-100); color: var(--color-primary-700, #00695c); border: 1px solid #80cbc4; }
+    .person-chip-anna { background: #e0f2f1; color: #00695c; border: 1px solid #80cbc4; }
     /* ── Plain subsection label (replaces green banner) ── */
     .form-section-label {
       font-size: var(--body-small-size); font-weight: var(--font-weight-medium);
@@ -712,7 +729,6 @@
               <div class="form-field">
                 <label class="form-field-label">Anzahl Monatsgehälter</label>
                 <div class="form-input-wrap">
-                  <span class="form-field-error-dot" aria-label="Fehler"></span>
                   <input class="form-input" type="text" value="12" />
                 </div>
               </div>
@@ -1052,7 +1068,7 @@
           <div class="form-card">
             <h2 class="form-card-heading">SCHUFA</h2>
             <div class="field-grid-3">
-              <div class="form-field"><label class="form-field-label">SCHUFA-Score</label><div class="form-input-wrap"><input class="form-input" type="text" value="" /></div></div>
+              <div class="form-field"><label class="form-field-label">SCHUFA-Score</label><div class="form-input-wrap"><input class="form-input" type="text" value="97,4" /></div></div>
               <div class="form-field"><label class="form-field-label">Bonitätsklasse</label><div class="form-input-wrap"><input class="form-input" type="text" value="A" /></div></div>
               <div class="form-field"><label class="form-field-label">Negative Einträge</label><div class="form-input-wrap"><select class="form-input"><option selected>Keine</option><option>Vorhanden</option></select></div></div>
             </div>
@@ -1255,8 +1271,36 @@
     btn.classList.add('active');
   }
   function setActiveSection(clicked) {
-    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(function(el) {
+      el.classList.remove('active');
+    });
     clicked.classList.add('active');
+
+    var labelEl = clicked.querySelector('.section-nav-item-label');
+    var label   = labelEl ? labelEl.textContent.trim() : clicked.textContent.trim();
+
+    var target = null;
+    document.querySelectorAll('.form-card').forEach(function(card) {
+      if (target) return;
+      var heading = card.querySelector('.form-card-heading');
+      if (heading && heading.textContent.trim() === label) target = card;
+    });
+    if (!target) return;
+
+    var scroller  = document.querySelector('.content-inner');
+    var stickyBar = document.getElementById('stickyProgress');
+    var stickyH   = stickyBar ? stickyBar.offsetHeight : 0;
+
+    if (scroller) {
+      var scrollTo = target.getBoundingClientRect().top
+                   - scroller.getBoundingClientRect().top
+                   + scroller.scrollTop
+                   - stickyH
+                   - 16;
+      scroller.scrollTo({ top: scrollTo, behavior: 'smooth' });
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
   function setActiveTab(tab) {
     document.querySelectorAll('.tab-nav .tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
@@ -1475,9 +1519,11 @@
 
   function isFieldFilled(fieldEl) {
     var input = fieldEl.querySelector('.form-input');
-    if (!input) return false;
-    if (input.tagName === 'SELECT') return input.value !== '';
-    return input.value.trim() !== '';
+    if (input) {
+      if (input.tagName === 'SELECT') return input.value !== '';
+      return input.value.trim() !== '';
+    }
+    return !!fieldEl.querySelector('input[type="radio"]:checked');
   }
 
   function updatePhaseStatuses() {
@@ -1515,9 +1561,19 @@
       var headingEl = card.querySelector('.form-card-heading');
       if (!headingEl) return;
       var cardTitle = headingEl.textContent.trim();
+      var hasAttention = !!card.querySelector('.field-needs-attention');
       document.querySelectorAll('#section-nav .section-nav-item .section-nav-item-label').forEach(function(labelEl) {
         if (labelEl.textContent.trim() === cardTitle) {
-          labelEl.closest('.section-nav-item').classList.add('nav-section-highlighted');
+          var navItem = labelEl.closest('.section-nav-item');
+          if (hasAttention && designMode === 1) {
+            navItem.classList.add('nav-section-attention');
+            var icon = document.createElement('span');
+            icon.className = 'nav-warn-icon material-symbols-outlined';
+            icon.textContent = 'warning';
+            navItem.appendChild(icon);
+          } else {
+            navItem.classList.add('nav-section-highlighted');
+          }
         }
       });
     });
@@ -1526,6 +1582,12 @@
   function clearSidebarHighlights() {
     document.querySelectorAll('#section-nav .section-nav-item.nav-section-highlighted').forEach(function(el) {
       el.classList.remove('nav-section-highlighted');
+    });
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-attention').forEach(function(el) {
+      el.classList.remove('nav-section-attention');
+    });
+    document.querySelectorAll('#section-nav .nav-warn-icon').forEach(function(el) {
+      el.remove();
     });
   }
 
@@ -1540,9 +1602,7 @@
     var toggle = document.createElement('div');
     toggle.className = 'design-toggle';
     toggle.innerHTML =
-      '<button class="design-btn active" id="btn-design1" onclick="setDesign(1)">Design 1</button>' +
-      '<button class="design-btn" id="btn-design2" onclick="setDesign(2)">Design 2</button>' +
-      '<button class="design-btn" id="btn-design3" onclick="setDesign(3)">Design 3</button>';
+      '<button class="design-btn active" id="btn-design1" onclick="setDesign(1)">Design 1</button>';
     tabBar.appendChild(toggle);
   }
 
