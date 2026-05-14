@@ -1374,6 +1374,55 @@
       padding-left: 30px;
     }
 
+    /* ─── CALC MODE TOGGLE ───────────────────────────────── */
+    .sys-value-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .sys-value-block {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .sys-sublabel {
+      font-size: 10px;
+      color: #90a4ae;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .calc-toggle-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 2px 4px;
+      color: #b0bec5;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.1s, border-color 0.1s, color 0.1s;
+    }
+    .calc-toggle-btn .material-symbols-outlined {
+      font-size: 18px;
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+    .calc-toggle-btn:hover {
+      background: #eceff1;
+      border-color: #b0bec5;
+      color: #546e7a;
+    }
+    .calc-toggle-btn.calc-toggle--min {
+      color: #009688;
+    }
+
     /* ─── SECTION HEADER ROWS ─────────────────────────────── */
     .section-row td {
       background: #ffffff;
@@ -2585,12 +2634,15 @@
     { id:5,  group:'as1', field:'Einnahmen (Monatlich)',         customerInput:'3.200 €',         systemValue:'3.200 €, 3.450 €',            source:'Gehaltsabrechnung',
       subRows: [
         { systemValue: '3.200 €', source: 'Gehaltsabrechnung Nov 2025' },
-        { systemValue: '3.450 €', source: 'Gehaltsabrechnung Dez 2025' },
+        { systemValue: '3.300 €', source: 'Gehaltsabrechnung Dez 2025' },
+        { systemValue: '3.450 €', source: 'Gehaltsabrechnung Jan 2026' },
       ]
     },
     { id:15, group:'as1', newDocument:true,    field:'Nettogehalt',                   fieldSub:'Einkommen',            customerInput:'3.200 €',       systemValue:'3.450 €',  source:'Gehaltsabrechnung Jan 2026', manuellerWert:'',
       subRows: [
-        { label:'Vorheriger Wert', systemValue:'3.200 €', source:'Gehaltsabrechnung Okt 2025' }
+        { systemValue:'3.200 €', source:'Gehaltsabrechnung Nov 2025' },
+        { systemValue:'3.300 €', source:'Gehaltsabrechnung Dez 2025' },
+        { systemValue:'3.450 €', source:'Gehaltsabrechnung Jan 2026', isNew: true },
       ]
     },
     { id:17, group:'as1', field:'Beschäftigungsart',             customerInput:'Angestellt',      systemValue:'Angestellt',                  source:'Gehaltsabrechnung', manuellerWert:'' },
@@ -2667,6 +2719,30 @@
   let manuellerWertDebounce = {};
   let collapsedGroups = new Set(['as1', 'as2', 'shared', 'immo1']);
   let manuallyOverridden = new Set(); // rows manually reverted to Prüfen
+  const calcModes = {}; // rowId → 'min' | 'avg' — default 'min'
+
+  // ─── CALC MODE HELPERS ────────────────────────────────────────────────────
+  function parseEuro(str) {
+    if (!str || str === '–') return null;
+    const n = parseFloat(String(str).replace(/\./g,'').replace(',','.').replace(/[€\s]/g,''));
+    return isNaN(n) ? null : n;
+  }
+  function formatEuro(n) {
+    return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  }
+  function getCalcNums(row) {
+    return (row.subRows || []).map(s => parseEuro(s.systemValue)).filter(n => n !== null);
+  }
+  function calcValue(nums, mode) {
+    if (!nums.length) return null;
+    if (mode === 'min') return Math.min(...nums);
+    return nums.reduce((a, b) => a + b, 0) / nums.length;
+  }
+  function toggleCalcMode(rowId, event) {
+    event.stopPropagation();
+    calcModes[rowId] = (calcModes[rowId] === 'avg') ? 'min' : 'avg';
+    renderTable();
+  }
 
   // ─── HISTORY HELPERS ──────────────────────────────────────────────────────
   function logChange(id, text) {
@@ -2904,10 +2980,26 @@
                 title="Systemwert bestätigen"
               >${checkSvg}</button>` : ''}
               ${hasSubRows ? (() => {
-                const nums = row.subRows.map(s => parseFloat(s.systemValue.replace(/\./g,'').replace(',','.'))).filter(n => !isNaN(n));
-                const avg = nums.length ? (nums.reduce((a,b) => a+b, 0) / nums.length) : null;
-                const avgStr = avg !== null ? ('Ø ' + avg.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €') : (row.subRows.length + ' Werte');
-                return `<span style="color:#546e7a;font-size:12px">${avgStr}</span>`;
+                const nums = getCalcNums(row);
+                if (!nums.length) return `<span style="color:#546e7a;font-size:12px">${row.subRows.length} Werte</span>`;
+                const minVal = Math.min(...nums);
+                const avgVal = nums.reduce((a,b) => a+b,0) / nums.length;
+                const valsDiffer = Math.abs(minVal - avgVal) >= 0.01;
+                const mode = calcModes[row.id] || 'min';
+                const displayVal = calcValue(nums, mode);
+                const prefix = mode === 'avg' ? 'Ø' : '';
+                const sublabel = mode === 'avg' ? 'Ø letzte ' + nums.length + ' Monate' : 'Niedrigst der letzten ' + nums.length + ' Monate';
+                const toggleTitle = mode === 'min' ? 'Durchschnittswert anzeigen' : 'Niedrigster Wert der letzten ' + nums.length + ' Monate anzeigen';
+                const toggleBtn = valsDiffer
+                  ? `<button class="calc-toggle-btn ${mode === 'min' ? 'calc-toggle--min' : ''}" onclick="toggleCalcMode(${row.id}, event)" title="${toggleTitle}"><span class="material-symbols-outlined">sync_alt</span></button>`
+                  : '';
+                return `<div class="sys-value-wrap">
+                  <div class="sys-value-block">
+                    <span style="color:#546e7a;font-size:12px">${prefix ? prefix + ' ' : ''}${formatEuro(displayVal)}</span>
+                    <span class="sys-sublabel">${sublabel}</span>
+                  </div>
+                  ${toggleBtn}
+                </div>`;
               })() : sysValueHtml}
             </div>
           </td>
@@ -2954,7 +3046,7 @@
       const subRowsHtml = (hasSubRows && isExpanded)
         ? row.subRows.map(sub => {
           const subValHtml = sub.isNew
-            ? `<strong>${sub.systemValue}</strong>&nbsp;<span class="badge badge-new" style="font-size:10px;padding:1px 6px;gap:2px;"><span class="material-symbols-outlined" style="font-size:10px;letter-spacing:0;line-height:1;">error</span>Neu</span>`
+            ? `<span style="display:inline-flex;align-items:center;gap:6px;"><strong>${sub.systemValue}</strong><span class="badge badge-new"><span class="material-symbols-outlined">error</span>Neu</span></span>`
             : sub.systemValue;
           const subSrcHtml = sub.source === '–' ? '–'
             : (sub.openPayslip || sub.openPayslipScenario || (typeof sub.source === 'string' && sub.source.startsWith('Gehaltsabrechnung')))
