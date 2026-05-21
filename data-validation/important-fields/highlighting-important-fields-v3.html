@@ -25,48 +25,86 @@
       margin-bottom: var(--space-m);
       flex-wrap: wrap;
     }
+    .phase-chips-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-s);
+    }
+    .phase-info-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-neutral-dark-300);
+      cursor: help;
+      font-size: 20px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .phase-info-tooltip {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      transform: none;
+      background: var(--color-neutral-dark-800);
+      color: var(--color-neutral-light-000);
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      padding: 7px 11px;
+      border-radius: var(--radius-s);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-base);
+      z-index: 200;
+      font-family: var(--font-family);
+    }
+    .phase-info-btn:hover .phase-info-tooltip { opacity: 1; }
     .phase-chips {
       display: inline-flex;
-      align-items: stretch;
-      border: 1px solid var(--color-neutral-light-500);
-      border-radius: var(--radius-full);
-      background: var(--color-neutral-light-000);
-      overflow: hidden;
+      align-items: center;
+      gap: var(--space-xs);
     }
     .phase-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px var(--space-m);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 13px;
+      height: 28px;
       font-family: var(--font-family);
       font-size: var(--body-regular-size);
       font-weight: var(--font-weight-regular);
-      color: var(--color-neutral-dark-400);
-      background: transparent;
-      border: none;
-      border-right: 1px solid var(--color-neutral-light-500);
+      color: var(--color-neutral-dark-700);
+      background: var(--color-neutral-light-000);
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background var(--transition-base), color var(--transition-base);
+      transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
       white-space: nowrap;
+      outline: none;
     }
-    .phase-chip:last-child { border-right: none; }
-    .phase-chip::before {
-      content: '';
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--color-neutral-light-500);
-      flex-shrink: 0;
-      transition: background var(--transition-base);
-    }
+    .phase-chip::before { display: none; }
     .phase-chip:hover {
-      background: var(--color-primary-100);
-      color: var(--color-primary-600);
+      background: var(--color-neutral-light-100);
+      border-color: #a0aab4;
+      color: var(--color-neutral-dark-900);
     }
-    .phase-chip:hover::before { background: var(--color-primary-300); }
+    .phase-chip:focus-visible {
+      border-color: var(--color-primary-500);
+      box-shadow: 0 0 0 3px rgba(0,150,136,0.18);
+    }
     .phase-chip.active {
       background: var(--color-primary-100);
+      border: 1.5px solid var(--color-primary-500);
       color: var(--color-primary-600);
       font-weight: var(--font-weight-medium);
     }
-    .phase-chip.active::before { background: var(--color-primary-500); }
+    .phase-chip-check {
+      display: none;
+      font-size: 15px;
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+    }
+    .phase-chip.active .phase-chip-check { display: inline; }
 
     /* ── Kreditgeber custom dropdown ── */
     .kreditgeber-control { position: relative; flex-shrink: 0; }
@@ -144,8 +182,55 @@
     /* ── Field highlighting ── */
     .form-field.field-highlighted {
       border-left: 3px solid var(--color-primary-500);
+      border-radius: 2px 0 0 2px;
       padding-left: calc(var(--space-s) - 3px);
     }
+    .form-field.field-highlighted-missing {
+      border-left: 3px solid var(--color-warning-high);
+      border-radius: 2px 0 0 2px;
+      padding-left: calc(var(--space-s) - 3px);
+    }
+    .form-field.field-highlighted-missing .form-input {
+      border-color: var(--color-warning-high);
+    }
+
+    /* ── Selected bank chips ── */
+    .bank-chips-wrap {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .bank-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      height: 20px;
+      background: #ECEFF1;
+      border: none;
+      border-radius: 4px;
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-600);
+      white-space: nowrap;
+    }
+    .bank-chip-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--color-neutral-dark-600);
+      font-size: 16px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      transition: color var(--transition-base);
+    }
+    .bank-chip-remove:hover { color: var(--color-neutral-dark-900); }
+    .content-inner { background: var(--color-neutral-light-100); }
     .field-filter-tag {
       display: inline-flex; align-items: center;
       font-size: 10px; font-weight: 600;
@@ -229,11 +314,25 @@
       padding-bottom: var(--space-s);
     }
     #section-nav .section-nav-heading::before { display: none; }
-    #section-nav .section-nav-item.nav-section-highlighted {
+    #section-nav .section-nav-item.nav-section-ok {
       border-left: 3px solid var(--color-primary-500);
       color: var(--color-primary-600);
       background: var(--color-primary-100);
       padding-left: calc(var(--space-xl) - 3px);
+    }
+    #section-nav .section-nav-item.nav-section-missing {
+      border-left: 3px solid #e65100;
+      color: #e65100;
+      background: #fff3e0;
+      padding-left: calc(var(--space-xl) - 3px);
+      display: flex;
+      align-items: center;
+    }
+    .nav-warn-icon {
+      font-size: 16px;
+      margin-left: auto;
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
     }
   </style>
 </head>
@@ -334,23 +433,20 @@
         <div class="content-inner">
           <div id="antrag-view">
 
-          <!-- ── Antragsvalidierung Banner ── -->
-          <div class="validation-banner">
-            <div class="validation-banner-header">
-              <span class="validation-banner-title">Antragsvalidierung (beta)</span>
-              <div class="validation-toggle-wrap">
-                <span class="validation-toggle-label">Anzeigen</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" />
-                  <span class="toggle-slider"></span>
-                </label>
+          <!-- ── Controls: phase chips + Kreditgeber ── -->
+          <div class="antrag-controls">
+            <div class="phase-chips-wrap">
+              <span class="phase-info-btn material-symbols-outlined">
+                info
+                <span class="phase-info-tooltip">Wähle eine Phase, um die relevanten Pflichtfelder im Formular hervorzuheben.</span>
+              </span>
+              <div class="phase-chips">
+                <button class="phase-chip" onclick="selectPhase('basisdaten', this)">Basisdaten<span class="phase-chip-check material-symbols-outlined">check</span></button>
+                <button class="phase-chip" onclick="selectPhase('zinssuche', this)">Zinssuche<span class="phase-chip-check material-symbols-outlined">check</span></button>
+                <button class="phase-chip" onclick="selectPhase('angebotserstellung', this)">Angebotserstellung<span class="phase-chip-check material-symbols-outlined">check</span></button>
+                <button class="phase-chip" onclick="selectPhase('einreichung', this)">Einreichung<span class="phase-chip-check material-symbols-outlined">check</span></button>
               </div>
             </div>
-            <p class="validation-banner-desc">Diese Funktion ermöglicht das Auslesen von Daten aus Personalausweis/Pass, Gehaltsnachweis, Energieausweis und Exposé. Wenige Minuten nach dem Upload und der Kategorisierung im Dokumentencenter werden die Daten in den Antrag übernommen. Sie können entscheiden, ob Sie die Daten übernehmen möchten.</p>
-          </div>
-
-          <!-- ── Controls: Kreditgeber + phase chips ── -->
-          <div class="antrag-controls">
             <div class="kreditgeber-control" id="kreditgeber-control">
               <button class="kreditgeber-trigger" id="kreditgeber-trigger" onclick="toggleKreditgeberDropdown()">
                 <span class="kreditgeber-trigger-content">
@@ -435,12 +531,7 @@
                 </div>
               </div>
             </div>
-            <div class="phase-chips">
-              <button class="phase-chip" onclick="selectPhase('pflichtfelder', this)">Pflichtfelder</button>
-              <button class="phase-chip" onclick="selectPhase('finanzierungsvorschlaege', this)">Finanzierungsvorschläge erstellen</button>
-              <button class="phase-chip" onclick="selectPhase('kreditpruefung', this)">Kreditprüfung einreichen</button>
-              <button class="phase-chip" onclick="selectPhase('finanzierung-bestaetigt', this)">Finanzierung bestätigt</button>
-            </div>
+            <div class="bank-chips-wrap" id="bank-chips-wrap" style="display:none"></div>
           </div>
 
           <!-- ── Card 0: Persönliche Details ── -->
@@ -840,8 +931,23 @@
     btn.classList.add('active');
   }
   function setActiveSection(clicked) {
-    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('#section-nav .section-nav-item, #section-nav .section-nav-heading').forEach(function(el) { el.classList.remove('active'); });
     clicked.classList.add('active');
+
+    var labelEl = clicked.querySelector('.section-nav-item-label');
+    var label = labelEl ? labelEl.textContent.trim() : clicked.textContent.trim();
+    var target = null;
+    document.querySelectorAll('.form-card').forEach(function(card) {
+      if (target) return;
+      var heading = card.querySelector('.form-card-heading');
+      if (heading && heading.textContent.trim() === label) target = card;
+    });
+    if (!target) return;
+    var scroller = document.querySelector('.content-inner');
+    if (scroller) {
+      var scrollTo = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 16;
+      scroller.scrollTo({ top: scrollTo, behavior: 'smooth' });
+    }
   }
   function setActiveTab(tab) {
     document.querySelectorAll('.tab-nav .tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
@@ -849,14 +955,14 @@
   }
 
   /* ── State ── */
-  var activePhase       = null;
-  var activeKreditgeber = null;
+  var activePhase        = null;
+  var activeKreditgebers = [];
 
   /* ── Phase → field map ── */
   var FIELD_FILTER_MAP = {
-    'pflichtfelder':             ['Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','IBAN','Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'],
-    'finanzierungsvorschlaege':  ['Gehalt (netto)','Variable Einkünfte (netto)','Unterhaltsverpflichtungen','Familienstand'],
-    'kreditpruefung':            [
+    'basisdaten':         ['Vorname','Nachname','Geburtsdatum','Staatsangehörigkeit','Aufenthaltsstatus','IBAN','Gehalt (netto)','Anzahl Monatsgehälter','Derzeitige Mietkosten'],
+    'zinssuche':          ['Gehalt (netto)','Variable Einkünfte (netto)','Unterhaltsverpflichtungen','Familienstand'],
+    'angebotserstellung': [
       'Vorname','Nachname','Geburtsdatum','Geburtsort','Geburtsland',
       'Staatsangehörigkeit','Aufenthaltsstatus','Familienstand',
       'Steueridentifikationsnummer','IBAN','Kontoinhaber',
@@ -867,14 +973,26 @@
       'Berufsunfähigkeitsversicherungsbeiträge','Unterhaltsverpflichtungen',
       'Bestehende Kreditverträge'
     ],
-    'finanzierung-bestaetigt':   ['IBAN','Kontoinhaber']
+    'einreichung':        ['IBAN','Kontoinhaber']
   };
 
   var PHASE_TAG_LABELS = {
-    'pflichtfelder':             'Pflichtfeld',
-    'finanzierungsvorschlaege':  'Finanzierungsvorschlag',
-    'kreditpruefung':            'Kreditprüfung',
-    'finanzierung-bestaetigt':   'Finanzierung bestätigt'
+    'basisdaten':         'Basisdaten',
+    'zinssuche':          'Zinssuche',
+    'angebotserstellung': 'Angebotserstellung',
+    'einreichung':        'Einreichung'
+  };
+
+  /* ── Kreditgeber display names ── */
+  var BANK_NAMES = {
+    'europace':        'Europace',
+    'commerzbank':     'Commerzbank',
+    'deutsche-bank':   'Deutsche Bank',
+    'dkb':             'DKB',
+    'dsl-bank':        'DSL Bank',
+    'hypovereinsbank': 'HVB',
+    'ing':             'ING',
+    'isb':             'ISB'
   };
 
   /* ── Kreditgeber → field map ── */
@@ -924,29 +1042,70 @@
   }
 
   function selectKreditgeberOption(cb) {
-    document.querySelectorAll('#kreditgeber-list input[type="checkbox"]').forEach(function(other) {
-      if (other !== cb) other.checked = false;
-    });
-    activeKreditgeber = cb.checked ? cb.value : null;
+    if (cb.checked) {
+      if (activeKreditgebers.indexOf(cb.value) === -1) activeKreditgebers.push(cb.value);
+    } else {
+      activeKreditgebers = activeKreditgebers.filter(function(v) { return v !== cb.value; });
+    }
 
     var labelEl = document.getElementById('kreditgeber-selected-label');
     var logoEl  = document.getElementById('kreditgeber-selected-logo');
-    if (activeKreditgeber) {
-      var selectedItem = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + activeKreditgeber + '"]');
-      var nameSpan = selectedItem ? selectedItem.querySelector('span:last-child') : null;
-      labelEl.textContent = nameSpan ? nameSpan.textContent : activeKreditgeber;
-      labelEl.classList.remove('kreditgeber-placeholder');
-      var sourceLogo = selectedItem ? selectedItem.querySelector('.kreditgeber-item-logo') : null;
-      logoEl.innerHTML = sourceLogo ? sourceLogo.innerHTML : '';
-    } else {
+    logoEl.innerHTML = '';
+    if (activeKreditgebers.length === 0) {
       labelEl.textContent = 'Kreditgeber wählen';
       labelEl.classList.add('kreditgeber-placeholder');
-      logoEl.innerHTML = '';
+    } else if (activeKreditgebers.length === 1) {
+      var selectedItem = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + activeKreditgebers[0] + '"]');
+      var nameSpan = selectedItem ? selectedItem.querySelector('span:last-child') : null;
+      labelEl.textContent = nameSpan ? nameSpan.textContent : activeKreditgebers[0];
+      labelEl.classList.remove('kreditgeber-placeholder');
+    } else {
+      labelEl.textContent = activeKreditgebers.length + ' Kreditgeber';
+      labelEl.classList.remove('kreditgeber-placeholder');
     }
 
+    renderBankChips();
     applyHighlights();
-    document.getElementById('kreditgeber-dropdown').classList.remove('open');
-    document.getElementById('kreditgeber-trigger').classList.remove('open');
+  }
+
+  function renderBankChips() {
+    var wrap = document.getElementById('bank-chips-wrap');
+    wrap.innerHTML = '';
+    if (activeKreditgebers.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'flex';
+    activeKreditgebers.forEach(function(value) {
+      var item = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + value + '"]');
+      var name = item ? item.querySelector('span:last-child').textContent : value;
+      var chip = document.createElement('span');
+      chip.className = 'bank-chip';
+      chip.innerHTML = name + '<button class="bank-chip-remove material-symbols-outlined" onclick="removeBankChip(\'' + value + '\')">close</button>';
+      wrap.appendChild(chip);
+    });
+  }
+
+  function removeBankChip(value) {
+    activeKreditgebers = activeKreditgebers.filter(function(v) { return v !== value; });
+    var cb = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + value + '"] input[type="checkbox"]');
+    if (cb) cb.checked = false;
+
+    var labelEl = document.getElementById('kreditgeber-selected-label');
+    var logoEl  = document.getElementById('kreditgeber-selected-logo');
+    logoEl.innerHTML = '';
+    if (activeKreditgebers.length === 0) {
+      labelEl.textContent = 'Kreditgeber wählen';
+      labelEl.classList.add('kreditgeber-placeholder');
+    } else if (activeKreditgebers.length === 1) {
+      var selectedItem = document.querySelector('#kreditgeber-list .kreditgeber-item[data-value="' + activeKreditgebers[0] + '"]');
+      var nameSpan = selectedItem ? selectedItem.querySelector('span:last-child') : null;
+      labelEl.textContent = nameSpan ? nameSpan.textContent : activeKreditgebers[0];
+      labelEl.classList.remove('kreditgeber-placeholder');
+    } else {
+      labelEl.textContent = activeKreditgebers.length + ' Kreditgeber';
+      labelEl.classList.remove('kreditgeber-placeholder');
+    }
+
+    renderBankChips();
+    applyHighlights();
   }
 
   document.addEventListener('click', function(e) {
@@ -961,9 +1120,13 @@
   function applyHighlights() {
     clearHighlights();
 
-    var phaseFields      = activePhase       ? (FIELD_FILTER_MAP[activePhase]            || []) : [];
-    var kreditgeberFields= activeKreditgeber  ? (KREDITGEBER_FIELD_MAP[activeKreditgeber] || []) : [];
-    var hasFilter        = activePhase || activeKreditgeber;
+    var phaseFields       = activePhase ? (FIELD_FILTER_MAP[activePhase] || []) : [];
+    var kreditgeberFields = [];
+    activeKreditgebers.forEach(function(kg) {
+      (KREDITGEBER_FIELD_MAP[kg] || []).forEach(function(f) {
+        if (kreditgeberFields.indexOf(f) === -1) kreditgeberFields.push(f);
+      });
+    });
 
     document.querySelectorAll('.form-field').forEach(function(fieldEl) {
       var labelEl = fieldEl.querySelector('.form-field-label');
@@ -974,7 +1137,23 @@
       var inBank  = kreditgeberFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
 
       if (inPhase || inBank) {
-        fieldEl.classList.add('field-highlighted');
+        if (isFieldFilled(fieldEl)) {
+          fieldEl.classList.add('field-highlighted');
+        } else {
+          fieldEl.classList.add('field-highlighted-missing');
+          if (inBank) {
+            activeKreditgebers.forEach(function(kg) {
+              var kgFields = KREDITGEBER_FIELD_MAP[kg] || [];
+              var requires = kgFields.some(function(n) { return baseText === n || baseText.startsWith(n); });
+              if (requires) {
+                var tag = document.createElement('span');
+                tag.className = 'field-filter-tag field-filter-tag--bank';
+                tag.textContent = BANK_NAMES[kg] || kg;
+                labelEl.appendChild(tag);
+              }
+            });
+          }
+        }
       }
     });
     updateSidebarHighlights();
@@ -982,29 +1161,57 @@
 
   function clearHighlights() {
     document.querySelectorAll('.form-field.field-highlighted').forEach(function(el) { el.classList.remove('field-highlighted'); });
+    document.querySelectorAll('.form-field.field-highlighted-missing').forEach(function(el) { el.classList.remove('field-highlighted-missing'); });
     document.querySelectorAll('.field-filter-tag').forEach(function(t) { t.remove(); });
     clearSidebarHighlights();
+  }
+
+  function isFieldFilled(fieldEl) {
+    var radio = fieldEl.querySelector('input[type="radio"]:checked');
+    if (radio) return true;
+    var input = fieldEl.querySelector('input[type="text"], input[type="number"], input[type="email"]');
+    if (input) return input.value.trim() !== '';
+    var select = fieldEl.querySelector('select');
+    if (select) return select.value !== '';
+    return false;
   }
 
   function updateSidebarHighlights() {
     clearSidebarHighlights();
     document.querySelectorAll('.form-card').forEach(function(card) {
-      if (!card.querySelector('.field-highlighted')) return;
+      var highlighted = card.querySelectorAll('.field-highlighted, .field-highlighted-missing');
+      if (!highlighted.length) return;
+
+      var allFilled = !card.querySelector('.field-highlighted-missing');
+
       var headingEl = card.querySelector('.form-card-heading');
       if (!headingEl) return;
       var cardTitle = headingEl.textContent.trim();
       document.querySelectorAll('#section-nav .section-nav-item .section-nav-item-label').forEach(function(labelEl) {
         if (labelEl.textContent.trim() === cardTitle) {
-          labelEl.closest('.section-nav-item').classList.add('nav-section-highlighted');
+          var navItem = labelEl.closest('.section-nav-item');
+          if (allFilled) {
+            navItem.classList.add('nav-section-ok');
+          } else {
+            navItem.classList.add('nav-section-missing');
+            var icon = document.createElement('span');
+            icon.className = 'nav-warn-icon material-symbols-outlined';
+            icon.textContent = 'warning';
+            navItem.appendChild(icon);
+          }
         }
       });
     });
   }
 
   function clearSidebarHighlights() {
-    document.querySelectorAll('#section-nav .section-nav-item.nav-section-highlighted').forEach(function(el) {
-      el.classList.remove('nav-section-highlighted');
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-ok').forEach(function(el) {
+      el.classList.remove('nav-section-ok');
     });
+    document.querySelectorAll('#section-nav .section-nav-item.nav-section-missing').forEach(function(el) {
+      el.classList.remove('nav-section-missing');
+    });
+    document.querySelectorAll('#section-nav .nav-warn-icon').forEach(function(el) { el.remove(); });
   }
 
   /* ── Drawer top (for any future fixed panels) ── */
