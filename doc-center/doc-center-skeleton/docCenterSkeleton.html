@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doc Center – Skeleton</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Roboto', 'sans-serif'] },
+          colors: {
+            primary: { 100: '#E6F5F3', 500: '#009688', 600: '#00877A', 700: '#00695c' },
+            neutral: {
+              50:  '#FAFAFA', 100: '#F5F5F5', 200: '#EEEEEE', 300: '#E0E0E0',
+              400: '#BDBDBD', 500: '#9E9E9E', 600: '#757575', 700: '#616161',
+              800: '#424242', 900: '#212121',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; font-family: 'Roboto', sans-serif; }
+    .icon {
+      font-family: 'Material Symbols Outlined'; font-style: normal;
+      font-size: 20px; line-height: 1;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      user-select: none;
+    }
+    .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+  /* ── Data ── */
+  const GROUPS = [
+    {
+      id: 'unkategorisiert',
+      label: 'Unkategorisiert',
+      icon: 'folder_open',
+      items: [
+        { id: 101, name: 'Unkategorisierte Seiten', docStatus: 'pending' },
+      ]
+    },
+    {
+      id: 'persoenlich',
+      label: 'Persönliche Dokumente',
+      icon: 'person',
+      newCount: 2,
+      items: [
+        { id: 201, name: 'Gehaltsabrechnung August',    docStatus: 'ok', isNew: true,
+          warnings: ['IBAN fehlt auf der Gehaltsabrechnung', 'Digital signiert – bitte in Tinte unterschreiben'] },
+        { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok', isNew: true },
+        { id: 203, name: 'Personalausweis',             docStatus: 'ok' },
+        { id: 204, name: 'Kontoauszug Oktober',         docStatus: 'pending' },
+      ]
+    },
+    {
+      id: 'immobilien',
+      label: 'Immobilienunterlagen',
+      icon: 'home',
+      items: [
+        { id: 301, name: 'Vollständiger aktueller Grundbuchauszug (max. 3 Monate alt)', docStatus: 'ok' },
+        { id: 302, name: 'Wohnflächenberechnung (mit Angabe von Länge und Breite je Raum)', docStatus: 'ok',
+          warnings: ['Maße bei Raum 3 fehlen', 'Stempel des Architekten fehlt'] },
+        { id: 303, name: 'Aktuelle Flurkarte/Lageplan',  docStatus: 'ok' },
+        { id: 304, name: 'Baubeschreibung',              docStatus: 'pending' },
+        { id: 305, name: 'Kaufvertragsentwurf',          docStatus: 'ok' },
+        { id: 306, name: 'Bemaßte Baupläne (evtl. fehlende Maßangaben bitte zwingend ergänzen)', docStatus: 'ok' },
+        { id: 307, name: 'Exposé',                       docStatus: 'rejected',
+          rejectedReasons: ['Dokument unleserlich – bitte erneut scannen', 'Exposé veraltet (älter als 3 Monate)'] },
+        { id: 308, name: 'Aktuelle Objektfotos in Farbe von Innen und Außen (je mind. 2)', docStatus: 'ok' },
+      ]
+    }
+  ];
+
+  /* all items flattened for viewer lookup */
+  const ALL_DOCS = GROUPS.flatMap(g => g.items);
+
+  /* ── Sub-components ── */
+
+  /* ── Tooltip (portal, bypasses overflow clipping) ── */
+  function Tooltip({ anchor, children }) {
+    if (!anchor) return null;
+    const TIP_W = 248;
+    const GAP   = 6;
+    const PAD   = 8;
+
+    // Center on anchor, then clamp so neither edge leaves the viewport
+    const rawLeft = anchor.left + anchor.width / 2 - TIP_W / 2;
+    const left = Math.max(PAD, Math.min(rawLeft, window.innerWidth - TIP_W - PAD));
+
+    // Prefer above; fall back to below when near the top of the screen
+    const above = anchor.top > 180;
+    const vertical = above
+      ? { bottom: window.innerHeight - anchor.top + GAP }
+      : { top: anchor.bottom + GAP };
+
+    const style = {
+      position: 'fixed',
+      zIndex: 9999,
+      left,
+      width: TIP_W,
+      ...vertical,
+      pointerEvents: 'none',
+    };
+    return ReactDOM.createPortal(
+      <div style={style} className="bg-white border border-neutral-200 rounded-lg shadow-lg overflow-hidden text-left">
+        {children}
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── DocStatusBadge — left of document name ── */
+  function DocStatusBadge({ docStatus, rejectedReasons = [] }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+
+    function StatusIcon() {
+      if (docStatus === 'ok')
+        return <span className="icon icon-filled text-[18px] text-green-500 leading-none">check_circle</span>;
+      if (docStatus === 'rejected')
+        return <span className="icon icon-filled text-[18px] text-red-500 leading-none">cancel</span>;
+      /* pending — filled circle with white hourglass */
+      return (
+        <span className="w-[18px] h-[18px] rounded-full bg-neutral-400 inline-flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <span className="icon text-[11px] text-white" style={{ fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20", lineHeight: 1, display: 'block' }}>hourglass_empty</span>
+        </span>
+      );
+    }
+
+    const labels = { ok: 'Genehmigt', pending: 'Ausstehend', rejected: 'Abgelehnt' };
+
+    return (
+      <div
+        ref={ref}
+        className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}
+      >
+        <StatusIcon />
+        <Tooltip anchor={anchor}>
+          {docStatus === 'rejected' ? (
+            <>
+              <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-red-50">
+                <span className="icon icon-filled text-[14px] text-red-500">cancel</span>
+                <span className="text-[11px] font-medium text-red-600 uppercase tracking-wide">Abgelehnt</span>
+              </div>
+              {rejectedReasons.length > 0 && (
+                <ul className="px-3 py-2.5 flex flex-col gap-1.5">
+                  {rejectedReasons.map((r, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[12px] text-neutral-700 leading-snug">
+                      <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <div className="px-3 py-2.5 flex items-center gap-2">
+              <StatusIcon />
+              <span className="text-[12px] text-neutral-700 font-medium">{labels[docStatus] || 'Ausstehend'}</span>
+            </div>
+          )}
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /* ── WarningBadge — right side exclamation ── */
+  function WarningBadge({ warnings }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    if (!warnings || warnings.length === 0) return null;
+    return (
+      <div
+        ref={ref}
+        className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}
+      >
+        <span className="icon icon-filled text-[18px] text-[#F57C00] leading-none">error</span>
+        <Tooltip anchor={anchor}>
+          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-amber-50">
+            <span className="icon icon-filled text-[14px] text-amber-500">warning</span>
+            <span className="text-[11px] font-medium text-amber-600 uppercase tracking-wide">
+              {warnings.length} {warnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+            </span>
+          </div>
+          <ul className="px-3 py-2.5 flex flex-col gap-1.5">
+            {warnings.map((w, i) => (
+              <li key={i} className="flex items-start gap-2 text-[12px] text-neutral-700 leading-snug">
+                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                {w}
+              </li>
+            ))}
+          </ul>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  function NewBadge() {
+    return (
+      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">
+        Neu
+      </span>
+    );
+  }
+
+  function Checkbox({ checked, onChange }) {
+    return (
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        onClick={e => e.stopPropagation()}
+        className="w-4 h-4 rounded-md border-neutral-300 accent-[#78909C] flex-shrink-0 cursor-pointer"
+      />
+    );
+  }
+
+  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck }) {
+    const [open, setOpen] = React.useState(true);
+    const approvedCount = group.items.filter(i => i.docStatus === 'ok').length;
+    const totalCount = group.items.length;
+
+    return (
+      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+        {/* Category header */}
+        <div
+          className="flex items-center gap-2 px-4 cursor-pointer bg-white hover:bg-neutral-50 select-none h-11"
+          onClick={() => setOpen(o => !o)}
+        >
+          <Checkbox
+            checked={group.items.every(i => checkedIds.has(i.id))}
+            onChange={e => {
+              e.stopPropagation();
+              onCheck(group.items.map(i => i.id), e.target.checked);
+            }}
+          />
+          <span className="icon icon-filled text-[18px] text-neutral-700">{group.icon}</span>
+          <span className="flex-1 text-sm font-medium text-neutral-900 leading-snug">
+            {group.label}
+          </span>
+          {group.newCount > 0 && (
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">
+              {group.newCount} Neue
+            </span>
+          )}
+          <span className="text-[12px] text-neutral-500 tabular-nums">{approvedCount}/{totalCount}</span>
+          <button
+            className="w-5 h-5 flex items-center justify-center text-neutral-800 hover:text-primary-500 transition-colors"
+            onClick={e => { e.stopPropagation(); }}
+            title="Hinzufügen"
+          >
+            <span className="icon text-[16px]">add</span>
+          </button>
+          <span className="icon text-[16px] text-neutral-800">
+            {open ? 'expand_less' : 'expand_more'}
+          </span>
+        </div>
+
+        {/* Items */}
+        {open && (
+          <ul>
+            {group.items.map(item => {
+              const active = item.id === selectedId;
+              return (
+                <li key={item.id} className="border-t border-neutral-100 first:border-t-0">
+                  <button
+                    onClick={() => onSelect(item.id)}
+                    className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
+                      ${active
+                        ? 'bg-primary-100 border-l-4 border-l-primary-500 pl-[20px]'
+                        : 'pl-[24px] hover:bg-neutral-50'}`}
+                  >
+                    <Checkbox
+                      checked={checkedIds.has(item.id)}
+                      onChange={e => onCheck([item.id], e.target.checked)}
+                    />
+                    <DocStatusBadge docStatus={item.docStatus} rejectedReasons={item.rejectedReasons || []} />
+                    <span className={`flex-1 text-[13px] leading-snug text-left min-w-0
+                      ${active ? 'text-primary-700 font-medium' : 'text-neutral-700'}`}>
+                      {item.name}
+                    </span>
+                    {item.isNew && <NewBadge />}
+                    <WarningBadge warnings={item.warnings} />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
+  /* ── Sidebar ── */
+  function Sidebar({ selectedId, onSelect }) {
+    const [activeTab, setActiveTab] = React.useState('antragsunterlagen');
+    const [checkedIds, setCheckedIds] = React.useState(new Set());
+
+    const allIds = ALL_DOCS.map(d => d.id);
+    const allChecked = allIds.every(id => checkedIds.has(id));
+
+    function handleCheck(ids, checked) {
+      setCheckedIds(prev => {
+        const next = new Set(prev);
+        ids.forEach(id => checked ? next.add(id) : next.delete(id));
+        return next;
+      });
+    }
+
+    const TABS = [
+      { id: 'antragsunterlagen', label: 'Antragsunterlagen' },
+      { id: 'vertragsunterlagen', label: 'Vertragsunterlagen' },
+    ];
+
+    return (
+      <aside className="w-[400px] flex-shrink-0 flex flex-col bg-white border-r border-neutral-200 overflow-hidden">
+
+        {/* ── Tab bar ── */}
+        <div className="flex items-center border-b border-neutral-200 px-2 pt-2 gap-1">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 text-[12px] font-medium rounded-t transition-colors whitespace-nowrap
+                ${activeTab === tab.id
+                  ? 'border border-neutral-300 border-b-white bg-white text-neutral-900 -mb-px z-10 relative'
+                  : 'text-neutral-500 hover:text-neutral-700'}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <button className="ml-auto mb-2 w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600">
+            <span className="icon text-[16px]">chevron_right</span>
+          </button>
+        </div>
+
+        {/* ── Source bar ── */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200">
+          <button className="flex items-center gap-1.5 text-primary-600 hover:text-primary-700 transition-colors">
+            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-white leading-none">F</span>
+            </div>
+            <span className="text-[13px] font-medium">FinLink</span>
+            <span className="icon text-[16px]">arrow_drop_down</span>
+          </button>
+          <div className="flex items-center gap-1.5">
+            <button className="flex items-center gap-1 h-6 px-2 rounded-full bg-primary-500 text-white text-[11px] font-medium hover:bg-primary-600 transition-colors">
+              <span className="icon text-[13px]">visibility</span>
+              Sichtbar
+            </button>
+            <button className="w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600 rounded hover:bg-neutral-100">
+              <span className="icon text-[18px]">more_horiz</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ── Select all ── */}
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-neutral-200">
+          <Checkbox
+            checked={allChecked}
+            onChange={e => handleCheck(allIds, e.target.checked)}
+          />
+          <span className="flex-1 text-[13px] text-neutral-600">Alle auswählen</span>
+          <button className="w-5 h-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600">
+            <span className="icon text-[16px]">unfold_more</span>
+          </button>
+        </div>
+
+        {/* ── Document groups ── */}
+        <div className="flex-1 overflow-y-auto flex flex-col gap-3 p-3 bg-[#ECEFF1]">
+          {GROUPS.map(group => (
+            <CategoryGroup
+              key={group.id}
+              group={group}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              checkedIds={checkedIds}
+              onCheck={handleCheck}
+            />
+          ))}
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="border-t border-neutral-200 px-3 py-2.5 flex flex-col gap-1">
+          <button className="flex items-center gap-1 text-primary-600 hover:text-primary-700 text-[13px] font-medium transition-colors">
+            <span className="icon text-[16px]">add</span>
+            Weitere Dokumente anfordern
+          </button>
+          <p className="text-[10px] text-neutral-400 leading-tight">
+            FE: main@c297573658 | BE: main@c297573658
+          </p>
+        </div>
+
+      </aside>
+    );
+  }
+
+  /* ── Checks data per document type ── */
+  const DOC_CHECKS = {
+    201: [
+      { label: 'Name stimmt mit Kundendaten überein',   status: 'ok' },
+      { label: 'Datum liegt im gültigen Bereich',       status: 'ok' },
+      { label: 'Arbeitgebersignatur vorhanden',         status: 'ok' },
+      { label: 'IBAN nicht auf Dokument gefunden',      status: 'warning',
+        action: { label: 'Kontoauszug anfordern', icon: 'add_circle', hint: 'Erstellt einen neuen Slot für den Kunden' } },
+    ],
+    202: [
+      { label: 'Name stimmt mit Kundendaten überein',   status: 'ok' },
+      { label: 'Datum liegt im gültigen Bereich',       status: 'ok' },
+      { label: 'Betrag plausibel',                      status: 'ok' },
+      { label: 'Arbeitgebername fehlt',                 status: 'warning',
+        action: { label: 'Dokument erneut anfordern', icon: 'refresh', hint: 'Sendet eine neue Anfrage an den Kunden' } },
+    ],
+    203: [
+      { label: 'Name stimmt mit Kundendaten überein',   status: 'ok' },
+      { label: 'Ausweis nicht abgelaufen',              status: 'ok' },
+      { label: 'Lichtbild vorhanden',                   status: 'ok' },
+      { label: 'MRZ-Zeile lesbar',                      status: 'ok' },
+    ],
+    204: [
+      { label: 'IBAN stimmt mit Antrag überein',        status: 'ok' },
+      { label: 'Datum liegt im gültigen Bereich',       status: 'ok' },
+      { label: 'Kontoinhaber nicht verifiziert',        status: 'warning',
+        action: { label: 'Kunden kontaktieren', icon: 'mail', hint: 'Öffnet E-Mail-Vorlage für den Kunden' } },
+      { label: 'Keine sichtbaren Manipulationen',       status: 'ok' },
+    ],
+    301: [
+      { label: 'Grundbuchnummer vorhanden',             status: 'ok' },
+      { label: 'Datum max. 3 Monate alt',               status: 'ok' },
+      { label: 'Eigentümer stimmt überein',             status: 'ok' },
+    ],
+    302: [
+      { label: 'Wohnfläche angegeben',                  status: 'ok' },
+      { label: 'Unterschrift des Architekten vorhanden', status: 'ok' },
+      { label: 'Länge und Breite je Raum fehlen',       status: 'warning',
+        action: { label: 'Ergänzung anfordern', icon: 'edit_document', hint: 'Fordert Nachlieferung der Maßangaben an' } },
+    ],
+  };
+
+  const DEFAULT_CHECKS = [
+    { label: 'Dokument lesbar',                        status: 'ok' },
+    { label: 'Format korrekt',                         status: 'ok' },
+    { label: 'Keine sichtbaren Manipulationen',        status: 'ok' },
+  ];
+
+  /* ── Prüfungen card — two-column layout ── */
+  function PruefungenCard({ checks }) {
+    const warnings = checks.filter(c => c.status === 'warning');
+    const passed   = checks.filter(c => c.status === 'ok');
+    const [triggered, setTriggered] = React.useState({});
+
+    function handleAction(i) {
+      setTriggered(prev => ({ ...prev, [i]: true }));
+    }
+
+    return (
+      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-neutral-200 flex items-center gap-2">
+          <span className="icon text-[18px] text-neutral-500">fact_check</span>
+          <span className="text-[13px] font-medium text-neutral-900">Prüfungen</span>
+          <div className="ml-auto flex items-center gap-2">
+            {warnings.length > 0 && (
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                {warnings.length} {warnings.length === 1 ? 'Warnung' : 'Warnungen'}
+              </span>
+            )}
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
+              {passed.length}/{checks.length} bestanden
+            </span>
+          </div>
+        </div>
+
+        {/* Two columns */}
+        <div className="grid grid-cols-2 divide-x divide-neutral-200 min-h-[80px]">
+
+          {/* Warnungen */}
+          <div>
+            <div className="px-4 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-amber-50">
+              <span className="icon icon-filled text-[16px] text-amber-500">warning</span>
+              <span className="text-[11px] font-medium text-amber-700 uppercase tracking-wide">Warnungen</span>
+            </div>
+            {warnings.length === 0 ? (
+              <p className="px-4 py-5 text-[12px] text-neutral-400 text-center">Keine Warnungen</p>
+            ) : warnings.map((check, i) => (
+              <div key={i} className="px-4 py-3 border-b border-neutral-100 last:border-0">
+                <div className="flex items-start gap-2">
+                  <span className="icon icon-filled text-[16px] text-amber-400 mt-0.5 flex-shrink-0">warning</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] text-neutral-800 leading-snug">{check.label}</p>
+                    {check.action && (
+                      triggered[i] ? (
+                        <span className="mt-2 inline-flex items-center gap-1 text-[11px] text-green-600 font-medium">
+                          <span className="icon icon-filled text-[13px]">check_circle</span>
+                          Aktion ausgelöst
+                        </span>
+                      ) : (
+                        <div className="mt-2">
+                          <button
+                            onClick={() => handleAction(i)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-primary-500 text-primary-600 text-[12px] font-medium hover:bg-primary-100 transition-colors"
+                          >
+                            <span className="icon text-[14px]">{check.action.icon}</span>
+                            {check.action.label}
+                          </button>
+                          {check.action.hint && (
+                            <p className="mt-1 text-[11px] text-neutral-400 leading-snug">{check.action.hint}</p>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bestanden */}
+          <div>
+            <div className="px-4 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-green-50">
+              <span className="icon icon-filled text-[16px] text-green-500">check_circle</span>
+              <span className="text-[11px] font-medium text-green-700 uppercase tracking-wide">Bestanden</span>
+            </div>
+            {passed.length === 0 ? (
+              <p className="px-4 py-5 text-[12px] text-neutral-400 text-center">Keine bestandenen Prüfungen</p>
+            ) : passed.map((check, i) => (
+              <div key={i} className="px-4 py-3 border-b border-neutral-100 last:border-0 flex items-start gap-2">
+                <span className="icon icon-filled text-[16px] text-green-400 mt-0.5 flex-shrink-0">check_circle</span>
+                <p className="text-[13px] text-neutral-600 leading-snug">{check.label}</p>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Main viewer ── */
+  function DocumentViewer({ doc }) {
+    const checks = doc ? (DOC_CHECKS[doc.id] ?? DEFAULT_CHECKS) : [];
+
+    return (
+      <main className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
+        {/* Toolbar */}
+        <div className="h-11 flex-shrink-0 flex items-center justify-between px-4 bg-white border-b border-neutral-200">
+          <span className="text-sm font-medium text-neutral-800 truncate">{doc?.name ?? '–'}</span>
+          <div className="flex items-center gap-1">
+            {['zoom_out', 'zoom_in', 'fullscreen'].map(ico => (
+              <button key={ico} className="w-8 h-8 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-500 transition-colors">
+                <span className="icon">{ico}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Document action bar — full width, no border, Figma-matched */}
+        <div className="flex-shrink-0 flex items-center justify-between bg-white pl-[10px] pr-[16px] py-[8px] border-b border-neutral-100"
+             style={{ boxShadow: '0 1px 4px 0 rgba(84,110,122,0.15)' }}>
+          {/* Left: approve/reject + text actions */}
+          <div className="flex items-center gap-6">
+            {/* Approve / Reject circle buttons */}
+            <div className="flex items-center gap-2">
+              <button className="w-8 h-8 rounded-full border border-[#b0bec5] flex items-center justify-center text-[#37474f] hover:border-primary-500 hover:text-primary-600 transition-colors">
+                <span className="icon text-[18px]">check</span>
+              </button>
+              <button className="w-8 h-8 rounded-full border border-[#b0bec5] flex items-center justify-center text-[#37474f] hover:border-red-400 hover:text-red-500 transition-colors">
+                <span className="icon text-[18px]">close</span>
+              </button>
+            </div>
+            {/* Text link buttons */}
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-primary-600 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">arrow_forward</span>
+              Neu kategorisieren
+            </button>
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-primary-600 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">download</span>
+              Herunterladen
+            </button>
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-red-500 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">delete</span>
+              Papierkorb
+            </button>
+          </div>
+          {/* Right: icon buttons */}
+          <div className="flex items-center gap-4">
+            {[{ ico: 'note_add' }, { ico: 'upload' }, { ico: 'more_horiz' }].map(({ ico }) => (
+              <button key={ico} className="w-9 h-9 flex items-center justify-center rounded border border-[#b0bec5] text-[#37474f] hover:bg-neutral-50 transition-colors">
+                <span className="icon text-[20px]">{ico}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="p-6 flex flex-col gap-5">
+
+            {/* Prüfungen */}
+            {doc && <PruefungenCard checks={checks} />}
+
+            {/* Document preview */}
+            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+              <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2 text-neutral-400">
+                  <span className="icon text-5xl">description</span>
+                  <span className="text-sm">{doc ? doc.name : 'Kein Dokument ausgewählt'}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  /* ── Right rail ── */
+  function PageRail({ doc }) {
+    const PAGE_COUNTS = { 201:2, 202:1, 203:2, 204:3, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3 };
+    const count = doc ? (PAGE_COUNTS[doc.id] ?? 2) : 0;
+    const pages = Array.from({ length: count }, (_, i) => i + 1);
+
+    return (
+      <aside className="w-[120px] flex-shrink-0 flex flex-col bg-white border-l border-neutral-200 overflow-hidden">
+        <div className="px-3 py-3 border-b border-neutral-200 flex items-center gap-1.5">
+          <span className="icon text-[16px] text-neutral-500">layers</span>
+          <span className="text-xs font-medium text-neutral-600">Seiten</span>
+        </div>
+        <div className="flex-1 overflow-y-auto py-3 flex flex-col gap-3 px-3">
+          {!doc && <p className="text-xs text-neutral-300 text-center mt-6">–</p>}
+          {pages.map(p => (
+            <div key={p} className="flex flex-col items-center gap-1 cursor-pointer group">
+              <div className="w-full aspect-[3/4] bg-neutral-200 rounded border-2 border-transparent group-hover:border-primary-500 transition-colors" />
+              <span className="text-[10px] text-neutral-400">{p}</span>
+            </div>
+          ))}
+        </div>
+      </aside>
+    );
+  }
+
+  /* ── Header ── */
+  function Header() {
+    return (
+      <header className="h-[70px] flex items-center justify-between px-4 bg-white border-b border-neutral-200 flex-shrink-0">
+
+        {/* Left: title + progress */}
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-[20px] font-medium leading-[28px] text-[#37474f] whitespace-nowrap">
+              Dokumente für Melissa Mustermann
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] leading-[16px]">
+                <span className="font-medium text-[#37474f]">5/25</span>
+                <span className="text-[#546e7a]"> Dokumente genehmigt</span>
+              </span>
+              <div className="w-[150px] h-[6px] bg-[#e6f5f3] rounded-full overflow-hidden">
+                <div className="h-full w-[20%] bg-[#009688] rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: actions + user */}
+        <div className="flex items-center gap-2">
+          {/* Hochladen primary */}
+          <button className="flex items-center gap-1 pl-2 pr-4 py-2 bg-[#009688] hover:bg-primary-600 text-white text-[14px] font-medium rounded transition-colors">
+            <span className="icon text-[20px]">upload</span>
+            Hochladen
+          </button>
+          {/* Exportieren secondary */}
+          <button className="flex items-center gap-1 pl-2 pr-4 py-2 border border-[#b0bec5] text-[#4b5961] text-[14px] font-medium rounded hover:bg-neutral-50 transition-colors">
+            <span className="icon text-[20px]">call_made</span>
+            Exportieren
+          </button>
+          {/* Email icon button with counter */}
+          <div className="relative">
+            <button className="w-9 h-9 flex items-center justify-center border border-[#b0bec5] rounded text-[#4b5961] hover:bg-neutral-50 transition-colors">
+              <span className="icon text-[20px]">email</span>
+            </button>
+            <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#009688] rounded-full flex items-center justify-center">
+              <span className="text-[10px] font-medium text-white leading-none">4</span>
+            </div>
+          </div>
+          {/* More menu */}
+          <button className="w-9 h-9 flex items-center justify-center border border-[#b0bec5] rounded text-[#4b5961] hover:bg-neutral-50 transition-colors">
+            <span className="icon text-[20px]">more_horiz</span>
+          </button>
+          {/* Divider */}
+          <div className="w-px h-10 bg-[#eceff1] mx-1" />
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full bg-[#b0bec5] flex items-center justify-center flex-shrink-0">
+            <span className="icon text-[20px] text-white">person</span>
+          </div>
+          {/* User info */}
+          <div className="flex items-center gap-1">
+            <div className="flex flex-col items-start">
+              <span className="text-[14px] text-[#4b5961] leading-[20px] tracking-[0.25px] whitespace-nowrap">Jan Joisten</span>
+              <span className="text-[12px] text-[#78909c] leading-[16px] whitespace-nowrap">Berater/in</span>
+            </div>
+            <span className="icon text-[20px] text-[#4b5961]">expand_more</span>
+          </div>
+        </div>
+
+      </header>
+    );
+  }
+
+  /* ── App ── */
+  function App() {
+    const [selectedId, setSelectedId] = React.useState(201);
+    const selectedDoc = ALL_DOCS.find(d => d.id === selectedId) ?? null;
+
+    return (
+      <div className="h-screen flex flex-col overflow-hidden">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar selectedId={selectedId} onSelect={setSelectedId} />
+          <DocumentViewer doc={selectedDoc} />
+          <PageRail doc={selectedDoc} />
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
