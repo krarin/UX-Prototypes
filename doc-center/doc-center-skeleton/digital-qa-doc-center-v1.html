@@ -77,11 +77,10 @@
       icon: 'person',
       newCount: 2,
       items: [
-        { id: 201, name: 'Gehaltsabrechnung August',    docStatus: 'pending', isNew: true,
+        { id: 201, name: 'Gehaltsabrechnung Juli',    docStatus: 'pending', isNew: true,
           warnings: ['IBAN fehlt auf der Gehaltsabrechnung', 'Digital signiert – bitte in Tinte unterschreiben'] },
-        { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok', isNew: true },
-        { id: 203, name: 'Personalausweis',             docStatus: 'ok' },
-        { id: 204, name: 'Kontoauszug Oktober',         docStatus: 'pending' },
+        { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok' },
+        { id: 204, name: 'Kontoauszug August',           docStatus: 'pending' },
         { id: 205, name: 'Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)', docStatus: 'pending',
           warnings: ['Nur Reisepass hochgeladen – Meldebescheinigung automatisch angefordert'] },
         { id: 206, name: 'Aufenthaltstitel', docStatus: 'pending',
@@ -501,7 +500,7 @@
     201: [
       { id:'201-1', name:'IBAN auf Dokument',       description:'IBAN muss im Dokument vorhanden sein',
         status:'fail',    result:'IBAN nicht gefunden',
-        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug' } },
+        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug anfordern' } },
       { id:'201-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
         status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
       { id:'201-3', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
@@ -520,23 +519,13 @@
       { id:'202-4', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
         status:'pass',    result:'Datum: 15.09.2025', override:null, remediation:null },
     ],
-    203: [
-      { id:'203-1', name:'Name stimmt überein',     description:'Name muss mit Antragsdaten übereinstimmen',
-        status:'pass',    result:'Melissa Mustermann bestätigt', override:null, remediation:null },
-      { id:'203-2', name:'Ausweis nicht abgelaufen', description:'Gültigkeitsdatum muss in der Zukunft liegen',
-        status:'pass',    result:'Gültig bis 12.2029', override:null, remediation:null },
-      { id:'203-3', name:'Lichtbild vorhanden',     description:'Lichtbild muss erkennbar sein',
-        status:'pass',    result:'Lichtbild erkannt', override:null, remediation:null },
-      { id:'203-4', name:'MRZ-Zeile lesbar',        description:'Maschinenlesbarer Bereich muss vollständig sein',
-        status:'pass',    result:'MRZ vollständig', override:null, remediation:null },
-    ],
     204: [
       { id:'204-1', name:'IBAN stimmt überein',     description:'IBAN muss mit Antragsdaten übereinstimmen',
         status:'pass',    result:'DE89 3704 0044 xxxx – stimmt überein', override:null, remediation:null },
       { id:'204-2', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
         status:'pass',    result:'Datum: 01.10.2025', override:null, remediation:null },
       { id:'204-3', name:'Kontoinhaber verifiziert', description:'Kontoinhaber muss mit Antragsteller übereinstimmen',
-        status:'warning', result:'Abweichender Kontoinhaber', override:null, remediation:null },
+        status:'pass', result:'Kontoinhaber bestätigt', override:null, remediation:null },
       { id:'204-4', name:'Keine Manipulationen',    description:'Keine sichtbaren Veränderungen',
         status:'pass',    result:'Keine Manipulationen erkannt', override:null, remediation:null },
     ],
@@ -1142,6 +1131,13 @@
                   style={{ height: '900px', border: 'none' }}
                   title="Energieausweis"
                 />
+              ) : doc?.id === 201 ? (
+                <iframe
+                  src="assets/gehaltsabrechnung-august.pdf"
+                  className="w-full"
+                  style={{ height: '900px', border: 'none' }}
+                  title="Gehaltsabrechnung August"
+                />
               ) : doc?.id === 205 ? (
                 <img
                   src="assets/reisepass.jpg"
@@ -1166,7 +1162,7 @@
 
   /* ── Right rail ── */
   function PageRail({ doc }) {
-    const PAGE_COUNTS = { 201:2, 202:1, 203:2, 204:3, 205:1, 206:1, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3, 309:2 };
+    const PAGE_COUNTS = { 201:2, 202:1, 204:3, 205:1, 206:1, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3, 309:2 };
     const count = doc ? (PAGE_COUNTS[doc.id] ?? 2) : 0;
     const pages = Array.from({ length: count }, (_, i) => i + 1);
 
