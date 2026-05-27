@@ -82,6 +82,10 @@
         { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok', isNew: true },
         { id: 203, name: 'Personalausweis',             docStatus: 'ok' },
         { id: 204, name: 'Kontoauszug Oktober',         docStatus: 'pending' },
+        { id: 205, name: 'Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)', docStatus: 'pending',
+          warnings: ['Nur Reisepass hochgeladen – Meldebescheinigung automatisch angefordert'] },
+        { id: 206, name: 'Aufenthaltstitel', docStatus: 'pending',
+          warnings: ['Aufenthaltstitel läuft in weniger als 6 Monaten ab'] },
       ]
     },
     {
@@ -111,11 +115,12 @@
   /* ── Sub-components ── */
 
   /* Orange triangle warning icon with "?" — matches Figma node 29:80326 */
-  function WarnIcon({ size = 16, className = '' }) {
+  function WarnIcon({ size = 16, className = '', color = '#FF9F1A' }) {
+    const textColor = color === '#FF9F1A' ? 'white' : '#FF9F1A';
     return (
       <svg width={size} height={size} viewBox="0 0 20 20" fill="none" className={className} style={{ flexShrink: 0, display: 'inline-block' }}>
-        <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill="#FF9F1A"/>
-        <text x="10" y="15.5" textAnchor="middle" fill="white" fontSize="8" fontWeight="700" fontFamily="Roboto, sans-serif">!</text>
+        <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill={color}/>
+        <text x="10" y="15.5" textAnchor="middle" fill={textColor} fontSize="8" fontWeight="700" fontFamily="Roboto, sans-serif">!</text>
       </svg>
     );
   }
@@ -266,16 +271,24 @@
   }
 
   function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {} }) {
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
     const approvedCount = group.items.filter(i => i.docStatus === 'ok').length;
     const totalCount = group.items.length;
 
+    function handleHeaderClick() {
+      const opening = !open;
+      setOpen(opening);
+      if (opening && group.items.length > 0) {
+        onSelect(group.items[0].id);
+      }
+    }
+
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-neutral-200">
         {/* Category header */}
         <div
           className="flex items-center gap-2 px-4 cursor-pointer bg-white hover:bg-neutral-50 select-none h-11"
-          onClick={() => setOpen(o => !o)}
+          onClick={handleHeaderClick}
         >
           <Checkbox
             checked={group.items.every(i => checkedIds.has(i.id))}
@@ -319,8 +332,8 @@
                       onClick={() => onSelect(item.id)}
                       className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
                         ${active
-                          ? 'bg-primary-100 border-l-4 border-l-primary-500 pl-[20px]'
-                          : 'pl-[24px] hover:bg-neutral-50'}`}
+                          ? 'bg-primary-100 border-l-4 border-l-primary-500 pl-[38px]'
+                          : 'pl-[42px] hover:bg-neutral-50'}`}
                     >
                       <Checkbox
                         checked={checkedIds.has(item.id)}
@@ -342,16 +355,16 @@
                       <li key={slot.id} className="border-t border-neutral-100 relative">
                         {/* Vertical dashed line */}
                         <span className="absolute pointer-events-none"
-                          style={{ left: 36, top: 0, bottom: si === slots.length - 1 ? '50%' : 0,
+                          style={{ left: 54, top: 0, bottom: si === slots.length - 1 ? '50%' : 0,
                             borderLeft: '2px dashed #FF9F1A' }} />
                         {/* Horizontal stub */}
                         <span className="absolute pointer-events-none"
-                          style={{ left: 36, top: '50%', width: 14,
+                          style={{ left: 54, top: '50%', width: 14,
                             borderTop: '2px dashed #FF9F1A' }} />
                         <button
                           onClick={() => onSelect(slot.id)}
                           className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
-                            ${slotActive ? 'bg-qa-warn-light border-l-4 pl-[48px]' : 'pl-[52px] hover:bg-neutral-50'}`}
+                            ${slotActive ? 'bg-qa-warn-light border-l-4 pl-[66px]' : 'pl-[70px] hover:bg-neutral-50'}`}
                           style={slotActive ? { borderLeftColor: '#FF9F1A' } : {}}
                         >
                           <span className="w-[16px] h-[16px] rounded-full bg-neutral-300 inline-flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -360,7 +373,7 @@
                           <span className="flex-1 text-[12px] italic text-qa-warn leading-snug text-left min-w-0 truncate">
                             {slot.name}
                           </span>
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-qa-warn-light text-qa-warn border border-qa-warn whitespace-nowrap flex-shrink-0">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-neutral-600 text-white whitespace-nowrap flex-shrink-0">
                             Angefordert
                           </span>
                         </button>
@@ -452,7 +465,7 @@
         </div>
 
         {/* ── Document groups ── */}
-        <div className="flex-1 overflow-y-auto flex flex-col gap-3 p-3 bg-[#ECEFF1]">
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 p-3 bg-[#ECEFF1]">
           {GROUPS.map(group => (
             <CategoryGroup
               key={group.id}
@@ -488,20 +501,18 @@
     201: [
       { id:'201-1', name:'IBAN auf Dokument',       description:'IBAN muss im Dokument vorhanden sein',
         status:'fail',    result:'IBAN nicht gefunden',
-        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug anfordern' } },
+        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug' } },
       { id:'201-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
         status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
       { id:'201-3', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
         status:'pass',    result:'Datum: 15.08.2025', override:null, remediation:null },
-      { id:'201-4', name:'Arbeitgebersignatur',     description:'Stempel oder Unterschrift des Arbeitgebers erforderlich',
-        status:'warning', result:'Unterschrift unleserlich', override:null, remediation:null },
+
       { id:'201-5', name:'Dokument lesbar',         description:'Alle Seiten müssen klar lesbar sein',
         status:'pass',    result:'Lesbarkeit bestätigt', override:null, remediation:null },
     ],
     202: [
       { id:'202-1', name:'Arbeitgebername',         description:'Name des Arbeitgebers muss angegeben sein',
-        status:'fail',    result:'Arbeitgebername fehlt',
-        override:null, remediation:{ type:'request_document', documentType:'payslip', label:'Dokument erneut anfordern' } },
+        status:'pass',    result:'Finlink GmbH gefunden', override:null, remediation:null },
       { id:'202-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
         status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
       { id:'202-3', name:'Betrag plausibel',        description:'Bruttogehalt im plausiblen Bereich',
@@ -537,6 +548,16 @@
       { id:'301-3', name:'Eigentümer stimmt überein', description:'Eigentümer muss mit Antragsdaten übereinstimmen',
         status:'pass',    result:'Mustermann bestätigt', override:null, remediation:null },
     ],
+    304: [
+      { id:'304-1', name:'Dokument vollständig',     description:'Alle Pflichtangaben müssen vorhanden sein',
+        status:'pass', result:'Vollständigkeit bestätigt', override:null, remediation:null },
+      { id:'304-2', name:'Baujahr angegeben',        description:'Baujahr des Gebäudes muss angegeben sein',
+        status:'pass', result:'Baujahr 2015 gefunden', override:null, remediation:null },
+      { id:'304-3', name:'Gebäudetyp angegeben',     description:'Art des Gebäudes muss beschrieben sein',
+        status:'pass', result:'Einfamilienhaus bestätigt', override:null, remediation:null },
+      { id:'304-4', name:'Unterschrift vorhanden',   description:'Dokument muss unterzeichnet sein',
+        status:'pass', result:'Unterschrift erkannt', override:null, remediation:null },
+    ],
     309: [
       { id:'309-1', name:'Gültigkeitsdatum',
         description:'„Gültig bis"-Datum muss in der Zukunft liegen',
@@ -552,6 +573,99 @@
       { id:'309-4', name:'Gebäudeadresse stimmt überein',
         description:'Adresse muss mit der Immobilie im Antrag übereinstimmen',
         status:'pass', result:'Weidenweg 25a, 16547 Birkenwerder bestätigt', override:null, remediation:null },
+    ],
+    206: [
+      { id:'206-1', name:'Gültigkeitsdauer',
+        description:'Aufenthaltstitel muss noch mindestens 6 Monate gültig sein',
+        status:'warning', result:'Läuft ab in 5 Monaten (< 6-Monats-Schwelle)',
+        override:null, remediation:null },
+      { id:'206-2', name:'Name stimmt überein',
+        description:'Name muss mit Antragsdaten übereinstimmen',
+        status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
+      { id:'206-3', name:'Dokumenttyp erkannt',
+        description:'Dokumenttyp muss als Aufenthaltstitel identifiziert sein',
+        status:'pass', result:'Aufenthaltstitel (§ 25 AufenthG) erkannt', override:null, remediation:null },
+      { id:'206-4', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    307: [
+      { id:'307-1', name:'Lesbarkeit',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'fail', result:'Dokument unleserlich – bitte erneut scannen',
+        override:null, remediation:{ type:'request_document', documentType:'expose', label:'Dokument erneut anfordern' } },
+      { id:'307-2', name:'Aktualität',
+        description:'Exposé darf nicht älter als 3 Monate sein',
+        status:'fail', result:'Exposé veraltet (älter als 3 Monate)',
+        override:null, remediation:{ type:'request_document', documentType:'expose', label:'Aktuelles Exposé anfordern' } },
+    ],
+    205: [
+      { id:'205-1', name:'Ausweistyp erkannt',
+        description:'Ausweistyp automatisch identifiziert',
+        status:'requested', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
+        override:null, remediation:null },
+      { id:'205-2', name:'Name stimmt überein',
+        description:'Name muss mit Antragsdaten übereinstimmen',
+        status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
+      { id:'205-3', name:'Ausweis nicht abgelaufen',
+        description:'Gültigkeitsdatum muss in der Zukunft liegen',
+        status:'pass', result:'Gültig bis 03.2030', override:null, remediation:null },
+      { id:'205-4', name:'Dokument lesbar',
+        description:'Alle Seiten klar lesbar',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    303: [
+      { id:'303-1', name:'Aktualität',
+        description:'Flurkarte darf nicht älter als 3 Monate sein',
+        status:'pass', result:'Datum: 08.10.2025', override:null, remediation:null },
+      { id:'303-2', name:'Adresse stimmt überein',
+        description:'Adresse muss mit der Immobilie im Antrag übereinstimmen',
+        status:'pass', result:'Weidenweg 25a, 16547 Birkenwerder bestätigt', override:null, remediation:null },
+      { id:'303-3', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    305: [
+      { id:'305-1', name:'Parteien angegeben',
+        description:'Käufer und Verkäufer müssen vollständig angegeben sein',
+        status:'pass', result:'Mustermann & Verkäufer GmbH bestätigt', override:null, remediation:null },
+      { id:'305-2', name:'Kaufpreis angegeben',
+        description:'Kaufpreis muss im Vertragsentwurf enthalten sein',
+        status:'pass', result:'€ 485.000,00 gefunden', override:null, remediation:null },
+      { id:'305-3', name:'Datum vorhanden',
+        description:'Datum des Vertragsentwurfs muss angegeben sein',
+        status:'pass', result:'Datum: 05.10.2025', override:null, remediation:null },
+      { id:'305-4', name:'Unterschriften vorhanden',
+        description:'Unterschriften beider Parteien müssen erkannt sein',
+        status:'pass', result:'Beide Unterschriften erkannt', override:null, remediation:null },
+    ],
+    306: [
+      { id:'306-1', name:'Maße vollständig',
+        description:'Alle Raummaße müssen vorhanden sein',
+        status:'pass', result:'Alle Maße angegeben', override:null, remediation:null },
+      { id:'306-2', name:'Grundriss vollständig',
+        description:'Grundriss aller Etagen muss vorhanden sein',
+        status:'pass', result:'EG + OG + DG vollständig', override:null, remediation:null },
+      { id:'306-3', name:'Architektenangaben',
+        description:'Name und Kontakt des Architekten müssen angegeben sein',
+        status:'pass', result:'Planungsbüro Schäfer gefunden', override:null, remediation:null },
+      { id:'306-4', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    308: [
+      { id:'308-1', name:'Innenfotos vorhanden',
+        description:'Mindestens 2 Innenfotos erforderlich',
+        status:'pass', result:'4 Innenfotos erkannt', override:null, remediation:null },
+      { id:'308-2', name:'Außenfotos vorhanden',
+        description:'Mindestens 2 Außenfotos erforderlich',
+        status:'pass', result:'3 Außenfotos erkannt', override:null, remediation:null },
+      { id:'308-3', name:'Bildqualität',
+        description:'Fotos müssen in Farbe und ausreichend scharf sein',
+        status:'pass', result:'Farbfotos, ausreichende Auflösung', override:null, remediation:null },
+      { id:'308-4', name:'Aktualität',
+        description:'Fotos dürfen nicht älter als 3 Monate sein',
+        status:'pass', result:'Datum: 01.10.2025', override:null, remediation:null },
     ],
     302: [
       { id:'302-1', name:'Wohnfläche angegeben',    description:'Gesamtwohnfläche muss explizit angegeben sein',
@@ -578,17 +692,22 @@
   ══════════════════════════════════════════════════════ */
 
   /* Status badge — coloured pill using Figma UI-Kit status tokens */
-  function StatusBadge({ status }) {
+  function StatusBadge({ status, hasNote = false }) {
     const cfg = {
-      pass:    { bg:'bg-qa-pass',    icon:'check',             label:'Bestanden'      },
-      fail:    { bg:'bg-qa-fail',    icon:'cancel',            label:'Fehlgeschlagen' },
-      ignored: { bg:'bg-qa-ignored', icon:'do_not_disturb_on', label:'Ignoriert'      },
-      pending: { bg:'bg-qa-pending', icon:'hourglass_empty',   label:'Ausstehend'     },
+      pass:    { bg:'bg-qa-pass',    icon:'check',             label:'Bestanden'           },
+      fail:    { bg:'bg-qa-fail',    icon:'cancel',            label:'Nicht erfüllt'       },
+      ignored: { bg:'bg-qa-ignored', icon:'do_not_disturb_on', label: hasNote ? 'Ignoriert mit Notiz' : 'Ignoriert' },
+      pending: { bg:'bg-qa-pending', icon:'hourglass_empty',   label:'Ausstehend'          },
     }[status];
     if (status === 'warning') return (
       <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap bg-qa-warn w-full">
-        <WarnIcon size={13} />
+        <WarnIcon size={13} color="white" />
         Warnung
+      </span>
+    );
+    if (status === 'requested') return (
+      <span className="flex items-center px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap w-full bg-neutral-600">
+        Angefordert
       </span>
     );
     if (!cfg) return null;
@@ -600,28 +719,51 @@
     );
   }
 
+  /* Gray pen icon with hover tooltip showing ignore note + advisor + timestamp */
+  function IgnoreNoteIcon({ override, onReset }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    const ts = override?.timestamp ? new Date(override.timestamp) : null;
+    const dateStr = ts
+      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    return (
+      <div className="flex items-center gap-2 flex-nowrap">
+        <div ref={ref} className="relative cursor-default flex items-center"
+          onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+          onMouseLeave={() => setAnchor(null)}>
+          <span className="w-[26px] h-[26px] rounded-full bg-neutral-100 border border-neutral-300 inline-flex items-center justify-center flex-shrink-0">
+            <span className="icon text-[15px] text-neutral-500" style={{ lineHeight:1 }}>edit</span>
+          </span>
+          <Tooltip anchor={anchor}>
+            <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+                {override?.initials ?? '??'}
+              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+                <span className="text-[10px] text-neutral-400">{dateStr}</span>
+              </div>
+            </div>
+            <div className="px-3 py-2">
+              <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+            </div>
+          </Tooltip>
+        </div>
+        <button onClick={onReset} className="text-[11px] text-neutral-500 hover:text-neutral-800 underline transition-colors whitespace-nowrap flex-shrink-0">
+          Zurücksetzen
+        </button>
+      </div>
+    );
+  }
+
   /* Action cell — right column of check row */
   function ActionCell({ check, onRequestDoc, onIgnore, onReset }) {
-    if (check.status === 'pass')
+    if (check.status === 'pass' || check.status === 'pending' || check.status === 'requested')
       return <span className="text-neutral-300 text-[13px]">—</span>;
-    if (check.status === 'pending')
-      return check.slotCreated
-        ? <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-qa-warn text-white whitespace-nowrap">
-            <span className="icon text-[13px]" style={{ lineHeight:1 }}>link</span>Angefordert
-          </span>
-        : <span className="text-neutral-300 text-[13px]">—</span>;
     if (check.status === 'ignored')
-      return (
-        <div className="flex items-center gap-2 flex-nowrap overflow-hidden">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-qa-ignored text-white min-w-0">
-            <span className="icon icon-filled text-[12px]" style={{ lineHeight:1 }}>chat</span>
-            <span className="truncate max-w-[120px]">{check.override?.note}</span>
-          </span>
-          <button onClick={onReset} className="text-[11px] text-neutral-500 hover:text-neutral-800 underline transition-colors whitespace-nowrap flex-shrink-0">
-            Zurücksetzen
-          </button>
-        </div>
-      );
+      return <IgnoreNoteIcon override={check.override} onReset={onReset} />;
     /* warning or fail */
     return (
       <div className="flex items-center gap-1.5 flex-nowrap">
@@ -647,12 +789,9 @@
     const resultColor = { warning:'text-qa-warn', fail:'text-qa-fail', ignored:'text-neutral-400', pending:'text-neutral-400' }[check.status] || 'text-neutral-600';
     return (
       <tr className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition-colors">
-        <td className="px-3 py-1.5 align-middle whitespace-nowrap"><StatusBadge status={check.status} /></td>
+        <td className="px-3 py-1.5 align-middle whitespace-nowrap"><StatusBadge status={check.status} hasNote={!!(check.override?.note)} /></td>
         <td className="px-3 py-1.5 align-middle whitespace-nowrap">
-          <div className="flex flex-col">
-            <span className="text-[12px] font-medium text-[#37474f] leading-snug">{check.name}</span>
-            <span className="text-[11px] text-neutral-400 leading-snug">{check.description}</span>
-          </div>
+          <span className="text-[12px] font-medium text-[#37474f]">{check.name}</span>
         </td>
         <td className="px-3 py-1.5 align-middle">
           {isPass
@@ -675,6 +814,10 @@
     const passCount     = checks.filter(c => c.status === 'pass').length;
     const totalCount    = checks.filter(c => c.status !== 'ignored').length;
     const warnFailCount = checks.filter(c => c.status === 'warning' || c.status === 'fail').length;
+    const allPass       = checks.length > 0 && checks.every(c => c.status === 'pass');
+
+    const [tableExpanded, setTableExpanded] = React.useState(!allPass);
+    React.useEffect(() => { setTableExpanded(!allPass); setPassExpanded(false); }, [doc?.id]);
 
     const activeChecks = checks.filter(c => c.status !== 'pass');
     const passChecks   = checks.filter(c => c.status === 'pass');
@@ -702,6 +845,16 @@
             <span className="icon text-[16px] text-primary-500">fact_check</span>
             <span className="text-[13px] font-medium text-[#37474f]">Prüfungen</span>
           </div>
+          {allPass && (
+            <button
+              onClick={() => setTableExpanded(x => !x)}
+              className="flex items-center gap-1 text-[12px] font-medium text-qa-pass hover:opacity-80 transition-opacity"
+            >
+              <span className="icon icon-filled text-[14px]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
+              {passCount}/{totalCount} Bestanden
+              <span className={`icon text-[16px] transition-transform duration-150 ${tableExpanded ? 'rotate-180' : ''}`} style={{ lineHeight:1 }}>expand_more</span>
+            </button>
+          )}
           <div className="flex-1" />
           <button onClick={handleRerun} disabled={isRunning}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-medium bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors whitespace-nowrap">
@@ -712,7 +865,7 @@
           </button>
         </div>
         {/* Checks table */}
-        <div className="overflow-y-auto" style={{ maxHeight: '320px' }}>
+        {tableExpanded && <div className="overflow-y-auto" style={{ maxHeight: '320px' }}>
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-neutral-50 border-b border-neutral-200">
@@ -726,27 +879,31 @@
               {/* Active checks (fail / warning / ignored / pending) — expanded by default */}
               {activeChecks.map(renderRow)}
 
-              {/* Bestanden group — collapsed by default */}
+              {/* Bestanden group — only show collapsible header when there are also non-pass checks */}
               {passChecks.length > 0 && (
-                <React.Fragment>
-                  <tr
-                    className="border-b border-neutral-100 bg-neutral-50 cursor-pointer hover:bg-neutral-100 transition-colors select-none"
-                    onClick={() => setPassExpanded(x => !x)}
-                  >
-                    <td colSpan={4} className="px-3 py-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className={`icon text-[16px] text-neutral-400 transition-transform duration-150 ${passExpanded ? 'rotate-180' : ''}`} style={{ lineHeight:1 }}>expand_more</span>
-                        <span className="text-[12px] font-medium text-neutral-500">Bestanden</span>
-                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-qa-pass text-white text-[10px] font-medium leading-none">{passChecks.length}</span>
-                      </div>
-                    </td>
-                  </tr>
-                  {passExpanded && passChecks.map(renderRow)}
-                </React.Fragment>
+                allPass
+                  ? passChecks.map(renderRow)
+                  : (
+                    <React.Fragment>
+                      <tr
+                        className="border-b border-neutral-100 bg-neutral-50 cursor-pointer hover:bg-neutral-100 transition-colors select-none"
+                        onClick={() => setPassExpanded(x => !x)}
+                      >
+                        <td colSpan={4} className="px-3 py-1.5">
+                          <div className="flex items-center gap-1">
+                            <span className="icon icon-filled text-[14px] text-qa-pass" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
+                            <span className="text-[12px] font-medium text-qa-pass">{passChecks.length}/{totalCount} Bestanden</span>
+                            <span className={`icon text-[16px] text-qa-pass transition-transform duration-150 ${passExpanded ? 'rotate-180' : ''}`} style={{ lineHeight:1 }}>expand_more</span>
+                          </div>
+                        </td>
+                      </tr>
+                      {passExpanded && passChecks.map(renderRow)}
+                    </React.Fragment>
+                  )
               )}
             </tbody>
           </table>
-        </div>
+        </div>}
       </div>
     );
   }
@@ -806,10 +963,16 @@
   }
 
   /* ── Ignore Check Modal ── */
+  const ADVISOR = { name: 'Florian Kollege', initials: 'FK' };
+
   function IgnoreCheckModal({ check, onConfirm, onClose }) {
     const [note, setNote] = React.useState('');
     const [dirty, setDirty] = React.useState(false);
     const isEmpty = note.trim() === '';
+    const now = new Date();
+    const datePreview = now.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+      + ' · ' + now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+
     function handleConfirm() {
       setDirty(true);
       if (!isEmpty) onConfirm(check, note.trim());
@@ -819,7 +982,7 @@
         <div className="bg-white rounded-lg shadow-xl w-full max-w-[480px] overflow-hidden" onClick={e => e.stopPropagation()}>
           <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-200">
             <span className="icon icon-filled text-[20px] text-qa-ignored">do_not_disturb_on</span>
-            <span className="text-[15px] font-medium text-[#37474f] flex-1">Prüfung ignorieren & Notiz hinzufügen</span>
+            <span className="text-[15px] font-medium text-[#37474f] flex-1">Prüfung ignorieren</span>
             <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-500">
               <span className="icon text-[18px]">close</span>
             </button>
@@ -839,9 +1002,17 @@
                   ${dirty && isEmpty ? 'border-qa-fail bg-qa-fail-light' : 'border-neutral-300 focus:border-primary-500'}`} />
               {dirty && isEmpty && <p className="text-[11px] text-qa-fail mt-1">Bitte gib eine Begründung an.</p>}
             </div>
-            <p className="text-[11px] text-neutral-400 leading-snug">
-              Diese Prüfung wird beim nächsten Prüfungslauf übersprungen. Die Notiz wird im Prüfungsprotokoll gespeichert.
-            </p>
+            {/* Advisor + timestamp — auto-attached on confirm */}
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-neutral-50 border border-neutral-200">
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-qa-warn text-white text-[11px] font-bold flex-shrink-0">
+                {ADVISOR.initials}
+              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-[12px] font-medium text-[#37474f]">{ADVISOR.name}</span>
+                <span className="text-[11px] text-neutral-400">{datePreview}</span>
+              </div>
+              <span className="ml-auto text-[10px] text-neutral-400 italic">wird automatisch angehängt</span>
+            </div>
           </div>
           <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-neutral-200 bg-neutral-50">
             <button onClick={onClose} className="px-4 py-2 rounded border border-neutral-300 text-neutral-700 text-[13px] font-medium hover:bg-neutral-100 transition-colors">
@@ -860,12 +1031,33 @@
   }
 
   /* ── Toast notification ── */
-  function Toast({ message, visible }) {
+  function Toast({ message, visible, onUndo, onDismiss }) {
     if (!visible) return null;
     return ReactDOM.createPortal(
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] flex items-center gap-2 px-4 py-3 rounded-lg bg-[#37474f] text-white text-[13px] font-medium shadow-lg whitespace-nowrap">
-        <span className="icon icon-filled text-[16px] text-qa-pass">check_circle</span>
-        {message}
+      <div className="fixed bottom-6 right-6 z-[300] flex items-start max-w-[360px]"
+        style={{ borderRadius: '4px', boxShadow: '0px 1px 4px 0px rgba(84,110,122,0.25)', overflow: 'hidden' }}>
+        {/* Green left accent bar */}
+        <div className="w-[4px] flex-shrink-0 self-stretch bg-qa-pass" />
+        {/* Content */}
+        <div className="flex items-start gap-2 px-3 py-2.5 bg-[#E9FCF2]" style={{ minWidth: 0 }}>
+          <span className="icon icon-filled flex-shrink-0 mt-px" style={{ fontSize: '18px', color: '#20BF6B', lineHeight: 1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>check_circle</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] leading-[1.4] tracking-[0.25px]" style={{ color: '#546E7A' }}>{message}</p>
+            {onUndo && (
+              <button
+                onClick={() => { onUndo(); onDismiss(); }}
+                className="mt-1 text-[12px] font-medium underline whitespace-nowrap transition-colors"
+                style={{ color: '#546E7A', opacity: 0.8 }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '0.8'}>
+                Rückgängig
+              </button>
+            )}
+          </div>
+          <button onClick={onDismiss} className="flex-shrink-0 ml-1 transition-opacity hover:opacity-70" style={{ color: '#546E7A' }}>
+            <span className="icon text-[18px]" style={{ lineHeight: 1 }}>close</span>
+          </button>
+        </div>
       </div>,
       document.body
     );
@@ -943,12 +1135,27 @@
 
             {/* Document preview */}
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
-              <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2 text-neutral-400">
-                  <span className="icon text-5xl">description</span>
-                  <span className="text-sm">{doc ? doc.name : 'Kein Dokument ausgewählt'}</span>
+              {doc?.id === 309 ? (
+                <iframe
+                  src="assets/energieausweis.pdf"
+                  className="w-full"
+                  style={{ height: '900px', border: 'none' }}
+                  title="Energieausweis"
+                />
+              ) : doc?.id === 205 ? (
+                <img
+                  src="assets/reisepass.jpg"
+                  alt="Reisepass"
+                  className="w-full h-auto block"
+                />
+              ) : (
+                <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-2 text-neutral-400">
+                    <span className="icon text-5xl">description</span>
+                    <span className="text-sm">{doc ? doc.name : 'Kein Dokument ausgewählt'}</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
           </div>
@@ -959,7 +1166,7 @@
 
   /* ── Right rail ── */
   function PageRail({ doc }) {
-    const PAGE_COUNTS = { 201:2, 202:1, 203:2, 204:3, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3 };
+    const PAGE_COUNTS = { 201:2, 202:1, 203:2, 204:3, 205:1, 206:1, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3, 309:2 };
     const count = doc ? (PAGE_COUNTS[doc.id] ?? 2) : 0;
     const pages = Array.from({ length: count }, (_, i) => i + 1);
 
@@ -1052,7 +1259,7 @@
 
   /* ── App ── */
   function App() {
-    const [selectedId, setSelectedId] = React.useState(201);
+    const [selectedId, setSelectedId] = React.useState(null);
 
     /* QA checks state — keyed by doc id, initialised from QA_CHECKS */
     const [docChecks, setDocChecks] = React.useState(() => {
@@ -1063,19 +1270,26 @@
       return init;
     });
 
-    /* Modal state */
-    const [requestModal, setRequestModal] = React.useState(null); // { check, doc }
-    const [ignoreModal,  setIgnoreModal]  = React.useState(null); // check
+    const [ignoreModal, setIgnoreModal] = React.useState(null);
 
-    /* Toast */
-    const [toast, setToast] = React.useState({ visible: false, message: '' });
-    function showToast(msg) {
-      setToast({ visible: true, message: msg });
-      setTimeout(() => setToast({ visible: false, message: '' }), 3000);
+    /* Toast with optional undo */
+    const [toast, setToast] = React.useState({ visible: false, message: '', onUndo: null });
+    const toastTimerRef = React.useRef(null);
+    function showToast(msg, onUndo = null) {
+      clearTimeout(toastTimerRef.current);
+      setToast({ visible: true, message: msg, onUndo });
+      toastTimerRef.current = setTimeout(() => setToast({ visible: false, message: '', onUndo: null }), 8000);
+    }
+    function dismissToast() {
+      clearTimeout(toastTimerRef.current);
+      setToast({ visible: false, message: '', onUndo: null });
     }
 
-    /* Supporting slots — keyed by parent doc id */
-    const [supportingSlots, setSupportingSlots] = React.useState({});
+    /* Supporting slots — keyed by parent doc id.
+       205's Meldebescheinigung slot is pre-seeded: auto-created by the system on upload. */
+    const [supportingSlots, setSupportingSlots] = React.useState({
+      205: [{ id: 'slot-melde-auto', name: 'Meldebescheinigung', docStatus: 'pending' }]
+    });
 
     const selectedDoc    = ALL_DOCS.find(d => d.id === selectedId) ?? null;
     const currentChecks  = selectedDoc ? (docChecks[selectedDoc.id] || []) : [];
@@ -1087,30 +1301,33 @@
       }));
     }
 
-    function handleRequestDocConfirm(check) {
+    function handleRequestDoc(check) {
       const docId = selectedDoc.id;
-      const newSlot = {
-        id: `slot-${Date.now()}`,
-        name: check.remediation.label,
-        docStatus: 'pending',
-      };
-      setSupportingSlots(prev => ({
-        ...prev,
-        [docId]: [...(prev[docId] || []), newSlot],
-      }));
-      updateCheck(docId, check.id, {
-        status: 'pending',
-        slotCreated: true,
-        result: `${check.remediation.label} angefordert`,
-      });
-      setRequestModal(null);
-      showToast('Slot erstellt & Dokument angefordert');
+      const slotId = `slot-${Date.now()}`;
+      const newSlot = { id: slotId, name: check.remediation.label, docStatus: 'pending' };
+      const origCheck = (QA_CHECKS[docId] || []).find(c => c.id === check.id);
+
+      setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
+      updateCheck(docId, check.id, { status: 'requested', result: check.remediation.label.replace(/\s*anfordern$/i, '') + ' angefordert' });
+
+      showToast(
+        'Anfrage gesendet. Der Kunde sieht den Ablehnungsgrund und die nächsten Schritte in seinem Dashboard.',
+        () => {
+          setSupportingSlots(prev => ({ ...prev, [docId]: (prev[docId] || []).filter(s => s.id !== slotId) }));
+          if (origCheck) updateCheck(docId, check.id, { ...origCheck });
+        }
+      );
     }
 
     function handleIgnoreConfirm(check, note) {
       updateCheck(selectedDoc.id, check.id, {
         status: 'ignored',
-        override: { note, advisorId: 'jan.joisten', timestamp: new Date().toISOString() },
+        override: {
+          note,
+          advisorName: ADVISOR.name,
+          initials: ADVISOR.initials,
+          timestamp: new Date().toISOString(),
+        },
       });
       setIgnoreModal(null);
       showToast('Prüfung wurde ignoriert');
@@ -1137,7 +1354,7 @@
           <DocumentViewer
             doc={selectedDoc}
             checks={currentChecks}
-            onOpenRequestModal={(check) => setRequestModal({ check, doc: selectedDoc })}
+            onOpenRequestModal={handleRequestDoc}
             onOpenIgnoreModal={(check) => setIgnoreModal(check)}
             onChecksUpdate={(checkId, updates) => updateCheck(selectedDoc?.id, checkId, updates)}
             onResetCheck={handleResetCheck}
@@ -1146,14 +1363,6 @@
           <PageRail doc={selectedDoc} />
         </div>
 
-        {requestModal && (
-          <RequestDocModal
-            check={requestModal.check}
-            doc={requestModal.doc}
-            onConfirm={handleRequestDocConfirm}
-            onClose={() => setRequestModal(null)}
-          />
-        )}
         {ignoreModal && (
           <IgnoreCheckModal
             check={ignoreModal}
@@ -1161,7 +1370,7 @@
             onClose={() => setIgnoreModal(null)}
           />
         )}
-        <Toast message={toast.message} visible={toast.visible} />
+        <Toast message={toast.message} visible={toast.visible} onUndo={toast.onUndo} onDismiss={dismissToast} />
       </div>
     );
   }
