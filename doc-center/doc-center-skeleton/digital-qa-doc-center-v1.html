@@ -82,7 +82,8 @@
         { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok' },
         { id: 204, name: 'Kontoauszug August',           docStatus: 'pending' },
         { id: 205, name: 'Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)', docStatus: 'pending',
-          warnings: ['Nur Reisepass hochgeladen – Meldebescheinigung automatisch angefordert'] },
+          warnings: ['Nur Reisepass hochgeladen – Meldebescheinigung erforderlich'],
+          note: 'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' },
         { id: 206, name: 'Aufenthaltstitel', docStatus: 'pending',
           warnings: ['Aufenthaltstitel läuft in weniger als 6 Monaten ab'] },
       ]
@@ -249,6 +250,39 @@
     );
   }
 
+  /* Blue description icon for sidebar — shown after doc is approved with an ignored note */
+  function SidebarIgnoreNoteIcon({ override }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    const ts = override?.timestamp ? new Date(override.timestamp) : null;
+    const dateStr = ts
+      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    return (
+      <div ref={ref} className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}>
+        <span className="icon icon-filled text-[18px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>description</span>
+        <Tooltip anchor={anchor}>
+          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+              {override?.initials ?? '??'}
+            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+              <span className="text-[10px] text-neutral-400">{dateStr}</span>
+            </div>
+          </div>
+          <div className="px-3 py-2">
+            <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+          </div>
+        </Tooltip>
+      </div>
+    );
+  }
+
   function NewBadge() {
     return (
       <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">
@@ -269,9 +303,9 @@
     );
   }
 
-  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {} }) {
+  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {} }) {
     const [open, setOpen] = React.useState(false);
-    const approvedCount = group.items.filter(i => i.docStatus === 'ok').length;
+    const approvedCount = group.items.filter(i => (docStatusOverrides[i.id] ?? i.docStatus) === 'ok').length;
     const totalCount = group.items.length;
 
     function handleHeaderClick() {
@@ -324,6 +358,9 @@
             {group.items.map(item => {
               const active = item.id === selectedId;
               const slots  = supportingSlots[item.id] || [];
+              const effectiveStatus = docStatusOverrides[item.id] ?? item.docStatus;
+              const ignoredNote = ignoredNotesByDoc[item.id] ?? null;
+              const isApprovedWithNote = effectiveStatus === 'ok' && ignoredNote;
               return (
                 <React.Fragment key={item.id}>
                   <li className="border-t border-neutral-100 first:border-t-0">
@@ -338,13 +375,15 @@
                         checked={checkedIds.has(item.id)}
                         onChange={e => onCheck([item.id], e.target.checked)}
                       />
-                      <DocStatusBadge docStatus={item.docStatus} rejectedReasons={item.rejectedReasons || []} />
+                      <DocStatusBadge docStatus={effectiveStatus} rejectedReasons={item.rejectedReasons || []} />
                       <span className={`flex-1 text-[13px] leading-snug text-left min-w-0
                         ${active ? 'text-primary-700 font-medium' : 'text-neutral-700'}`}>
                         {item.name}
                       </span>
                       {item.isNew && <NewBadge />}
-                      <WarningBadge warnings={item.warnings} />
+                      {isApprovedWithNote
+                        ? <SidebarIgnoreNoteIcon override={ignoredNote} />
+                        : <WarningBadge warnings={item.warnings} />}
                     </button>
                   </li>
                   {/* Supporting slots — indented with dashed amber connector */}
@@ -389,7 +428,7 @@
   }
 
   /* ── Sidebar ── */
-  function Sidebar({ selectedId, onSelect, supportingSlots = {} }) {
+  function Sidebar({ selectedId, onSelect, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {} }) {
     const [activeTab, setActiveTab] = React.useState('antragsunterlagen');
     const [checkedIds, setCheckedIds] = React.useState(new Set());
 
@@ -474,6 +513,8 @@
               checkedIds={checkedIds}
               onCheck={handleCheck}
               supportingSlots={supportingSlots}
+              docStatusOverrides={docStatusOverrides}
+              ignoredNotesByDoc={ignoredNotesByDoc}
             />
           ))}
         </div>
@@ -500,7 +541,7 @@
     201: [
       { id:'201-1', name:'IBAN auf Dokument',       description:'IBAN muss im Dokument vorhanden sein',
         status:'fail',    result:'IBAN nicht gefunden',
-        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug anfordern' } },
+        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug anfordern', slotName:'Kontoauszug', slotNote:'Auf der eingereichten Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte einen aktuellen Kontoauszug hochladen, um die IBAN zu bestätigen.' } },
       { id:'201-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
         status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
       { id:'201-3', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
@@ -591,8 +632,8 @@
     205: [
       { id:'205-1', name:'Ausweistyp erkannt',
         description:'Ausweistyp automatisch identifiziert',
-        status:'requested', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
-        override:null, remediation:null },
+        status:'warning', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
+        override:null, remediation:{ type:'request_document', documentType:'registration', label:'Meldebescheinigung anfordern', slotName:'Meldebescheinigung', slotNote:'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' } },
       { id:'205-2', name:'Name stimmt überein',
         description:'Name muss mit Antragsdaten übereinstimmen',
         status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
@@ -712,6 +753,7 @@
   function IgnoreNoteIcon({ override, onReset }) {
     const [anchor, setAnchor] = React.useState(null);
     const ref = React.useRef(null);
+    const hasNote = !!(override?.note);
     const ts = override?.timestamp ? new Date(override.timestamp) : null;
     const dateStr = ts
       ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
@@ -722,25 +764,33 @@
         <div ref={ref} className="relative cursor-default flex items-center"
           onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
           onMouseLeave={() => setAnchor(null)}>
-          <span className="w-[26px] h-[26px] rounded-full bg-neutral-100 border border-neutral-300 inline-flex items-center justify-center flex-shrink-0">
-            <span className="icon text-[15px] text-neutral-500" style={{ lineHeight:1 }}>edit</span>
-          </span>
-          <Tooltip anchor={anchor}>
-            <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
-                {override?.initials ?? '??'}
-              </span>
-              <div className="flex flex-col leading-tight">
-                <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
-                <span className="text-[10px] text-neutral-400">{dateStr}</span>
+          <span className={`icon icon-filled text-[18px] ${hasNote ? 'text-qa-ignored' : 'text-neutral-400'}`} style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>description</span>
+          {hasNote ? (
+            <Tooltip anchor={anchor}>
+              <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+                  {override?.initials ?? '??'}
+                </span>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+                  <span className="text-[10px] text-neutral-400">{dateStr}</span>
+                </div>
               </div>
-            </div>
-            <div className="px-3 py-2">
-              <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
-            </div>
-          </Tooltip>
+              <div className="px-3 py-2">
+                <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip anchor={anchor}>
+              <div className="px-3 py-2">
+                <p className="text-[12px] text-neutral-500">Notiz hinzufügen</p>
+              </div>
+            </Tooltip>
+          )}
         </div>
-        <button onClick={onReset} className="text-[11px] text-neutral-500 hover:text-neutral-800 underline transition-colors whitespace-nowrap flex-shrink-0">
+        <button onClick={onReset}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] border border-[#b0bec5] text-[11px] font-medium text-[#4b5961] hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0">
+          <span className="icon text-[13px]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20" }}>undo</span>
           Zurücksetzen
         </button>
       </div>
@@ -758,8 +808,8 @@
       <div className="flex items-center gap-1.5 flex-nowrap">
         {check.remediation?.type === 'request_document' && (
           <button onClick={onRequestDoc}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-primary-500 text-primary-600 text-[11px] font-medium hover:bg-primary-100 transition-colors whitespace-nowrap">
-            <span className="icon text-[13px]" style={{ lineHeight:1 }}>add_circle</span>
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-primary-500 text-white text-[11px] font-medium hover:bg-primary-600 transition-colors whitespace-nowrap">
+            <span className="icon text-[13px]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20" }}>add_circle</span>
             {check.remediation.label}
           </button>
         )}
@@ -1053,7 +1103,7 @@
   }
 
   /* ── Main viewer ── */
-  function DocumentViewer({ doc, checks, onOpenRequestModal, onOpenIgnoreModal, onChecksUpdate, onResetCheck, onRerun }) {
+  function DocumentViewer({ doc, slot, docNote, checks, onOpenRequestModal, onOpenIgnoreModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc }) {
     return (
       <main className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
         {/* Toolbar */}
@@ -1075,7 +1125,8 @@
           <div className="flex items-center gap-6">
             {/* Approve / Reject circle buttons */}
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 rounded-full border border-[#b0bec5] flex items-center justify-center text-[#37474f] hover:border-primary-500 hover:text-primary-600 transition-colors">
+              <button onClick={onApproveDoc}
+                className="w-8 h-8 rounded-full border border-[#b0bec5] flex items-center justify-center text-[#37474f] hover:border-primary-500 hover:text-primary-600 transition-colors">
                 <span className="icon text-[18px]">check</span>
               </button>
               <button className="w-8 h-8 rounded-full border border-[#b0bec5] flex items-center justify-center text-[#37474f] hover:border-red-400 hover:text-red-500 transition-colors">
@@ -1105,6 +1156,28 @@
             ))}
           </div>
         </div>
+
+        {/* Note bar — shown when a supporting slot with a note is selected */}
+        {(slot?.note || docNote) && (
+          <div className="flex-shrink-0 flex items-center gap-3 pl-4 pr-4 py-2.5 bg-white border border-neutral-200 mx-6 mt-5 rounded-[4px]" style={{ borderLeftColor: '#FF9F1A', borderLeftWidth: '4px' }}>
+            <span className="icon text-[18px] text-neutral-400 flex-shrink-0" style={{ lineHeight:1 }}>description</span>
+            <p className="flex-1 text-[13px] text-neutral-700 leading-snug">
+              <span className="font-medium">Öffentliche Notiz:&nbsp;</span>{slot?.note || docNote}
+            </p>
+            <div className="flex items-center gap-3 flex-shrink-0 text-neutral-500">
+              <div className="flex items-center gap-1.5">
+                <span className="icon text-[16px]" style={{ lineHeight:1 }}>person</span>
+                <span className="text-[12px]">Sichtbar für den Kunden</span>
+              </div>
+              <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-200 transition-colors">
+                <span className="icon text-[18px]">more_horiz</span>
+              </button>
+              <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-200 transition-colors">
+                <span className="icon text-[18px]">expand_more</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto min-h-0">
           <div className="p-6 flex flex-col gap-5">
@@ -1281,13 +1354,31 @@
       setToast({ visible: false, message: '', onUndo: null });
     }
 
-    /* Supporting slots — keyed by parent doc id.
-       205's Meldebescheinigung slot is pre-seeded: auto-created by the system on upload. */
-    const [supportingSlots, setSupportingSlots] = React.useState({
-      205: [{ id: 'slot-melde-auto', name: 'Meldebescheinigung', docStatus: 'pending' }]
-    });
+    /* Supporting slots — keyed by parent doc id */
+    const [supportingSlots, setSupportingSlots] = React.useState({});
+
+    /* Doc status overrides — set when advisor manually approves a doc */
+    const [docStatusOverrides, setDocStatusOverrides] = React.useState({});
+
+    /* Compute which docs have at least one ignored check with a note */
+    const ignoredNotesByDoc = React.useMemo(() => {
+      const result = {};
+      Object.entries(docChecks).forEach(([docId, checks]) => {
+        const ignoredWithNote = checks.find(c => c.status === 'ignored' && c.override?.note);
+        if (ignoredWithNote) result[Number(docId)] = ignoredWithNote.override;
+      });
+      return result;
+    }, [docChecks]);
+
+    function handleApproveDoc() {
+      if (!selectedDoc) return;
+      setDocStatusOverrides(prev => ({ ...prev, [selectedDoc.id]: 'ok' }));
+      showToast('Dokument genehmigt');
+    }
 
     const selectedDoc    = ALL_DOCS.find(d => d.id === selectedId) ?? null;
+    const selectedSlot   = !selectedDoc ? Object.values(supportingSlots).flat().find(s => s.id === selectedId) ?? null : null;
+    const activeDocNote  = selectedDoc?.note || (supportingSlots[selectedDoc?.id] || []).find(s => s.note)?.note || null;
     const currentChecks  = selectedDoc ? (docChecks[selectedDoc.id] || []) : [];
 
     function updateCheck(docId, checkId, updates) {
@@ -1300,7 +1391,7 @@
     function handleRequestDoc(check) {
       const docId = selectedDoc.id;
       const slotId = `slot-${Date.now()}`;
-      const newSlot = { id: slotId, name: check.remediation.label, docStatus: 'pending' };
+      const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: check.remediation.slotNote || null };
       const origCheck = (QA_CHECKS[docId] || []).find(c => c.id === check.id);
 
       setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
@@ -1346,15 +1437,20 @@
             selectedId={selectedId}
             onSelect={setSelectedId}
             supportingSlots={supportingSlots}
+            docStatusOverrides={docStatusOverrides}
+            ignoredNotesByDoc={ignoredNotesByDoc}
           />
           <DocumentViewer
             doc={selectedDoc}
+            slot={selectedSlot}
+            docNote={activeDocNote}
             checks={currentChecks}
             onOpenRequestModal={handleRequestDoc}
             onOpenIgnoreModal={(check) => setIgnoreModal(check)}
             onChecksUpdate={(checkId, updates) => updateCheck(selectedDoc?.id, checkId, updates)}
             onResetCheck={handleResetCheck}
             onRerun={handleRerun}
+            onApproveDoc={handleApproveDoc}
           />
           <PageRail doc={selectedDoc} />
         </div>
