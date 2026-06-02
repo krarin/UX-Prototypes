@@ -632,7 +632,7 @@
     205: [
       { id:'205-1', name:'Ausweistyp erkannt',
         description:'Ausweistyp automatisch identifiziert',
-        status:'warning', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
+        status:'fail', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
         override:null, remediation:{ type:'request_document', documentType:'registration', label:'Meldebescheinigung anfordern', slotName:'Meldebescheinigung', slotNote:'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' } },
       { id:'205-2', name:'Name stimmt überein',
         description:'Name muss mit Antragsdaten übereinstimmen',
@@ -889,67 +889,71 @@
 
     const text = isPass ? check.name : (check.result || check.name);
 
+    const borderClass = isLast ? '' : 'border-b border-[#eceff1]';
+
     return (
-      <div className={`flex items-stretch bg-white ${isLast ? 'rounded-bl-[8px] rounded-br-[8px]' : 'border-b border-[#eceff1]'}`}>
+      <React.Fragment>
         {/* Left cell: icon + text */}
-        <div className="flex items-center gap-2 px-3 h-10 flex-1 min-w-0">
+        <div className={`flex items-center gap-2 px-3 min-h-10 py-1.5 bg-white ${borderClass}`}>
           {isError && <span className="icon text-[20px] text-[#e64d4d] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>}
           {isWarn  && <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>}
           {isPass  && <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>}
-          <span className={`text-[12px] leading-[16px] tracking-[0.2px] truncate ${isError ? 'font-medium text-[#e64d4d]' : 'text-[#4b5961]'}`}>{text}</span>
+          <span className={`text-[12px] leading-[16px] tracking-[0.2px] break-words ${isError ? 'font-medium text-[#e64d4d]' : 'text-[#4b5961]'}`}>{text}</span>
         </div>
 
-        {/* Right cell: actions */}
-        <div className="flex items-center justify-end gap-2 px-3 h-10 w-[395px] flex-shrink-0">
-          {/* Note icon when a note has been added */}
-          {hasNote && !isRequested && <ChatNoteIcon override={check.override} />}
+        {/* Right cell: actions (skipped for pass variant) */}
+        {!isPass && (
+          <div className={`flex items-center justify-end gap-2 pl-2 pr-3 min-h-10 py-1.5 bg-white ${borderClass}`}>
+            {/* Note icon when a note has been added */}
+            {hasNote && !isRequested && <ChatNoteIcon override={check.override} />}
 
-          {/* Fehler — default state */}
-          {isError && !hasNote && !isRequested && (
-            <>
-              {check.remediation?.type === 'request_document' && (
-                <button onClick={() => onOpenRequestModal(check)}
-                  className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
-                  {check.remediation.label}
+            {/* Fehler — default state */}
+            {isError && !hasNote && !isRequested && (
+              <>
+                {check.remediation?.type === 'request_document' && (
+                  <button onClick={() => onOpenRequestModal(check)}
+                    className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
+                    {check.remediation.label}
+                  </button>
+                )}
+                <button onClick={() => onOpenIgnoreModal(check)}
+                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                  Ignorieren
                 </button>
-              )}
-              <button onClick={() => onOpenIgnoreModal(check)}
-                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
-                Ignorieren
-              </button>
-            </>
-          )}
+              </>
+            )}
 
-          {/* Fehler — angefordert state */}
-          {isError && isRequested && (
-            <>
-              <span className="h-4 px-2 rounded-[4px] bg-[#546e7a] text-white text-[11px] font-medium leading-[16px] tracking-[0.25px] inline-flex items-center whitespace-nowrap">
-                {check.result}
-              </span>
+            {/* Fehler — angefordert state */}
+            {isError && isRequested && (
+              <>
+                <span className="h-4 px-2 rounded-[4px] bg-[#546e7a] text-white text-[11px] font-medium leading-[16px] tracking-[0.25px] inline-flex items-center whitespace-nowrap">
+                  {check.result}
+                </span>
+                <button onClick={() => onResetCheck(check.id)}
+                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                  Zurücksetzen
+                </button>
+              </>
+            )}
+
+            {/* Fehler — ignored with note state */}
+            {isError && isIgnored && (
               <button onClick={() => onResetCheck(check.id)}
                 className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
                 Zurücksetzen
               </button>
-            </>
-          )}
+            )}
 
-          {/* Fehler — ignored with note state */}
-          {isError && isIgnored && (
-            <button onClick={() => onResetCheck(check.id)}
-              className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
-              Zurücksetzen
-            </button>
-          )}
-
-          {/* Warnungen — always shows "Notiz hinzufügen" (acts as edit when note exists) */}
-          {isWarn && (
-            <button onClick={() => onOpenIgnoreModal(check)}
-              className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
-              Notiz hinzufügen
-            </button>
-          )}
-        </div>
-      </div>
+            {/* Warnungen — always shows "Notiz hinzufügen" (acts as edit when note exists) */}
+            {isWarn && (
+              <button onClick={() => onOpenIgnoreModal(check)}
+                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                Notiz hinzufügen
+              </button>
+            )}
+          </div>
+        )}
+      </React.Fragment>
     );
   }
 
@@ -958,10 +962,12 @@
     const titleLabels = { error: 'Fehler', warning: 'Warnungen', pass: 'Bestanden' };
     const [expanded, setExpanded] = React.useState(variant !== 'pass');
 
+    const gridCols = variant === 'pass' ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) max-content';
+
     return (
-      <div className="rounded-[8px] overflow-hidden border border-[#eaeaea]">
+      <div className="rounded-[8px] overflow-hidden border border-[#eaeaea] w-full">
         <button onClick={() => setExpanded(x => !x)}
-          className={`w-full flex items-center justify-between bg-white px-3 h-9 hover:bg-neutral-50 transition-colors ${expanded && rows.length > 0 ? 'border-b border-[#eceff1]' : ''}`}>
+          className={`w-full flex items-center justify-between bg-white px-3 h-9 hover:bg-neutral-50 transition-colors gap-6 ${expanded && rows.length > 0 ? 'border-b border-[#eceff1]' : ''}`}>
           <div className="flex items-center gap-2">
             <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">{titleLabels[variant]}</span>
             <span className={`icon text-[16px] text-[#37474f] transition-transform ${expanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
@@ -974,13 +980,17 @@
           )}
         </button>
 
-        {expanded && rows.map((check, i) => (
-          <QARow key={check.id} check={check} variant={variant} isLast={i === rows.length - 1}
-            onOpenRequestModal={onOpenRequestModal}
-            onOpenIgnoreModal={onOpenIgnoreModal}
-            onResetCheck={onResetCheck}
-          />
-        ))}
+        {expanded && rows.length > 0 && (
+          <div className="grid" style={{ gridTemplateColumns: gridCols }}>
+            {rows.map((check, i) => (
+              <QARow key={check.id} check={check} variant={variant} isLast={i === rows.length - 1}
+                onOpenRequestModal={onOpenRequestModal}
+                onOpenIgnoreModal={onOpenIgnoreModal}
+                onResetCheck={onResetCheck}
+              />
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -988,9 +998,6 @@
   /* ── V2: top-level QA panel with three grouped cards ── */
   function QAPanel({ doc, checks, onChecksUpdate, onOpenRequestModal, onOpenIgnoreModal, onResetCheck, onRerun }) {
     const [isRunning, setIsRunning] = React.useState(false);
-    const [allCollapsed, setAllCollapsed] = React.useState(false);
-
-    React.useEffect(() => { setAllCollapsed(false); }, [doc?.id]);
 
     // Categorize by ORIGINAL status so ignored/requested rows stay in their home group
     const errors = [], warnings = [], passed = [];
@@ -1011,49 +1018,39 @@
     }
 
     return (
-      <div className="flex flex-col gap-3">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between">
-          <button onClick={() => !allPassed && setAllCollapsed(x => !x)}
-            disabled={allPassed}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity disabled:cursor-default disabled:opacity-100">
-            <span className="text-[16px] font-medium text-[#37474f] tracking-[0.1px] leading-[24px]">Dokumentprüfung</span>
-            {!allPassed && (
-              <span className={`icon text-[20px] text-[#37474f] transition-transform ${allCollapsed ? '-rotate-90' : ''}`} style={{ lineHeight:1 }}>expand_more</span>
-            )}
-          </button>
+      <div className={`flex flex-col gap-3 min-w-[640px] ${allPassed ? 'w-full max-w-[640px]' : 'w-fit max-w-full'}`}>
+        {/* Rerun button — above the tables */}
+        <div className="flex items-center justify-start -mb-2">
           <button onClick={handleRerun} disabled={isRunning}
             className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-primary-500 hover:text-primary-600 transition-colors disabled:opacity-60 whitespace-nowrap">
             <span className={`icon text-[16px] ${isRunning ? 'animate-spin' : ''}`} style={{ lineHeight:1 }}>
               {isRunning ? 'progress_activity' : 'sync'}
             </span>
-            {isRunning ? 'Läuft …' : 'Prüfungen wiederhohlen'}
+            {isRunning ? 'Läuft …' : 'Prüfungen wiederholen'}
           </button>
         </div>
 
-        {!allCollapsed && (
-          allPassed ? (
-            <GroupCard variant="pass" rows={passed} isAllPassed totalCount={totalCount} />
-          ) : (
-            <>
-              {errors.length > 0 && (
-                <GroupCard variant="error" rows={errors}
-                  onOpenRequestModal={onOpenRequestModal}
-                  onOpenIgnoreModal={onOpenIgnoreModal}
-                  onResetCheck={onResetCheck}
-                />
-              )}
-              {warnings.length > 0 && (
-                <GroupCard variant="warning" rows={warnings}
-                  onOpenIgnoreModal={onOpenIgnoreModal}
-                  onResetCheck={onResetCheck}
-                />
-              )}
-              {passed.length > 0 && (
-                <GroupCard variant="pass" rows={passed} />
-              )}
-            </>
-          )
+        {allPassed ? (
+          <GroupCard variant="pass" rows={passed} isAllPassed totalCount={totalCount} />
+        ) : (
+          <>
+            {errors.length > 0 && (
+              <GroupCard variant="error" rows={errors}
+                onOpenRequestModal={onOpenRequestModal}
+                onOpenIgnoreModal={onOpenIgnoreModal}
+                onResetCheck={onResetCheck}
+              />
+            )}
+            {warnings.length > 0 && (
+              <GroupCard variant="warning" rows={warnings}
+                onOpenIgnoreModal={onOpenIgnoreModal}
+                onResetCheck={onResetCheck}
+              />
+            )}
+            {passed.length > 0 && (
+              <GroupCard variant="pass" rows={passed} />
+            )}
+          </>
         )}
       </div>
     );
@@ -1061,51 +1058,66 @@
 
   /* ── Request Supporting Document Modal ── */
   function RequestDocModal({ check, doc, onConfirm, onClose }) {
-    const [creating, setCreating] = React.useState(false);
+    const [note, setNote] = React.useState(check.remediation?.slotNote || '');
+    const title = check.remediation?.label || 'Dokument anfordern';
+
     function handleConfirm() {
-      setCreating(true);
-      setTimeout(() => { onConfirm(check); setCreating(false); }, 700);
+      onConfirm(check, note.trim());
     }
     return ReactDOM.createPortal(
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200] p-4" onClick={onClose}>
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-[480px] overflow-hidden" onClick={e => e.stopPropagation()}>
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-200">
-            <span className="text-[15px] font-medium text-[#37474f] flex-1">Ergänzenden Slot erstellen</span>
-            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-500">
-              <span className="icon text-[18px]">close</span>
-            </button>
-          </div>
-          <div className="px-5 py-4 flex flex-col gap-4">
-            <div className="bg-qa-warn-light border border-qa-warn rounded-lg p-3 flex gap-3">
-              <WarnIcon size={18} className="mt-0.5" />
-              <div>
-                <p className="text-[13px] font-medium text-[#37474f]">{check.name}</p>
-                <p className="text-[12px] text-neutral-600 mt-0.5">{check.result}</p>
-                <p className="text-[12px] text-neutral-500 mt-1">Ein ergänzendes Dokument kann diesen Fehler beheben.</p>
+        <div className="bg-white rounded-[8px] w-full max-w-[561px] overflow-hidden"
+          style={{ boxShadow: '0px 4px 24px rgba(55,71,79,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Top separator */}
+          <div className="h-px bg-[#eceff1]" />
+
+          {/* Header */}
+          <div className="bg-white rounded-tl-[8px] rounded-tr-[8px] pt-4">
+            <div className="flex items-center justify-between px-6 mb-4">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="text-[20px] font-medium text-[#37474f] leading-[24px]">{title}</span>
               </div>
+              <button onClick={onClose} className="w-5 h-5 flex items-center justify-center text-neutral-500 hover:text-neutral-700 flex-shrink-0">
+                <span className="icon text-[20px]">close</span>
+              </button>
             </div>
-            <div className="border-2 border-dashed border-qa-warn rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="icon text-[18px] text-qa-warn">description</span>
-                <span className="text-[13px] font-medium text-qa-warn italic">{check.remediation?.label}</span>
-              </div>
-              <p className="text-[12px] text-neutral-500">
-                Verknüpft mit: <span className="font-medium text-[#37474f]">{doc?.name}</span> · Persönliche Dokumente
-              </p>
-            </div>
-            <p className="text-[11px] text-neutral-400 leading-snug">
-              Der neue Slot wird dem Kunden als Anforderung angezeigt. Nach dem Upload wird die Prüfung automatisch erneut ausgeführt.
-            </p>
+            <div className="h-px bg-[#eceff1]" />
           </div>
-          <div className="flex items-center justify-start gap-2 px-5 py-3 border-t border-neutral-200 bg-neutral-50">
-            <button onClick={handleConfirm} disabled={creating}
-              className="flex items-center gap-1.5 px-4 py-2 rounded bg-primary-500 text-white text-[13px] font-medium hover:bg-primary-600 disabled:opacity-60 transition-colors">
-              {creating && <span className="icon text-[16px] animate-spin">progress_activity</span>}
-              Slot erstellen & anfordern
-            </button>
-            <button onClick={onClose} className="px-4 py-2 rounded border border-neutral-300 text-neutral-700 text-[13px] font-medium hover:bg-neutral-100 transition-colors">
-              Abbrechen
-            </button>
+
+          {/* Content */}
+          <div className="flex flex-col gap-4 px-6 py-4">
+            {/* Error banner */}
+            <div className="flex items-center gap-2 p-2 bg-qa-fail-light">
+              <span className="icon icon-filled text-[20px] text-qa-fail flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>
+              <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
+            </div>
+
+            {/* Editable note shown to the customer */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[14px] text-[#546e7a] tracking-[0.1px] leading-[20px]">
+                Notiz im Kundendashboard sichtbar
+              </label>
+              <textarea value={note} onChange={e => setNote(e.target.value)}
+                placeholder="Diese Notiz sieht der Kunde in seinem Dashboard…"
+                className="w-full px-[10px] py-[6px] text-[16px] leading-[24px] tracking-[0.25px] text-[#37474f] border border-[#cfd8dc] rounded-[4px] resize-none focus:outline-none focus:border-primary-500 transition-colors"
+                style={{ height: '92px' }} />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-white rounded-bl-[8px] rounded-br-[8px]">
+            <div className="h-px bg-[#eceff1]" />
+            <div className="flex items-center gap-4 px-6 py-[24px]">
+              <button onClick={handleConfirm}
+                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors whitespace-nowrap">
+                <span className="px-1">{title} & Slot erstellen</span>
+              </button>
+              <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
+                Abbrechen
+              </button>
+            </div>
           </div>
         </div>
       </div>,
@@ -1141,8 +1153,7 @@
           <div className="bg-white rounded-tl-[8px] rounded-tr-[8px] pt-4">
             <div className="flex items-center justify-between px-6 mb-4">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="icon icon-filled text-[20px] text-qa-warn flex-shrink-0" style={{ lineHeight:1 }}>do_not_disturb_on</span>
-                <span className="text-[20px] font-medium text-[#37474f]">Prüfung ignorieren</span>
+                <span className="text-[20px] font-medium text-[#37474f] leading-[24px]">Prüfung ignorieren</span>
               </div>
               <button onClick={onClose} className="w-5 h-5 flex items-center justify-center text-neutral-500 hover:text-neutral-700 flex-shrink-0">
                 <span className="icon text-[20px]">close</span>
@@ -1153,9 +1164,9 @@
 
           {/* Content */}
           <div className="flex flex-col gap-4 px-6 py-4">
-            {/* Blue info banner */}
-            <div className="flex items-center gap-2 p-2 bg-[#ebf0fb]">
-              <span className="icon icon-filled text-[20px] text-qa-ignored flex-shrink-0" style={{ lineHeight:1 }}>info</span>
+            {/* Error banner */}
+            <div className="flex items-center gap-2 p-2 bg-qa-fail-light">
+              <span className="icon icon-filled text-[20px] text-qa-fail flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>
               <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
             </div>
 
@@ -1190,8 +1201,7 @@
             <div className="h-px bg-[#eceff1]" />
             <div className="flex items-center gap-4 px-6 py-[24px]">
               <button onClick={handleConfirm}
-                className="flex items-center gap-1 h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium hover:bg-primary-600 transition-colors">
-                <span className="icon text-[20px]" style={{ lineHeight:1 }}>remove_circle_outline</span>
+                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors">
                 <span className="px-1">Prüfung ignorieren</span>
               </button>
               <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
@@ -1485,6 +1495,7 @@
     });
 
     const [ignoreModal, setIgnoreModal] = React.useState(null);
+    const [requestModal, setRequestModal] = React.useState(null);
 
     /* Toast with optional undo */
     const [toast, setToast] = React.useState({ visible: false, message: '', onUndo: null });
@@ -1534,14 +1545,15 @@
       }));
     }
 
-    function handleRequestDoc(check) {
+    function handleConfirmRequest(check, note) {
       const docId = selectedDoc.id;
       const slotId = `slot-${Date.now()}`;
-      const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: check.remediation.slotNote || null };
+      const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: note || null };
       const origCheck = (QA_CHECKS[docId] || []).find(c => c.id === check.id);
 
       setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
       updateCheck(docId, check.id, { status: 'requested', result: check.remediation.label.replace(/\s*anfordern$/i, '') + ' angefordert' });
+      setRequestModal(null);
 
       showToast(
         'Anfrage gesendet. Der Kunde sieht den Ablehnungsgrund und die nächsten Schritte in seinem Dashboard.',
@@ -1593,7 +1605,7 @@
             slot={selectedSlot}
             docNote={activeDocNote}
             checks={currentChecks}
-            onOpenRequestModal={handleRequestDoc}
+            onOpenRequestModal={(check) => setRequestModal(check)}
             onOpenIgnoreModal={(check) => setIgnoreModal(check)}
             onChecksUpdate={(checkId, updates) => updateCheck(selectedDoc?.id, checkId, updates)}
             onResetCheck={handleResetCheck}
@@ -1609,6 +1621,14 @@
             check={ignoreModal}
             onConfirm={handleIgnoreConfirm}
             onClose={() => setIgnoreModal(null)}
+          />
+        )}
+        {requestModal && (
+          <RequestDocModal
+            check={requestModal}
+            doc={selectedDoc}
+            onConfirm={handleConfirmRequest}
+            onClose={() => setRequestModal(null)}
           />
         )}
         <Toast message={toast.message} visible={toast.visible} onUndo={toast.onUndo} onDismiss={dismissToast} />
