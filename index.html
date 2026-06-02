@@ -42,6 +42,14 @@
       grid-template-columns: 1fr 1fr;
       gap: var(--space-l);
     }
+    .project-section-header {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      padding: var(--space-m) 0 var(--space-xs);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+    }
     .project-card {
       background: var(--color-neutral-light-000);
       border: 1px solid var(--color-neutral-light-500);
@@ -118,11 +126,23 @@
         <a href="doc-center/doc-center-skeleton/docCenterSkeleton.html" class="project-link">Öffnen →</a>
       </div>
 
-      <div class="project-card">
+      <div class="project-section-header">
         <span class="project-tag">Projekt 4</span>
-        <span class="project-title">DigitalQA Doc Center V1</span>
-        <p class="project-desc">Exakte Kopie des Doc Center Skeletons als Ausgangspunkt für DigitalQA V1.</p>
+        <span class="project-title">DigitalQA Doc Center</span>
+      </div>
+
+      <div class="project-card">
+        <span class="project-tag">V1</span>
+        <span class="project-title">Usability Testing</span>
+        <p class="project-desc">Erster Prototyp für Usability-Tests des DigitalQA Doc Centers.</p>
         <a href="doc-center/doc-center-skeleton/digital-qa-doc-center-v1.html" class="project-link">Öffnen →</a>
+      </div>
+
+      <div class="project-card">
+        <span class="project-tag">V2</span>
+        <span class="project-title">Updated Table</span>
+        <p class="project-desc">Weiterentwicklung auf Basis von V1 – aktualisierte Tabellenansicht.</p>
+        <a href="doc-center/doc-center-skeleton/digital-qa-doc-center-v2.html" class="project-link">Öffnen →</a>
       </div>
 
     </div>

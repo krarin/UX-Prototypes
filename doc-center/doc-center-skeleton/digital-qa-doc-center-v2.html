@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigitalQA Doc Center V2 – Updated Table</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Roboto', 'sans-serif'] },
+          colors: {
+            primary: { 100: '#E6F5F3', 500: '#009688', 600: '#00877A', 700: '#00695c' },
+            neutral: {
+              50:  '#FAFAFA', 100: '#F5F5F5', 200: '#EEEEEE', 300: '#E0E0E0',
+              400: '#BDBDBD', 500: '#9E9E9E', 600: '#757575', 700: '#616161',
+              800: '#424242', 900: '#212121',
+            },
+            /* QA status — from Figma UI-Kit tokens */
+            'qa-pass':           '#20BF6B',
+            'qa-pass-light':     '#E9FCF2',
+            'qa-warn':           '#FF9F1A',
+            'qa-warn-light':     '#FFF5E8',
+            'qa-fail':           '#FF5656',
+            'qa-fail-light':     '#FFEEEE',
+            'qa-ignored':        '#4B7BEC',
+            'qa-ignored-light':  '#EBF0FB',
+            'qa-pending':        '#78909C',
+            'qa-pending-light':  '#ECEFF1',
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; font-family: 'Roboto', sans-serif; }
+    .icon {
+      font-family: 'Material Symbols Outlined'; font-style: normal;
+      font-size: 20px; line-height: 1;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      user-select: none;
+    }
+    .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+  /* ── Data ── */
+  const GROUPS = [
+    {
+      id: 'unkategorisiert',
+      label: 'Unkategorisiert',
+      icon: 'folder_open',
+      items: [
+        { id: 101, name: 'Unkategorisierte Seiten', docStatus: 'pending' },
+      ]
+    },
+    {
+      id: 'persoenlich',
+      label: 'Persönliche Dokumente',
+      icon: 'person',
+      newCount: 2,
+      items: [
+        { id: 201, name: 'Gehaltsabrechnung Juli',    docStatus: 'pending', isNew: true,
+          warnings: ['IBAN fehlt auf der Gehaltsabrechnung'] },
+        { id: 202, name: 'Gehaltsabrechnung September', docStatus: 'ok' },
+        { id: 204, name: 'Gehaltsabrechnung August',       docStatus: 'pending' },
+        { id: 205, name: 'Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)', docStatus: 'pending',
+          warnings: ['Nur Reisepass hochgeladen – Meldebescheinigung erforderlich'],
+          note: 'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' },
+        { id: 206, name: 'Aufenthaltstitel', docStatus: 'pending',
+          warnings: ['Aufenthaltstitel läuft in weniger als 6 Monaten ab'] },
+      ]
+    },
+    {
+      id: 'immobilien',
+      label: 'Immobilienunterlagen',
+      icon: 'home',
+      items: [
+        { id: 301, name: 'Vollständiger aktueller Grundbuchauszug (max. 3 Monate alt)', docStatus: 'ok' },
+        { id: 302, name: 'Wohnflächenberechnung (mit Angabe von Länge und Breite je Raum)', docStatus: 'ok',
+          warnings: ['Maße bei Raum 3 fehlen', 'Stempel des Architekten fehlt'] },
+        { id: 303, name: 'Aktuelle Flurkarte/Lageplan',  docStatus: 'ok' },
+        { id: 304, name: 'Baubeschreibung',              docStatus: 'pending' },
+        { id: 305, name: 'Kaufvertragsentwurf',          docStatus: 'ok' },
+        { id: 306, name: 'Bemaßte Baupläne (evtl. fehlende Maßangaben bitte zwingend ergänzen)', docStatus: 'ok' },
+        { id: 307, name: 'Exposé',                       docStatus: 'rejected',
+          rejectedReasons: ['Dokument unleserlich – bitte erneut scannen', 'Exposé veraltet (älter als 3 Monate)'] },
+        { id: 308, name: 'Aktuelle Objektfotos in Farbe von Innen und Außen (je mind. 2)', docStatus: 'ok' },
+        { id: 309, name: 'Energieausweis', docStatus: 'rejected',
+          rejectedReasons: ['Gültigkeitsdatum abgelaufen – automatisch abgelehnt'] },
+      ]
+    }
+  ];
+
+  /* all items flattened for viewer lookup */
+  const ALL_DOCS = GROUPS.flatMap(g => g.items);
+
+  /* ── Sub-components ── */
+
+  /* Orange triangle warning icon with "?" — matches Figma node 29:80326 */
+  function WarnIcon({ size = 16, className = '', color = '#FF9F1A' }) {
+    const textColor = color === '#FF9F1A' ? 'white' : '#FF9F1A';
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" className={className} style={{ flexShrink: 0, display: 'inline-block' }}>
+        <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill={color}/>
+        <text x="10" y="15.5" textAnchor="middle" fill={textColor} fontSize="8" fontWeight="700" fontFamily="Roboto, sans-serif">!</text>
+      </svg>
+    );
+  }
+
+  /* ── Tooltip (portal, bypasses overflow clipping) ── */
+  function Tooltip({ anchor, children }) {
+    if (!anchor) return null;
+    const TIP_W = 248;
+    const GAP   = 6;
+    const PAD   = 8;
+
+    // Center on anchor, then clamp so neither edge leaves the viewport
+    const rawLeft = anchor.left + anchor.width / 2 - TIP_W / 2;
+    const left = Math.max(PAD, Math.min(rawLeft, window.innerWidth - TIP_W - PAD));
+
+    // Prefer above; fall back to below when near the top of the screen
+    const above = anchor.top > 180;
+    const vertical = above
+      ? { bottom: window.innerHeight - anchor.top + GAP }
+      : { top: anchor.bottom + GAP };
+
+    const style = {
+      position: 'fixed',
+      zIndex: 9999,
+      left,
+      width: TIP_W,
+      ...vertical,
+      pointerEvents: 'none',
+    };
+    return ReactDOM.createPortal(
+      <div style={style} className="bg-white border border-neutral-200 rounded-lg shadow-lg overflow-hidden text-left">
+        {children}
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── DocStatusBadge — left of document name ── */
+  function DocStatusBadge({ docStatus, rejectedReasons = [] }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+
+    function StatusIcon() {
+      if (docStatus === 'ok')
+        return <span className="icon icon-filled text-[18px] text-green-500 leading-none">check_circle</span>;
+      if (docStatus === 'rejected')
+        return <span className="icon icon-filled text-[18px] text-red-500 leading-none">cancel</span>;
+      /* pending — filled circle with white hourglass */
+      return (
+        <span className="w-[18px] h-[18px] rounded-full bg-neutral-400 inline-flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <span className="icon text-[11px] text-white" style={{ fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20", lineHeight: 1, display: 'block' }}>hourglass_empty</span>
+        </span>
+      );
+    }
+
+    const labels = { ok: 'Genehmigt', pending: 'Ausstehend', rejected: 'Abgelehnt' };
+
+    return (
+      <div
+        ref={ref}
+        className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}
+      >
+        <StatusIcon />
+        <Tooltip anchor={anchor}>
+          {docStatus === 'rejected' ? (
+            <>
+              <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-red-50">
+                <span className="icon icon-filled text-[14px] text-red-500">cancel</span>
+                <span className="text-[11px] font-medium text-red-600 uppercase tracking-wide">Abgelehnt</span>
+              </div>
+              {rejectedReasons.length > 0 && (
+                <ul className="px-3 py-2.5 flex flex-col gap-1.5">
+                  {rejectedReasons.map((r, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[12px] text-neutral-700 leading-snug">
+                      <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <div className="px-3 py-2.5 flex items-center gap-2">
+              <StatusIcon />
+              <span className="text-[12px] text-neutral-700 font-medium">{labels[docStatus] || 'Ausstehend'}</span>
+            </div>
+          )}
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /* ── WarningBadge — right side exclamation ── */
+  function WarningBadge({ warnings }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    if (!warnings || warnings.length === 0) return null;
+    return (
+      <div
+        ref={ref}
+        className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}
+      >
+        <WarnIcon size={18} />
+        <Tooltip anchor={anchor}>
+          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-amber-50">
+            <WarnIcon size={14} />
+            <span className="text-[11px] font-medium text-amber-600 uppercase tracking-wide">
+              {warnings.length} {warnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+            </span>
+          </div>
+          <ul className="px-3 py-2.5 flex flex-col gap-1.5">
+            {warnings.map((w, i) => (
+              <li key={i} className="flex items-start gap-2 text-[12px] text-neutral-700 leading-snug">
+                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                {w}
+              </li>
+            ))}
+          </ul>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /* Blue description icon for sidebar — shown after doc is approved with an ignored note */
+  function SidebarIgnoreNoteIcon({ override }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    const ts = override?.timestamp ? new Date(override.timestamp) : null;
+    const dateStr = ts
+      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    return (
+      <div ref={ref} className="flex-shrink-0 flex items-center"
+        onClick={e => e.stopPropagation()}
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}>
+        <span className="icon icon-filled text-[18px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>description</span>
+        <Tooltip anchor={anchor}>
+          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+              {override?.initials ?? '??'}
+            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+              <span className="text-[10px] text-neutral-400">{dateStr}</span>
+            </div>
+          </div>
+          <div className="px-3 py-2">
+            <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+          </div>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  function NewBadge() {
+    return (
+      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">
+        Neu
+      </span>
+    );
+  }
+
+  function Checkbox({ checked, onChange }) {
+    return (
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        onClick={e => e.stopPropagation()}
+        className="w-4 h-4 rounded-md border-neutral-300 accent-[#78909C] flex-shrink-0 cursor-pointer"
+      />
+    );
+  }
+
+  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {} }) {
+    const [open, setOpen] = React.useState(false);
+    const approvedCount = group.items.filter(i => (docStatusOverrides[i.id] ?? i.docStatus) === 'ok').length;
+    const totalCount = group.items.length;
+
+    function handleHeaderClick() {
+      const opening = !open;
+      setOpen(opening);
+      if (opening && group.items.length > 0) {
+        onSelect(group.items[0].id);
+      }
+    }
+
+    return (
+      <div className="bg-white rounded-lg border border-neutral-200">
+        {/* Category header */}
+        <div
+          className="flex items-center gap-2 px-4 cursor-pointer bg-white hover:bg-neutral-50 select-none h-11"
+          onClick={handleHeaderClick}
+        >
+          <Checkbox
+            checked={group.items.every(i => checkedIds.has(i.id))}
+            onChange={e => {
+              e.stopPropagation();
+              onCheck(group.items.map(i => i.id), e.target.checked);
+            }}
+          />
+          <span className="icon icon-filled text-[18px] text-neutral-700">{group.icon}</span>
+          <span className="flex-1 text-sm font-medium text-neutral-900 leading-snug">
+            {group.label}
+          </span>
+          {group.newCount > 0 && (
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">
+              {group.newCount} Neue
+            </span>
+          )}
+          <span className="text-[12px] text-neutral-500 tabular-nums">{approvedCount}/{totalCount}</span>
+          <button
+            className="w-5 h-5 flex items-center justify-center text-neutral-800 hover:text-primary-500 transition-colors"
+            onClick={e => { e.stopPropagation(); }}
+            title="Hinzufügen"
+          >
+            <span className="icon text-[16px]">add</span>
+          </button>
+          <span className="icon text-[16px] text-neutral-800">
+            {open ? 'expand_less' : 'expand_more'}
+          </span>
+        </div>
+
+        {/* Items */}
+        {open && (
+          <ul>
+            {group.items.map(item => {
+              const active = item.id === selectedId;
+              const slots  = supportingSlots[item.id] || [];
+              const effectiveStatus = docStatusOverrides[item.id] ?? item.docStatus;
+              const ignoredNote = ignoredNotesByDoc[item.id] ?? null;
+              const isApprovedWithNote = effectiveStatus === 'ok' && ignoredNote;
+              return (
+                <React.Fragment key={item.id}>
+                  <li className="border-t border-neutral-100 first:border-t-0">
+                    <button
+                      onClick={() => onSelect(item.id)}
+                      className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
+                        ${active
+                          ? 'bg-primary-100 border-l-4 border-l-primary-500 pl-[38px]'
+                          : 'pl-[42px] hover:bg-neutral-50'}`}
+                    >
+                      <Checkbox
+                        checked={checkedIds.has(item.id)}
+                        onChange={e => onCheck([item.id], e.target.checked)}
+                      />
+                      <DocStatusBadge docStatus={effectiveStatus} rejectedReasons={item.rejectedReasons || []} />
+                      <span className={`flex-1 text-[13px] leading-snug text-left min-w-0
+                        ${active ? 'text-primary-700 font-medium' : 'text-neutral-700'}`}>
+                        {item.name}
+                      </span>
+                      {item.isNew && <NewBadge />}
+                      {isApprovedWithNote
+                        ? <SidebarIgnoreNoteIcon override={ignoredNote} />
+                        : <WarningBadge warnings={item.warnings} />}
+                    </button>
+                  </li>
+                  {/* Supporting slots — indented with dashed amber connector */}
+                  {slots.map((slot, si) => {
+                    const slotActive = slot.id === selectedId;
+                    return (
+                      <li key={slot.id} className="border-t border-neutral-100 relative">
+                        {/* Vertical dashed line */}
+                        <span className="absolute pointer-events-none"
+                          style={{ left: 54, top: 0, bottom: si === slots.length - 1 ? '50%' : 0,
+                            borderLeft: '2px dashed #FF9F1A' }} />
+                        {/* Horizontal stub */}
+                        <span className="absolute pointer-events-none"
+                          style={{ left: 54, top: '50%', width: 14,
+                            borderTop: '2px dashed #FF9F1A' }} />
+                        <button
+                          onClick={() => onSelect(slot.id)}
+                          className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
+                            ${slotActive ? 'bg-qa-warn-light border-l-4 pl-[66px]' : 'pl-[70px] hover:bg-neutral-50'}`}
+                          style={slotActive ? { borderLeftColor: '#FF9F1A' } : {}}
+                        >
+                          <span className="w-[16px] h-[16px] rounded-full bg-neutral-300 inline-flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <span className="icon text-[10px] text-white" style={{ fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20", lineHeight:1, display:'block' }}>hourglass_empty</span>
+                          </span>
+                          <span className="flex-1 text-[12px] italic text-qa-warn leading-snug text-left min-w-0 truncate">
+                            {slot.name}
+                          </span>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-neutral-600 text-white whitespace-nowrap flex-shrink-0">
+                            Angefordert
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
+  /* ── Sidebar ── */
+  function Sidebar({ selectedId, onSelect, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {} }) {
+    const [activeTab, setActiveTab] = React.useState('antragsunterlagen');
+    const [checkedIds, setCheckedIds] = React.useState(new Set());
+
+    const allIds = ALL_DOCS.map(d => d.id);
+    const allChecked = allIds.every(id => checkedIds.has(id));
+
+    function handleCheck(ids, checked) {
+      setCheckedIds(prev => {
+        const next = new Set(prev);
+        ids.forEach(id => checked ? next.add(id) : next.delete(id));
+        return next;
+      });
+    }
+
+    const TABS = [
+      { id: 'antragsunterlagen', label: 'Antragsunterlagen' },
+      { id: 'vertragsunterlagen', label: 'Vertragsunterlagen' },
+    ];
+
+    return (
+      <aside className="w-[400px] flex-shrink-0 flex flex-col bg-white border-r border-neutral-200 overflow-hidden">
+
+        {/* ── Tab bar ── */}
+        <div className="flex items-center border-b border-neutral-200 px-2 pt-2 gap-1">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 text-[12px] font-medium rounded-t transition-colors whitespace-nowrap
+                ${activeTab === tab.id
+                  ? 'border border-neutral-300 border-b-white bg-white text-neutral-900 -mb-px z-10 relative'
+                  : 'text-neutral-500 hover:text-neutral-700'}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <button className="ml-auto mb-2 w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600">
+            <span className="icon text-[16px]">chevron_right</span>
+          </button>
+        </div>
+
+        {/* ── Source bar ── */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200">
+          <button className="flex items-center gap-1.5 text-primary-600 hover:text-primary-700 transition-colors">
+            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-white leading-none">F</span>
+            </div>
+            <span className="text-[13px] font-medium">FinLink</span>
+            <span className="icon text-[16px]">arrow_drop_down</span>
+          </button>
+          <div className="flex items-center gap-1.5">
+            <button className="flex items-center gap-1 h-6 px-2 rounded-full bg-primary-500 text-white text-[11px] font-medium hover:bg-primary-600 transition-colors">
+              <span className="icon text-[13px]">visibility</span>
+              Sichtbar
+            </button>
+            <button className="w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600 rounded hover:bg-neutral-100">
+              <span className="icon text-[18px]">more_horiz</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ── Select all ── */}
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-neutral-200">
+          <Checkbox
+            checked={allChecked}
+            onChange={e => handleCheck(allIds, e.target.checked)}
+          />
+          <span className="flex-1 text-[13px] text-neutral-600">Alle auswählen</span>
+          <button className="w-5 h-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600">
+            <span className="icon text-[16px]">unfold_more</span>
+          </button>
+        </div>
+
+        {/* ── Document groups ── */}
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 p-3 bg-[#ECEFF1]">
+          {GROUPS.map(group => (
+            <CategoryGroup
+              key={group.id}
+              group={group}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              checkedIds={checkedIds}
+              onCheck={handleCheck}
+              supportingSlots={supportingSlots}
+              docStatusOverrides={docStatusOverrides}
+              ignoredNotesByDoc={ignoredNotesByDoc}
+            />
+          ))}
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="border-t border-neutral-200 px-3 py-2.5 flex flex-col gap-1">
+          <button className="flex items-center gap-1 text-primary-600 hover:text-primary-700 text-[13px] font-medium transition-colors">
+            <span className="icon text-[16px]">add</span>
+            Weitere Dokumente anfordern
+          </button>
+          <p className="text-[10px] text-neutral-400 leading-tight">
+            FE: main@c297573658 | BE: main@c297573658
+          </p>
+        </div>
+
+      </aside>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════
+     QA DATA MODEL  (status: pass | warning | fail | ignored | pending)
+  ══════════════════════════════════════════════════════ */
+  const QA_CHECKS = {
+    201: [
+      { id:'201-1', name:'IBAN auf Dokument',       description:'IBAN muss im Dokument vorhanden sein',
+        status:'fail',    result:'IBAN nicht gefunden',
+        override:null, remediation:{ type:'request_document', documentType:'bank_statement', label:'Kontoauszug anfordern', slotName:'Kontoauszug', slotNote:'Auf der eingereichten Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte einen aktuellen Kontoauszug hochladen, um die IBAN zu bestätigen.' } },
+      { id:'201-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
+        status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
+      { id:'201-3', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
+        status:'pass',    result:'Datum: 15.08.2025', override:null, remediation:null },
+
+      { id:'201-5', name:'Dokument lesbar',         description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass',    result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    202: [
+      { id:'202-1', name:'Arbeitgebername',         description:'Name des Arbeitgebers muss angegeben sein',
+        status:'pass',    result:'Finlink GmbH gefunden', override:null, remediation:null },
+      { id:'202-2', name:'Name stimmt überein',     description:'Kundenname muss auf dem Dokument lesbar sein',
+        status:'pass',    result:'Melissa Mustermann gefunden', override:null, remediation:null },
+      { id:'202-3', name:'Betrag plausibel',        description:'Bruttogehalt im plausiblen Bereich',
+        status:'pass',    result:'€ 4.250,00 – plausibel', override:null, remediation:null },
+      { id:'202-4', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
+        status:'pass',    result:'Datum: 15.09.2025', override:null, remediation:null },
+    ],
+    204: [
+      { id:'204-1', name:'IBAN stimmt überein',     description:'IBAN muss mit Antragsdaten übereinstimmen',
+        status:'pass',    result:'DE89 3704 0044 xxxx – stimmt überein', override:null, remediation:null },
+      { id:'204-2', name:'Datum im gültigen Bereich', description:'Nicht älter als 3 Monate',
+        status:'pass',    result:'Datum: 01.10.2025', override:null, remediation:null },
+      { id:'204-3', name:'Kontoinhaber verifiziert', description:'Kontoinhaber muss mit Antragsteller übereinstimmen',
+        status:'pass', result:'Kontoinhaber bestätigt', override:null, remediation:null },
+      { id:'204-4', name:'Keine Manipulationen',    description:'Keine sichtbaren Veränderungen',
+        status:'pass',    result:'Keine Manipulationen erkannt', override:null, remediation:null },
+    ],
+    301: [
+      { id:'301-1', name:'Grundbuchnummer',         description:'Grundbuchnummer muss vorhanden sein',
+        status:'pass',    result:'GB-Nr. 1234/5678 gefunden', override:null, remediation:null },
+      { id:'301-2', name:'Datum aktuell',           description:'Nicht älter als 3 Monate',
+        status:'pass',    result:'Datum: 10.10.2025', override:null, remediation:null },
+      { id:'301-3', name:'Eigentümer stimmt überein', description:'Eigentümer muss mit Antragsdaten übereinstimmen',
+        status:'pass',    result:'Mustermann bestätigt', override:null, remediation:null },
+    ],
+    304: [
+      { id:'304-1', name:'Dokument vollständig',     description:'Alle Pflichtangaben müssen vorhanden sein',
+        status:'pass', result:'Vollständigkeit bestätigt', override:null, remediation:null },
+      { id:'304-2', name:'Baujahr angegeben',        description:'Baujahr des Gebäudes muss angegeben sein',
+        status:'pass', result:'Baujahr 2015 gefunden', override:null, remediation:null },
+      { id:'304-3', name:'Gebäudetyp angegeben',     description:'Art des Gebäudes muss beschrieben sein',
+        status:'pass', result:'Einfamilienhaus bestätigt', override:null, remediation:null },
+      { id:'304-4', name:'Unterschrift vorhanden',   description:'Dokument muss unterzeichnet sein',
+        status:'pass', result:'Unterschrift erkannt', override:null, remediation:null },
+    ],
+    309: [
+      { id:'309-1', name:'Gültigkeitsdatum',
+        description:'„Gültig bis"-Datum muss in der Zukunft liegen',
+        status:'fail', result:'Abgelaufen seit 02.10.2025',
+        override:null,
+        remediation:{ type:'request_document', documentType:'energy_certificate', label:'Neues Dokument anfordern' } },
+      { id:'309-2', name:'Aussteller vorhanden',
+        description:'Name und Kontaktdaten des Ausstellers müssen angegeben sein',
+        status:'pass', result:'Planungsbüro Gabriela Bugs bestätigt', override:null, remediation:null },
+      { id:'309-3', name:'Registriernummer',
+        description:'Registriernummer muss vollständig und lesbar sein',
+        status:'pass', result:'BB-2015-000669702 gefunden', override:null, remediation:null },
+      { id:'309-4', name:'Gebäudeadresse stimmt überein',
+        description:'Adresse muss mit der Immobilie im Antrag übereinstimmen',
+        status:'pass', result:'Weidenweg 25a, 16547 Birkenwerder bestätigt', override:null, remediation:null },
+    ],
+    206: [
+      { id:'206-1', name:'Gültigkeitsdauer',
+        description:'Aufenthaltstitel muss noch mindestens 6 Monate gültig sein',
+        status:'warning', result:'Läuft ab in 5 Monaten (< 6-Monats-Schwelle)',
+        override:null, remediation:null },
+      { id:'206-2', name:'Name stimmt überein',
+        description:'Name muss mit Antragsdaten übereinstimmen',
+        status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
+      { id:'206-3', name:'Dokumenttyp erkannt',
+        description:'Dokumenttyp muss als Aufenthaltstitel identifiziert sein',
+        status:'pass', result:'Aufenthaltstitel (§ 25 AufenthG) erkannt', override:null, remediation:null },
+      { id:'206-4', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    307: [
+      { id:'307-1', name:'Lesbarkeit',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'fail', result:'Dokument unleserlich – bitte erneut scannen',
+        override:null, remediation:{ type:'request_document', documentType:'expose', label:'Dokument erneut anfordern' } },
+      { id:'307-2', name:'Aktualität',
+        description:'Exposé darf nicht älter als 3 Monate sein',
+        status:'fail', result:'Exposé veraltet (älter als 3 Monate)',
+        override:null, remediation:{ type:'request_document', documentType:'expose', label:'Aktuelles Exposé anfordern' } },
+    ],
+    205: [
+      { id:'205-1', name:'Ausweistyp erkannt',
+        description:'Ausweistyp automatisch identifiziert',
+        status:'warning', result:'Nur Reisepass hochgeladen – Meldebescheinigung erforderlich',
+        override:null, remediation:{ type:'request_document', documentType:'registration', label:'Meldebescheinigung anfordern', slotName:'Meldebescheinigung', slotNote:'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' } },
+      { id:'205-2', name:'Name stimmt überein',
+        description:'Name muss mit Antragsdaten übereinstimmen',
+        status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
+      { id:'205-3', name:'Ausweis nicht abgelaufen',
+        description:'Gültigkeitsdatum muss in der Zukunft liegen',
+        status:'pass', result:'Gültig bis 03.2030', override:null, remediation:null },
+      { id:'205-4', name:'Dokument lesbar',
+        description:'Alle Seiten klar lesbar',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    303: [
+      { id:'303-1', name:'Aktualität',
+        description:'Flurkarte darf nicht älter als 3 Monate sein',
+        status:'pass', result:'Datum: 08.10.2025', override:null, remediation:null },
+      { id:'303-2', name:'Adresse stimmt überein',
+        description:'Adresse muss mit der Immobilie im Antrag übereinstimmen',
+        status:'pass', result:'Weidenweg 25a, 16547 Birkenwerder bestätigt', override:null, remediation:null },
+      { id:'303-3', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    305: [
+      { id:'305-1', name:'Parteien angegeben',
+        description:'Käufer und Verkäufer müssen vollständig angegeben sein',
+        status:'pass', result:'Mustermann & Verkäufer GmbH bestätigt', override:null, remediation:null },
+      { id:'305-2', name:'Kaufpreis angegeben',
+        description:'Kaufpreis muss im Vertragsentwurf enthalten sein',
+        status:'pass', result:'€ 485.000,00 gefunden', override:null, remediation:null },
+      { id:'305-3', name:'Datum vorhanden',
+        description:'Datum des Vertragsentwurfs muss angegeben sein',
+        status:'pass', result:'Datum: 05.10.2025', override:null, remediation:null },
+      { id:'305-4', name:'Unterschriften vorhanden',
+        description:'Unterschriften beider Parteien müssen erkannt sein',
+        status:'pass', result:'Beide Unterschriften erkannt', override:null, remediation:null },
+    ],
+    306: [
+      { id:'306-1', name:'Maße vollständig',
+        description:'Alle Raummaße müssen vorhanden sein',
+        status:'pass', result:'Alle Maße angegeben', override:null, remediation:null },
+      { id:'306-2', name:'Grundriss vollständig',
+        description:'Grundriss aller Etagen muss vorhanden sein',
+        status:'pass', result:'EG + OG + DG vollständig', override:null, remediation:null },
+      { id:'306-3', name:'Architektenangaben',
+        description:'Name und Kontakt des Architekten müssen angegeben sein',
+        status:'pass', result:'Planungsbüro Schäfer gefunden', override:null, remediation:null },
+      { id:'306-4', name:'Dokument lesbar',
+        description:'Alle Seiten müssen klar lesbar sein',
+        status:'pass', result:'Lesbarkeit bestätigt', override:null, remediation:null },
+    ],
+    308: [
+      { id:'308-1', name:'Innenfotos vorhanden',
+        description:'Mindestens 2 Innenfotos erforderlich',
+        status:'pass', result:'4 Innenfotos erkannt', override:null, remediation:null },
+      { id:'308-2', name:'Außenfotos vorhanden',
+        description:'Mindestens 2 Außenfotos erforderlich',
+        status:'pass', result:'3 Außenfotos erkannt', override:null, remediation:null },
+      { id:'308-3', name:'Bildqualität',
+        description:'Fotos müssen in Farbe und ausreichend scharf sein',
+        status:'pass', result:'Farbfotos, ausreichende Auflösung', override:null, remediation:null },
+      { id:'308-4', name:'Aktualität',
+        description:'Fotos dürfen nicht älter als 3 Monate sein',
+        status:'pass', result:'Datum: 01.10.2025', override:null, remediation:null },
+    ],
+    302: [
+      { id:'302-1', name:'Wohnfläche angegeben',    description:'Gesamtwohnfläche muss explizit angegeben sein',
+        status:'pass',    result:'112 m² angegeben', override:null, remediation:null },
+      { id:'302-2', name:'Raummaße vollständig',    description:'Länge und Breite je Raum müssen vorhanden sein',
+        status:'fail',    result:'Maße für Raum 3 fehlen',
+        override:null, remediation:{ type:'request_document', documentType:'floor_plan', label:'Ergänzung anfordern' } },
+      { id:'302-3', name:'Architektenunterschrift', description:'Unterschrift des Architekten erforderlich',
+        status:'warning', result:'Stempel aber keine Unterschrift', override:null, remediation:null },
+    ],
+  };
+
+  const DEFAULT_QA_CHECKS = [
+    { id:'def-1', name:'Dokument lesbar',     description:'Alle Seiten klar lesbar',
+      status:'pending', result:'–', override:null, remediation:null },
+    { id:'def-2', name:'Format korrekt',      description:'Dateiformat entspricht Anforderungen',
+      status:'pending', result:'–', override:null, remediation:null },
+    { id:'def-3', name:'Keine Manipulationen', description:'Keine sichtbaren Veränderungen',
+      status:'pending', result:'–', override:null, remediation:null },
+  ];
+
+  /* ══════════════════════════════════════════════════════
+     QA COMPONENTS
+  ══════════════════════════════════════════════════════ */
+
+  /* Status badge — coloured pill using Figma UI-Kit status tokens */
+  function StatusBadge({ status, hasNote = false }) {
+    const cfg = {
+      pass:    { bg:'bg-qa-pass',    icon:'check',             label:'Bestanden'           },
+      fail:    { bg:'bg-qa-fail',    icon:'cancel',            label:'Nicht erfüllt'       },
+      ignored: { bg:'bg-qa-ignored', icon:'do_not_disturb_on', label: hasNote ? 'Ignoriert mit Notiz' : 'Ignoriert' },
+      pending: { bg:'bg-qa-pending', icon:'hourglass_empty',   label:'Ausstehend'          },
+    }[status];
+    if (status === 'warning') return (
+      <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap bg-qa-warn w-full">
+        <WarnIcon size={13} color="white" />
+        Warnung
+      </span>
+    );
+    if (status === 'requested') return (
+      <span className="flex items-center px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap w-full bg-neutral-600">
+        Angefordert
+      </span>
+    );
+    if (!cfg) return null;
+    return (
+      <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap w-full ${cfg.bg}`}>
+        <span className="icon icon-filled text-[13px]" style={{ lineHeight:1 }}>{cfg.icon}</span>
+        {cfg.label}
+      </span>
+    );
+  }
+
+  /* Gray pen icon with hover tooltip showing ignore note + advisor + timestamp */
+  function IgnoreNoteIcon({ override, onReset }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    const hasNote = !!(override?.note);
+    const ts = override?.timestamp ? new Date(override.timestamp) : null;
+    const dateStr = ts
+      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    return (
+      <div className="flex items-center gap-2 flex-nowrap">
+        <div ref={ref} className="relative cursor-default flex items-center"
+          onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+          onMouseLeave={() => setAnchor(null)}>
+          <span className={`icon icon-filled text-[18px] ${hasNote ? 'text-qa-ignored' : 'text-neutral-400'}`} style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>description</span>
+          {hasNote ? (
+            <Tooltip anchor={anchor}>
+              <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+                  {override?.initials ?? '??'}
+                </span>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+                  <span className="text-[10px] text-neutral-400">{dateStr}</span>
+                </div>
+              </div>
+              <div className="px-3 py-2">
+                <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip anchor={anchor}>
+              <div className="px-3 py-2">
+                <p className="text-[12px] text-neutral-500">Notiz hinzufügen</p>
+              </div>
+            </Tooltip>
+          )}
+        </div>
+        <button onClick={onReset}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] border border-[#b0bec5] text-[11px] font-medium text-[#4b5961] hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0">
+          <span className="icon text-[13px]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20" }}>undo</span>
+          Zurücksetzen
+        </button>
+      </div>
+    );
+  }
+
+  /* Action cell — right column of check row */
+  function ActionCell({ check, onRequestDoc, onIgnore, onReset }) {
+    if (check.status === 'pass' || check.status === 'pending' || check.status === 'requested')
+      return <span className="text-neutral-300 text-[13px]">—</span>;
+    if (check.status === 'ignored')
+      return <IgnoreNoteIcon override={check.override} onReset={onReset} />;
+    /* warning or fail */
+    return (
+      <div className="flex items-center gap-1.5 flex-nowrap">
+        {check.remediation?.type === 'request_document' && (
+          <button onClick={onRequestDoc}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-primary-500 text-white text-[11px] font-medium hover:bg-primary-600 transition-colors whitespace-nowrap">
+            <span className="icon text-[13px]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20" }}>add_circle</span>
+            {check.remediation.label}
+          </button>
+        )}
+        <button onClick={onIgnore}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-300 text-neutral-600 text-[11px] font-medium hover:bg-neutral-100 transition-colors whitespace-nowrap">
+          <span className="icon text-[13px]" style={{ lineHeight:1 }}>do_not_disturb_on</span>
+          Ignorieren
+        </button>
+      </div>
+    );
+  }
+
+  /* Single check row */
+  function QACheckRow({ check, onRequestDoc, onIgnore, onReset }) {
+    const isPass = check.status === 'pass';
+    const resultColor = { ignored:'text-neutral-400', pending:'text-neutral-400' }[check.status] || 'text-[#37474f]';
+    return (
+      <tr className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition-colors">
+        <td className="px-3 py-1.5 align-middle whitespace-nowrap"><StatusBadge status={check.status} hasNote={!!(check.override?.note)} /></td>
+        <td className="px-3 py-1.5 align-middle whitespace-nowrap">
+          <span className="text-[12px] font-medium text-[#37474f]">{check.name}</span>
+        </td>
+        <td className="px-3 py-1.5 align-middle">
+          {isPass
+            ? <span className="icon icon-filled text-[15px] text-qa-pass" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
+            : <span className={`text-[12px] ${resultColor}`}>{check.result}</span>
+          }
+        </td>
+        <td className="px-3 py-1.5 align-middle whitespace-nowrap">
+          <ActionCell check={check} onRequestDoc={onRequestDoc} onIgnore={onIgnore} onReset={onReset} />
+        </td>
+      </tr>
+    );
+  }
+
+  /* Main QA panel */
+  /* ── V2: orange chat icon with note tooltip ── */
+  function ChatNoteIcon({ override }) {
+    const [anchor, setAnchor] = React.useState(null);
+    const ref = React.useRef(null);
+    const ts = override?.timestamp ? new Date(override.timestamp) : null;
+    const dateStr = ts
+      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    return (
+      <div ref={ref} className="flex items-center cursor-default"
+        onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
+        onMouseLeave={() => setAnchor(null)}>
+        <span className="icon text-[20px] text-qa-warn" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>chat</span>
+        <Tooltip anchor={anchor}>
+          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+              {override?.initials ?? '??'}
+            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
+              <span className="text-[10px] text-neutral-400">{dateStr}</span>
+            </div>
+          </div>
+          <div className="px-3 py-2">
+            <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
+          </div>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  /* ── V2: single QA row inside a group card ── */
+  function QARow({ check, variant, isLast, onOpenRequestModal, onOpenIgnoreModal, onResetCheck }) {
+    const isError = variant === 'error';
+    const isWarn  = variant === 'warning';
+    const isPass  = variant === 'pass';
+    const hasNote = !!check.override?.note;
+    const isRequested = check.status === 'requested';
+    const isIgnored   = check.status === 'ignored';
+
+    const text = isPass ? check.name : (check.result || check.name);
+
+    return (
+      <div className={`flex items-stretch bg-white ${isLast ? 'rounded-bl-[8px] rounded-br-[8px]' : 'border-b border-[#eceff1]'}`}>
+        {/* Left cell: icon + text */}
+        <div className="flex items-center gap-2 px-3 h-10 flex-1 min-w-0">
+          {isError && <span className="icon text-[20px] text-[#e64d4d] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>}
+          {isWarn  && <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>}
+          {isPass  && <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>}
+          <span className={`text-[12px] leading-[16px] tracking-[0.2px] truncate ${isError ? 'font-medium text-[#e64d4d]' : 'text-[#4b5961]'}`}>{text}</span>
+        </div>
+
+        {/* Right cell: actions */}
+        <div className="flex items-center justify-end gap-2 px-3 h-10 w-[395px] flex-shrink-0">
+          {/* Note icon when a note has been added */}
+          {hasNote && !isRequested && <ChatNoteIcon override={check.override} />}
+
+          {/* Fehler — default state */}
+          {isError && !hasNote && !isRequested && (
+            <>
+              {check.remediation?.type === 'request_document' && (
+                <button onClick={() => onOpenRequestModal(check)}
+                  className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
+                  {check.remediation.label}
+                </button>
+              )}
+              <button onClick={() => onOpenIgnoreModal(check)}
+                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                Ignorieren
+              </button>
+            </>
+          )}
+
+          {/* Fehler — angefordert state */}
+          {isError && isRequested && (
+            <>
+              <span className="h-4 px-2 rounded-[4px] bg-[#546e7a] text-white text-[11px] font-medium leading-[16px] tracking-[0.25px] inline-flex items-center whitespace-nowrap">
+                {check.result}
+              </span>
+              <button onClick={() => onResetCheck(check.id)}
+                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                Zurücksetzen
+              </button>
+            </>
+          )}
+
+          {/* Fehler — ignored with note state */}
+          {isError && isIgnored && (
+            <button onClick={() => onResetCheck(check.id)}
+              className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+              Zurücksetzen
+            </button>
+          )}
+
+          {/* Warnungen — always shows "Notiz hinzufügen" (acts as edit when note exists) */}
+          {isWarn && (
+            <button onClick={() => onOpenIgnoreModal(check)}
+              className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+              Notiz hinzufügen
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── V2: group card (Fehler / Warnungen / Bestanden) ── */
+  function GroupCard({ variant, rows, isAllPassed, totalCount, onOpenRequestModal, onOpenIgnoreModal, onResetCheck }) {
+    const titleLabels = { error: 'Fehler', warning: 'Warnungen', pass: 'Bestanden' };
+    const [expanded, setExpanded] = React.useState(variant !== 'pass');
+
+    return (
+      <div className="rounded-[8px] overflow-hidden border border-[#eaeaea]">
+        <button onClick={() => setExpanded(x => !x)}
+          className={`w-full flex items-center justify-between bg-white px-3 h-9 hover:bg-neutral-50 transition-colors ${expanded && rows.length > 0 ? 'border-b border-[#eceff1]' : ''}`}>
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">{titleLabels[variant]}</span>
+            <span className={`icon text-[16px] text-[#37474f] transition-transform ${expanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
+          </div>
+          {isAllPassed && (
+            <div className="flex items-center gap-1">
+              <span className="icon text-[20px] text-[#20bf6b]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
+              <span className="text-[12px] font-medium text-[#20bf6b] leading-[16px]">{rows.length}/{totalCount} bestanden</span>
+            </div>
+          )}
+        </button>
+
+        {expanded && rows.map((check, i) => (
+          <QARow key={check.id} check={check} variant={variant} isLast={i === rows.length - 1}
+            onOpenRequestModal={onOpenRequestModal}
+            onOpenIgnoreModal={onOpenIgnoreModal}
+            onResetCheck={onResetCheck}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  /* ── V2: top-level QA panel with three grouped cards ── */
+  function QAPanel({ doc, checks, onChecksUpdate, onOpenRequestModal, onOpenIgnoreModal, onResetCheck, onRerun }) {
+    const [isRunning, setIsRunning] = React.useState(false);
+    const [allCollapsed, setAllCollapsed] = React.useState(false);
+
+    React.useEffect(() => { setAllCollapsed(false); }, [doc?.id]);
+
+    // Categorize by ORIGINAL status so ignored/requested rows stay in their home group
+    const errors = [], warnings = [], passed = [];
+    checks.forEach(c => {
+      const orig = (QA_CHECKS[doc?.id] || []).find(x => x.id === c.id);
+      const origStatus = orig?.status || c.status;
+      if (origStatus === 'fail') errors.push(c);
+      else if (origStatus === 'warning') warnings.push(c);
+      else if (c.status === 'pass') passed.push(c);
+    });
+
+    const totalCount = errors.length + warnings.length + passed.length;
+    const allPassed = errors.length === 0 && warnings.length === 0 && passed.length > 0;
+
+    function handleRerun() {
+      setIsRunning(true);
+      setTimeout(() => { setIsRunning(false); onRerun(); }, 2000);
+    }
+
+    return (
+      <div className="flex flex-col gap-3">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between">
+          <button onClick={() => !allPassed && setAllCollapsed(x => !x)}
+            disabled={allPassed}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity disabled:cursor-default disabled:opacity-100">
+            <span className="text-[16px] font-medium text-[#37474f] tracking-[0.1px] leading-[24px]">Dokumentprüfung</span>
+            {!allPassed && (
+              <span className={`icon text-[20px] text-[#37474f] transition-transform ${allCollapsed ? '-rotate-90' : ''}`} style={{ lineHeight:1 }}>expand_more</span>
+            )}
+          </button>
+          <button onClick={handleRerun} disabled={isRunning}
+            className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-primary-500 hover:text-primary-600 transition-colors disabled:opacity-60 whitespace-nowrap">
+            <span className={`icon text-[16px] ${isRunning ? 'animate-spin' : ''}`} style={{ lineHeight:1 }}>
+              {isRunning ? 'progress_activity' : 'sync'}
+            </span>
+            {isRunning ? 'Läuft …' : 'Prüfungen wiederhohlen'}
+          </button>
+        </div>
+
+        {!allCollapsed && (
+          allPassed ? (
+            <GroupCard variant="pass" rows={passed} isAllPassed totalCount={totalCount} />
+          ) : (
+            <>
+              {errors.length > 0 && (
+                <GroupCard variant="error" rows={errors}
+                  onOpenRequestModal={onOpenRequestModal}
+                  onOpenIgnoreModal={onOpenIgnoreModal}
+                  onResetCheck={onResetCheck}
+                />
+              )}
+              {warnings.length > 0 && (
+                <GroupCard variant="warning" rows={warnings}
+                  onOpenIgnoreModal={onOpenIgnoreModal}
+                  onResetCheck={onResetCheck}
+                />
+              )}
+              {passed.length > 0 && (
+                <GroupCard variant="pass" rows={passed} />
+              )}
+            </>
+          )
+        )}
+      </div>
+    );
+  }
+
+  /* ── Request Supporting Document Modal ── */
+  function RequestDocModal({ check, doc, onConfirm, onClose }) {
+    const [creating, setCreating] = React.useState(false);
+    function handleConfirm() {
+      setCreating(true);
+      setTimeout(() => { onConfirm(check); setCreating(false); }, 700);
+    }
+    return ReactDOM.createPortal(
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200] p-4" onClick={onClose}>
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-[480px] overflow-hidden" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-200">
+            <span className="text-[15px] font-medium text-[#37474f] flex-1">Ergänzenden Slot erstellen</span>
+            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-500">
+              <span className="icon text-[18px]">close</span>
+            </button>
+          </div>
+          <div className="px-5 py-4 flex flex-col gap-4">
+            <div className="bg-qa-warn-light border border-qa-warn rounded-lg p-3 flex gap-3">
+              <WarnIcon size={18} className="mt-0.5" />
+              <div>
+                <p className="text-[13px] font-medium text-[#37474f]">{check.name}</p>
+                <p className="text-[12px] text-neutral-600 mt-0.5">{check.result}</p>
+                <p className="text-[12px] text-neutral-500 mt-1">Ein ergänzendes Dokument kann diesen Fehler beheben.</p>
+              </div>
+            </div>
+            <div className="border-2 border-dashed border-qa-warn rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="icon text-[18px] text-qa-warn">description</span>
+                <span className="text-[13px] font-medium text-qa-warn italic">{check.remediation?.label}</span>
+              </div>
+              <p className="text-[12px] text-neutral-500">
+                Verknüpft mit: <span className="font-medium text-[#37474f]">{doc?.name}</span> · Persönliche Dokumente
+              </p>
+            </div>
+            <p className="text-[11px] text-neutral-400 leading-snug">
+              Der neue Slot wird dem Kunden als Anforderung angezeigt. Nach dem Upload wird die Prüfung automatisch erneut ausgeführt.
+            </p>
+          </div>
+          <div className="flex items-center justify-start gap-2 px-5 py-3 border-t border-neutral-200 bg-neutral-50">
+            <button onClick={handleConfirm} disabled={creating}
+              className="flex items-center gap-1.5 px-4 py-2 rounded bg-primary-500 text-white text-[13px] font-medium hover:bg-primary-600 disabled:opacity-60 transition-colors">
+              {creating && <span className="icon text-[16px] animate-spin">progress_activity</span>}
+              Slot erstellen & anfordern
+            </button>
+            <button onClick={onClose} className="px-4 py-2 rounded border border-neutral-300 text-neutral-700 text-[13px] font-medium hover:bg-neutral-100 transition-colors">
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── Ignore Check Modal ── */
+  const ADVISOR = { name: 'Florian Kollege', initials: 'FK' };
+
+  function IgnoreCheckModal({ check, onConfirm, onClose }) {
+    const [note, setNote] = React.useState('');
+    const [dirty, setDirty] = React.useState(false);
+    const isEmpty = note.trim() === '';
+    const now = new Date();
+    const datePreview = now.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+      + ' - ' + now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+
+    function handleConfirm() {
+      setDirty(true);
+      if (!isEmpty) onConfirm(check, note.trim());
+    }
+    return ReactDOM.createPortal(
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200] p-4" onClick={onClose}>
+        <div className="bg-white rounded-[8px] w-full max-w-[561px] overflow-hidden"
+          style={{ boxShadow: '0px 4px 24px rgba(55,71,79,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Top separator */}
+          <div className="h-px bg-[#eceff1]" />
+
+          {/* Header */}
+          <div className="bg-white rounded-tl-[8px] rounded-tr-[8px] pt-4">
+            <div className="flex items-center justify-between px-6 mb-4">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="icon icon-filled text-[20px] text-qa-warn flex-shrink-0" style={{ lineHeight:1 }}>do_not_disturb_on</span>
+                <span className="text-[20px] font-medium text-[#37474f]">Prüfung ignorieren</span>
+              </div>
+              <button onClick={onClose} className="w-5 h-5 flex items-center justify-center text-neutral-500 hover:text-neutral-700 flex-shrink-0">
+                <span className="icon text-[20px]">close</span>
+              </button>
+            </div>
+            <div className="h-px bg-[#eceff1]" />
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col gap-4 px-6 py-4">
+            {/* Blue info banner */}
+            <div className="flex items-center gap-2 p-2 bg-[#ebf0fb]">
+              <span className="icon icon-filled text-[20px] text-qa-ignored flex-shrink-0" style={{ lineHeight:1 }}>info</span>
+              <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
+            </div>
+
+            {/* Textarea */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[14px] text-[#546e7a] tracking-[0.1px]">
+                Begründung <span className="text-[#e64d4d]">*</span>
+              </label>
+              <textarea value={note} onChange={e => setNote(e.target.value)}
+                placeholder="Bitte gib eine Begründung an, warum diese Prüfung ignoriert werden soll..."
+                className={`w-full px-[10px] py-[6px] text-[16px] leading-[24px] tracking-[0.25px] border rounded-[4px] resize-none focus:outline-none transition-colors
+                  ${dirty && isEmpty ? 'border-qa-fail bg-qa-fail-light' : 'border-[#cfd8dc] focus:border-primary-500'}`}
+                style={{ height: '92px' }} />
+              {dirty && isEmpty && <p className="text-[11px] text-qa-fail">Bitte gib eine Begründung an.</p>}
+            </div>
+
+            {/* Advisor row */}
+            <div className="flex items-center gap-2 px-[10px] py-[6px] bg-[#fafbfc] border border-[#eceff1] rounded-[4px]">
+              <div className="w-8 h-8 rounded-full bg-neutral-200 inline-flex items-center justify-center flex-shrink-0">
+                <span className="text-[14px] font-medium text-[#78909c]">{ADVISOR.initials}</span>
+              </div>
+              <div className="flex flex-col flex-1 min-w-0 text-[14px] leading-[20px]">
+                <span className="font-medium text-[#4b5961]">{ADVISOR.name}</span>
+                <span className="text-[#546e7a] tracking-[0.25px]">{datePreview}</span>
+              </div>
+              <span className="flex-1 min-w-0 text-[14px] italic text-[#78909c] tracking-[0.25px]">wird automatisch angehängt</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-white rounded-bl-[8px] rounded-br-[8px]">
+            <div className="h-px bg-[#eceff1]" />
+            <div className="flex items-center gap-4 px-6 py-[24px]">
+              <button onClick={handleConfirm}
+                className="flex items-center gap-1 h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium hover:bg-primary-600 transition-colors">
+                <span className="icon text-[20px]" style={{ lineHeight:1 }}>remove_circle_outline</span>
+                <span className="px-1">Prüfung ignorieren</span>
+              </button>
+              <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── Toast notification ── */
+  function Toast({ message, visible, onUndo, onDismiss }) {
+    if (!visible) return null;
+    return ReactDOM.createPortal(
+      <div className="fixed bottom-6 right-6 z-[300] flex items-start max-w-[360px]"
+        style={{ borderRadius: '4px', boxShadow: '0px 1px 4px 0px rgba(84,110,122,0.25)', overflow: 'hidden' }}>
+        {/* Green left accent bar */}
+        <div className="w-[4px] flex-shrink-0 self-stretch bg-qa-pass" />
+        {/* Content */}
+        <div className="flex items-start gap-2 px-3 py-2.5 bg-[#E9FCF2]" style={{ minWidth: 0 }}>
+          <span className="icon icon-filled flex-shrink-0 mt-px" style={{ fontSize: '18px', color: '#20BF6B', lineHeight: 1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>check_circle</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] leading-[1.4] tracking-[0.25px]" style={{ color: '#546E7A' }}>{message}</p>
+            {onUndo && (
+              <button
+                onClick={() => { onUndo(); onDismiss(); }}
+                className="mt-1 text-[12px] font-medium underline whitespace-nowrap transition-colors"
+                style={{ color: '#546E7A', opacity: 0.8 }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '0.8'}>
+                Rückgängig
+              </button>
+            )}
+          </div>
+          <button onClick={onDismiss} className="flex-shrink-0 ml-1 transition-opacity hover:opacity-70" style={{ color: '#546E7A' }}>
+            <span className="icon text-[18px]" style={{ lineHeight: 1 }}>close</span>
+          </button>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── Main viewer ── */
+  function DocumentViewer({ doc, slot, docNote, checks, onOpenRequestModal, onOpenIgnoreModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
+    return (
+      <main className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
+        {/* Toolbar */}
+        <div className="h-11 flex-shrink-0 flex items-center justify-between px-4 bg-white border-b border-neutral-200">
+          <span className="text-sm font-medium text-neutral-800 truncate">{doc?.name ?? '–'}</span>
+          <div className="flex items-center gap-1">
+            {['zoom_out', 'zoom_in', 'fullscreen'].map(ico => (
+              <button key={ico} className="w-8 h-8 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-500 transition-colors">
+                <span className="icon">{ico}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Document action bar — full width, no border, Figma-matched */}
+        <div className="flex-shrink-0 flex items-center justify-between bg-white pl-[10px] pr-[16px] py-[8px] border-b border-neutral-100"
+             style={{ boxShadow: '0 1px 4px 0 rgba(84,110,122,0.15)' }}>
+          {/* Left: approve/reject + text actions */}
+          <div className="flex items-center gap-6">
+            {/* Approve / Reject circle buttons */}
+            <div className="flex items-center gap-2">
+              <button onClick={onApproveDoc}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors
+                  ${effectiveDocStatus === 'ok'
+                    ? 'border-2 border-qa-pass text-qa-pass'
+                    : 'border border-[#b0bec5] text-[#37474f] hover:border-primary-500 hover:text-primary-600'}`}>
+                <span className={`icon text-[18px] ${effectiveDocStatus === 'ok' ? 'icon-filled' : ''}`}
+                  style={effectiveDocStatus === 'ok' ? { fontVariationSettings:"'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20" } : {}}>check</span>
+              </button>
+              <button
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors
+                  ${effectiveDocStatus === 'rejected'
+                    ? 'border-2 border-qa-fail text-qa-fail'
+                    : 'border border-[#b0bec5] text-[#37474f] hover:border-red-400 hover:text-red-500'}`}>
+                <span className={`icon text-[18px] ${effectiveDocStatus === 'rejected' ? 'icon-filled' : ''}`}
+                  style={effectiveDocStatus === 'rejected' ? { fontVariationSettings:"'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20" } : {}}>close</span>
+              </button>
+            </div>
+            {/* Text link buttons */}
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-primary-600 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">arrow_forward</span>
+              Neu kategorisieren
+            </button>
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-primary-600 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">download</span>
+              Herunterladen
+            </button>
+            <button className="flex items-center gap-1 py-[2px] text-[14px] font-medium text-[#37474f] hover:text-red-500 transition-colors whitespace-nowrap">
+              <span className="icon text-[20px]">delete</span>
+              Papierkorb
+            </button>
+          </div>
+          {/* Right: icon buttons */}
+          <div className="flex items-center gap-4">
+            {[{ ico: 'note_add' }, { ico: 'upload' }, { ico: 'more_horiz' }].map(({ ico }) => (
+              <button key={ico} className="w-9 h-9 flex items-center justify-center rounded border border-[#b0bec5] text-[#37474f] hover:bg-neutral-50 transition-colors">
+                <span className="icon text-[20px]">{ico}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Note bar — shown when a supporting slot with a note is selected */}
+        {(slot?.note || docNote) && (
+          <div className="flex-shrink-0 flex items-center gap-3 pl-4 pr-4 py-2.5 bg-white border border-neutral-200 mx-6 mt-5 rounded-[4px]" style={{ borderLeftColor: '#FF9F1A', borderLeftWidth: '4px' }}>
+            <span className="icon text-[18px] text-neutral-400 flex-shrink-0" style={{ lineHeight:1 }}>description</span>
+            <p className="flex-1 text-[13px] text-neutral-700 leading-snug">
+              <span className="font-medium">Öffentliche Notiz:&nbsp;</span>{slot?.note || docNote}
+            </p>
+            <div className="flex items-center gap-3 flex-shrink-0 text-neutral-500">
+              <div className="flex items-center gap-1.5">
+                <span className="icon text-[16px]" style={{ lineHeight:1 }}>person</span>
+                <span className="text-[12px]">Sichtbar für den Kunden</span>
+              </div>
+              <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-200 transition-colors">
+                <span className="icon text-[18px]">more_horiz</span>
+              </button>
+              <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-200 transition-colors">
+                <span className="icon text-[18px]">expand_more</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="p-6 flex flex-col gap-5">
+
+            {/* QA Panel */}
+            {doc && checks.length > 0 && (
+              <QAPanel
+                doc={doc}
+                checks={checks}
+                onChecksUpdate={onChecksUpdate}
+                onOpenRequestModal={onOpenRequestModal}
+                onOpenIgnoreModal={onOpenIgnoreModal}
+                onResetCheck={onResetCheck}
+                onRerun={onRerun}
+              />
+            )}
+
+            {/* Document preview */}
+            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+              {doc?.id === 309 ? (
+                <iframe
+                  src="assets/energieausweis.pdf"
+                  className="w-full"
+                  style={{ height: '900px', border: 'none' }}
+                  title="Energieausweis"
+                />
+              ) : doc?.id === 201 || doc?.id === 202 || doc?.id === 204 ? (
+                <iframe
+                  src="assets/gehaltsabrechnung-august.pdf"
+                  className="w-full"
+                  style={{ height: '900px', border: 'none' }}
+                  title="Gehaltsabrechnung"
+                />
+              ) : doc?.id === 205 ? (
+                <img
+                  src="assets/reisepass.jpg"
+                  alt="Reisepass"
+                  className="w-full h-auto block"
+                />
+              ) : (
+                <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-2 text-neutral-400">
+                    <span className="icon text-5xl">description</span>
+                    <span className="text-sm">{doc ? doc.name : 'Kein Dokument ausgewählt'}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  /* ── Right rail ── */
+  function PageRail({ doc }) {
+    const PAGE_COUNTS = { 201:2, 202:1, 204:3, 205:1, 206:1, 301:2, 302:1, 303:1, 304:1, 305:2, 306:3, 307:2, 308:3, 309:2 };
+    const count = doc ? (PAGE_COUNTS[doc.id] ?? 2) : 0;
+    const pages = Array.from({ length: count }, (_, i) => i + 1);
+
+    return (
+      <aside className="w-[120px] flex-shrink-0 flex flex-col bg-white border-l border-neutral-200 overflow-hidden">
+        <div className="px-3 py-3 border-b border-neutral-200 flex items-center gap-1.5">
+          <span className="icon text-[16px] text-neutral-500">layers</span>
+          <span className="text-xs font-medium text-neutral-600">Seiten</span>
+        </div>
+        <div className="flex-1 overflow-y-auto py-3 flex flex-col gap-3 px-3">
+          {!doc && <p className="text-xs text-neutral-300 text-center mt-6">–</p>}
+          {pages.map(p => (
+            <div key={p} className="flex flex-col items-center gap-1 cursor-pointer group">
+              <div className="w-full aspect-[3/4] bg-neutral-200 rounded border-2 border-transparent group-hover:border-primary-500 transition-colors" />
+              <span className="text-[10px] text-neutral-400">{p}</span>
+            </div>
+          ))}
+        </div>
+      </aside>
+    );
+  }
+
+  /* ── Header ── */
+  function Header() {
+    return (
+      <header className="h-[70px] flex items-center justify-between px-4 bg-white border-b border-neutral-200 flex-shrink-0">
+
+        {/* Left: title + progress */}
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-[20px] font-medium leading-[28px] text-[#37474f] whitespace-nowrap">
+              Dokumente für Melissa Mustermann
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] leading-[16px]">
+                <span className="font-medium text-[#37474f]">5/25</span>
+                <span className="text-[#546e7a]"> Dokumente genehmigt</span>
+              </span>
+              <div className="w-[150px] h-[6px] bg-[#e6f5f3] rounded-full overflow-hidden">
+                <div className="h-full w-[20%] bg-[#009688] rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: actions + user */}
+        <div className="flex items-center gap-2">
+          {/* Hochladen primary */}
+          <button className="flex items-center gap-1 pl-2 pr-4 py-2 bg-[#009688] hover:bg-primary-600 text-white text-[14px] font-medium rounded transition-colors">
+            <span className="icon text-[20px]">upload</span>
+            Hochladen
+          </button>
+          {/* Exportieren secondary */}
+          <button className="flex items-center gap-1 pl-2 pr-4 py-2 border border-[#b0bec5] text-[#4b5961] text-[14px] font-medium rounded hover:bg-neutral-50 transition-colors">
+            <span className="icon text-[20px]">call_made</span>
+            Exportieren
+          </button>
+          {/* Email icon button with counter */}
+          <div className="relative">
+            <button className="w-9 h-9 flex items-center justify-center border border-[#b0bec5] rounded text-[#4b5961] hover:bg-neutral-50 transition-colors">
+              <span className="icon text-[20px]">email</span>
+            </button>
+            <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#009688] rounded-full flex items-center justify-center">
+              <span className="text-[10px] font-medium text-white leading-none">4</span>
+            </div>
+          </div>
+          {/* More menu */}
+          <button className="w-9 h-9 flex items-center justify-center border border-[#b0bec5] rounded text-[#4b5961] hover:bg-neutral-50 transition-colors">
+            <span className="icon text-[20px]">more_horiz</span>
+          </button>
+          {/* Divider */}
+          <div className="w-px h-10 bg-[#eceff1] mx-1" />
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full bg-[#b0bec5] flex items-center justify-center flex-shrink-0">
+            <span className="icon text-[20px] text-white">person</span>
+          </div>
+          {/* User info */}
+          <div className="flex items-center gap-1">
+            <div className="flex flex-col items-start">
+              <span className="text-[14px] text-[#4b5961] leading-[20px] tracking-[0.25px] whitespace-nowrap">Jan Joisten</span>
+              <span className="text-[12px] text-[#78909c] leading-[16px] whitespace-nowrap">Berater/in</span>
+            </div>
+            <span className="icon text-[20px] text-[#4b5961]">expand_more</span>
+          </div>
+        </div>
+
+      </header>
+    );
+  }
+
+  /* ── App ── */
+  function App() {
+    const [selectedId, setSelectedId] = React.useState(null);
+
+    /* QA checks state — keyed by doc id, initialised from QA_CHECKS */
+    const [docChecks, setDocChecks] = React.useState(() => {
+      const init = {};
+      ALL_DOCS.forEach(d => {
+        init[d.id] = (QA_CHECKS[d.id] || DEFAULT_QA_CHECKS).map(c => ({ ...c }));
+      });
+      return init;
+    });
+
+    const [ignoreModal, setIgnoreModal] = React.useState(null);
+
+    /* Toast with optional undo */
+    const [toast, setToast] = React.useState({ visible: false, message: '', onUndo: null });
+    const toastTimerRef = React.useRef(null);
+    function showToast(msg, onUndo = null) {
+      clearTimeout(toastTimerRef.current);
+      setToast({ visible: true, message: msg, onUndo });
+      toastTimerRef.current = setTimeout(() => setToast({ visible: false, message: '', onUndo: null }), 8000);
+    }
+    function dismissToast() {
+      clearTimeout(toastTimerRef.current);
+      setToast({ visible: false, message: '', onUndo: null });
+    }
+
+    /* Supporting slots — keyed by parent doc id */
+    const [supportingSlots, setSupportingSlots] = React.useState({});
+
+    /* Doc status overrides — set when advisor manually approves a doc */
+    const [docStatusOverrides, setDocStatusOverrides] = React.useState({});
+
+    /* Compute which docs have at least one ignored check with a note */
+    const ignoredNotesByDoc = React.useMemo(() => {
+      const result = {};
+      Object.entries(docChecks).forEach(([docId, checks]) => {
+        const ignoredWithNote = checks.find(c => c.status === 'ignored' && c.override?.note);
+        if (ignoredWithNote) result[Number(docId)] = ignoredWithNote.override;
+      });
+      return result;
+    }, [docChecks]);
+
+    function handleApproveDoc() {
+      if (!selectedDoc) return;
+      setDocStatusOverrides(prev => ({ ...prev, [selectedDoc.id]: 'ok' }));
+      showToast('Dokument genehmigt');
+    }
+
+    const selectedDoc       = ALL_DOCS.find(d => d.id === selectedId) ?? null;
+    const effectiveDocStatus = selectedDoc ? (docStatusOverrides[selectedDoc.id] ?? selectedDoc.docStatus) : null;
+    const selectedSlot   = !selectedDoc ? Object.values(supportingSlots).flat().find(s => s.id === selectedId) ?? null : null;
+    const activeDocNote  = selectedDoc?.note ?? null;
+    const currentChecks  = selectedDoc && QA_CHECKS[selectedDoc.id] ? (docChecks[selectedDoc.id] || []) : [];
+
+    function updateCheck(docId, checkId, updates) {
+      setDocChecks(prev => ({
+        ...prev,
+        [docId]: prev[docId].map(c => c.id === checkId ? { ...c, ...updates } : c),
+      }));
+    }
+
+    function handleRequestDoc(check) {
+      const docId = selectedDoc.id;
+      const slotId = `slot-${Date.now()}`;
+      const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: check.remediation.slotNote || null };
+      const origCheck = (QA_CHECKS[docId] || []).find(c => c.id === check.id);
+
+      setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
+      updateCheck(docId, check.id, { status: 'requested', result: check.remediation.label.replace(/\s*anfordern$/i, '') + ' angefordert' });
+
+      showToast(
+        'Anfrage gesendet. Der Kunde sieht den Ablehnungsgrund und die nächsten Schritte in seinem Dashboard.',
+        () => {
+          setSupportingSlots(prev => ({ ...prev, [docId]: (prev[docId] || []).filter(s => s.id !== slotId) }));
+          if (origCheck) updateCheck(docId, check.id, { ...origCheck });
+        }
+      );
+    }
+
+    function handleIgnoreConfirm(check, note) {
+      const orig = (QA_CHECKS[selectedDoc.id] || []).find(c => c.id === check.id);
+      const isWarning = orig?.status === 'warning';
+      updateCheck(selectedDoc.id, check.id, {
+        status: isWarning ? 'warning' : 'ignored',
+        override: {
+          note,
+          advisorName: ADVISOR.name,
+          initials: ADVISOR.initials,
+          timestamp: new Date().toISOString(),
+        },
+      });
+      setIgnoreModal(null);
+      showToast(isWarning ? 'Notiz hinzugefügt' : 'Prüfung wurde ignoriert');
+    }
+
+    function handleResetCheck(checkId) {
+      const orig = (QA_CHECKS[selectedDoc?.id] || []).find(c => c.id === checkId);
+      if (orig) updateCheck(selectedDoc.id, checkId, { ...orig });
+    }
+
+    function handleRerun() {
+      showToast('✓ Prüfungen wurden aktualisiert');
+    }
+
+    return (
+      <div className="h-screen flex flex-col overflow-hidden">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            supportingSlots={supportingSlots}
+            docStatusOverrides={docStatusOverrides}
+            ignoredNotesByDoc={ignoredNotesByDoc}
+          />
+          <DocumentViewer
+            doc={selectedDoc}
+            slot={selectedSlot}
+            docNote={activeDocNote}
+            checks={currentChecks}
+            onOpenRequestModal={handleRequestDoc}
+            onOpenIgnoreModal={(check) => setIgnoreModal(check)}
+            onChecksUpdate={(checkId, updates) => updateCheck(selectedDoc?.id, checkId, updates)}
+            onResetCheck={handleResetCheck}
+            onRerun={handleRerun}
+            onApproveDoc={handleApproveDoc}
+            effectiveDocStatus={effectiveDocStatus}
+          />
+          <PageRail doc={selectedDoc} />
+        </div>
+
+        {ignoreModal && (
+          <IgnoreCheckModal
+            check={ignoreModal}
+            onConfirm={handleIgnoreConfirm}
+            onClose={() => setIgnoreModal(null)}
+          />
+        )}
+        <Toast message={toast.message} visible={toast.visible} onUndo={toast.onUndo} onDismiss={dismissToast} />
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
