@@ -250,34 +250,52 @@
     );
   }
 
-  /* Blue description icon for sidebar — shown after doc is approved with an ignored note */
-  function SidebarIgnoreNoteIcon({ override }) {
+  /* Renders a list of notes (newest first), with avatar/timestamp header per entry */
+  function NoteList({ notes }) {
+    if (!notes || notes.length === 0) return null;
+    return (
+      <div className="flex flex-col max-h-[400px] overflow-y-auto">
+        {notes.map((n, i) => {
+          const ts = n?.timestamp ? new Date(n.timestamp) : null;
+          const dateStr = ts
+            ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+              + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
+            : '';
+          return (
+            <React.Fragment key={i}>
+              {i > 0 && <div className="h-px bg-neutral-200" />}
+              <div className="px-3 py-2 flex items-center gap-2 bg-neutral-50">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
+                  {n?.initials ?? '??'}
+                </span>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-[11px] font-medium text-neutral-700">{n?.advisorName ?? '–'}</span>
+                  <span className="text-[10px] text-neutral-400">{dateStr}</span>
+                </div>
+              </div>
+              <div className="px-3 py-2">
+                <p className="text-[12px] text-neutral-700 leading-snug">{n?.note}</p>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }
+
+  /* Sidebar note icon — orange chat bubble with all notes in a hover tooltip */
+  function SidebarIgnoreNoteIcon({ notes }) {
     const [anchor, setAnchor] = React.useState(null);
     const ref = React.useRef(null);
-    const ts = override?.timestamp ? new Date(override.timestamp) : null;
-    const dateStr = ts
-      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
-        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
-      : '';
+    if (!notes || notes.length === 0) return null;
     return (
       <div ref={ref} className="flex-shrink-0 flex items-center"
         onClick={e => e.stopPropagation()}
         onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
         onMouseLeave={() => setAnchor(null)}>
-        <span className="icon icon-filled text-[18px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>description</span>
+        <span className="icon text-[18px] text-qa-warn" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>chat</span>
         <Tooltip anchor={anchor}>
-          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
-              {override?.initials ?? '??'}
-            </span>
-            <div className="flex flex-col leading-tight">
-              <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
-              <span className="text-[10px] text-neutral-400">{dateStr}</span>
-            </div>
-          </div>
-          <div className="px-3 py-2">
-            <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
-          </div>
+          <NoteList notes={notes} />
         </Tooltip>
       </div>
     );
@@ -359,8 +377,8 @@
               const active = item.id === selectedId;
               const slots  = supportingSlots[item.id] || [];
               const effectiveStatus = docStatusOverrides[item.id] ?? item.docStatus;
-              const ignoredNote = ignoredNotesByDoc[item.id] ?? null;
-              const isApprovedWithNote = effectiveStatus === 'ok' && ignoredNote;
+              const ignoredNotes = ignoredNotesByDoc[item.id] ?? null;
+              const isApprovedWithNote = effectiveStatus === 'ok' && ignoredNotes && ignoredNotes.length > 0;
               return (
                 <React.Fragment key={item.id}>
                   <li className="border-t border-neutral-100 first:border-t-0">
@@ -382,7 +400,7 @@
                       </span>
                       {item.isNew && <NewBadge />}
                       {isApprovedWithNote
-                        ? <SidebarIgnoreNoteIcon override={ignoredNote} />
+                        ? <SidebarIgnoreNoteIcon notes={ignoredNotes} />
                         : <WarningBadge warnings={item.warnings} />}
                     </button>
                   </li>
@@ -846,44 +864,29 @@
   }
 
   /* Main QA panel */
-  /* ── V2: orange chat icon with note tooltip ── */
-  function ChatNoteIcon({ override }) {
+  /* ── V2: orange chat icon with multi-note tooltip ── */
+  function ChatNoteIcon({ notes }) {
     const [anchor, setAnchor] = React.useState(null);
     const ref = React.useRef(null);
-    const ts = override?.timestamp ? new Date(override.timestamp) : null;
-    const dateStr = ts
-      ? ts.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
-        + ' · ' + ts.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' })
-      : '';
+    if (!notes || notes.length === 0) return null;
     return (
-      <div ref={ref} className="flex items-center cursor-default"
+      <div ref={ref} className="flex items-center cursor-default flex-shrink-0"
         onMouseEnter={() => setAnchor(ref.current?.getBoundingClientRect())}
         onMouseLeave={() => setAnchor(null)}>
         <span className="icon text-[20px] text-qa-warn" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>chat</span>
         <Tooltip anchor={anchor}>
-          <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-2 bg-neutral-50">
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-neutral-500 text-white text-[10px] font-bold flex-shrink-0">
-              {override?.initials ?? '??'}
-            </span>
-            <div className="flex flex-col leading-tight">
-              <span className="text-[11px] font-medium text-neutral-700">{override?.advisorName ?? '–'}</span>
-              <span className="text-[10px] text-neutral-400">{dateStr}</span>
-            </div>
-          </div>
-          <div className="px-3 py-2">
-            <p className="text-[12px] text-neutral-700 leading-snug">{override?.note}</p>
-          </div>
+          <NoteList notes={notes} />
         </Tooltip>
       </div>
     );
   }
 
   /* ── V2: single QA row inside a group card ── */
-  function QARow({ check, variant, isLast, onOpenRequestModal, onOpenIgnoreModal, onResetCheck }) {
+  function QARow({ check, variant, isLast, onOpenRequestModal, onOpenIgnoreModal, onOpenNoteModal, onResetCheck }) {
     const isError = variant === 'error';
     const isWarn  = variant === 'warning';
     const isPass  = variant === 'pass';
-    const hasNote = !!check.override?.note;
+    const hasNote = (check.notes?.length || 0) > 0;
     const isRequested = check.status === 'requested';
     const isIgnored   = check.status === 'ignored';
 
@@ -893,31 +896,31 @@
 
     return (
       <React.Fragment>
-        {/* Left cell: icon + text */}
+        {/* Left cell: icon + text (always renders the static check result, never the note) */}
         <div className={`flex items-center gap-2 px-3 min-h-10 py-1.5 bg-white ${borderClass}`}>
-          {isError && <span className="icon text-[20px] text-[#e64d4d] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>}
+          {isError && <span className={`icon text-[20px] flex-shrink-0 ${isIgnored ? 'text-neutral-400' : 'text-[#e64d4d]'}`} style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>}
           {isWarn  && <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>}
           {isPass  && <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>}
-          <span className={`text-[12px] leading-[16px] tracking-[0.2px] break-words ${isError ? 'font-medium text-[#e64d4d]' : 'text-[#4b5961]'}`}>{text}</span>
+          <span className={`text-[12px] leading-[16px] tracking-[0.2px] break-words ${isError && isIgnored ? 'text-neutral-500' : isError ? 'font-medium text-[#e64d4d]' : 'text-[#4b5961]'}`}>{text}</span>
         </div>
 
         {/* Right cell: actions (skipped for pass variant) */}
         {!isPass && (
           <div className={`flex items-center justify-end gap-2 pl-2 pr-3 min-h-10 py-1.5 bg-white ${borderClass}`}>
-            {/* Note icon when a note has been added */}
-            {hasNote && !isRequested && <ChatNoteIcon override={check.override} />}
+            {/* Chat icon — shows whenever any notes exist, in any state */}
+            {hasNote && <ChatNoteIcon notes={check.notes} />}
 
-            {/* Fehler — default state */}
-            {isError && !hasNote && !isRequested && (
+            {/* Fehler — default state (not yet ignored, not yet requested) */}
+            {isError && !isRequested && !isIgnored && (
               <>
                 {check.remediation?.type === 'request_document' && (
                   <button onClick={() => onOpenRequestModal(check)}
-                    className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
+                    className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
                     {check.remediation.label}
                   </button>
                 )}
                 <button onClick={() => onOpenIgnoreModal(check)}
-                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
                   Ignorieren
                 </button>
               </>
@@ -927,30 +930,28 @@
             {isError && isRequested && (
               <>
                 <span className="h-4 px-2 rounded-[4px] bg-[#546e7a] text-white text-[11px] font-medium leading-[16px] tracking-[0.25px] inline-flex items-center whitespace-nowrap">
-                  {check.result}
+                  {check.remediation?.label?.replace(/\s*anfordern$/i, '') + ' angefordert'}
                 </span>
                 <button onClick={() => onResetCheck(check.id)}
-                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                  className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
                   Zurücksetzen
                 </button>
               </>
             )}
 
-            {/* Fehler — ignored with note state */}
+            {/* Fehler — ignored state */}
             {isError && isIgnored && (
               <button onClick={() => onResetCheck(check.id)}
-                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
                 Zurücksetzen
               </button>
             )}
 
-            {/* Warnungen — always shows "Notiz hinzufügen" (acts as edit when note exists) */}
-            {isWarn && (
-              <button onClick={() => onOpenIgnoreModal(check)}
-                className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
-                Notiz hinzufügen
-              </button>
-            )}
+            {/* Notiz hinzufügen — always present for Fehler + Warnungen */}
+            <button onClick={() => onOpenNoteModal(check)}
+              className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+              Notiz hinzufügen
+            </button>
           </div>
         )}
       </React.Fragment>
@@ -958,7 +959,7 @@
   }
 
   /* ── V2: group card (Fehler / Warnungen / Bestanden) ── */
-  function GroupCard({ variant, rows, isAllPassed, totalCount, onOpenRequestModal, onOpenIgnoreModal, onResetCheck }) {
+  function GroupCard({ variant, rows, isAllPassed, totalCount, onOpenRequestModal, onOpenIgnoreModal, onOpenNoteModal, onResetCheck }) {
     const titleLabels = { error: 'Fehler', warning: 'Warnungen', pass: 'Bestanden' };
     const [expanded, setExpanded] = React.useState(variant !== 'pass');
 
@@ -972,10 +973,10 @@
             <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">{titleLabels[variant]}</span>
             <span className={`icon text-[16px] text-[#37474f] transition-transform ${expanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
           </div>
-          {isAllPassed && (
+          {variant === 'pass' && (
             <div className="flex items-center gap-1">
               <span className="icon text-[20px] text-[#20bf6b]" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
-              <span className="text-[12px] font-medium text-[#20bf6b] leading-[16px]">{rows.length}/{totalCount} bestanden</span>
+              <span className="text-[12px] font-medium text-[#20bf6b] leading-[16px]">{rows.length}/{totalCount} Bestanden</span>
             </div>
           )}
         </button>
@@ -986,6 +987,7 @@
               <QARow key={check.id} check={check} variant={variant} isLast={i === rows.length - 1}
                 onOpenRequestModal={onOpenRequestModal}
                 onOpenIgnoreModal={onOpenIgnoreModal}
+                onOpenNoteModal={onOpenNoteModal}
                 onResetCheck={onResetCheck}
               />
             ))}
@@ -996,7 +998,7 @@
   }
 
   /* ── V2: top-level QA panel with three grouped cards ── */
-  function QAPanel({ doc, checks, onChecksUpdate, onOpenRequestModal, onOpenIgnoreModal, onResetCheck, onRerun }) {
+  function QAPanel({ doc, checks, onChecksUpdate, onOpenRequestModal, onOpenIgnoreModal, onOpenNoteModal, onResetCheck, onRerun }) {
     const [isRunning, setIsRunning] = React.useState(false);
 
     // Categorize by ORIGINAL status so ignored/requested rows stay in their home group
@@ -1038,17 +1040,19 @@
               <GroupCard variant="error" rows={errors}
                 onOpenRequestModal={onOpenRequestModal}
                 onOpenIgnoreModal={onOpenIgnoreModal}
+                onOpenNoteModal={onOpenNoteModal}
                 onResetCheck={onResetCheck}
               />
             )}
             {warnings.length > 0 && (
               <GroupCard variant="warning" rows={warnings}
                 onOpenIgnoreModal={onOpenIgnoreModal}
+                onOpenNoteModal={onOpenNoteModal}
                 onResetCheck={onResetCheck}
               />
             )}
             {passed.length > 0 && (
-              <GroupCard variant="pass" rows={passed} />
+              <GroupCard variant="pass" rows={passed} totalCount={totalCount} />
             )}
           </>
         )}
@@ -1111,7 +1115,7 @@
             <div className="h-px bg-[#eceff1]" />
             <div className="flex items-center gap-4 px-6 py-[24px]">
               <button onClick={handleConfirm}
-                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors whitespace-nowrap">
+                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors whitespace-nowrap">
                 <span className="px-1">{title} & Slot erstellen</span>
               </button>
               <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
@@ -1201,8 +1205,95 @@
             <div className="h-px bg-[#eceff1]" />
             <div className="flex items-center gap-4 px-6 py-[24px]">
               <button onClick={handleConfirm}
-                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] hover:bg-primary-600 transition-colors">
+                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors">
                 <span className="px-1">Prüfung ignorieren</span>
+              </button>
+              <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
+  /* ── Note-only Modal (does not change the check's status) ── */
+  function NoteModal({ check, onConfirm, onClose }) {
+    const [note, setNote] = React.useState('');
+    const [dirty, setDirty] = React.useState(false);
+    const isEmpty = note.trim() === '';
+    const now = new Date();
+    const datePreview = now.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+      + ' - ' + now.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+
+    function handleConfirm() {
+      setDirty(true);
+      if (!isEmpty) onConfirm(check, note.trim());
+    }
+
+    return ReactDOM.createPortal(
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200] p-4" onClick={onClose}>
+        <div className="bg-white rounded-[8px] w-full max-w-[561px] overflow-hidden"
+          style={{ boxShadow: '0px 4px 24px rgba(55,71,79,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Top separator */}
+          <div className="h-px bg-[#eceff1]" />
+
+          {/* Header */}
+          <div className="bg-white rounded-tl-[8px] rounded-tr-[8px] pt-4">
+            <div className="flex items-center justify-between px-6 mb-4">
+              <span className="text-[20px] font-medium text-[#37474f] leading-[24px]">Notiz hinzufügen</span>
+              <button onClick={onClose} className="w-5 h-5 flex items-center justify-center text-neutral-500 hover:text-neutral-700 flex-shrink-0">
+                <span className="icon text-[20px]">close</span>
+              </button>
+            </div>
+            <div className="h-px bg-[#eceff1]" />
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col gap-4 px-6 py-4">
+            {/* Error banner (re-using the same red error look) */}
+            <div className="flex items-center gap-2 p-2 bg-qa-fail-light">
+              <span className="icon icon-filled text-[20px] text-qa-fail flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>
+              <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
+            </div>
+
+            {/* Internal note textarea */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[14px] text-[#546e7a] tracking-[0.1px] leading-[20px]">
+                Interne Notiz
+              </label>
+              <textarea value={note} onChange={e => setNote(e.target.value)}
+                placeholder="Interne Notiz nur für Berater ersichtlich..."
+                className={`w-full px-[10px] py-[6px] text-[16px] leading-[24px] tracking-[0.25px] border rounded-[4px] resize-none focus:outline-none transition-colors
+                  ${dirty && isEmpty ? 'border-qa-fail bg-qa-fail-light' : 'border-[#cfd8dc] focus:border-primary-500'}`}
+                style={{ height: '92px' }} />
+              {dirty && isEmpty && <p className="text-[11px] text-qa-fail">Bitte gib eine Notiz an.</p>}
+            </div>
+
+            {/* Advisor row */}
+            <div className="flex items-center gap-2 px-[10px] py-[6px] bg-[#fafbfc] border border-[#eceff1] rounded-[4px]">
+              <div className="w-8 h-8 rounded-full bg-neutral-200 inline-flex items-center justify-center flex-shrink-0">
+                <span className="text-[14px] font-medium text-[#78909c]">{ADVISOR.initials}</span>
+              </div>
+              <div className="flex flex-col flex-1 min-w-0 text-[14px] leading-[20px]">
+                <span className="font-medium text-[#4b5961]">{ADVISOR.name}</span>
+                <span className="text-[#546e7a] tracking-[0.25px]">{datePreview}</span>
+              </div>
+              <span className="flex-1 min-w-0 text-[14px] italic text-[#78909c] tracking-[0.25px]">wird automatisch angehängt</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-white rounded-bl-[8px] rounded-br-[8px]">
+            <div className="h-px bg-[#eceff1]" />
+            <div className="flex items-center gap-4 px-6 py-[24px]">
+              <button onClick={handleConfirm}
+                className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors">
+                <span className="px-1">Notiz hinzufügen</span>
               </button>
               <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
                 Abbrechen
@@ -1249,7 +1340,7 @@
   }
 
   /* ── Main viewer ── */
-  function DocumentViewer({ doc, slot, docNote, checks, onOpenRequestModal, onOpenIgnoreModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
+  function DocumentViewer({ doc, slot, docNote, checks, onOpenRequestModal, onOpenIgnoreModal, onOpenNoteModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
     return (
       <main className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
         {/* Toolbar */}
@@ -1345,6 +1436,7 @@
                 onChecksUpdate={onChecksUpdate}
                 onOpenRequestModal={onOpenRequestModal}
                 onOpenIgnoreModal={onOpenIgnoreModal}
+                onOpenNoteModal={onOpenNoteModal}
                 onResetCheck={onResetCheck}
                 onRerun={onRerun}
               />
@@ -1496,6 +1588,7 @@
 
     const [ignoreModal, setIgnoreModal] = React.useState(null);
     const [requestModal, setRequestModal] = React.useState(null);
+    const [noteModal, setNoteModal] = React.useState(null);
 
     /* Toast with optional undo */
     const [toast, setToast] = React.useState({ visible: false, message: '', onUndo: null });
@@ -1516,12 +1609,16 @@
     /* Doc status overrides — set when advisor manually approves a doc */
     const [docStatusOverrides, setDocStatusOverrides] = React.useState({});
 
-    /* Compute which docs have at least one ignored check with a note */
+    /* Aggregate every note across a doc's checks — newest first */
     const ignoredNotesByDoc = React.useMemo(() => {
       const result = {};
       Object.entries(docChecks).forEach(([docId, checks]) => {
-        const ignoredWithNote = checks.find(c => c.status === 'ignored' && c.override?.note);
-        if (ignoredWithNote) result[Number(docId)] = ignoredWithNote.override;
+        const allNotes = checks.flatMap(c => c.notes || []);
+        if (allNotes.length > 0) {
+          result[Number(docId)] = [...allNotes].sort(
+            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+          );
+        }
       });
       return result;
     }, [docChecks]);
@@ -1552,7 +1649,7 @@
       const origCheck = (QA_CHECKS[docId] || []).find(c => c.id === check.id);
 
       setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
-      updateCheck(docId, check.id, { status: 'requested', result: check.remediation.label.replace(/\s*anfordern$/i, '') + ' angefordert' });
+      updateCheck(docId, check.id, { status: 'requested' });
       setRequestModal(null);
 
       showToast(
@@ -1567,22 +1664,48 @@
     function handleIgnoreConfirm(check, note) {
       const orig = (QA_CHECKS[selectedDoc.id] || []).find(c => c.id === check.id);
       const isWarning = orig?.status === 'warning';
-      updateCheck(selectedDoc.id, check.id, {
-        status: isWarning ? 'warning' : 'ignored',
-        override: {
-          note,
-          advisorName: ADVISOR.name,
-          initials: ADVISOR.initials,
-          timestamp: new Date().toISOString(),
-        },
+      const newNote = {
+        note,
+        advisorName: ADVISOR.name,
+        initials: ADVISOR.initials,
+        timestamp: new Date().toISOString(),
+      };
+      setDocChecks(prev => {
+        const docId = selectedDoc.id;
+        return {
+          ...prev,
+          [docId]: prev[docId].map(c => c.id === check.id
+            ? { ...c, status: isWarning ? 'warning' : 'ignored', notes: [newNote, ...(c.notes || [])] }
+            : c),
+        };
       });
       setIgnoreModal(null);
       showToast(isWarning ? 'Notiz hinzugefügt' : 'Prüfung wurde ignoriert');
     }
 
+    function handleAddNote(check, note) {
+      const newNote = {
+        note,
+        advisorName: ADVISOR.name,
+        initials: ADVISOR.initials,
+        timestamp: new Date().toISOString(),
+      };
+      setDocChecks(prev => {
+        const docId = selectedDoc.id;
+        return {
+          ...prev,
+          [docId]: prev[docId].map(c => c.id === check.id
+            ? { ...c, notes: [newNote, ...(c.notes || [])] }
+            : c),
+        };
+      });
+      setNoteModal(null);
+      showToast('Notiz hinzugefügt');
+    }
+
     function handleResetCheck(checkId) {
       const orig = (QA_CHECKS[selectedDoc?.id] || []).find(c => c.id === checkId);
-      if (orig) updateCheck(selectedDoc.id, checkId, { ...orig });
+      if (orig) updateCheck(selectedDoc.id, checkId, { ...orig, notes: [] });
     }
 
     function handleRerun() {
@@ -1607,6 +1730,7 @@
             checks={currentChecks}
             onOpenRequestModal={(check) => setRequestModal(check)}
             onOpenIgnoreModal={(check) => setIgnoreModal(check)}
+            onOpenNoteModal={(check) => setNoteModal(check)}
             onChecksUpdate={(checkId, updates) => updateCheck(selectedDoc?.id, checkId, updates)}
             onResetCheck={handleResetCheck}
             onRerun={handleRerun}
@@ -1629,6 +1753,13 @@
             doc={selectedDoc}
             onConfirm={handleConfirmRequest}
             onClose={() => setRequestModal(null)}
+          />
+        )}
+        {noteModal && (
+          <NoteModal
+            check={noteModal}
+            onConfirm={handleAddNote}
+            onClose={() => setNoteModal(null)}
           />
         )}
         <Toast message={toast.message} visible={toast.visible} onUndo={toast.onUndo} onDismiss={dismissToast} />
