@@ -2206,6 +2206,27 @@
       ALL_DOCS.forEach(d => {
         init[d.id] = (QA_CHECKS[d.id] || DEFAULT_QA_CHECKS).map(c => ({ ...c }));
       });
+
+      /* Seed past advisor actions (QA_CHECKS stays the untouched "automated flag" baseline):
+         — Exposé (307): both failing checks resolved by requesting one fresh Exposé
+         — Energieausweis (309): the expired-date check manually freigegeben */
+      const expoRequestNote = {
+        note: 'Das eingereichte Exposé ist unleserlich und älter als 3 Monate. Bitte laden Sie ein aktuelles, gut lesbares Exposé der Immobilie hoch.',
+        advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: '2026-05-28T10:15:00.000Z',
+      };
+      if (init[307]) init[307] = init[307].map(c =>
+        (c.id === '307-1' || c.id === '307-2')
+          ? { ...c, status: 'requested', requestNote: expoRequestNote, fresh: true }
+          : c);
+      if (init[309]) init[309] = init[309].map(c =>
+        c.id === '309-1'
+          ? { ...c, status: 'manually_released', fresh: true,
+              manualRelease: {
+                reason: 'Aktualisierter Energieausweis liegt der Bank bereits vor; Gültigkeit wurde manuell bestätigt.',
+                advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: '2026-05-28T10:15:00.000Z',
+              } }
+          : c);
+
       return init;
     });
 
@@ -2228,15 +2249,28 @@
       setToast({ visible: false, message: '', onUndo: null });
     }
 
-    /* Supporting slots — keyed by parent doc id */
-    const [supportingSlots, setSupportingSlots] = React.useState({});
+    /* Supporting slots — keyed by parent doc id.
+       Seeded: Exposé (307) request produced one fresh-Exposé slot awaiting customer upload. */
+    const [supportingSlots, setSupportingSlots] = React.useState({
+      307: [{ id: 'slot-307-expose', name: 'Aktuelles Exposé (neu)', docStatus: 'pending',
+        note: 'Das eingereichte Exposé ist unleserlich und älter als 3 Monate. Bitte laden Sie ein aktuelles, gut lesbares Exposé der Immobilie hoch.' }],
+    });
 
-    /* Doc status overrides — set when advisor manually approves a doc */
-    const [docStatusOverrides, setDocStatusOverrides] = React.useState({});
+    /* Doc status overrides — set when advisor manually approves a doc.
+       Seeded: Energieausweis (309) is genehmigt after the expired-date check was manuell freigegeben. */
+    const [docStatusOverrides, setDocStatusOverrides] = React.useState({ 309: 'ok' });
 
     /* Customer-facing notes — keyed by entity id (doc id or slot id).
-       Starts empty: notes only appear when the advisor adds one explicitly. */
-    const [customerNotesByEntity, setCustomerNotesByEntity] = React.useState({});
+       Seeded: mirror the Exposé request note onto the new slot and its parent doc
+       (matches handleConfirmRequest) so the document-viewer toolbar popover shows it. */
+    const [customerNotesByEntity, setCustomerNotesByEntity] = React.useState(() => {
+      const expoNote = {
+        id: 'cn-slot-307-expose',
+        note: 'Das eingereichte Exposé ist unleserlich und älter als 3 Monate. Bitte laden Sie ein aktuelles, gut lesbares Exposé der Immobilie hoch.',
+        advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: '2026-05-28T10:15:00.000Z',
+      };
+      return { 'slot-307-expose': [expoNote], 307: [expoNote] };
+    });
 
     function handleAddCustomerNote(entityId, noteText) {
       if (!entityId || !noteText?.trim()) return;
