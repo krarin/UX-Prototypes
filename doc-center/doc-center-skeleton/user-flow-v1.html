@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital QA Doc Center · User Flow V1</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Roboto', 'sans-serif'] },
+          colors: {
+            primary: { 100: '#E6F5F3', 500: '#009688', 600: '#00877A', 700: '#00695c' },
+            qa: {
+              pass: '#20BF6B', passLight: '#E9FCF2',
+              warn: '#FF9F1A', warnLight: '#FFF5E8',
+              fail: '#FF5656', failBase: '#E64D4D', failLight: '#FFEEEE',
+              pending: '#78909C', pendingLight: '#ECEFF1',
+            },
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { font-family: 'Roboto', sans-serif; color: #37474f; }
+    .icon { font-family: 'Material Symbols Outlined'; font-style: normal; user-select: none; line-height: 1; }
+    code { font-family: 'Roboto Mono', monospace; font-size: 0.9em; }
+    /* Connector — vertical line with chevron */
+    .connector { display: flex; flex-direction: column; align-items: center; }
+    .connector::before {
+      content: ""; width: 2px; height: 18px; background: #cfd8dc;
+    }
+    .connector::after {
+      content: "expand_more"; font-family: 'Material Symbols Outlined';
+      font-size: 18px; line-height: 1; color: #90a4ae; margin-top: -2px;
+    }
+    /* Tag chip for German action labels */
+    .ui-label {
+      display: inline-block; padding: 1px 6px; border-radius: 4px;
+      background: #ECEFF1; color: #37474f; font-weight: 500;
+      font-family: 'Roboto Mono', monospace; font-size: 0.85em;
+      border: 1px solid #cfd8dc;
+    }
+  </style>
+</head>
+<body class="bg-neutral-100 min-h-screen pb-20">
+
+  <!-- ── Top banner ── -->
+  <header class="bg-white border-b border-neutral-200 sticky top-0 z-10">
+    <div class="max-w-[1280px] mx-auto px-8 py-5 flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide bg-[#EDE9FE] text-[#7C3AED]">User Flow V1</span>
+          <h1 class="text-[22px] font-medium text-neutral-900">Digital QA Doc Center</h1>
+        </div>
+        <p class="text-[13px] text-neutral-500 mt-1">Decision tree for QA review and document approval — English descriptions, German UI labels</p>
+      </div>
+      <a href="../../index.html" class="text-[13px] font-medium text-neutral-500 hover:text-neutral-700 flex items-center gap-1">
+        <span class="icon text-[18px]">arrow_back</span>
+        Zurück zur Übersicht
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-[1280px] mx-auto px-8 py-10">
+
+    <!-- ── Legend ── -->
+    <section class="mb-10">
+      <h2 class="text-[12px] font-semibold uppercase tracking-wider text-neutral-500 mb-3">Legend</h2>
+      <div class="bg-white rounded-lg border border-neutral-200 p-4 flex flex-wrap gap-6">
+        <div class="flex items-center gap-2">
+          <span class="icon icon-filled text-[20px]" style="color:#20BF6B;font-variation-settings:'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20;">check</span>
+          <span class="text-[13px]"><strong>Green</strong> — Check passed (auto)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill="#FF9F1A"/>
+            <text x="10" y="15.5" text-anchor="middle" fill="white" font-size="8" font-weight="700" font-family="Roboto, sans-serif">!</text>
+          </svg>
+          <span class="text-[13px]"><strong>Amber</strong> — <code class="ui-label">Warnung</code> (does NOT block approval)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="icon icon-filled text-[20px]" style="color:#E64D4D;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20;">cancel</span>
+          <span class="text-[13px]"><strong>Red</strong> — <code class="ui-label">Fehler</code> (BLOCKS approval)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex w-5 h-5 rounded-full bg-neutral-400 items-center justify-center">
+            <span class="icon text-white text-[12px]">hourglass_empty</span>
+          </span>
+          <span class="text-[13px]"><strong>Pending</strong> — Customer hasn't uploaded yet</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Pre-decision flow ── -->
+    <section class="mb-8">
+      <div class="flex flex-col items-center">
+        <!-- Start node -->
+        <div class="w-[320px] bg-white rounded-lg border border-neutral-300 shadow-sm px-5 py-4 text-center">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">Start</div>
+          <div class="text-[14px] font-medium text-neutral-900">Customer uploads document</div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- Auto step -->
+        <div class="w-[320px] bg-[#EFF6FF] rounded-lg border border-[#BFDBFE] px-5 py-4 text-center">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-[#1D4ED8] mb-1 flex items-center justify-center gap-1">
+            <span class="icon text-[14px]">bolt</span>
+            Automatic
+          </div>
+          <div class="text-[14px] font-medium text-neutral-900">Digital QA runs checks</div>
+          <div class="text-[12px] text-neutral-500 mt-1">Each check returns <strong class="text-[#20BF6B]">Green</strong>, <strong class="text-[#FF9F1A]">Amber</strong>, or <strong class="text-[#E64D4D]">Red</strong></div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- Decision node -->
+        <div class="w-[400px] bg-white rounded-lg border-2 border-neutral-400 shadow-sm px-5 py-4 text-center">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mb-1 flex items-center justify-center gap-1">
+            <span class="icon text-[14px]">call_split</span>
+            Decision
+          </div>
+          <div class="text-[14px] font-medium text-neutral-900">What's the overall check result?</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Three branches ── -->
+    <section class="mb-12">
+      <div class="grid grid-cols-3 gap-6 items-start">
+
+        <!-- ─── Branch A — All green ─── -->
+        <div class="rounded-xl border-2 border-[#A7F3D0] bg-[#F0FDF4] p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="icon icon-filled text-[24px]" style="color:#20BF6B;font-variation-settings:'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 24;">check_circle</span>
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#15803d]">Branch A</div>
+              <div class="text-[14px] font-medium text-neutral-900">All checks green</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center gap-0">
+            <div class="w-full bg-white rounded-lg border border-emerald-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">Document ready for approval</div>
+              <div class="text-[12px] text-neutral-500 mt-1"><code class="ui-label">Genehmigen ✓</code> button enabled</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-emerald-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">Advisor reviews the doc preview</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-emerald-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">Advisor clicks <code class="ui-label">Genehmigen ✓</code></div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-[#20BF6B] text-white rounded-lg px-4 py-3 text-center shadow-sm">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="icon icon-filled text-[18px]" style="color:white;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20;">check_circle</span>
+                <div class="text-[13px] font-medium">Document approved</div>
+              </div>
+              <div class="text-[11px] mt-1 opacity-90">Sidebar checkmark turns solid green · doc locked</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── Branch B — Has Red(s) ─── -->
+        <div class="rounded-xl border-2 border-[#FECACA] bg-[#FEF2F2] p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="icon icon-filled text-[24px]" style="color:#E64D4D;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">cancel</span>
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#b91c1c]">Branch B</div>
+              <div class="text-[14px] font-medium text-neutral-900">At least one Red (Fehler)</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center gap-0">
+            <div class="w-full bg-white rounded-lg border-2 border-rose-300 px-4 py-3 text-center">
+              <div class="text-[13px] font-semibold text-rose-700">Document is BLOCKED</div>
+              <div class="text-[12px] text-neutral-600 mt-1"><code class="ui-label">Genehmigen ✓</code> button disabled until every Red is resolved</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-rose-200 px-4 py-3 text-center">
+              <div class="text-[12px] font-medium text-neutral-700">For each Red, advisor chooses one resolution:</div>
+            </div>
+
+            <!-- Three sub-options for each red -->
+            <div class="connector"></div>
+            <div class="w-full flex flex-col gap-3">
+              <!-- Option 1: Manuell freigeben -->
+              <div class="bg-white rounded-lg border border-rose-200 px-4 py-3">
+                <div class="text-[12px] font-semibold text-neutral-800 mb-1.5 flex items-center gap-1.5">
+                  <span class="inline-flex w-5 h-5 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">1</span>
+                  <code class="ui-label">Manuell freigeben</code>
+                </div>
+                <div class="text-[12px] text-neutral-600 leading-relaxed pl-7">
+                  Modal requires a <code class="ui-label">Begründung</code>. Row turns green with a hoverable <code class="ui-label">Begründung</code> token. This Red counts as resolved.
+                </div>
+              </div>
+              <!-- Option 2: Ergänzendes Dokument anfordern -->
+              <div class="bg-white rounded-lg border border-rose-200 px-4 py-3">
+                <div class="text-[12px] font-semibold text-neutral-800 mb-1.5 flex items-center gap-1.5">
+                  <span class="inline-flex w-5 h-5 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">2</span>
+                  <code class="ui-label">Ergänzendes Dokument anfordern</code>
+                </div>
+                <div class="text-[12px] text-neutral-600 leading-relaxed pl-7">
+                  Modal captures a <code class="ui-label">Notiz für Kunde</code>. A sub-slot appears in the sidebar with status <code class="ui-label">angefordert</code>. <strong>Doc stays blocked</strong> until sub-slot is approved or this Red is manually released.
+                </div>
+              </div>
+              <!-- Option 3: Neue Version anfordern -->
+              <div class="bg-white rounded-lg border border-rose-200 px-4 py-3">
+                <div class="text-[12px] font-semibold text-neutral-800 mb-1.5 flex items-center gap-1.5">
+                  <span class="inline-flex w-5 h-5 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">3</span>
+                  <code class="ui-label">Neue Version anfordern</code> <span class="text-neutral-400 font-normal">(X button on doc level)</span>
+                </div>
+                <div class="text-[12px] text-neutral-600 leading-relaxed pl-7">
+                  Document moves to <code class="ui-label">abgelehnt</code>. Customer is asked to re-upload. Flow restarts from the top.
+                </div>
+              </div>
+            </div>
+
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-rose-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">All Reds resolved</div>
+              <div class="text-[12px] text-neutral-500 mt-1"><code class="ui-label">Genehmigen ✓</code> button becomes enabled</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-rose-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">Advisor clicks <code class="ui-label">Genehmigen ✓</code></div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-[#20BF6B] text-white rounded-lg px-4 py-3 text-center shadow-sm">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="icon icon-filled text-[18px]" style="color:white;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20;">check_circle</span>
+                <div class="text-[13px] font-medium">Document approved</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── Branch C — Amber only ─── -->
+        <div class="rounded-xl border-2 border-[#FCD34D] bg-[#FFFBEB] p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+              <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill="#FF9F1A"/>
+              <text x="10" y="15.5" text-anchor="middle" fill="white" font-size="8" font-weight="700" font-family="Roboto, sans-serif">!</text>
+            </svg>
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-[#b45309]">Branch C</div>
+              <div class="text-[14px] font-medium text-neutral-900">Only Amber warnings</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center gap-0">
+            <div class="w-full bg-white rounded-lg border border-amber-200 px-4 py-3 text-center">
+              <div class="text-[13px] font-semibold text-amber-700">Document NOT blocked</div>
+              <div class="text-[12px] text-neutral-600 mt-1"><code class="ui-label">Genehmigen ✓</code> already enabled. Advisor may approve directly OR take optional actions first.</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-amber-200 px-4 py-3 text-center">
+              <div class="text-[12px] font-medium text-neutral-700">Optional per-Warnung actions (parallel, not required):</div>
+            </div>
+
+            <div class="connector"></div>
+            <div class="w-full flex flex-col gap-3">
+              <div class="bg-white rounded-lg border border-amber-200 px-4 py-3">
+                <div class="text-[12px] font-semibold text-neutral-800 mb-1.5 flex items-center gap-1.5">
+                  <span class="inline-flex w-5 h-5 rounded-full bg-amber-100 text-amber-700 items-center justify-center text-[11px] font-bold">1</span>
+                  <code class="ui-label">Ergänzendes Dokument anfordern</code>
+                </div>
+                <div class="text-[12px] text-neutral-600 leading-relaxed pl-7">
+                  Sub-slot created with <code class="ui-label">Notiz für Kunde</code>. Advisor can still approve the parent doc independently.
+                </div>
+              </div>
+              <div class="bg-white rounded-lg border border-amber-200 px-4 py-3">
+                <div class="text-[12px] font-semibold text-neutral-800 mb-1.5 flex items-center gap-1.5">
+                  <span class="inline-flex w-5 h-5 rounded-full bg-amber-100 text-amber-700 items-center justify-center text-[11px] font-bold">2</span>
+                  <code class="ui-label">Notiz an Kunden schreiben</code>
+                </div>
+                <div class="text-[12px] text-neutral-600 leading-relaxed pl-7">
+                  Modal captures a customer-facing note. Note enters the <code class="ui-label">Notizen für Kunde</code> list as <code class="ui-label">Entwurf</code> until advisor clicks <code class="ui-label">Senden</code> (V4) or it ships immediately (V3).
+                </div>
+              </div>
+            </div>
+
+            <div class="connector"></div>
+            <div class="w-full bg-white rounded-lg border border-amber-200 px-4 py-3 text-center">
+              <div class="text-[13px] text-neutral-800">Advisor clicks <code class="ui-label">Genehmigen ✓</code> when ready</div>
+            </div>
+            <div class="connector"></div>
+            <div class="w-full bg-[#20BF6B] text-white rounded-lg px-4 py-3 text-center shadow-sm">
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="icon icon-filled text-[18px]" style="color:white;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20;">check_circle</span>
+                <div class="text-[13px] font-medium">Document approved</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Branch D — Pending ── -->
+    <section class="mb-12">
+      <h2 class="text-[12px] font-semibold uppercase tracking-wider text-neutral-500 mb-3">Edge state — Document not uploaded</h2>
+      <div class="rounded-xl border-2 border-neutral-300 bg-neutral-50 p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex w-6 h-6 rounded-full bg-neutral-400 items-center justify-center">
+            <span class="icon text-white text-[14px]">hourglass_empty</span>
+          </span>
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Branch D</div>
+            <div class="text-[14px] font-medium text-neutral-900">Pending — customer hasn't uploaded</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-6 items-center">
+          <div class="bg-white rounded-lg border border-neutral-200 px-4 py-3">
+            <div class="text-[13px] text-neutral-800">Sidebar shows hourglass icon</div>
+            <div class="text-[12px] text-neutral-500 mt-1">No QA checks have run yet</div>
+          </div>
+          <div class="flex items-center justify-center text-neutral-400">
+            <span class="icon text-[28px]">arrow_forward</span>
+          </div>
+          <div class="bg-white rounded-lg border border-neutral-200 px-4 py-3">
+            <div class="text-[13px] text-neutral-800">No actions available on this doc</div>
+            <div class="text-[12px] text-neutral-500 mt-1">Advisor waits until customer uploads → loops to Start</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Edge-case loops ── -->
+    <section class="mb-12">
+      <h2 class="text-[12px] font-semibold uppercase tracking-wider text-neutral-500 mb-3">Edge-case loops</h2>
+      <div class="grid grid-cols-2 gap-4">
+
+        <!-- E1 -->
+        <div class="bg-white rounded-lg border border-neutral-200 p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex w-6 h-6 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">E1</span>
+            <div class="text-[13px] font-medium text-neutral-900">After <code class="ui-label">Neue Version anfordern</code></div>
+          </div>
+          <p class="text-[12px] text-neutral-600 leading-relaxed">
+            Document moves to <code class="ui-label">abgelehnt</code>. Customer uploads a fresh version → the auto-step <em>"Digital QA runs checks"</em> runs again → entire decision tree re-evaluates from the top.
+          </p>
+        </div>
+
+        <!-- E2 -->
+        <div class="bg-white rounded-lg border border-neutral-200 p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex w-6 h-6 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">E2</span>
+            <div class="text-[13px] font-medium text-neutral-900">After <code class="ui-label">Ergänzendes Dokument anfordern</code></div>
+          </div>
+          <p class="text-[12px] text-neutral-600 leading-relaxed">
+            Sub-slot waits for customer (hourglass in sidebar). Customer uploads → QA checks the sub-slot → if sub-slot approved, the triggering Red is automatically resolved. When the last Red is resolved, the parent doc enters the approval path.
+          </p>
+        </div>
+
+        <!-- E3 -->
+        <div class="bg-white rounded-lg border border-neutral-200 p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex w-6 h-6 rounded-full bg-rose-100 text-rose-700 items-center justify-center text-[11px] font-bold">E3</span>
+            <div class="text-[13px] font-medium text-neutral-900">All Reds resolved via <code class="ui-label">Manuell freigeben</code></div>
+          </div>
+          <p class="text-[12px] text-neutral-600 leading-relaxed">
+            No requests, no new version needed — all Reds are overridden in one session. Advisor clicks <code class="ui-label">Genehmigen ✓</code> directly. Each <code class="ui-label">Begründung</code> stays attached to its row as an audit trail.
+          </p>
+        </div>
+
+        <!-- E4 -->
+        <div class="bg-white rounded-lg border border-neutral-200 p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex w-6 h-6 rounded-full bg-amber-100 text-amber-700 items-center justify-center text-[11px] font-bold">E4</span>
+            <div class="text-[13px] font-medium text-neutral-900">Mixed state — Reds + Ambers together</div>
+          </div>
+          <p class="text-[12px] text-neutral-600 leading-relaxed">
+            Document stays blocked as long as any Red is unresolved. Amber actions (notes / requests) can run in parallel but do NOT change the Approve state. Resolving Reds is the only path to enabling <code class="ui-label">Genehmigen ✓</code>.
+          </p>
+        </div>
+
+        <!-- E5 -->
+        <div class="bg-white rounded-lg border border-neutral-200 p-4 col-span-2">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 items-center justify-center text-[11px] font-bold">E5</span>
+            <div class="text-[13px] font-medium text-neutral-900">After approval — revert</div>
+          </div>
+          <p class="text-[12px] text-neutral-600 leading-relaxed">
+            Once a document is approved, it's locked. If the advisor uses <code class="ui-label">Zurücksetzen</code> on an individual <code class="ui-label">Manuell freigegeben</code> row and that reintroduces a Red, the Approve state automatically resets to <strong>blocked</strong>. Sidebar checkmark reverts. The advisor then handles the Red and re-approves.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Footer notes ── -->
+    <section class="mt-12 bg-[#FAF5FF] border border-[#E9D5FF] rounded-lg p-5">
+      <h3 class="text-[13px] font-semibold text-[#6D28D9] mb-2 flex items-center gap-1.5">
+        <span class="icon text-[18px]">info</span>
+        Notes for the team
+      </h3>
+      <ul class="text-[12px] text-neutral-700 leading-relaxed space-y-1.5 pl-5 list-disc">
+        <li>This flow is documentation only — V1–V4 prototypes implement parts of it but not all. Notable drift: V3/V4's <code class="ui-label">Genehmigen ✓</code> button is currently <em>not</em> disabled while Reds are unresolved. This is flagged as future work.</li>
+        <li><code class="ui-label">Manuell freigeben</code> is intentionally <em>not</em> available on Amber rows in this refined model — Amber doesn't block, so there's nothing to override. (V3/V4 still expose it; that's an inconsistency to clean up.)</li>
+        <li>The X button on the document toolbar is the <em>only</em> way to trigger <code class="ui-label">Neue Version anfordern</code>. It's always available, regardless of check state.</li>
+        <li>Customer notes ride a separate lifecycle: in V3 they ship immediately, in V4 they're collected as <code class="ui-label">Entwurf</code> and bundled with one <code class="ui-label">Senden</code> click.</li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>
