@@ -264,6 +264,13 @@
               <div class="text-[13px] font-semibold text-amber-700">Document NOT blocked</div>
               <div class="text-[12px] text-neutral-600 mt-1"><code class="ui-label">Genehmigen ✓</code> already enabled. Advisor may approve directly OR take optional actions first.</div>
             </div>
+            <!-- Annotation linking to the application-stage section below -->
+            <div class="w-full px-2 py-2 text-center">
+              <p class="text-[11px] italic text-amber-700/80 leading-snug">
+                <span class="icon text-[12px] align-text-bottom">arrow_downward</span>
+                Ambers + <code class="ui-label">Notiz für Kunde</code> entries re-surface during <code class="ui-label">Einreichung zur Bank</code> — see Application stage below.
+              </p>
+            </div>
             <div class="connector"></div>
             <div class="w-full bg-white rounded-lg border border-amber-200 px-4 py-3 text-center">
               <div class="text-[12px] font-medium text-neutral-700">Optional per-Warnung actions (parallel, not required):</div>
@@ -395,6 +402,112 @@
           <p class="text-[12px] text-neutral-600 leading-relaxed">
             Once a document is approved, it's locked. If the advisor uses <code class="ui-label">Zurücksetzen</code> on an individual <code class="ui-label">Manuell freigegeben</code> row and that reintroduces a Red, the Approve state automatically resets to <strong>blocked</strong>. Sidebar checkmark reverts. The advisor then handles the Red and re-approves.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Application stage — Einreichung zur Bank ── -->
+    <section class="mb-12">
+      <h2 class="text-[12px] font-semibold uppercase tracking-wider text-neutral-500 mb-3">Application stage — submission to the bank</h2>
+      <div class="rounded-xl border-2 border-[#E9D5FF] bg-[#FAF5FF] p-6">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="inline-flex w-7 h-7 rounded-full bg-[#7C3AED] items-center justify-center">
+            <span class="icon text-white text-[16px]">send</span>
+          </span>
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[#6D28D9]">After all docs approved</div>
+            <div class="text-[14px] font-medium text-neutral-900">Einreichung zur Bank</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-0">
+          <!-- Step 1 -->
+          <div class="w-[420px] bg-white rounded-lg border border-purple-200 px-4 py-3 text-center">
+            <div class="text-[13px] text-neutral-800">All required documents reach <code class="ui-label">genehmigt</code></div>
+            <div class="text-[12px] text-neutral-500 mt-1">Reds resolved · Ambers reviewed</div>
+          </div>
+          <div class="connector"></div>
+
+          <!-- Step 2 -->
+          <div class="w-[420px] bg-white rounded-lg border border-purple-200 px-4 py-3 text-center">
+            <div class="text-[13px] text-neutral-800">Advisor clicks <code class="ui-label">Antrag einreichen</code></div>
+            <div class="text-[12px] text-neutral-500 mt-1">New purple button in the application header</div>
+          </div>
+          <div class="connector"></div>
+
+          <!-- Step 3 — auto -->
+          <div class="w-[420px] bg-[#EFF6FF] rounded-lg border border-[#BFDBFE] px-4 py-3 text-center">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[#1D4ED8] mb-1 flex items-center justify-center gap-1">
+              <span class="icon text-[14px]">bolt</span>
+              Automatic
+            </div>
+            <div class="text-[13px] font-medium text-neutral-900"><code class="ui-label">Vollständigkeitsprüfung</code></div>
+            <div class="text-[12px] text-neutral-500 mt-1">System aggregates Ambers + customer notes across the whole application</div>
+          </div>
+          <div class="connector"></div>
+
+          <!-- Step 4 — Decision -->
+          <div class="w-[420px] bg-white rounded-lg border-2 border-purple-300 shadow-sm px-4 py-3 text-center">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-purple-700 mb-1 flex items-center justify-center gap-1">
+              <span class="icon text-[14px]">call_split</span>
+              Decision
+            </div>
+            <div class="text-[13px] font-medium text-neutral-900">Any Ambers OR <code class="ui-label">Notiz für Kunde</code> entries from review?</div>
+          </div>
+
+          <!-- Two branches -->
+          <div class="w-full grid grid-cols-2 gap-6 mt-6">
+
+            <!-- Branch: Yes (re-surface) -->
+            <div class="flex flex-col items-center gap-0">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-purple-700">Yes — items to review</div>
+              <div class="connector"></div>
+              <div class="w-full bg-white rounded-lg border border-purple-200 px-4 py-3">
+                <div class="text-[12px] font-medium text-neutral-800 mb-2">Submission modal opens — per-doc review</div>
+                <ul class="text-[12px] text-neutral-600 space-y-1 pl-4 list-disc">
+                  <li>Doc name + ✓</li>
+                  <li><strong>Warnungen aus der Prüfung:</strong> each Amber's <code class="ui-label">result</code> text</li>
+                  <li><strong>Notizen an Kunde:</strong> each <code class="ui-label">Notiz für Kunde</code> entry written during review</li>
+                  <li>Inline link <code class="ui-label">Zum Dokument →</code> jumps back to the doc</li>
+                </ul>
+              </div>
+              <div class="connector"></div>
+              <div class="w-full bg-white rounded-lg border-2 border-purple-300 px-4 py-3 text-center">
+                <div class="text-[12px] font-semibold text-purple-700">Final decision</div>
+                <div class="text-[12px] text-neutral-600 mt-1">Confirm → submit · OR · Back to doc to address</div>
+              </div>
+            </div>
+
+            <!-- Branch: No (clean) -->
+            <div class="flex flex-col items-center gap-0">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-purple-700">No — application is clean</div>
+              <div class="connector"></div>
+              <div class="w-full bg-white rounded-lg border border-purple-200 px-4 py-3 text-center">
+                <div class="text-[12px] text-neutral-700">Direct submission CTA — no review modal needed</div>
+              </div>
+              <div class="connector"></div>
+              <div class="w-full bg-white rounded-lg border border-purple-200 px-4 py-3 text-center">
+                <div class="text-[12px] text-neutral-700">Summary banner: "N Dokumente bereit · 0 Warnungen · 0 Notizen"</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Convergence -->
+          <div class="w-full flex justify-center mt-4">
+            <div class="connector"></div>
+          </div>
+          <div class="w-[420px] bg-white rounded-lg border border-purple-200 px-4 py-3 text-center">
+            <div class="text-[13px] text-neutral-800">Advisor clicks <code class="ui-label">An die Bank einreichen</code></div>
+          </div>
+          <div class="connector"></div>
+          <div class="w-[420px] bg-[#7C3AED] text-white rounded-lg px-4 py-3 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5">
+              <span class="icon text-[18px]">send</span>
+              <div class="text-[13px] font-medium">Antrag eingereicht zur Bank</div>
+            </div>
+            <div class="text-[11px] mt-1 opacity-90">Bank reviews · Customer notified · End of advisor-side flow</div>
+          </div>
         </div>
       </div>
     </section>

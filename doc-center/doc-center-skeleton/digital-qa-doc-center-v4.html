@@ -539,11 +539,12 @@
     );
   }
 
-  /* ── WarningBadge — right side exclamation ── */
-  function WarningBadge({ warnings }) {
+  /* ── WarningBadge — right side exclamation, derives from QA_CHECKS so dot colors match severity ── */
+  function WarningBadge({ docId }) {
     const [anchor, setAnchor] = React.useState(null);
     const ref = React.useRef(null);
-    if (!warnings || warnings.length === 0) return null;
+    const items = (QA_CHECKS[docId] || []).filter(c => c.status === 'fail' || c.status === 'warning');
+    if (items.length === 0) return null;
     return (
       <div
         ref={ref}
@@ -556,15 +557,15 @@
         <Tooltip anchor={anchor}>
           <div className="px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 bg-amber-50">
             <WarnIcon size={14} />
-            <span className="text-[11px] font-medium text-amber-600 uppercase tracking-wide">
-              {warnings.length} {warnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+            <span className="text-[11px] font-medium text-amber-600">
+              {items.length} {items.length === 1 ? 'Hinweis' : 'Hinweise'}
             </span>
           </div>
           <ul className="px-3 py-2.5 flex flex-col gap-1.5">
-            {warnings.map((w, i) => (
+            {items.map((c, i) => (
               <li key={i} className="flex items-start gap-2 text-[12px] text-neutral-700 leading-snug">
-                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
-                {w}
+                <span className={`mt-[5px] w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.status === 'fail' ? 'bg-qa-fail' : 'bg-amber-400'}`} />
+                {c.result || c.name}
               </li>
             ))}
           </ul>
@@ -724,7 +725,7 @@
                       {item.isNew && <NewBadge />}
                       {isApprovedWithNote
                         ? <SidebarIgnoreNoteIcon notes={ignoredNotes} />
-                        : <WarningBadge warnings={item.warnings} />}
+                        : <WarningBadge docId={item.id} />}
                     </button>
                   </li>
                   {/* Supporting slots — indented with dashed amber connector */}
