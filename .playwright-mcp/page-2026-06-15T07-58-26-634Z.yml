@@ -1,0 +1,161 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: Dokumente für Melissa Mustermann
+      - generic [ref=e9]: 5/25 Dokumente genehmigt
+    - generic [ref=e12]:
+      - button "upload Hochladen" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: upload
+        - text: Hochladen
+      - button "call_made Exportieren" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: call_made
+        - text: Exportieren
+      - generic [ref=e17]:
+        - button "email" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: email
+        - generic [ref=e21]: "4"
+      - button "more_horiz" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]: more_horiz
+      - generic [ref=e26]: person
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]: Jan Joisten
+          - generic [ref=e30]: Berater/in
+        - generic [ref=e31]: expand_more
+  - generic [ref=e32]:
+    - complementary [ref=e33]:
+      - generic [ref=e34]:
+        - button "Antragsunterlagen" [ref=e35] [cursor=pointer]
+        - button "Vertragsunterlagen" [ref=e36] [cursor=pointer]
+        - button "chevron_right" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: chevron_right
+      - generic [ref=e39]:
+        - button "F FinLink arrow_drop_down" [ref=e40] [cursor=pointer]:
+          - generic [ref=e42]: F
+          - generic [ref=e43]: FinLink
+          - generic [ref=e44]: arrow_drop_down
+        - generic [ref=e45]:
+          - button "visibility Sichtbar" [ref=e46] [cursor=pointer]:
+            - generic [ref=e47]: visibility
+            - text: Sichtbar
+          - button "more_horiz" [ref=e48] [cursor=pointer]:
+            - generic [ref=e49]: more_horiz
+      - generic [ref=e50]:
+        - checkbox [ref=e51] [cursor=pointer]
+        - generic [ref=e52]: Alle auswählen
+        - button "unfold_more" [ref=e53] [cursor=pointer]:
+          - generic [ref=e54]: unfold_more
+      - generic [ref=e55]:
+        - generic [ref=e57] [cursor=pointer]:
+          - checkbox [ref=e58]
+          - generic [ref=e59]: folder_open
+          - generic [ref=e60]: Unkategorisiert
+          - generic [ref=e61]: 0/1
+          - button "add" [ref=e62]:
+            - generic [ref=e63]: add
+          - generic [ref=e64]: expand_more
+        - generic [ref=e65]:
+          - generic [ref=e66] [cursor=pointer]:
+            - checkbox [ref=e67]
+            - generic [ref=e68]: person
+            - generic [ref=e69]: Persönliche Dokumente
+            - generic [ref=e70]: 1 Neu
+            - generic [ref=e71]: 1/5
+            - button "add" [ref=e72]:
+              - generic [ref=e73]: add
+            - generic [ref=e74]: expand_less
+          - list [ref=e305]:
+            - listitem [ref=e306]:
+              - button "hourglass_empty Gehaltsabrechnung Juli Neu" [active] [ref=e307] [cursor=pointer]:
+                - checkbox [ref=e308]
+                - generic [ref=e311]: hourglass_empty
+                - generic [ref=e312]: Gehaltsabrechnung Juli
+                - generic [ref=e313]: Neu
+                - img [ref=e315]:
+                  - generic [ref=e317]: "!"
+            - listitem [ref=e318]:
+              - button "check_circle Gehaltsabrechnung September" [ref=e319] [cursor=pointer]:
+                - checkbox [ref=e320]
+                - generic [ref=e322]: check_circle
+                - generic [ref=e323]: Gehaltsabrechnung September
+            - listitem [ref=e324]:
+              - button "hourglass_empty Gehaltsabrechnung August" [ref=e325] [cursor=pointer]:
+                - checkbox [ref=e326]
+                - generic [ref=e329]: hourglass_empty
+                - generic [ref=e330]: Gehaltsabrechnung August
+            - listitem [ref=e331]:
+              - button "hourglass_empty Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)" [ref=e332] [cursor=pointer]:
+                - checkbox [ref=e333]
+                - generic [ref=e336]: hourglass_empty
+                - generic [ref=e337]: Beidseitige Ausweiskopie (gültiger EU-Personalausweis oder Reisepass)
+                - img [ref=e339]:
+                  - generic [ref=e341]: "!"
+            - listitem [ref=e342]:
+              - button "hourglass_empty Aufenthaltstitel" [ref=e343] [cursor=pointer]:
+                - checkbox [ref=e344]
+                - generic [ref=e347]: hourglass_empty
+                - generic [ref=e348]: Aufenthaltstitel
+                - img [ref=e350]:
+                  - generic [ref=e352]: "!"
+        - generic [ref=e76] [cursor=pointer]:
+          - checkbox [ref=e77]
+          - generic [ref=e78]: home
+          - generic [ref=e79]: Immobilienunterlagen
+          - generic [ref=e80]: 7/9
+          - button "add" [ref=e81]:
+            - generic [ref=e82]: add
+          - generic [ref=e83]: expand_more
+      - generic [ref=e84]:
+        - button "add Weitere Dokumente anfordern" [ref=e85] [cursor=pointer]:
+          - generic [ref=e86]: add
+          - text: Weitere Dokumente anfordern
+        - paragraph [ref=e87]: "FE: main@c297573658 | BE: main@c297573658"
+    - main [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - button "Dokument genehmigen" [disabled] [ref=e92]:
+            - generic [ref=e93]: check
+          - button "Neue Version anfordern" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: close
+        - generic [ref=e97]: Gehaltsabrechnung Juli
+      - generic [ref=e98]:
+        - button "Neu kategorisieren" [ref=e100] [cursor=pointer]:
+          - generic [ref=e101]: arrow_forward
+        - button "Herunterladen" [ref=e103] [cursor=pointer]:
+          - generic [ref=e104]: download
+        - button "Papierkorb" [ref=e106] [cursor=pointer]:
+          - generic [ref=e107]: delete
+        - button "Notizen für Kunde" [ref=e111] [cursor=pointer]:
+          - generic [ref=e112]: forum
+        - button "Mehr Dokumente hochladen" [ref=e114] [cursor=pointer]:
+          - generic [ref=e115]: upload
+        - button "Mehr Optionen" [ref=e118] [cursor=pointer]:
+          - generic [ref=e119]: more_horiz
+      - generic [ref=e184]:
+        - generic [ref=e185]:
+          - button "Prüfungen expand_more" [ref=e186] [cursor=pointer]:
+            - generic [ref=e187]: Prüfungen
+            - generic [ref=e188]: expand_more
+          - button "sync Prüfungen wiederholen" [ref=e189] [cursor=pointer]:
+            - generic [ref=e190]: sync
+            - text: Prüfungen wiederholen
+        - generic [ref=e191]:
+          - generic [ref=e192]:
+            - generic [ref=e193]: cancel
+            - generic [ref=e194]: IBAN nicht gefunden
+          - generic [ref=e195]:
+            - button "Kontoauszug anfordern" [ref=e196] [cursor=pointer]
+            - button "Manuell freigeben" [ref=e197] [cursor=pointer]
+        - button "Bestandene Prüfungen (3) expand_more" [ref=e198] [cursor=pointer]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: Bestandene Prüfungen (3)
+            - generic [ref=e201]: expand_more
+      - iframe [ref=e202]:
+        
+    - complementary [ref=e127]:
+      - generic [ref=e128]:
+        - generic [ref=e129]: layers
+        - generic [ref=e130]: Seiten
+      - generic [ref=e131]:
+        - generic [ref=e205] [cursor=pointer]: "1"
+        - generic [ref=e208] [cursor=pointer]: "2"

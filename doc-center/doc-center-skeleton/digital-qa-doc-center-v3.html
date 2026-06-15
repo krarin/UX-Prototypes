@@ -114,14 +114,14 @@
 
   /* ── Sub-components ── */
 
-  /* Orange triangle warning icon with "?" — matches Figma node 29:80326 */
+  /* Warning triangle — Material Symbols "warning" filled (Figma node 3613:280, Icon-library) */
   function WarnIcon({ size = 16, className = '', color = '#FF9F1A' }) {
-    const textColor = color === '#FF9F1A' ? 'white' : '#FF9F1A';
     return (
-      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" className={className} style={{ flexShrink: 0, display: 'inline-block' }}>
-        <path d="M9.13 3.2L1.2 16.8A1 1 0 0 0 2.07 18.3H17.93A1 1 0 0 0 18.8 16.8L10.87 3.2A1 1 0 0 0 9.13 3.2Z" fill={color}/>
-        <text x="10" y="15.5" textAnchor="middle" fill={textColor} fontSize="8" fontWeight="700" fontFamily="Roboto, sans-serif">!</text>
-      </svg>
+      <span className={`icon ${className}`}
+        style={{ fontSize: size, color, lineHeight: 1, flexShrink: 0, display: 'inline-block',
+          fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>
+        warning
+      </span>
     );
   }
 
@@ -529,6 +529,10 @@
 
     const hasOpen = items.some(i => i.currentStatus === 'fail' || i.currentStatus === 'warning');
     const resolved = !hasOpen;
+    // A red (critical) triangle wins over amber whenever any open critical error remains
+    const hasOpenFail = items.some(i => i.currentStatus === 'fail');
+    // Counter badge = open issues only (critical + warnings); passed/resolved checks excluded
+    const openCount = items.filter(i => i.currentStatus === 'fail' || i.currentStatus === 'warning').length;
 
     return (
       <div
@@ -542,20 +546,10 @@
         {resolved ? (
           <span className="icon icon-filled text-[18px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>info</span>
         ) : (
-          <WarnIcon size={18} />
+          <WarnIcon size={18} color={hasOpenFail ? '#FF5656' : '#FF9F1A'} />
         )}
 
         <Tooltip anchor={anchor}>
-          <div className={`px-3 py-2 border-b border-neutral-100 flex items-center gap-1.5 ${resolved ? 'bg-qa-ignored-light' : 'bg-amber-50'}`}>
-            {resolved ? (
-              <span className="icon icon-filled text-[14px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>info</span>
-            ) : (
-              <WarnIcon size={14} />
-            )}
-            <span className={`text-[11px] font-medium ${resolved ? 'text-qa-ignored' : 'text-amber-600'}`}>
-              {items.length} {items.length === 1 ? 'Hinweis' : 'Hinweise'}{resolved ? ' erledigt' : ''}
-            </span>
-          </div>
           <ul className="px-3 py-2.5 flex flex-col gap-2">
             {items.map((it, i) => {
               const cs = it.currentStatus;
@@ -774,7 +768,7 @@
                         : <WarningBadge docId={item.id} dynamicChecks={dynamicChecksByDoc[item.id] || []} />}
                     </button>
                   </li>
-                  {/* Supporting slots — indented with dashed amber connector */}
+                  {/* Supporting slots — indented with dashed grey connector */}
                   {slots.map((slot, si) => {
                     const slotActive = slot.id === selectedId;
                     return (
@@ -782,19 +776,19 @@
                         {/* Vertical dashed line */}
                         <span className="absolute pointer-events-none"
                           style={{ left: 54, top: 0, bottom: si === slots.length - 1 ? '50%' : 0,
-                            borderLeft: '2px dashed #FF9F1A' }} />
+                            borderLeft: '2px dashed #616161' }} />
                         {/* Horizontal stub */}
                         <span className="absolute pointer-events-none"
                           style={{ left: 54, top: '50%', width: 14,
-                            borderTop: '2px dashed #FF9F1A' }} />
+                            borderTop: '2px dashed #616161' }} />
                         <button
                           onClick={() => onSelect(slot.id)}
                           className={`w-full text-left flex items-center gap-2 pr-3 py-2 transition-colors
-                            ${slotActive ? 'bg-qa-warn-light border-l-4 pl-[66px]' : 'pl-[70px] hover:bg-neutral-50'}`}
-                          style={slotActive ? { borderLeftColor: '#FF9F1A' } : {}}
+                            ${slotActive ? 'bg-neutral-100 border-l-4 pl-[66px]' : 'pl-[70px] hover:bg-neutral-50'}`}
+                          style={slotActive ? { borderLeftColor: '#616161' } : {}}
                         >
                           <span className="w-[16px] h-[16px] rounded-full border-2 border-dashed border-neutral-400 bg-transparent flex-shrink-0" />
-                          <span className="flex-1 text-[12px] italic text-qa-warn leading-snug text-left min-w-0 truncate">
+                          <span className="flex-1 text-[12px] italic text-neutral-700 leading-snug text-left min-w-0 truncate">
                             {slot.name}
                           </span>
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-neutral-600 text-white whitespace-nowrap flex-shrink-0">
@@ -1295,7 +1289,7 @@
             <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
           )}
           {isError && !isResolved && (
-            <span className="icon text-[20px] text-[#e64d4d] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>
+            <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} color="#FF5656" /></span>
           )}
           {isWarn && !isResolved && (
             <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>
@@ -1366,8 +1360,29 @@
     );
   }
 
+  /* ── Version tabs shown above QAPanel when advisor chose "Keep Both" ── */
+  function VersionTabs({ versions, activeTab, onTabChange }) {
+    return (
+      <div className="flex items-center gap-1 px-3 pt-2 pb-0">
+        {versions.map(v => (
+          <button key={v.key}
+            onClick={() => onTabChange(v.key)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-t transition-colors whitespace-nowrap border
+              ${activeTab === v.key
+                ? 'border-neutral-300 border-b-white bg-white text-neutral-900 -mb-px relative z-10'
+                : 'border-transparent text-neutral-500 hover:text-neutral-700'}`}>
+            {v.label}
+            {v.isNew && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500 text-white leading-none">Neu</span>
+            )}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   /* ── V3: unified Prüfungen panel — single table with all checks ── */
-  function QAPanel({ doc, checks, onChecksUpdate, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck, onRerun }) {
+  function QAPanel({ doc, checks, readOnly = false, onChecksUpdate, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck, onRerun }) {
     const [isRunning, setIsRunning] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [bestandeneExpanded, setBestandeneExpanded] = React.useState(false);
@@ -1430,7 +1445,7 @@
                   {visibleRows.map((row, i) => (
                     <QARow key={row.check.id} check={row.check} variant={row.variant}
                       isLast={i === visibleRows.length - 1 && bestandeneRows.length === 0}
-                      showRightCell={hasActionable}
+                      showRightCell={hasActionable && !readOnly}
                       onOpenRequestModal={onOpenRequestModal}
                       onOpenManualReleaseModal={onOpenManualReleaseModal}
                       onOpenCustomerNoteModal={onOpenCustomerNoteModal}
@@ -1504,13 +1519,14 @@
           <div className="flex flex-col gap-4 px-6 py-4">
             {/* Error banner */}
             <div className="flex items-center gap-2 p-2 bg-qa-fail-light">
-              <span className="icon icon-filled text-[20px] text-qa-fail flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>cancel</span>
+              <WarnIcon size={20} color="#FF5656" />
               <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
             </div>
 
             {/* Editable note shown to the customer */}
             <div className="flex flex-col gap-1">
-              <label className="text-[14px] text-[#546e7a] tracking-[0.1px] leading-[20px]">
+              <label className="text-[14px] text-[#546e7a] tracking-[0.1px] leading-[20px] flex items-center gap-1">
+                <span className="icon text-[16px]">email</span>
                 Notiz für Kunde <span className="text-neutral-400">(sichtbar im Kundendashboard)</span>
               </label>
               <textarea value={note} onChange={e => setNote(e.target.value)}
@@ -1526,7 +1542,7 @@
             <div className="flex items-center gap-4 px-6 py-[24px]">
               <button onClick={handleConfirm}
                 className="flex items-center h-[36px] px-3 rounded-[4px] bg-[#009688] text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors whitespace-nowrap">
-                <span className="px-1">{title} & Slot erstellen</span>
+                <span className="px-1">Notiz senden und Slot erstellen</span>
               </button>
               <button onClick={onClose} className="text-[14px] font-medium text-[#4b5961] hover:text-neutral-900 transition-colors">
                 Abbrechen
@@ -1926,6 +1942,72 @@
     );
   }
 
+  /* ── Replace-or-Keep gate modal ── */
+  function ReplaceOrKeepModal({ doc, pendingVersion, onReplace, onKeepBoth, onClose }) {
+    const uploadDate = pendingVersion?.uploadDate
+      ? new Date(pendingVersion.uploadDate).toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' })
+      : '–';
+    return ReactDOM.createPortal(
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[200] p-4" onClick={onClose}>
+        <div className="bg-white rounded-[8px] w-full max-w-[480px] overflow-hidden flex flex-col"
+          style={{ boxShadow: '0px 4px 24px rgba(55,71,79,0.5)' }}
+          onClick={e => e.stopPropagation()}>
+
+          {/* Header */}
+          <div className="flex items-start gap-3 px-6 pt-5 pb-4 border-b border-neutral-100">
+            <span className="inline-flex w-8 h-8 rounded-full bg-primary-100 items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="icon text-primary-500 text-[20px]">upload_file</span>
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-[16px] font-medium text-[#37474f] leading-tight mb-1">Neues Dokument eingegangen</div>
+              <div className="text-[12px] text-neutral-500 leading-snug">Ihr Kunde hat ein neues Dokument hochgeladen · {uploadDate}</div>
+            </div>
+            <button onClick={onClose} className="w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600 flex-shrink-0">
+              <span className="icon text-[20px]">close</span>
+            </button>
+          </div>
+
+          {/* Doc name chip */}
+          <div className="px-6 py-4 border-b border-neutral-100">
+            <div className="flex items-center gap-2 p-3 bg-neutral-50 rounded-[4px] border border-neutral-200">
+              <span className="icon text-[20px] text-neutral-400">description</span>
+              <span className="text-[13px] font-medium text-[#37474f] truncate">{doc?.name}</span>
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="px-6 py-4 flex flex-col gap-3">
+            <p className="text-[13px] text-neutral-600 mb-1">Wie soll mit dem neuen Dokument verfahren werden?</p>
+            <button onClick={onReplace}
+              className="flex items-start gap-3 p-3 rounded-[4px] border-2 border-primary-500 bg-primary-100 text-left hover:bg-[#d0eeeb] transition-colors">
+              <span className="icon text-[22px] text-primary-500 flex-shrink-0 mt-0.5">swap_horiz</span>
+              <div>
+                <div className="text-[13px] font-medium text-primary-700 mb-0.5">Altes Dokument ersetzen</div>
+                <div className="text-[12px] text-primary-600 leading-snug">Das neue Dokument überschreibt das alte. Prüfungen werden automatisch neu ausgeführt.</div>
+              </div>
+            </button>
+            <button onClick={onKeepBoth}
+              className="flex items-start gap-3 p-3 rounded-[4px] border border-neutral-300 bg-white text-left hover:bg-neutral-50 transition-colors">
+              <span className="icon text-[22px] text-neutral-500 flex-shrink-0 mt-0.5">layers</span>
+              <div>
+                <div className="text-[13px] font-medium text-[#37474f] mb-0.5">Beide Versionen behalten</div>
+                <div className="text-[12px] text-neutral-500 leading-snug">Altes und neues Dokument bleiben erhalten. Prüftabellen werden per Tab angezeigt.</div>
+              </div>
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-3 border-t border-neutral-100 flex justify-end">
+            <button onClick={onClose} className="text-[13px] font-medium text-neutral-500 hover:text-neutral-700 transition-colors">
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
   /* ── Toast notification ── */
   function Toast({ message, visible, onUndo, onDismiss }) {
     if (!visible) return null;
@@ -1960,19 +2042,23 @@
   }
 
   /* ── Main viewer ── */
-  function DocumentViewer({ doc, slot, docNote, checks, customerNotes = [], activeEntityId, canApprove = true, onAddCustomerNote, onEditCustomerNote, onDeleteCustomerNote, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
+  function DocumentViewer({ doc, slot, docNote, checks, customerNotes = [], activeEntityId, canApprove = true, pendingNewVersion = null, versionHistory = null, onShowReplaceOrKeep, onVersionTabChange, onAddCustomerNote, onEditCustomerNote, onDeleteCustomerNote, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
+    // Determine active check set: old-version snapshot or live checks
+    const activeChecks = versionHistory && versionHistory.activeTab === 'old'
+      ? versionHistory.old.checks
+      : checks;
+    const isOldVersionActive = !!(versionHistory && versionHistory.activeTab === 'old');
     return (
       <main className="flex-1 flex flex-col overflow-hidden bg-neutral-100">
         {/* Row 1 — approve/reject circle buttons + document name */}
         <div className="h-11 flex-shrink-0 flex items-center gap-3 px-4 bg-white border-b border-neutral-200">
           <div className="flex items-center gap-2 flex-shrink-0">
-            <IconTooltip label={canApprove ? 'Dokument genehmigen' : 'Erst alle Fehler auflösen, um zu genehmigen'}>
+            <IconTooltip label="Dokument genehmigen">
               <button onClick={onApproveDoc} aria-label="Dokument genehmigen"
-                disabled={!canApprove}
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors
                   ${effectiveDocStatus === 'ok'
                     ? 'border-2 border-qa-pass text-qa-pass'
-                    : 'border border-[#b0bec5] text-[#37474f] hover:border-primary-500 hover:text-primary-600 disabled:border-neutral-200 disabled:text-neutral-300 disabled:cursor-not-allowed disabled:hover:border-neutral-200 disabled:hover:text-neutral-300'}`}>
+                    : 'border border-[#b0bec5] text-[#37474f] hover:border-primary-500 hover:text-primary-600'}`}>
                 <span className={`icon text-[18px] ${effectiveDocStatus === 'ok' ? 'icon-filled' : ''}`}
                   style={effectiveDocStatus === 'ok' ? { fontVariationSettings:"'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20" } : {}}>check</span>
               </button>
@@ -2041,24 +2127,62 @@
           ]} />
         </div>
 
+        {/* Incoming document banner */}
+        {doc && pendingNewVersion && (
+          <div className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-primary-100 border-b border-primary-500/30">
+            <span className="icon text-[20px] text-primary-500 flex-shrink-0">upload_file</span>
+            <div className="flex-1 min-w-0">
+              <span className="text-[13px] font-medium text-primary-700">Neues Dokument eingegangen</span>
+              <span className="text-[12px] text-primary-600 ml-2">·</span>
+              <span className="text-[12px] text-primary-600 ml-1">
+                {new Date(pendingNewVersion.uploadDate).toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' })}
+              </span>
+            </div>
+            <button onClick={onShowReplaceOrKeep}
+              className="flex items-center gap-1 h-7 px-3 rounded-[4px] bg-primary-500 text-white text-[12px] font-medium hover:bg-primary-600 transition-colors whitespace-nowrap">
+              Überprüfen
+            </button>
+          </div>
+        )}
+
         {/* Divider line between icon toolbar and Prüfungen table */}
-        {doc && checks.length > 0 && (
+        {doc && activeChecks.length > 0 && (
           <div className="h-px bg-neutral-200 flex-shrink-0" />
         )}
 
-        {/* Prüfungen table — now part of the top layer */}
-        {doc && checks.length > 0 && (
-          <div className="flex-shrink-0 bg-white px-4 py-3 border-b border-neutral-200">
-            <QAPanel
-              doc={doc}
-              checks={checks}
-              onChecksUpdate={onChecksUpdate}
-              onOpenRequestModal={onOpenRequestModal}
-              onOpenManualReleaseModal={onOpenManualReleaseModal}
-              onOpenCustomerNoteModal={onOpenCustomerNoteModal}
-              onResetCheck={onResetCheck}
-              onRerun={onRerun}
-            />
+        {/* Prüfungen table — version tabs + check panel */}
+        {doc && activeChecks.length > 0 && (
+          <div className="flex-shrink-0 bg-white border-b border-neutral-200">
+            {/* Version tabs (only when advisor chose "Keep Both") */}
+            {versionHistory && (
+              <VersionTabs
+                activeTab={versionHistory.activeTab}
+                onTabChange={onVersionTabChange}
+                versions={[
+                  { key: 'new', label: versionHistory.newLabel, isNew: true },
+                  { key: 'old', label: versionHistory.old.label, isNew: false },
+                ]}
+              />
+            )}
+            <div className={`px-4 py-3 ${versionHistory ? 'border-t border-neutral-200' : ''}`}>
+              {isOldVersionActive && (
+                <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-neutral-50 rounded-[4px] border border-neutral-200">
+                  <span className="icon text-[16px] text-neutral-400">history</span>
+                  <span className="text-[12px] text-neutral-500">Archivierte Version — nur zur Ansicht</span>
+                </div>
+              )}
+              <QAPanel
+                doc={doc}
+                checks={activeChecks}
+                readOnly={isOldVersionActive}
+                onChecksUpdate={onChecksUpdate}
+                onOpenRequestModal={onOpenRequestModal}
+                onOpenManualReleaseModal={onOpenManualReleaseModal}
+                onOpenCustomerNoteModal={onOpenCustomerNoteModal}
+                onResetCheck={onResetCheck}
+                onRerun={onRerun}
+              />
+            </div>
           </div>
         )}
 
@@ -2066,8 +2190,23 @@
           <div className="p-6 flex flex-col gap-5">
 
             {/* Document preview */}
-            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
-              {doc?.id === 309 ? (
+            <div className={`rounded-lg overflow-hidden ${doc?.id === 101 ? '' : 'bg-white shadow-sm border border-neutral-200'}`}>
+              {doc?.id === 101 ? (
+                <div className="flex items-center justify-center" style={{ minHeight: '480px', border: '1.5px dashed #b0bec5', borderRadius: '8px', background: '#f9fafb' }}>
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <span className="icon text-[48px] text-neutral-300" style={{ fontVariationSettings:"'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48" }}>cloud_upload</span>
+                    <p className="text-[15px] font-medium text-neutral-700">Ziehen Sie Ihre Dateien per Drag &amp; Drop hierher</p>
+                    <p className="text-[14px] text-neutral-500">oder <button className="text-primary-500 font-medium hover:underline focus:outline-none">suchen</button> Sie nach einer Datei</p>
+                  </div>
+                </div>
+              ) : doc?.id === 307 ? (
+                <iframe
+                  src="assets/expose-lassestrasse.pdf"
+                  className="w-full"
+                  style={{ height: '900px', border: 'none' }}
+                  title="Exposé Lassestraße"
+                />
+              ) : doc?.id === 309 ? (
                 <iframe
                   src="assets/energieausweis.pdf"
                   className="w-full"
@@ -2236,6 +2375,28 @@
     const [customerNoteModal, setCustomerNoteModal] = React.useState(null);
     const [submissionModal, setSubmissionModal] = React.useState(false);
 
+    /* Incoming document gate — keyed by doc id.
+       Seeded: Exposé (307) client uploaded a replacement after the advisor requested one. */
+    const [pendingNewVersions, setPendingNewVersions] = React.useState({
+      307: {
+        uploadDate: '2026-06-15T09:00:00.000Z',
+        name: 'Exposé (Neue Version)',
+        checks: [
+          { id:'307-new-1', name:'Lesbarkeit', description:'Alle Seiten müssen klar lesbar sein',
+            status:'pass', result:'Dokument gut lesbar', override:null, remediation:null },
+          { id:'307-new-2', name:'Aktualität', description:'Exposé darf nicht älter als 3 Monate sein',
+            status:'pass', result:'Datum: 12.06.2026', override:null, remediation:null },
+        ]
+      }
+    });
+
+    /* Version history — populated when advisor chooses "Beide behalten".
+       old.checks is the frozen snapshot; live checks stay in docChecks. */
+    const [documentVersionHistory, setDocumentVersionHistory] = React.useState({});
+
+    /* Which doc's replace-or-keep modal is open */
+    const [replaceOrKeepModal, setReplaceOrKeepModal] = React.useState(null);
+
     /* Toast with optional undo */
     const [toast, setToast] = React.useState({ visible: false, message: '', onUndo: null });
     const toastTimerRef = React.useRef(null);
@@ -2338,18 +2499,10 @@
     const activeDocNote  = selectedDoc?.note ?? null;
     const currentChecks  = selectedDoc && QA_CHECKS[selectedDoc.id] ? (docChecks[selectedDoc.id] || []) : [];
 
-    /* Approve gate — disable Approve button while any unresolved Red exists.
-       A Red is "unresolved" if its original status is 'fail' AND current status is not 'manually_released'.
-       'fail' (untouched) and 'requested' both count as unresolved. */
-    function hasUnresolvedReds(docId) {
-      const orig = QA_CHECKS[docId] || [];
-      return orig.some(o => {
-        if (o.status !== 'fail') return false;
-        const cur = (docChecks[docId] || []).find(c => c.id === o.id);
-        return (cur?.status ?? o.status) !== 'manually_released';
-      });
-    }
-    const canApprove = selectedDoc ? !hasUnresolvedReds(selectedDoc.id) : false;
+    /* No approve gate — the advisor can always approve a document, even when
+       unresolved critical errors remain. Those errors are captured later in the
+       summary report rather than blocking approval here. */
+    const canApprove = !!selectedDoc;
 
     /* Submission gate — every real doc must be in effective status 'ok' */
     const submittableDocs = ALL_DOCS.filter(d => d.id !== 101);
@@ -2458,6 +2611,49 @@
       if (orig) updateCheck(selectedDoc.id, checkId, { ...orig, notes: [], manualRelease: null, requestNote: null, fresh: false });
     }
 
+    function handleReplaceConfirm(docId) {
+      const pending = pendingNewVersions[docId];
+      if (!pending) return;
+      setDocChecks(prev => ({
+        ...prev,
+        [docId]: pending.checks.map(c => ({ ...c, fresh: true })),
+      }));
+      setPendingNewVersions(prev => { const n = { ...prev }; delete n[docId]; return n; });
+      setReplaceOrKeepModal(null);
+      showToast('Dokument ersetzt – Prüfungen aktualisiert');
+    }
+
+    function handleKeepBothConfirm(docId) {
+      const pending = pendingNewVersions[docId];
+      if (!pending) return;
+      const oldChecks = docChecks[docId] || [];
+      const fmtDate = iso => new Date(iso).toLocaleDateString('de-DE', { day:'2-digit', month:'short.', year:'numeric' });
+      // Snapshot old checks into version history; move new checks into live docChecks
+      setDocumentVersionHistory(prev => ({
+        ...prev,
+        [docId]: {
+          old: { checks: oldChecks, date: '2026-05-28T10:15:00.000Z', label: fmtDate('2026-05-28T10:15:00.000Z') },
+          newLabel: fmtDate(pending.uploadDate),
+          newDate: pending.uploadDate,
+          activeTab: 'new',
+        }
+      }));
+      setDocChecks(prev => ({
+        ...prev,
+        [docId]: pending.checks.map(c => ({ ...c, fresh: true })),
+      }));
+      setPendingNewVersions(prev => { const n = { ...prev }; delete n[docId]; return n; });
+      setReplaceOrKeepModal(null);
+      showToast('Beide Versionen gespeichert – Tabs verfügbar');
+    }
+
+    function handleVersionTabChange(docId, tab) {
+      setDocumentVersionHistory(prev => ({
+        ...prev,
+        [docId]: { ...prev[docId], activeTab: tab }
+      }));
+    }
+
     function handleRerun() {
       // Move freshly resolved checks into the Bestandene section by clearing `fresh`
       setDocChecks(prev => {
@@ -2489,6 +2685,10 @@
             checks={currentChecks}
             activeEntityId={selectedSlot?.id ?? selectedDoc?.id ?? null}
             customerNotes={customerNotesByEntity[selectedSlot?.id ?? selectedDoc?.id] || []}
+            pendingNewVersion={selectedDoc ? (pendingNewVersions[selectedDoc.id] ?? null) : null}
+            versionHistory={selectedDoc ? (documentVersionHistory[selectedDoc.id] ?? null) : null}
+            onShowReplaceOrKeep={() => selectedDoc && setReplaceOrKeepModal({ docId: selectedDoc.id })}
+            onVersionTabChange={(tab) => selectedDoc && handleVersionTabChange(selectedDoc.id, tab)}
             onAddCustomerNote={handleAddCustomerNote}
             onEditCustomerNote={handleEditCustomerNote}
             onDeleteCustomerNote={handleDeleteCustomerNote}
@@ -2533,6 +2733,15 @@
             check={customerNoteModal}
             onConfirm={handleCustomerNoteModalConfirm}
             onClose={() => setCustomerNoteModal(null)}
+          />
+        )}
+        {replaceOrKeepModal && (
+          <ReplaceOrKeepModal
+            doc={ALL_DOCS.find(d => d.id === replaceOrKeepModal.docId)}
+            pendingVersion={pendingNewVersions[replaceOrKeepModal.docId]}
+            onReplace={() => handleReplaceConfirm(replaceOrKeepModal.docId)}
+            onKeepBoth={() => handleKeepBothConfirm(replaceOrKeepModal.docId)}
+            onClose={() => setReplaceOrKeepModal(null)}
           />
         )}
         {submissionModal && (

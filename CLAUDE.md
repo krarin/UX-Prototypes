@@ -246,3 +246,24 @@ When referencing Figma designs, ONLY use these files:
 - Styles: https://www.figma.com/design/G8BJKjAkRkqKBkLxW6xbX5/MCP-UI-Kit--Copy-?m=auto&t=SdShI8ywSQO4NbrA-6
 - These are our approved design files without branding.
 - Do NOT reference any other Figma files or components outside these files.
+## Table and Card widths
+Future Guidance
+Always ask: what is the maximum comfortable reading width for this content?
+
+Content type	Recommended max-width
+Single-column form or card	640–720px
+Two-column card or detail panel	880–960px
+Data table (5–8 columns)	960–1100px
+Wide data table (>8 columns, scroll)	No max-width — let it scroll
+Rules of thumb:
+
+Set max-width + width: 100% on the container, not the element itself.
+Always pair with margin: 0 auto so the block stays centred.
+Never rely solely on a parent flex or grid to constrain width — flex children stretch to fill, so an inner max-width on the container is always needed.
+Avoid setting max-width on the .content-inner scroll container — it clips the padding rhythm. Set it one level deeper, on the card or table wrapper.
+Testing Checklist
+After applying any max-width change, verify at the following viewport widths:
+
+ 1280px — standard laptop: content should fill most of the viewport
+ 1440px — common external monitor: max-width cap should first become visible
+ 2560px — 27″/4K: card should be clearly centred with visible side space

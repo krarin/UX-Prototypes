@@ -631,7 +631,7 @@
 <script src="../../design-system/shell.js"></script>
 <script>
   Shell.init({
-    title:     "Max Mustermann",
+    title:     "Luise Gamero",
     subtitle:  "440.000 €",
     activeNav: "antraege",
     tabs:      ["Übersicht", "Antrag", "Angebote", "Dokumente"],
@@ -650,7 +650,7 @@
         <nav class="section-sidebar" id="section-nav" aria-label="Antragsabschnitte">
           <div class="section-nav-client">
             <span class="section-nav-client-dot" aria-hidden="true"></span>
-            <span class="section-nav-client-name">Maxs details</span>
+            <span class="section-nav-client-name">Luises details</span>
           </div>
           <div class="section-nav-group">
             <button class="section-nav-item indented done active" data-section="sec-person" onclick="setActiveSection(this)">
@@ -802,11 +802,11 @@
           <!-- ── Person layout ── -->
           <div class="person-layout">
 
-            <!-- Left: Erica's accordion card -->
+            <!-- Left: Luise's accordion card -->
             <div class="person-card">
               <div class="person-card-header">
                 <span class="material-symbols-outlined person-card-icon">person</span>
-                <span class="person-card-name">Erica's Details</span>
+                <span class="person-card-name">Luises Details</span>
               </div>
 
               <!-- Persönliche Details -->
@@ -818,7 +818,7 @@
                 <div class="accordion-body">
                   <div class="h-field">
                     <label class="h-field-label">Anrede</label>
-                    <select class="h-field-select"><option value=""></option><option>Herr</option><option>Frau</option><option>Divers</option></select>
+                    <select class="h-field-select"><option value=""></option><option>Herr</option><option selected>Frau</option><option>Divers</option></select>
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Akademischer Titel</label>
@@ -826,39 +826,39 @@
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Vorname</label>
-                    <input class="h-field-input" type="text" value="Erica" />
+                    <input class="h-field-input" type="text" value="Luise" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Nachname</label>
-                    <input class="h-field-input" type="text" value="Mustermann" />
+                    <input class="h-field-input" type="text" value="Gamero" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Geburtsname</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Schneider" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Geburtsdatum</label>
-                    <input class="h-field-input" type="text" value="01.02.1980" />
+                    <input class="h-field-input" type="text" value="14.06.1985" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Geburtsort</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="München" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Geburtsland</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Deutschland" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Staatsangehörigkeit</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Deutsch" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Aufenthaltsstatus</label>
-                    <select class="h-field-select"><option>Deutsche Staatsangehörigkeit</option><option>Niederlassungserlaubnis</option><option>Aufenthaltserlaubnis</option></select>
+                    <select class="h-field-select"><option selected>Deutsche Staatsangehörigkeit</option><option>Niederlassungserlaubnis</option><option>Aufenthaltserlaubnis</option></select>
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Familienstand</label>
-                    <select class="h-field-select"><option value=""></option><option>Ledig</option><option>Verheiratet</option><option>Geschieden</option><option>Verwitwet</option></select>
+                    <select class="h-field-select"><option value=""></option><option>Ledig</option><option selected>Verheiratet</option><option>Geschieden</option><option>Verwitwet</option></select>
                   </div>
                 </div>
               </div>
@@ -872,27 +872,27 @@
                 <div class="accordion-body">
                   <div class="h-field">
                     <label class="h-field-label">Straße und Nr.</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Lindenstraße 42" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">PLZ</label>
-                    <input class="h-field-input" type="text" value="" style="max-width:90px;flex:0 0 90px;" />
+                    <input class="h-field-input" type="text" value="80331" style="max-width:90px;flex:0 0 90px;" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Stadt</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="München" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Bundesland</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Bayern" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Telefon</label>
-                    <input class="h-field-input" type="tel" value="" />
+                    <input class="h-field-input" type="tel" value="+49 89 12345678" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">E-Mail</label>
-                    <input class="h-field-input" type="email" value="" />
+                    <input class="h-field-input" type="email" value="luise.gamero@example.de" />
                   </div>
                 </div>
               </div>
@@ -906,19 +906,19 @@
                 <div class="accordion-body">
                   <div class="h-field">
                     <label class="h-field-label">Beschäftigungsstatus</label>
-                    <select class="h-field-select"><option value=""></option><option>Angestellt</option><option>Selbstständig</option><option>Beamter</option><option>Rentner</option></select>
+                    <select class="h-field-select"><option value=""></option><option selected>Angestellt</option><option>Selbstständig</option><option>Beamter</option><option>Rentner</option></select>
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Arbeitgeber</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Siemens AG" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Beschäftigt seit</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="01.09.2012" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Branche</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Maschinenbau" />
                   </div>
                 </div>
               </div>
@@ -932,11 +932,11 @@
                 <div class="accordion-body">
                   <div class="h-field">
                     <label class="h-field-label">IBAN</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="DE89 3704 0044 0532 0130 00" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Kontoinhaber</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="Luise Gamero" />
                   </div>
                 </div>
               </div>
@@ -950,15 +950,15 @@
                 <div class="accordion-body">
                   <div class="h-field">
                     <label class="h-field-label">Steuer-ID</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="12 345 678 901" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">Personen im Haushalt</label>
-                    <input class="h-field-input" type="text" value="" />
+                    <input class="h-field-input" type="text" value="3" />
                   </div>
                   <div class="h-field">
                     <label class="h-field-label">SCHUFA-Auskunft</label>
-                    <select class="h-field-select"><option value=""></option><option>Einwilligung erteilt</option><option>Ausstehend</option></select>
+                    <select class="h-field-select"><option value=""></option><option selected>Einwilligung erteilt</option><option>Ausstehend</option></select>
                   </div>
                 </div>
               </div>
@@ -983,11 +983,11 @@
           <!-- ── Bonität ── -->
           <div class="person-layout">
 
-            <!-- Left: Max's Bonität -->
+            <!-- Left: Luise's Bonität -->
             <div class="person-card">
               <div class="person-card-header">
                 <span class="material-symbols-outlined person-card-icon">person</span>
-                <span class="person-card-name">Max's Bonität</span>
+                <span class="person-card-name">Luises Bonität</span>
               </div>
 
               <!-- Einnahmen (monatlich) -->
@@ -1167,13 +1167,13 @@
                 </div>
               </div>
 
-            </div><!-- .person-card (Max) -->
+            </div><!-- .person-card (Luise) -->
 
-            <!-- Right: Anna's Bonität -->
+            <!-- Right: Max's Bonität -->
             <div class="person-card">
               <div class="person-card-header">
                 <span class="material-symbols-outlined person-card-icon">person</span>
-                <span class="person-card-name">Anna's Bonität</span>
+                <span class="person-card-name">Max's Bonität</span>
               </div>
 
               <!-- Einnahmen (monatlich) -->
@@ -1353,7 +1353,7 @@
                 </div>
               </div>
 
-            </div><!-- .person-card (Anna) -->
+            </div><!-- .person-card (Max) -->
 
           </div><!-- .person-layout Bonität -->
 
@@ -1495,7 +1495,7 @@
                         </div>
                         <div class="h-field">
                           <label class="h-field-label">(Künftiger) Eigentümer</label>
-                          <select class="h-field-select"><option value=""></option><option>Max Mustermann</option><option>Anna Mustermann</option></select>
+                          <select class="h-field-select"><option value=""></option><option>Luise Gamero</option><option>Max Gamero</option></select>
                         </div>
                         <div class="h-field">
                           <label class="h-field-label">Vorlasten Abt. II</label>

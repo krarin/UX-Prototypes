@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JTBD Mapper — Mortgage Advisor Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ── Summary strip ── */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-m);
+      margin-bottom: var(--space-l);
+    }
+    .summary-card {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m);
+      padding: var(--space-m) var(--space-m);
+    }
+    .summary-card__label {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      margin-bottom: 6px;
+    }
+    .summary-card__value {
+      font-size: 28px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      line-height: 1;
+    }
+    .summary-card__sub {
+      font-size: 11px;
+      color: var(--color-neutral-dark-300);
+      margin-top: 4px;
+    }
+    .summary-card--alert .summary-card__value { color: var(--color-error-500); }
+    .summary-card--teal  .summary-card__value { color: var(--color-primary-500); }
+
+    /* ── Intro banner ── */
+    .intro-banner {
+      display: flex;
+      gap: var(--space-m);
+      align-items: flex-start;
+      background: var(--color-primary-100);
+      border: 1px solid var(--color-primary-200, #b2dfdb);
+      border-radius: var(--radius-m);
+      padding: var(--space-m) var(--space-l);
+      margin-bottom: var(--space-l);
+    }
+    .intro-banner__icon {
+      color: var(--color-primary-600);
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .intro-banner__text {
+      font-size: var(--body-small-size);
+      color: var(--color-primary-600);
+      line-height: 1.65;
+    }
+    .intro-banner__text strong { font-weight: var(--font-weight-medium); }
+
+    /* ── Toolbar ── */
+    .jtbd-toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      margin-bottom: var(--space-m);
+      flex-wrap: wrap;
+    }
+    .toolbar-label {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      flex-shrink: 0;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-600);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .filter-chip:hover {
+      border-color: var(--color-primary-400, #4db6ac);
+      color: var(--color-primary-600);
+    }
+    .filter-chip.active {
+      background: var(--color-primary-100);
+      border-color: var(--color-primary-500);
+      color: var(--color-primary-600);
+    }
+    .chip-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      background: var(--color-neutral-dark-300);
+      color: white;
+      line-height: 1;
+    }
+    .filter-chip.active .chip-count { background: var(--color-primary-500); }
+
+    .sort-select {
+      margin-left: auto;
+      padding: 5px 10px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      cursor: pointer;
+      outline: none;
+    }
+    .sort-select:focus { border-color: var(--color-primary-500); }
+
+    /* ── Jobs table ── */
+    .jtbd-table-wrap {
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+    }
+    .jtbd-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-neutral-light-000);
+    }
+    .jtbd-table th {
+      text-align: left;
+      padding: 10px var(--space-m);
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-400);
+      background: var(--color-neutral-light-100);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+      white-space: nowrap;
+    }
+    .jtbd-table td {
+      padding: 10px var(--space-m);
+      border-bottom: 1px solid var(--color-neutral-light-200);
+      vertical-align: middle;
+    }
+    .jtbd-table tbody tr:last-child td { border-bottom: none; }
+    .jtbd-table tbody tr:hover td { background: var(--color-neutral-light-050, #fafafa); }
+    .jtbd-table tbody tr.row-high td { background: #fff8f8; }
+    .jtbd-table tbody tr.row-high:hover td { background: #fff3f3; }
+
+    /* ── Category tag ── */
+    .cat-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .cat-client        { background: #e0f2f1; color: #00695c; }
+    .cat-application   { background: #e3f2fd; color: #1565c0; }
+    .cat-document      { background: #f3e5f5; color: #6a1b9a; }
+    .cat-communication { background: #e8f5e9; color: #2e7d32; }
+    .cat-compliance    { background: #fff3e0; color: #e65100; }
+    .cat-pipeline      { background: #eceff1; color: #37474f; }
+    .cat-reporting     { background: #fce4ec; color: #880e4f; }
+    .cat-product       { background: #e8eaf6; color: #283593; }
+
+    .job-name {
+      font-size: var(--body-regular-size);
+      color: var(--color-neutral-dark-900);
+    }
+
+    /* ── Rating dots ── */
+    .rating-dots { display: flex; gap: 5px; align-items: center; }
+    .rdot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-neutral-light-400);
+      cursor: pointer;
+      transition: transform var(--transition-fast), background var(--transition-fast);
+    }
+    .rdot:hover { transform: scale(1.3); }
+    .rdot.on-imp { background: var(--color-neutral-dark-700); }
+    .rdot.on-sat { background: var(--color-primary-500); }
+
+    /* ── Opportunity bar ── */
+    .opp-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      min-width: 130px;
+    }
+    .opp-track {
+      flex: 1;
+      height: 5px;
+      background: var(--color-neutral-light-300);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .opp-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+    .opp-fill-high   { background: var(--color-error-500); }
+    .opp-fill-medium { background: #f59e0b; }
+    .opp-fill-low    { background: var(--color-success); }
+    .opp-score-num {
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-700);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    /* ── Priority badges ── */
+    .pri-high   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .pri-medium { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .pri-low    { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+    /* ── MATRIX TAB ── */
+    .matrix-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-l);
+      align-items: start;
+    }
+    .matrix-panel {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m);
+      padding: var(--space-l);
+    }
+    .matrix-panel h3 {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-700);
+      margin-bottom: var(--space-m);
+    }
+    .y-axis-label {
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-300);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      margin-right: var(--space-s);
+      flex-shrink: 0;
+    }
+    .matrix-plot-area {
+      display: flex;
+      align-items: stretch;
+      gap: var(--space-s);
+    }
+    .y-axis-ticks {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 6px 0;
+    }
+    .axis-tick {
+      font-size: 11px;
+      color: var(--color-neutral-dark-300);
+      line-height: 1;
+    }
+    .matrix-plot {
+      position: relative;
+      flex: 1;
+      aspect-ratio: 1.5 / 1;
+      background: #fafafa;
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-s);
+      overflow: hidden;
+    }
+    .q-line-h {
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      border-top: 1.5px dashed var(--color-neutral-light-500);
+      pointer-events: none;
+    }
+    .q-line-v {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      border-left: 1.5px dashed var(--color-neutral-light-500);
+      pointer-events: none;
+    }
+    .q-label {
+      position: absolute;
+      pointer-events: none;
+      line-height: 1.3;
+    }
+    .q-label span:first-child {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .q-label span:last-child {
+      font-size: 10px;
+      color: var(--color-neutral-dark-300);
+    }
+    .q-tl { top: 8px; left: 8px; }
+    .q-tl span:first-child { color: var(--color-error-500); }
+    .q-tr { top: 8px; right: 8px; text-align: right; }
+    .q-tr span:first-child { color: var(--color-primary-500); }
+    .q-bl { bottom: 8px; left: 8px; }
+    .q-bl span:first-child { color: var(--color-neutral-dark-400); }
+    .q-br { bottom: 8px; right: 8px; text-align: right; }
+    .q-br span:first-child { color: #d97706; }
+
+    .mdot {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: var(--shadow-xs);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      transition: transform var(--transition-fast);
+      z-index: 2;
+    }
+    .mdot:hover { transform: translate(-50%, -50%) scale(1.7); z-index: 10; }
+
+    .mdot-client        { background: #00897b; }
+    .mdot-application   { background: #1976d2; }
+    .mdot-document      { background: #8e24aa; }
+    .mdot-communication { background: #43a047; }
+    .mdot-compliance    { background: #e53935; }
+    .mdot-pipeline      { background: #546e7a; }
+    .mdot-reporting     { background: #c2185b; }
+    .mdot-product       { background: #3949ab; }
+
+    .matrix-tooltip-box {
+      position: absolute;
+      background: var(--color-neutral-dark-900);
+      color: white;
+      padding: 6px 10px;
+      border-radius: var(--radius-s);
+      font-size: 12px;
+      white-space: nowrap;
+      pointer-events: none;
+      display: none;
+      z-index: 20;
+      max-width: 260px;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    .x-axis-ticks {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2px;
+      margin-top: 4px;
+    }
+    .x-axis-ticks .axis-tick { font-size: 11px; color: var(--color-neutral-dark-300); }
+    .x-axis-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-300);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+
+    /* Legend / sidebar panels */
+    .side-panel {
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m);
+      padding: var(--space-m);
+      margin-bottom: var(--space-m);
+    }
+    .side-panel h4 {
+      font-size: var(--body-small-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-400);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--space-m);
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      margin-bottom: var(--space-s);
+    }
+    .legend-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .legend-row span {
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-700);
+    }
+    .quadrant-guide-row {
+      font-size: var(--body-small-size);
+      padding: var(--space-xs) var(--space-s);
+      border-radius: var(--radius-xs);
+      margin-bottom: var(--space-xs);
+      line-height: 1.5;
+    }
+    .quadrant-guide-row strong { font-weight: var(--font-weight-medium); display: block; }
+
+    /* ── TOP PRIORITIES TAB ── */
+    .top-list { display: flex; flex-direction: column; gap: var(--space-s); }
+    .top-card {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: var(--space-m);
+      align-items: center;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-400);
+      border-left: 3px solid var(--color-neutral-light-400);
+      border-radius: var(--radius-m);
+      padding: var(--space-m);
+    }
+    .top-card-high { border-left-color: var(--color-error-500); }
+    .top-card-medium { border-left-color: #f59e0b; }
+
+    .rank-num {
+      font-size: 20px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-300);
+      text-align: center;
+    }
+    .top-card-high .rank-num { color: var(--color-error-500); }
+    .top-card-medium .rank-num { color: #d97706; }
+
+    .top-card__name {
+      font-size: var(--body-regular-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-900);
+      margin-bottom: var(--space-xs);
+    }
+    .top-card__meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      flex-wrap: wrap;
+    }
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: var(--font-weight-medium);
+    }
+    .score-pill-imp { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-700); }
+    .score-pill-sat { background: var(--color-primary-100); color: var(--color-primary-600); }
+
+    .top-card__score { text-align: right; flex-shrink: 0; }
+    .top-card__score-val {
+      font-size: 24px;
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-700);
+      line-height: 1;
+    }
+    .top-card-high .top-card__score-val { color: var(--color-error-500); }
+    .top-card-medium .top-card__score-val { color: #d97706; }
+    .top-card__score-lbl {
+      font-size: 10px;
+      color: var(--color-neutral-dark-300);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     'JTBD Mapper',
+    subtitle:  'Mortgage Advisor Platform',
+    activeNav: 'reporting',
+    tabs:      ['All Jobs', 'Opportunity Matrix', 'Top Priorities'],
+    activeTab: 0,
+    infoItems: [
+      { label: 'Total Jobs',       value: '42'  },
+      { label: 'Categories',       value: '8'   },
+      { label: 'High Priority',    value: '—'   },
+      { label: 'Avg. Satisfaction',value: '—'   }
+    ],
+    actions: [
+      { label: 'Reset Scores', type: 'secondary', icon: 'restart_alt', id: 'btn-reset'  },
+      { label: 'Export CSV',   type: 'ghost',     icon: 'download',    id: 'btn-export' }
+    ]
+  });
+</script>
+
+<div id="proto-content">
+
+  <!-- ══ TAB 0: ALL JOBS ══════════════════════════════════════════════════ -->
+  <div id="tab-0" class="content-inner">
+
+    <div class="intro-banner">
+      <span class="material-symbols-outlined intro-banner__icon">info</span>
+      <div class="intro-banner__text">
+        <strong>How to score:</strong> Click the dots to rate each job on
+        <strong>Importance</strong> (how critical to the advisor's daily workflow, 1–5) and
+        <strong>Satisfaction</strong> (how well the current platform delivers it, 1–5).
+        The <strong>Opportunity Score</strong> (0–10) rises when a job is highly important but poorly served —
+        your highest-priority design targets.
+      </div>
+    </div>
+
+    <div id="summary-strip" class="summary-strip"></div>
+
+    <div id="toolbar" class="jtbd-toolbar"></div>
+
+    <div class="jtbd-table-wrap">
+      <table class="jtbd-table">
+        <thead>
+          <tr>
+            <th style="width:190px">Category</th>
+            <th>Job to be Done</th>
+            <th style="width:130px">Importance</th>
+            <th style="width:130px">Satisfaction</th>
+            <th style="width:150px">Opportunity</th>
+            <th style="width:88px">Priority</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ══ TAB 1: OPPORTUNITY MATRIX ══════════════════════════════════════════ -->
+  <div id="tab-1" class="content-inner" style="display:none">
+
+    <div class="matrix-layout">
+
+      <!-- Plot -->
+      <div class="matrix-panel">
+        <h3>Importance vs. Satisfaction — All Jobs</h3>
+        <div class="matrix-plot-area">
+          <div class="y-axis-label">Importance ↑</div>
+          <div class="y-axis-ticks" id="y-ticks">
+            <span class="axis-tick">5</span>
+            <span class="axis-tick">4</span>
+            <span class="axis-tick">3</span>
+            <span class="axis-tick">2</span>
+            <span class="axis-tick">1</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column;">
+            <div class="matrix-plot" id="matrix-plot">
+              <div class="q-line-h"></div>
+              <div class="q-line-v"></div>
+              <div class="q-label q-tl">
+                <span>Underserved</span>
+                <span>Highest priority</span>
+              </div>
+              <div class="q-label q-tr">
+                <span>Leverage</span>
+                <span>Maintain quality</span>
+              </div>
+              <div class="q-label q-bl">
+                <span>Monitor</span>
+                <span>Low priority</span>
+              </div>
+              <div class="q-label q-br">
+                <span>Over-served?</span>
+                <span>Review investment</span>
+              </div>
+              <div id="matrix-tooltip" class="matrix-tooltip-box"></div>
+            </div>
+            <div class="x-axis-ticks">
+              <span class="axis-tick">1</span>
+              <span class="axis-tick">2</span>
+              <span class="axis-tick">3</span>
+              <span class="axis-tick">4</span>
+              <span class="axis-tick">5</span>
+            </div>
+            <div class="x-axis-label">Satisfaction →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend + guide -->
+      <div>
+        <div class="side-panel">
+          <h4>Categories</h4>
+          <div id="matrix-legend"></div>
+        </div>
+        <div class="side-panel">
+          <h4>Quadrant Guide</h4>
+          <div class="quadrant-guide-row" style="background:#fee2e2">
+            <strong style="color:#991b1b">Underserved ↖</strong>
+            High importance, low satisfaction. Prime UX targets.
+          </div>
+          <div class="quadrant-guide-row" style="background:var(--color-primary-100)">
+            <strong style="color:var(--color-primary-600)">Leverage ↗</strong>
+            High importance, high satisfaction. Protect and scale.
+          </div>
+          <div class="quadrant-guide-row" style="background:var(--color-neutral-light-100)">
+            <strong style="color:var(--color-neutral-dark-500)">Monitor ↙</strong>
+            Low importance, low satisfaction. Park for later.
+          </div>
+          <div class="quadrant-guide-row" style="background:#fef9c3">
+            <strong style="color:#854d0e">Over-served? ↘</strong>
+            Low importance, high satisfaction. Review effort.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TAB 2: TOP PRIORITIES ═══════════════════════════════════════════════ -->
+  <div id="tab-2" class="content-inner" style="display:none">
+    <div id="top-list" class="top-list"></div>
+  </div>
+
+</div><!-- #proto-content -->
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const JOBS = [
+  // Client Management
+  { id:  1, cat: 'Client Management',        job: 'Add a new client to the system',                              imp: 4, sat: 3 },
+  { id:  2, cat: 'Client Management',        job: 'View a client\'s full history across all applications',       imp: 5, sat: 2 },
+  { id:  3, cat: 'Client Management',        job: 'Update client contact details',                               imp: 3, sat: 4 },
+  { id:  4, cat: 'Client Management',        job: 'Merge duplicate client records',                              imp: 3, sat: 2 },
+  { id:  5, cat: 'Client Management',        job: 'Set a follow-up reminder for a client',                       imp: 4, sat: 2 },
+  // Application Processing
+  { id:  6, cat: 'Application Processing',   job: 'Start a new mortgage application',                            imp: 5, sat: 3 },
+  { id:  7, cat: 'Application Processing',   job: 'Check the status of an in-progress application',              imp: 5, sat: 2 },
+  { id:  8, cat: 'Application Processing',   job: 'Submit a completed application to a lender',                  imp: 5, sat: 3 },
+  { id:  9, cat: 'Application Processing',   job: 'Compare multiple lender offers side by side',                 imp: 5, sat: 2 },
+  { id: 10, cat: 'Application Processing',   job: 'Calculate how much a client can borrow',                      imp: 5, sat: 3 },
+  { id: 11, cat: 'Application Processing',   job: 'Generate a KFI / ESIS illustration',                         imp: 4, sat: 3 },
+  { id: 12, cat: 'Application Processing',   job: 'Handle a product transfer for an existing client',            imp: 4, sat: 2 },
+  { id: 13, cat: 'Application Processing',   job: 'Re-submit an application after a lender decline',             imp: 3, sat: 2 },
+  // Document Management
+  { id: 14, cat: 'Document Management',      job: 'Request documents from a client',                             imp: 5, sat: 3 },
+  { id: 15, cat: 'Document Management',      job: 'Upload and attach documents to an application',               imp: 5, sat: 3 },
+  { id: 16, cat: 'Document Management',      job: 'Check which documents are still outstanding',                 imp: 5, sat: 2 },
+  { id: 17, cat: 'Document Management',      job: 'Re-request expired or rejected documents',                    imp: 4, sat: 2 },
+  { id: 18, cat: 'Document Management',      job: 'Verify that documents meet lender requirements',              imp: 4, sat: 2 },
+  // Communication
+  { id: 19, cat: 'Communication',            job: 'Send a templated email or letter to a client',                imp: 4, sat: 4 },
+  { id: 20, cat: 'Communication',            job: 'Log a phone call or meeting note',                            imp: 4, sat: 3 },
+  { id: 21, cat: 'Communication',            job: 'Notify a client of a lender decision',                        imp: 5, sat: 3 },
+  { id: 22, cat: 'Communication',            job: 'Share application progress updates with a client',            imp: 4, sat: 2 },
+  { id: 23, cat: 'Communication',            job: 'Escalate an issue to a manager or lender',                    imp: 3, sat: 2 },
+  // Compliance & Suitability
+  { id: 24, cat: 'Compliance & Suitability', job: 'Complete a fact-find and client needs assessment',            imp: 5, sat: 2 },
+  { id: 25, cat: 'Compliance & Suitability', job: 'Record client vulnerability flags',                           imp: 5, sat: 3 },
+  { id: 26, cat: 'Compliance & Suitability', job: 'Generate a suitability report',                               imp: 5, sat: 1 },
+  { id: 27, cat: 'Compliance & Suitability', job: 'Check affordability against lender criteria',                 imp: 5, sat: 2 },
+  { id: 28, cat: 'Compliance & Suitability', job: 'Complete AML / KYC identity checks',                          imp: 5, sat: 3 },
+  { id: 29, cat: 'Compliance & Suitability', job: 'Document reasons-why for a product recommendation',           imp: 5, sat: 1 },
+  // Pipeline & Workflow
+  { id: 30, cat: 'Pipeline & Workflow',      job: 'See all active cases in a single pipeline view',              imp: 5, sat: 3 },
+  { id: 31, cat: 'Pipeline & Workflow',      job: 'Identify which cases need attention today',                   imp: 5, sat: 2 },
+  { id: 32, cat: 'Pipeline & Workflow',      job: 'Track key deadlines (offer expiry, completion date)',         imp: 5, sat: 2 },
+  { id: 33, cat: 'Pipeline & Workflow',      job: 'Hand off a case to a colleague',                              imp: 3, sat: 3 },
+  { id: 34, cat: 'Pipeline & Workflow',      job: 'Archive a completed or lapsed case',                          imp: 3, sat: 4 },
+  // Reporting & Performance
+  { id: 35, cat: 'Reporting & Performance',  job: 'View my conversion rate and completion stats',                imp: 4, sat: 2 },
+  { id: 36, cat: 'Reporting & Performance',  job: 'Generate a monthly submission report',                        imp: 3, sat: 3 },
+  { id: 37, cat: 'Reporting & Performance',  job: 'Track commission and procuration fees',                       imp: 4, sat: 3 },
+  { id: 38, cat: 'Reporting & Performance',  job: 'View team performance metrics',                               imp: 3, sat: 3 },
+  // Product Research
+  { id: 39, cat: 'Product Research',         job: 'Search available mortgage products for a client',             imp: 5, sat: 3 },
+  { id: 40, cat: 'Product Research',         job: "Check a lender's current lending criteria",                   imp: 5, sat: 2 },
+  { id: 41, cat: 'Product Research',         job: 'Compare interest rates across lenders',                       imp: 5, sat: 2 },
+  { id: 42, cat: 'Product Research',         job: 'Check lender processing times and SLAs',                      imp: 4, sat: 2 }
+];
+
+// Capture defaults so reset works
+const DEFAULTS = JOBS.map(j => ({ id: j.id, imp: j.imp, sat: j.sat }));
+
+const CAT_CFG = {
+  'Client Management':        { cls: 'cat-client',        dot: '#00897b' },
+  'Application Processing':   { cls: 'cat-application',   dot: '#1976d2' },
+  'Document Management':      { cls: 'cat-document',      dot: '#8e24aa' },
+  'Communication':            { cls: 'cat-communication', dot: '#43a047' },
+  'Compliance & Suitability': { cls: 'cat-compliance',    dot: '#e53935' },
+  'Pipeline & Workflow':      { cls: 'cat-pipeline',      dot: '#546e7a' },
+  'Reporting & Performance':  { cls: 'cat-reporting',     dot: '#c2185b' },
+  'Product Research':         { cls: 'cat-product',       dot: '#3949ab' }
+};
+
+// ── SCORING ───────────────────────────────────────────────────────────────────
+// Ulwick opportunity = importance + max(importance - satisfaction, 0)
+// On 1-5 scale: max raw = 9 (imp=5, sat=1 → 5+4). Normalize to 0–10.
+function opp(imp, sat) {
+  const raw = imp + Math.max(imp - sat, 0);
+  return Math.round((raw / 9) * 100) / 10; // one decimal, 0–10
+}
+
+function level(score) {
+  return score >= 7 ? 'high' : score >= 4 ? 'medium' : 'low';
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeFilter = 'All';
+let activeSort   = 'opportunity';
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function filteredJobs() {
+  return activeFilter === 'All' ? JOBS : JOBS.filter(j => j.cat === activeFilter);
+}
+
+function sortedJobs(jobs) {
+  return [...jobs].sort((a, b) => {
+    if (activeSort === 'opportunity')  return opp(b.imp, b.sat) - opp(a.imp, a.sat);
+    if (activeSort === 'importance')   return b.imp - a.imp;
+    if (activeSort === 'satisfaction') return a.sat - b.sat;
+    if (activeSort === 'category')     return a.cat.localeCompare(b.cat);
+    return 0;
+  });
+}
+
+function catTag(cat) {
+  const c = CAT_CFG[cat] || { cls: 'cat-client' };
+  return `<span class="cat-tag ${c.cls}">${cat}</span>`;
+}
+
+function ratingDots(jobId, field, value) {
+  let h = '<div class="rating-dots">';
+  for (let i = 1; i <= 5; i++) {
+    const on = i <= value;
+    const cls = on ? (field === 'imp' ? 'rdot on-imp' : 'rdot on-sat') : 'rdot';
+    h += `<div class="${cls}" data-id="${jobId}" data-f="${field}" data-v="${i}"></div>`;
+  }
+  return h + '</div>';
+}
+
+function oppBar(score) {
+  const lv  = level(score);
+  const pct = (score / 10) * 100;
+  return `<div class="opp-cell">
+    <div class="opp-track"><div class="opp-fill opp-fill-${lv}" style="width:${pct}%"></div></div>
+    <span class="opp-score-num">${score.toFixed(1)}</span>
+  </div>`;
+}
+
+function priorityBadge(lv) {
+  return `<span class="badge pri-${lv}">${lv.charAt(0).toUpperCase()+lv.slice(1)}</span>`;
+}
+
+// ── RENDER: TABLE ─────────────────────────────────────────────────────────────
+function renderTable() {
+  const jobs = sortedJobs(filteredJobs());
+  let html = '';
+  jobs.forEach(j => {
+    const score = opp(j.imp, j.sat);
+    const lv    = level(score);
+    html += `<tr class="${lv === 'high' ? 'row-high' : ''}" data-jid="${j.id}">`;
+    html += `<td>${catTag(j.cat)}</td>`;
+    html += `<td><span class="job-name">${j.job}</span></td>`;
+    html += `<td>${ratingDots(j.id, 'imp', j.imp)}</td>`;
+    html += `<td>${ratingDots(j.id, 'sat', j.sat)}</td>`;
+    html += `<td>${oppBar(score)}</td>`;
+    html += `<td>${priorityBadge(lv)}</td>`;
+    html += '</tr>';
+  });
+  document.getElementById('table-body').innerHTML = html;
+
+  document.querySelectorAll('.rdot').forEach(dot => {
+    dot.addEventListener('click', function() {
+      const j = JOBS.find(x => x.id === +this.dataset.id);
+      if (!j) return;
+      j[this.dataset.f] = +this.dataset.v;
+      renderAll();
+    });
+  });
+}
+
+// ── RENDER: TOOLBAR ───────────────────────────────────────────────────────────
+function renderToolbar() {
+  const cats = ['All', ...Object.keys(CAT_CFG)];
+  let html = '<span class="toolbar-label">Filter by:</span>';
+  cats.forEach(c => {
+    const count = c === 'All' ? JOBS.length : JOBS.filter(j => j.cat === c).length;
+    html += `<button class="filter-chip${activeFilter === c ? ' active' : ''}" data-cat="${c}">
+      ${c}<span class="chip-count">${count}</span>
+    </button>`;
+  });
+  html += `<select class="sort-select" id="sort-select">
+    <option value="opportunity"${activeSort==='opportunity'?' selected':''}>Sort: Opportunity</option>
+    <option value="importance"${activeSort==='importance'?' selected':''}>Sort: Importance</option>
+    <option value="satisfaction"${activeSort==='satisfaction'?' selected':''}>Sort: Satisfaction</option>
+    <option value="category"${activeSort==='category'?' selected':''}>Sort: Category</option>
+  </select>`;
+
+  const tb = document.getElementById('toolbar');
+  tb.innerHTML = html;
+
+  tb.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', function() {
+      activeFilter = this.dataset.cat;
+      renderToolbar();
+      renderTable();
+    });
+  });
+  document.getElementById('sort-select').addEventListener('change', function() {
+    activeSort = this.value;
+    renderTable();
+  });
+}
+
+// ── RENDER: SUMMARY STRIP ─────────────────────────────────────────────────────
+function renderSummary() {
+  const scores  = JOBS.map(j => opp(j.imp, j.sat));
+  const high    = scores.filter(s => s >= 7).length;
+  const avgSat  = (JOBS.reduce((a, j) => a + j.sat, 0) / JOBS.length).toFixed(1);
+  const topS    = Math.max(...scores).toFixed(1);
+  const avgOpp  = (scores.reduce((a, s) => a + s, 0) / scores.length).toFixed(1);
+
+  document.getElementById('summary-strip').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card__label">Total Jobs</div>
+      <div class="summary-card__value">${JOBS.length}</div>
+      <div class="summary-card__sub">across 8 categories</div>
+    </div>
+    <div class="summary-card summary-card--alert">
+      <div class="summary-card__label">High Priority</div>
+      <div class="summary-card__value">${high}</div>
+      <div class="summary-card__sub">opportunity score ≥ 7.0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card__label">Avg. Satisfaction</div>
+      <div class="summary-card__value">${avgSat}</div>
+      <div class="summary-card__sub">out of 5.0</div>
+    </div>
+    <div class="summary-card summary-card--teal">
+      <div class="summary-card__label">Top Opportunity</div>
+      <div class="summary-card__value">${topS}</div>
+      <div class="summary-card__sub">avg. ${avgOpp} across all jobs</div>
+    </div>`;
+
+  // Update info bar
+  document.addEventListener('shell:ready', () => {}, { once: true });
+  const infoVals = document.querySelectorAll('.info-value');
+  if (infoVals[2]) infoVals[2].textContent = high;
+  if (infoVals[3]) infoVals[3].textContent = avgSat + ' / 5';
+}
+
+// ── RENDER: MATRIX ────────────────────────────────────────────────────────────
+function renderMatrix() {
+  const plot = document.getElementById('matrix-plot');
+  if (!plot) return;
+  plot.querySelectorAll('.mdot').forEach(d => d.remove());
+
+  const tooltip = document.getElementById('matrix-tooltip');
+  const plotRect = plot.getBoundingClientRect();
+
+  JOBS.forEach(j => {
+    const catKey = CAT_CFG[j.cat].cls.replace('cat-', '');
+    const dot = document.createElement('div');
+    dot.className = `mdot mdot-${catKey}`;
+
+    // Map sat 1–5 → left 8%–92%, imp 1–5 → top 92%–8% (inverted)
+    const xPct = 8 + ((j.sat - 1) / 4) * 84;
+    const yPct = 8 + ((5 - j.imp) / 4) * 84;
+    dot.style.left = xPct + '%';
+    dot.style.top  = yPct + '%';
+
+    dot.addEventListener('mouseenter', function(e) {
+      const score = opp(j.imp, j.sat);
+      tooltip.innerHTML = `<strong>${j.job}</strong><br>Imp: ${j.imp} · Sat: ${j.sat} · Opp: ${score.toFixed(1)}`;
+      tooltip.style.display = 'block';
+      const tipX = Math.min(xPct, 60);
+      const tipY = yPct > 15 ? yPct - 2 : yPct + 12;
+      tooltip.style.left = tipX + '%';
+      tooltip.style.top  = tipY + '%';
+      tooltip.style.transform = yPct > 15 ? 'translate(0, -110%)' : 'translate(0, 10px)';
+    });
+    dot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+    plot.appendChild(dot);
+  });
+
+  // Legend
+  let legend = '';
+  Object.entries(CAT_CFG).forEach(([cat, cfg]) => {
+    legend += `<div class="legend-row"><div class="legend-dot" style="background:${cfg.dot}"></div><span>${cat}</span></div>`;
+  });
+  document.getElementById('matrix-legend').innerHTML = legend;
+}
+
+// ── RENDER: TOP PRIORITIES ────────────────────────────────────────────────────
+function renderTop() {
+  const sorted = [...JOBS].sort((a, b) => opp(b.imp, b.sat) - opp(a.imp, a.sat)).slice(0, 15);
+  let html = '';
+  sorted.forEach((j, i) => {
+    const score = opp(j.imp, j.sat);
+    const lv    = level(score);
+    html += `<div class="top-card top-card-${lv}">
+      <div class="rank-num">${i + 1}</div>
+      <div>
+        <div class="top-card__name">${j.job}</div>
+        <div class="top-card__meta">
+          ${catTag(j.cat)}
+          <span class="score-pill score-pill-imp">Importance: ${j.imp}/5</span>
+          <span class="score-pill score-pill-sat">Satisfaction: ${j.sat}/5</span>
+        </div>
+      </div>
+      <div class="top-card__score">
+        <div class="top-card__score-val">${score.toFixed(1)}</div>
+        <div class="top-card__score-lbl">Opp.</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('top-list').innerHTML = html;
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderSummary();
+  renderTable();
+  renderTop();
+  if (document.getElementById('tab-1').style.display !== 'none') renderMatrix();
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+let currentTab = 0;
+document.addEventListener('shell:tab-change', e => {
+  currentTab = e.detail.index;
+  document.getElementById('tab-0').style.display = currentTab === 0 ? '' : 'none';
+  document.getElementById('tab-1').style.display = currentTab === 1 ? '' : 'none';
+  document.getElementById('tab-2').style.display = currentTab === 2 ? '' : 'none';
+  if (currentTab === 1) renderMatrix();
+});
+
+// ── BUTTONS ───────────────────────────────────────────────────────────────────
+document.addEventListener('shell:ready', () => {
+  // Reset
+  const resetBtn = document.getElementById('btn-reset');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      DEFAULTS.forEach(d => {
+        const j = JOBS.find(x => x.id === d.id);
+        if (j) { j.imp = d.imp; j.sat = d.sat; }
+      });
+      renderAll();
+    });
+  }
+
+  // Export CSV
+  const exportBtn = document.getElementById('btn-export');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const rows = [['ID','Category','Job','Importance','Satisfaction','Opportunity Score','Priority']];
+      JOBS.forEach(j => {
+        const score = opp(j.imp, j.sat);
+        rows.push([j.id, j.cat, `"${j.job}"`, j.imp, j.sat, score.toFixed(1), level(score)]);
+      });
+      const csv  = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = 'jtbd-mortgage-advisor.csv';
+      a.click(); URL.revokeObjectURL(url);
+    });
+  }
+
+  // Update info bar values
+  const infoVals = document.querySelectorAll('.info-value');
+  const scores   = JOBS.map(j => opp(j.imp, j.sat));
+  if (infoVals[2]) infoVals[2].textContent = scores.filter(s => s >= 7).length;
+  if (infoVals[3]) infoVals[3].textContent = (JOBS.reduce((a, j) => a + j.sat, 0) / JOBS.length).toFixed(1) + ' / 5';
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderSummary();
+renderToolbar();
+renderTable();
+renderTop();
+</script>
+
+</body>
+</html>
