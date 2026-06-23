@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Breiten-Layout Vergleich – Angebot</title>
+<style>
+  :root {
+    --primary-500: #009688;
+    --primary-600: #00877A;
+    --primary-100: #E6F5F3;
+    --primary-700: #00695c;
+    --n50:#FAFAFA; --n100:#F5F5F5; --n200:#EEEEEE; --n300:#E0E0E0;
+    --n400:#BDBDBD; --n500:#9E9E9E; --n600:#757575; --n700:#616161;
+    --n800:#424242; --n900:#212121;
+    --warn:#FF9F1A; --pass:#20BF6B;
+
+    /* the two width rules being compared */
+    --shell-cap: 1600px;     /* high safety cap so ultrawide isn't absurd */
+    --prose-cap: 700px;      /* reading measure for text/detail content */
+    --docs-cap: 1100px;      /* the "cap everything" docs-style value */
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--sans);
+    color: var(--n900);
+    background: #fff;
+    display: flex; flex-direction: column;
+    height: 100vh; overflow: hidden;
+  }
+
+  /* ── Mode banner / toggle ── */
+  .modebar {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 20px;
+    background: var(--n900); color: #fff;
+    font-size: 13px;
+  }
+  .modebar .lbl { font-weight: 600; letter-spacing: .02em; }
+  .seg { display: inline-flex; background: rgba(255,255,255,.12); border-radius: 8px; padding: 3px; }
+  .seg button {
+    font: inherit; font-size: 12px; font-weight: 600;
+    border: 0; background: transparent; color: rgba(255,255,255,.75);
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: .15s;
+  }
+  .seg button.on { background: var(--primary-500); color: #fff; }
+  .modebar .readout { margin-left: auto; font-size: 12px; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; }
+  .modebar .readout b { color:#fff; }
+  .modebar .note { font-size: 12px; color: rgba(255,255,255,.6); }
+
+  /* ── Top product tab bar (chrome, mimics the real screen) ── */
+  .topbar {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 22px;
+    height: 46px; padding: 0 24px;
+    border-bottom: 1px solid var(--n200);
+    font-size: 13px; color: var(--n600);
+    background:#fff;
+  }
+  .topbar .tab { white-space: nowrap; }
+  .topbar .tab.active { color: var(--n900); font-weight: 600; position: relative; }
+  .topbar .tab.active::after {
+    content:""; position:absolute; left:0; right:0; bottom:-12px; height:2px; background: var(--primary-500);
+  }
+
+  /* ── App shell ── */
+  .app { flex: 1; display: flex; min-height: 0; }
+
+  .sidebar {
+    width: 230px; flex-shrink: 0;
+    border-right: 1px solid var(--n200);
+    padding: 14px 0;
+    overflow-y: auto;
+    background:#fff;
+  }
+  .sidebar .head { display:flex; align-items:center; gap:10px; padding: 4px 18px 14px; font-size:15px; font-weight:600;}
+  .sidebar .head .back { color: var(--n500); }
+  .navitem {
+    display:flex; align-items:center; gap:8px;
+    padding: 9px 18px; font-size:13px; color: var(--n700); cursor: pointer;
+  }
+  .navitem .dot { width:7px; height:7px; border-radius:50%; }
+  .navitem .dot.warn { background: var(--warn);} .navitem .dot.ok { background: var(--pass);}
+  .navitem.active { background: var(--primary-100); color: var(--primary-700); box-shadow: inset 3px 0 0 var(--primary-500); font-weight:500;}
+  .navitem.child { padding-left: 34px; color: var(--n600); }
+  .navitem.group { color: var(--n800); font-weight:500; cursor:default; padding-top:14px; }
+
+  /* ── Content scroll area ── */
+  .content {
+    flex: 1; min-width: 0; overflow-y: auto;
+    background: var(--n50);
+    padding: 24px 32px 64px;
+  }
+  /* the page column — high safety cap, centered */
+  .column {
+    width: 100%;
+    max-width: var(--shell-cap);
+    margin: 0 auto;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  .card {
+    background:#fff; border:1px solid var(--n200); border-radius: 12px;
+    overflow: hidden;
+  }
+  .card-head {
+    display:flex; align-items:center; gap:10px;
+    padding: 14px 20px; border-bottom: 1px solid var(--n100);
+    font-size: 15px; font-weight: 600;
+  }
+  .card-head .chev { margin-left:auto; color: var(--n500); }
+  .card-cap {
+    margin: -6px 0 0; padding: 0 2px;
+    font-size: 11px; color: var(--n500); letter-spacing:.01em;
+  }
+  .card-cap b { color: var(--primary-600); }
+
+  /* PROSE card body — capped reading measure */
+  .card-body { padding: 20px; }
+  .prose-measure {
+    max-width: var(--prose-cap);   /* recommended: capped */
+  }
+  .row { display:flex; justify-content:space-between; gap: 24px; padding: 6px 0; font-size: 13.5px; color: var(--n800); }
+  .row .pct { font-weight:600; font-variant-numeric: tabular-nums; white-space:nowrap; }
+  .blocktitle { font-weight:600; font-size:13.5px; margin: 4px 0 6px; }
+  ul.cond { list-style: disc; padding-left: 20px; margin: 2px 0 10px; }
+  ul.cond li { font-size: 13.5px; color: var(--n800); padding: 3px 0; }
+  .total { border-top: 1px solid var(--n200); margin-top: 8px; padding-top: 12px; font-weight:700; }
+
+  /* TABLE card body — fluid (recommended) */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: right; font-weight: 600; color: var(--n700);
+    background: var(--n100); padding: 12px 16px; white-space: nowrap;
+  }
+  thead th:first-child { text-align:left; }
+  tbody td { text-align: right; padding: 12px 16px; border-top: 1px solid var(--n100); color: var(--n800); font-variant-numeric: tabular-nums; white-space:nowrap; }
+  tbody td:first-child { text-align:left; color: var(--n900); }
+  .table-toolbar { display:flex; align-items:center; gap:8px; padding: 14px 20px 4px; }
+  .table-toolbar .select { flex:1; border:1px solid var(--n300); border-radius:6px; padding:8px 12px; font-size:13px; color:var(--n700);}
+  .table-toolbar .pill { border:1px solid var(--n300); background:#fff; border-radius:6px; padding:7px 14px; font-size:12px; cursor:pointer;}
+  .table-toolbar .pill.on { background: var(--primary-100); border-color: var(--primary-500); color: var(--primary-700); font-weight:600;}
+
+  /* ─────────────── DOCS-STYLE MODE (everything capped) ─────────────── */
+  body.mode-docs .column { max-width: var(--docs-cap); }
+  body.mode-docs .prose-measure { max-width: 100%; }   /* prose now stretches to the (already narrow) column */
+  /* table no longer fluid — it's bounded by the capped column; wide content just scrolls */
+
+  /* annotation chips */
+  .chip { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:3px 7px; border-radius:5px; vertical-align:middle; margin-left:8px;}
+  .chip.fluid { background:#E6F5F3; color: var(--primary-700);}
+  .chip.capped { background:#FFF3E0; color:#B26A00;}
+  body.mode-docs .chip.fluid { display:none; }
+  body:not(.mode-docs) .chip.capped-only { display:none; }
+  .chip.capped-only { background:#FFF3E0; color:#B26A00;}
+</style>
+</head>
+<body class="mode-rec">
+
+  <!-- Mode toggle -->
+  <div class="modebar">
+    <span class="lbl">Layout-Modus</span>
+    <div class="seg">
+      <button id="btn-rec" class="on" onclick="setMode('rec')">Empfohlen · Tabelle fluid, Text begrenzt</button>
+      <button id="btn-docs" onclick="setMode('docs')">Docs-Stil · alles begrenzt</button>
+    </div>
+    <span class="note" id="modenote">Tabelle nutzt volle Breite · Text auf 700px Lesebreite begrenzt</span>
+    <span class="readout">Fenster: <b id="vw">–</b>px</span>
+  </div>
+
+  <!-- Product chrome -->
+  <div class="topbar">
+    <span class="tab">Übersicht</span>
+    <span class="tab">Antrag</span>
+    <span class="tab">Antragsvalidierung</span>
+    <span class="tab">Kommunikation</span>
+    <span class="tab active">Angebotssuche</span>
+    <span class="tab">Manuelles Angebot</span>
+    <span class="tab">Objektbewertung</span>
+    <span class="tab">Dokumente</span>
+    <span class="tab">PDF</span>
+    <span class="tab">Buchhaltung</span>
+  </div>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="head"><span class="back">←</span> ING 330.000,00 €</div>
+      <div class="navitem">Machbarkeit <span class="dot warn"></span></div>
+      <div class="navitem">Details zum Angebot</div>
+      <div class="navitem active">Margendetails</div>
+      <div class="navitem">Tilgungsplan</div>
+      <div class="navitem">Haushaltsrechnung <span class="dot ok"></span></div>
+      <div class="navitem">Sensitivitätsanalyse <span class="dot ok"></span></div>
+      <div class="navitem group">Angebot Bündel 1</div>
+      <div class="navitem child">Immocheck <span class="dot ok"></span></div>
+      <div class="navitem child">Vorscoring</div>
+      <div class="navitem child">Einreichung</div>
+      <div class="navitem child">Angebotshistorie</div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+      <div class="column">
+
+        <!-- PROSE CARD -->
+        <p class="card-cap">
+          Margendetails — Text/Detail-Inhalt
+          <span class="chip capped">begrenzt · 700px Lesebreite</span>
+        </p>
+        <section class="card">
+          <div class="card-head">Margendetails <span class="chev">⌃</span></div>
+          <div class="card-body">
+            <div class="prose-measure">
+              <div class="blocktitle">Grundkondition ING</div>
+              <div class="row"><span></span><span class="pct">3,65 %</span></div>
+              <ul class="cond">
+                <li>Finanzierung – Finanzierungsbedarf — mind. 300.000,00 €</li>
+                <li>Finanzierung – Beleihungsauslauf — zw. 80,01 % und 85,00 %</li>
+                <li>Darlehen – Festschreibung — zw. 6 Jahre und 10 Jahre</li>
+              </ul>
+              <div class="row"><span>Objekt – Finanzierungsgrund — Kauf · Objekt – Postleitzahl — 12049</span><span class="pct">−0,10 %</span></div>
+              <div class="row"><span>Finanzierung – Finanzierungsbedarf — mind. 300.000,00 € · Objekt – Finanzierungsgrund — Kauf</span><span class="pct">−0,10 %</span></div>
+              <div class="row total"><span>Gesamt (Sollzins)</span><span class="pct">3,45 %</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TABLE CARD -->
+        <p class="card-cap">
+          Tilgungsplan — dichte Datentabelle
+          <span class="chip fluid">fluid · volle Breite</span>
+          <span class="chip capped-only">begrenzt · scrollt bei Bedarf</span>
+        </p>
+        <section class="card">
+          <div class="card-head">Tilgungsplan <span class="chev">⌃</span></div>
+          <div class="table-toolbar">
+            <div class="select">ING ▾</div>
+            <div class="pill on">Monatlich</div>
+            <div class="pill">Jährlich</div>
+          </div>
+          <div class="card-body" style="padding:16px 20px 4px">
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Datum</th><th>Monatliche Rate</th><th>Tilgung</th>
+                    <th>Zinszahlung</th><th>Restschuld</th><th>Ausgezahltes Darlehen</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+<script>
+  // generate amortization-ish rows
+  const rows = [];
+  let rest = 330000, rate = 1498.75;
+  const months = [
+    "30.06.2026","31.07.2026","31.08.2026","30.09.2026","31.10.2026","30.11.2026",
+    "31.12.2026","31.01.2027","28.02.2027","31.03.2027","30.04.2027","31.05.2027",
+    "30.06.2027","31.07.2027","31.08.2027","30.09.2027"
+  ];
+  const fmt = n => n.toLocaleString('de-DE',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  months.forEach((m,i) => {
+    let til = i===0 ? 0 : 550 + i*1.6;
+    let zins = i===0 ? 0 : rate - til;
+    let r = i===0 ? 0 : rate;
+    if(i>0) rest -= til;
+    rows.push(`<tr><td>${m}</td><td>${fmt(r)}</td><td>${fmt(til)}</td><td>${fmt(zins)}</td><td>${fmt(rest)}</td><td>${fmt(330000)}</td></tr>`);
+  });
+  document.getElementById('tbody').innerHTML = rows.join('');
+
+  function setMode(m){
+    document.body.classList.toggle('mode-docs', m==='docs');
+    document.getElementById('btn-rec').classList.toggle('on', m==='rec');
+    document.getElementById('btn-docs').classList.toggle('on', m==='docs');
+    document.getElementById('modenote').textContent = m==='docs'
+      ? 'Alles auf 1100px begrenzt (Doku-Konvention) — Tabelle verschenkt Breite auf großen Schirmen'
+      : 'Tabelle nutzt volle Breite · Text auf 700px Lesebreite begrenzt';
+  }
+  const vw = document.getElementById('vw');
+  const upd = () => vw.textContent = window.innerWidth;
+  upd(); window.addEventListener('resize', upd);
+</script>
+</body>
+</html>
