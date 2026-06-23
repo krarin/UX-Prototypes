@@ -15,36 +15,30 @@
     --line:#E4E7EB; --line-2:#EEF1F4; --bg:#F4F6F8; --card:#FFFFFF;
     --green:#20BF6B; --green-l:#E9FCF2; --amber:#FF9F1A; --amber-l:#FFF5E8;
     --red:#FF5656; --red-l:#FFEEEE; --violet:#7C5CFC; --violet-l:#EFEBFF;
-    --ms-blue:#0F6CBD; --ms-blue-l:#EFF6FC;
-    --cal-blue:#006BFF; --cal-blue-l:#EEF4FF;
+    --ms-blue:#0F6CBD; --ms-blue-l:#EFF6FC; --cal-blue:#006BFF; --cal-blue-l:#EEF4FF;
     --r-s:6px; --r-m:10px; --r-l:14px;
-    --sh-s:0 1px 2px rgba(16,24,40,.06); --sh-m:0 6px 18px rgba(16,24,40,.10);
-    --sh-l:-8px 0 40px rgba(16,24,40,.18);
+    --sh-s:0 1px 2px rgba(16,24,40,.06); --sh-m:0 6px 18px rgba(16,24,40,.10); --sh-l:-8px 0 40px rgba(16,24,40,.18);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
   .icon{font-family:'Material Symbols Outlined';font-style:normal;font-size:20px;line-height:1;
     font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;user-select:none;vertical-align:middle}
-  .icon.fill{font-variation-settings:'FILL' 1}
-  .icon.sm{font-size:16px}
+  .icon.fill{font-variation-settings:'FILL' 1}.icon.sm{font-size:16px}
   button{font-family:inherit;cursor:pointer;border:none;background:none}
   .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 
   /* top chrome */
   .topbar{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 22px}
-  .topbar .crumb{color:var(--ink-3);font-weight:500}
-  .topbar .crumb.cur{color:var(--ink);font-weight:700}
+  .topbar .crumb{color:var(--ink-3);font-weight:500}.topbar .crumb.cur{color:var(--ink);font-weight:700}
   .topbar .amount{color:var(--ink-3);font-weight:500}
   .topbar .right{margin-left:auto;display:flex;align-items:center;gap:18px;color:var(--ink-3)}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
   .cust-header{background:#fff;border-bottom:1px solid var(--line);padding:18px 22px}
   .cust-row{display:flex;align-items:center;gap:12px}
-  .cust-row h1{font-size:20px;font-weight:700}
-  .cust-row .amt{font-size:20px;font-weight:700;color:var(--ink-2)}
+  .cust-row h1{font-size:20px;font-weight:700}.cust-row .amt{font-size:20px;font-weight:700;color:var(--ink-2)}
   .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:500}
-  .pill-amber{background:#FFE5C2;color:#92600A}
-  .pill-violet{background:var(--violet-l);color:#5b3df5}
+  .pill-amber{background:#FFE5C2;color:#92600A}.pill-violet{background:var(--violet-l);color:#5b3df5}
   .pill-add{color:var(--primary);font-weight:500;display:inline-flex;align-items:center;gap:4px}
   .cust-sub{color:var(--ink-3);font-size:12.5px;margin-top:4px}
   .header-actions{margin-left:auto;display:flex;gap:8px}
@@ -52,67 +46,63 @@
   .tab{padding:0 0 12px;color:var(--ink-2);font-weight:500;border-bottom:2px solid transparent}
   .tab.active{color:var(--primary);border-color:var(--primary)}
 
-  /* buttons */
-  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-s);padding:8px 14px;font-size:13px;font-weight:500;border:1px solid var(--line);background:#fff;color:var(--ink);transition:.12s}
-  .btn:hover{background:var(--line-2)}
+  /* buttons — match shared design-system spec (design-system/layout.css) */
+  .btn{display:inline-flex;align-items:center;gap:4px;border-radius:4px;padding:6px 16px;font-family:'Roboto',sans-serif;font-size:14px;font-weight:500;line-height:20px;letter-spacing:.3px;border:1px solid #CFD8DC;background:#fff;color:#4B5961;transition:background .15s ease,border-color .15s ease,color .15s ease;white-space:nowrap}
+  .btn:hover{background:#F5F7F8;border-color:#B0BEC5}
   .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
-  .btn-primary:hover{background:var(--primary-600)}
-  .btn-sm{padding:5px 10px;font-size:12.5px}
-  .btn-danger{color:var(--red);border-color:#FAD1D1}
-  .btn-danger:hover{background:var(--red-l)}
+  .btn-primary:hover{background:var(--primary-600);border-color:var(--primary-600)}
+  .btn-ghost{background:transparent;border-color:transparent;color:#607D8B;padding:6px 8px}
+  .btn-ghost:hover{background:#F5F7F8;color:#4B5961}
+  .btn-danger{background:#fff;color:var(--red);border-color:#FAD1D1}
+  .btn-danger:hover{background:var(--red-l);border-color:#FAD1D1}
+  .btn-sm{padding:5px 12px;font-size:13px}
   .btn-block{width:100%;justify-content:center;padding:11px}
 
-  /* layout */
   .content{padding:22px;display:grid;grid-template-columns:minmax(320px,1fr) 1.4fr;gap:22px;max-width:1500px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);padding:18px 20px}
+  .card-soft{background:#FAFBFC}
   .card + .card{margin-top:18px}
   .card h2{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
   .card-head{display:flex;align-items:center;margin-bottom:14px}
   .card-head .edit{margin-left:auto;color:var(--primary);font-weight:500;font-size:13px;display:inline-flex;gap:4px;align-items:center}
   .muted{color:var(--ink-3)}
   .kv{display:grid;grid-template-columns:150px 1fr;gap:10px 14px;font-size:13.5px}
-  .kv .k{color:var(--ink-2);text-align:right}
-  .kv .v{font-weight:500}
+  .kv .k{color:var(--ink-2);text-align:right}.kv .v{font-weight:500}
   .count{color:var(--ink-3);font-weight:500;font-size:13px}
   .badge-live{margin-left:auto;background:var(--green-l);color:#10864a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
-  .steps{display:flex;gap:6px;margin-top:12px}
-  .steps i{height:6px;border-radius:3px;flex:1;background:var(--line)}
-  .steps i.on{background:var(--primary)}
+  .steps{display:flex;gap:6px;margin-top:12px}.steps i{height:6px;border-radius:3px;flex:1;background:var(--line)}.steps i.on{background:var(--primary)}
   .create-row{display:flex;gap:10px;flex-wrap:wrap}
   .create-btn{flex:1;min-width:150px;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:var(--r-m);padding:14px;display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ink);transition:.12s}
-  .create-btn:hover{border-color:var(--primary);background:var(--primary-100)}
-  .create-btn .icon{color:var(--primary)}
+  .create-btn:hover{border-color:var(--primary);background:var(--primary-100)}.create-btn .icon{color:var(--primary)}
 
-  /* sync bar */
-  .sync-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);background:var(--green-l);
-    border:1px solid #C6ECD7;border-radius:999px;padding:4px 12px;margin-bottom:14px}
+  .sync-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2);background:var(--green-l);border:1px solid #C6ECD7;border-radius:999px;padding:4px 12px;margin-bottom:14px;flex-wrap:wrap}
   .sync-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(32,191,107,.18)}
   .sync-bar .sim{margin-left:auto;color:var(--ink-3);font-weight:500;display:inline-flex;align-items:center;gap:3px}
   .sync-bar .sim:hover{color:var(--ink)}
   .logo{width:13px;height:13px;border-radius:3px;display:inline-block}
   .logo-ms{background:linear-gradient(135deg,#F25022 0 50%,#7FBA00 50% 100%)}
-  .logo-cal{background:var(--cal-blue)}
-  .logo-nylas{background:#6A5CFF}
+  .logo-cal{background:var(--cal-blue)}.logo-nylas{background:#6A5CFF}
 
-  /* meeting card */
-  .meeting{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;display:flex;gap:14px;align-items:flex-start}
-  .meeting + .meeting{margin-top:10px}
+  /* meeting card — Figma "Field" (node 1:2866) */
+  .meeting{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 2px rgba(84,110,122,.15);display:flex;gap:10px;align-items:flex-start}
+  .meeting + .meeting{margin-top:12px}
   .meeting.invite{border-left:3px solid var(--ms-blue);background:var(--ms-blue-l)}
-  .m-date{width:54px;flex:none;text-align:center;background:var(--primary-100);border-radius:var(--r-s);padding:8px 0;color:var(--primary-600)}
-  .m-date.inv{background:#fff;color:var(--ms-blue)}
-  .m-date .d{font-size:19px;font-weight:700;line-height:1}
-  .m-date .mo{font-size:11px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  .meeting.cancelled{opacity:.55}
   .m-main{flex:1;min-width:0}
-  .m-title{font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .m-meta{color:var(--ink-2);font-size:13px;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .m-meta .dot{color:var(--ink-3)}
+  .m-title{color:#4B5961;font-size:16px;font-weight:500;line-height:24px;letter-spacing:.1px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .m-meta{color:#546E7A;font-size:14px;line-height:20px;letter-spacing:.25px;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .m-meta .seg2{display:inline-flex;align-items:center;gap:8px}
+  .m-meta .icon{font-size:20px;color:#546E7A;flex:none}
+  .m-meta .sep{color:#B0BEC5}
+  .m-meta .mtype{color:var(--primary);font-weight:500;display:inline-flex;align-items:center;gap:4px}
+  .m-meta .mtype .icon{color:var(--primary)}
+  .m-iconbtn{width:32px;height:32px;flex:none;border-radius:16px;background:#ECEFF1;color:var(--ink-2);display:grid;place-items:center;transition:.12s}
+  .m-iconbtn:hover{background:#DEE4E7}
+  .m-iconbtn .icon{font-size:20px}
   .invited-by{font-size:12px;color:var(--ms-blue);font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px}
   .stat{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600}
-  .stat-wait{background:var(--amber-l);color:#9a6200}
-  .stat-ok{background:var(--green-l);color:#10864a}
-  .stat-cancel{background:var(--red-l);color:#c0392b}
-  .stat-resched{background:var(--violet-l);color:#5b3df5}
-  .stat-tent{background:var(--ms-blue-l);color:#0a5a9e}
+  .stat-wait{background:var(--amber-l);color:#9a6200}.stat-ok{background:var(--green-l);color:#10864a}
+  .stat-cancel{background:var(--red-l);color:#c0392b}.stat-resched{background:var(--violet-l);color:#5b3df5}.stat-tent{background:var(--ms-blue-l);color:#0a5a9e}
   .m-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .src-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:2px 8px;background:#fff}
   .tech{font-size:11px;color:var(--violet);background:var(--violet-l);border-radius:5px;padding:3px 7px;margin-top:8px;display:none}
@@ -122,73 +112,69 @@
   /* drawer */
   .scrim{position:fixed;inset:0;background:rgba(16,24,40,.42);opacity:0;pointer-events:none;transition:.2s;z-index:90}
   .scrim.show{opacity:1;pointer-events:auto}
-  .drawer{position:fixed;top:0;right:0;height:100%;width:560px;max-width:94vw;background:#fff;box-shadow:var(--sh-l);
-    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);z-index:100;display:flex;flex-direction:column}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:560px;max-width:94vw;background:#fff;box-shadow:var(--sh-l);transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);z-index:100;display:flex;flex-direction:column}
   .drawer.show{transform:none}
   .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
-  .d-head h2{font-size:17px;font-weight:700}
-  .d-head .sub{color:var(--ink-3);font-size:13px;margin-top:2px}
+  .d-head h2{font-size:17px;font-weight:700}.d-head .sub{color:var(--ink-3);font-size:13px;margin-top:2px}
   .d-close{margin-left:auto;color:var(--ink-2);width:32px;height:32px;border-radius:8px;display:grid;place-items:center}
   .d-close:hover{background:var(--line-2)}
   .d-body{flex:1;overflow:auto}
 
-  /* connected account + tool toggle */
   .acct{display:flex;align-items:center;gap:10px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--bg)}
   .acct .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
   .acct .who{font-size:12.5px;font-weight:600}
   .acct .via{font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:4px}
   .acct .tech-toggle{margin-left:auto;font-size:11.5px;color:var(--ink-2);display:inline-flex;align-items:center;gap:5px}
   .acct .tech-toggle input{accent-color:var(--primary)}
-
   .tool-bar{padding:12px 22px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
   .tool-bar .lbl{font-size:12px;color:var(--ink-2);font-weight:500}
   .seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
   .seg button{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
   .seg button.on{background:var(--ink);color:#fff}
 
-  /* native availability picker */
-  .pick-wrap{padding:18px 22px}
-  .pick-wrap h3{font-size:13px;font-weight:700;margin-bottom:10px}
-  .daystrip{display:flex;gap:8px;margin-bottom:16px;overflow:auto;padding-bottom:2px}
-  .daybtn{flex:none;border:1px solid var(--line);border-radius:var(--r-m);padding:8px 12px;text-align:center;min-width:60px;background:#fff}
-  .daybtn .dow{font-size:11px;color:var(--ink-3);font-weight:600}
-  .daybtn .dn{font-size:16px;font-weight:700;margin-top:2px}
-  .daybtn.sel{background:var(--ms-blue);border-color:var(--ms-blue);color:#fff}
-  .daybtn.sel .dow{color:#cfe6f9}
+  /* ===== unified booking stepper ===== */
+  .stepper{display:flex;align-items:center;gap:6px;padding:16px 22px 4px}
+  .stp{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink-3)}
+  .stp .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--line);color:var(--ink-2)}
+  .stp.active{color:var(--ink)}.stp.active .n{background:var(--primary);color:#fff}
+  .stp.done{color:var(--ink-2)}.stp.done .n{background:var(--primary-100);color:var(--primary-600)}
+  .stepper .line{flex:1;height:1px;background:var(--line);min-width:10px}
+  .src-line{padding:6px 22px 0;font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:5px}
 
-  .agenda{border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
-  .agenda-head{padding:8px 12px;background:var(--bg);font-size:11.5px;color:var(--ink-2);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}
-  .row{display:flex;align-items:stretch;border-bottom:1px solid var(--line-2);min-height:38px}
-  .row:last-child{border-bottom:none}
-  .row .t{width:54px;flex:none;font-size:11.5px;color:var(--ink-3);padding:9px 0 0 12px}
-  .row .body{flex:1;padding:6px 12px;display:flex;align-items:center}
-  .busy{background:repeating-linear-gradient(45deg,#F1F3F5,#F1F3F5 6px,#E9ECEF 6px,#E9ECEF 12px);width:100%;
-    border-radius:6px;padding:6px 10px;font-size:12px;color:var(--ink-2);font-weight:500;display:flex;align-items:center;gap:6px}
-  .free{width:100%;border:1px dashed #BBD9F2;color:var(--ms-blue);border-radius:6px;padding:7px 10px;font-size:12.5px;
-    font-weight:600;text-align:left;display:flex;align-items:center;gap:6px;background:#fff;transition:.12s}
-  .free:hover{background:var(--ms-blue);color:#fff;border-style:solid}
+  .step-body{padding:14px 22px 18px}
+  .step-body h3{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .backlink{color:var(--primary);font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:3px;margin-bottom:12px}
+  .backlink:hover{text-decoration:underline}
 
-  /* calendly faked iframe (contrast path) */
-  .embed-frame{margin:18px 22px;border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
-  .embed-bar{padding:7px 12px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-3);border-bottom:1px solid var(--line);background:var(--line-2)}
-  .bk{display:grid;grid-template-columns:180px 1fr;min-height:300px}
-  .bk-side{padding:16px;background:var(--cal-blue-l)}
-  .bk-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:12px}
-  .bk-evt{font-size:15px;font-weight:700;margin-bottom:8px}
-  .bk-fact{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:12px;margin-bottom:6px}
-  .bk-main{padding:16px}
-  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;max-width:280px}
-  .cal .dow{font-size:10px;color:var(--ink-3);text-align:center;font-weight:600}
-  .cal .day{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:500}
-  .cal .day.muted{color:var(--line)}
-  .cal .day.avail{cursor:pointer;color:var(--cal-blue);font-weight:700;background:var(--cal-blue-l)}
-  .cal .day.avail:hover{background:var(--cal-blue);color:#fff}
+  .cal-month{display:flex;align-items:center;justify-content:space-between;max-width:330px;margin:0 auto 10px}
+  .cal-month b{font-size:13.5px}
+  .cal-month button{width:28px;height:28px;border-radius:6px;color:var(--ink-2)}.cal-month button:hover{background:var(--line-2)}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:330px;margin:0 auto}
+  .cal .dow{font-size:10.5px;color:var(--ink-3);text-align:center;font-weight:600;padding:4px 0}
+  .cal .day{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:500;color:var(--ink)}
+  .cal .day.muted{color:#CdD3DA}
+  .cal .day.avail{cursor:pointer;color:var(--primary-600);font-weight:700;background:var(--primary-100)}
+  .cal .day.avail:hover{background:var(--primary);color:#fff}
+  .cal .day.sel{background:var(--primary);color:#fff}
 
-  .note{margin:0 22px 18px;border-radius:var(--r-m);padding:12px 14px;display:flex;gap:10px;font-size:12.5px}
-  .note-amber{border:1px solid #FFE2AE;background:var(--amber-l);color:#7a4e00}
-  .note-amber .icon{color:var(--amber)}
-  .note-green{border:1px solid #BFE9D2;background:var(--green-l);color:#0f7a45}
-  .note-green .icon{color:var(--green)}
+  .sel-date{text-align:center;font-weight:700;font-size:14px;margin-bottom:14px}
+  .slots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:360px;margin:0 auto}
+  .slot{border:1px solid var(--primary);color:var(--primary);border-radius:var(--r-s);padding:10px 6px;font-weight:600;font-size:13px;background:#fff;text-align:center}
+  .slot:hover{background:var(--primary);color:#fff}
+
+  .summary{border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;margin-bottom:14px}
+  .summary .srow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-2);font-size:13.5px}
+  .summary .srow:last-child{border-bottom:none}
+  .summary .srow .icon{color:var(--ink-3)}
+  .summary .srow .lab{color:var(--ink-3);width:90px;flex:none;font-size:12px}
+  .summary .srow .val{font-weight:600}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;color:var(--ink-2);font-weight:600;margin-bottom:5px}
+  .field textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-s);padding:9px 11px;font-family:inherit;font-size:13px;resize:vertical;min-height:64px}
+  .field textarea:focus{outline:none;border-color:var(--primary)}
+
+  .note{margin:14px 22px 0;border-radius:var(--r-m);padding:11px 13px;display:flex;gap:10px;font-size:12.5px}
+  .note-amber{border:1px solid #FFE2AE;background:var(--amber-l);color:#7a4e00}.note-amber .icon{color:var(--amber)}
   .note b{font-weight:700}
 
   .done{padding:38px 26px;text-align:center}
@@ -199,23 +185,15 @@
   .done-card{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;text-align:left;max-width:380px;margin:18px auto 0}
   .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
 
-  /* propose-time inline */
-  .propose{padding:18px 22px}
-  .propose .opt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--r-m);padding:12px;margin-bottom:8px;cursor:pointer}
-  .propose .opt:hover{border-color:var(--ms-blue);background:var(--ms-blue-l)}
-  .propose .opt .icon{color:var(--ms-blue)}
-
   .dlg-scrim{position:fixed;inset:0;background:rgba(16,24,40,.42);display:none;place-items:center;z-index:120}
   .dlg-scrim.show{display:grid}
   .dlg{background:#fff;border-radius:var(--r-l);box-shadow:var(--sh-m);width:380px;padding:22px}
-  .dlg h3{font-size:16px;font-weight:700;margin-bottom:6px}
-  .dlg p{color:var(--ink-2);margin-bottom:18px}
-  .dlg .row{display:flex;gap:10px;justify-content:flex-end;min-height:auto;border:none}
+  .dlg h3{font-size:16px;font-weight:700;margin-bottom:6px}.dlg p{color:var(--ink-2);margin-bottom:18px}
+  .dlg .row{display:flex;gap:10px;justify-content:flex-end}
 
   .toast-wrap{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
   .toast{background:var(--ink);color:#fff;border-radius:var(--r-m);padding:11px 16px;font-size:13px;font-weight:500;box-shadow:var(--sh-m);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(8px);transition:.2s}
-  .toast.show{opacity:1;transform:none}
-  .toast .icon{color:var(--green)}
+  .toast.show{opacity:1;transform:none}.toast .icon{color:var(--green)}
   .proto-flag{position:fixed;left:12px;bottom:12px;z-index:50;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:11.5px;color:var(--ink-3);box-shadow:var(--sh-s)}
 </style>
 </head>
@@ -226,68 +204,46 @@
   <span class="crumb cur">Max Mustermann</span><span class="amount">440.000 €</span>
   <div class="right"><span class="icon">notifications</span><span class="icon">help</span><span class="icon">language</span><div class="avatar">GS</div></div>
 </div>
-
 <div class="cust-header">
   <div class="cust-row">
     <h1>Max Mustermann</h1><span class="amt">440.000 €</span>
     <span class="pill pill-amber">&gt;100% BLA</span>
     <span class="pill pill-violet"><span class="icon sm">home</span>Property found</span>
     <span class="pill-add"><span class="icon sm">add</span>Tag hinzufügen</span>
-    <div class="header-actions">
-      <button class="btn">Finanzierungs-Assistent</button>
-      <button class="btn"><span class="icon sm">visibility</span>Kundensicht</button>
-      <button class="btn">⋯</button>
-    </div>
+    <div class="header-actions"><button class="btn">Finanzierungs-Assistent</button>
+      <button class="btn"><span class="icon sm">visibility</span>Kundensicht</button><button class="btn">⋯</button></div>
   </div>
   <div class="cust-sub">Antragsnummer: 333 000 000 007 771</div>
 </div>
-
-<div class="tabs">
-  <div class="tab active">Übersicht</div><div class="tab">Antrag</div><div class="tab">Kommunikation</div><div class="tab">Dokumente</div>
-</div>
+<div class="tabs"><div class="tab active">Übersicht</div><div class="tab">Antrag</div><div class="tab">Kommunikation</div><div class="tab">Dokumente</div></div>
 
 <div class="content">
   <div>
     <div class="card">
       <div class="card-head"><h2>Kundendetails</h2><span class="edit"><span class="icon sm">edit</span>Bearbeiten</span></div>
-      <div class="kv">
-        <span class="k">E-Mail</span><span class="v">p.rompf+20260616-4@finlink.de</span>
-        <span class="k">Telefonnummer</span><span class="v">+4923458887475</span>
-        <span class="k">Berater/in</span><span class="v">Martina</span>
-      </div>
+      <div class="kv"><span class="k">E-Mail</span><span class="v">p.rompf+20260616-4@finlink.de</span>
+        <span class="k">Telefonnummer</span><span class="v">+4923458887475</span><span class="k">Berater/in</span><span class="v">Martina</span></div>
     </div>
     <div class="card">
       <div class="card-head"><h2>Übersicht</h2><span class="edit"><span class="icon sm">edit</span>Bearbeiten</span></div>
-      <div class="kv">
-        <span class="k">Finanzierungsprojekt</span><span class="v">Kapitalbeschaffung</span>
-        <span class="k">Immobiliennutzung</span><span class="v">Selbst nutzen</span>
-        <span class="k">Objektart</span><span class="v">Eigentumswohnung</span>
-        <span class="k">Beratungsgespräch</span><span class="v">Nicht geplant</span>
-      </div>
+      <div class="kv"><span class="k">Finanzierungsprojekt</span><span class="v">Kapitalbeschaffung</span>
+        <span class="k">Immobiliennutzung</span><span class="v">Selbst nutzen</span><span class="k">Objektart</span><span class="v">Eigentumswohnung</span>
+        <span class="k">Beratungsgespräch</span><span class="v">Nicht geplant</span></div>
     </div>
   </div>
-
   <div>
     <div class="card">
       <div class="card-head"><h2>Antragsstatus</h2><span class="badge-live">Aktiv</span></div>
       <div class="muted" style="font-size:13px">Schritt: <b style="color:var(--ink)">1/10</b> · Anfrage erstellt</div>
       <div class="steps"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2><span class="icon" style="color:var(--primary)">event</span>Anstehende Gespräche <span class="count" id="mCount">(2)</span></h2>
-      </div>
-      <div class="sync-bar">
-        <span class="dot"></span>
-        <span class="logo logo-ms"></span> Outlook synchronisiert über
+    <div class="card card-soft">
+      <div class="card-head"><h2><span class="icon" style="color:var(--primary)">event</span>Anstehende Gespräche <span class="count" id="mCount">(2)</span></h2></div>
+      <div class="sync-bar"><span class="dot"></span><span class="logo logo-ms"></span> Outlook synchronisiert über
         <span class="logo logo-nylas"></span><b>Nylas</b> · zuletzt vor 2&nbsp;Min.
-        <button class="sim" onclick="simulateOutlookChange()" title="Webhook-Push aus Outlook simulieren">
-          <span class="icon sm">sync</span>Outlook-Änderung simulieren</button>
-      </div>
+        <button class="sim" onclick="simulateOutlookChange()"><span class="icon sm">sync</span>Outlook-Änderung simulieren</button></div>
       <div id="meetingList"></div>
     </div>
-
     <div class="card">
       <div class="card-head"><h2>Erstellen</h2></div>
       <div class="create-row">
@@ -303,87 +259,73 @@
 <!-- drawer -->
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
-  <div class="d-head">
-    <div><h2 id="dTitle">Termin planen</h2><div class="sub" id="dSub">mit Max Mustermann · Erstberatung</div></div>
-    <button class="d-close" onclick="closeDrawer()"><span class="icon">close</span></button>
-  </div>
-
-  <div class="acct">
-    <span class="dot"></span>
-    <div>
-      <div class="who" id="acctWho">martina@sparkasse-musterstadt.de</div>
-      <div class="via"><span class="logo logo-ms"></span>Outlook · verbunden über <span class="logo logo-nylas"></span>Nylas</div>
-    </div>
+  <div class="d-head"><div><h2 id="dTitle">Termin planen</h2><div class="sub" id="dSub">mit Max Mustermann · Erstberatung</div></div>
+    <button class="d-close" onclick="closeDrawer()"><span class="icon">close</span></button></div>
+  <div class="acct"><span class="dot"></span>
+    <div><div class="who">martina@sparkasse-musterstadt.de</div>
+      <div class="via"><span class="logo logo-ms"></span>Outlook · verbunden über <span class="logo logo-nylas"></span>Nylas</div></div>
     <label class="tech-toggle"><input type="checkbox" id="techChk" onchange="toggleTech(this.checked)">Technik einblenden</label>
   </div>
-
-  <div class="tool-bar">
-    <span class="lbl">Tool des Beraters:</span>
+  <div class="tool-bar"><span class="lbl">Tool des Beraters:</span>
     <div class="seg">
       <button id="segOutlook" class="on" onclick="setTool('outlook')"><span class="logo logo-ms"></span>Outlook (nativ)</button>
       <button id="segCalendly" onclick="setTool('calendly')"><span class="logo logo-cal"></span>Calendly</button>
     </div>
   </div>
-
   <div class="d-body" id="dBody"></div>
 </aside>
 
 <!-- cancel dialog -->
 <div class="dlg-scrim" id="cancelDlg">
-  <div class="dlg">
-    <h3 id="cancelTitle">Termin absagen?</h3>
-    <p id="cancelText">Der Kunde wird benachrichtigt und der Termin aus dem Outlook-Kalender entfernt.</p>
+  <div class="dlg"><h3 id="cancelTitle">Termin absagen?</h3><p id="cancelText"></p>
     <div class="row"><button class="btn" onclick="hideCancel()">Abbrechen</button>
-      <button class="btn btn-danger" onclick="confirmCancel()">Absagen</button></div>
-  </div>
+      <button class="btn btn-danger" onclick="confirmCancel()">Absagen</button></div></div>
 </div>
 
 <div class="toast-wrap" id="toasts"></div>
-<div class="proto-flag">Prototyp · Termin-Scheduling v2 · Outlook nativ via Nylas (Mock)</div>
+<div class="proto-flag">Prototyp · Termin-Scheduling v2 · einheitlicher Flow (Mock)</div>
 
 <script>
 /* ---------------- state ---------------- */
-let TOOL='outlook', MODE='new', techMode=false;
+let TOOL='outlook', MODE='new', techMode=false, STEP=1;
 let pick={day:null,dow:null,time:null};
 let activeMeetingId=null, cancelTargetId=null;
 
 let meetings=[
-  { id:1, type:'booked', title:'Erstberatung', kind:'Videocall (Teams)',
-    day:7, dow:'Mo', monthLabel:'Juli', mon:'JUL', time:'14:00–14:30', status:'ok', source:'outlook' },
+  { id:1, type:'booked', title:'Erstberatung', kind:'Microsoft Teams Meeting',
+    day:7, dow:'Mo', monthLabel:'Juli', mon:'JUL', time:'14:00–14:30', status:'ok', source:'outlook',
+    participants:'Max Mustermann, Martina' },
   { id:2, type:'invite', title:'Rückfrage zur Finanzierung', kind:'Telefon',
     day:9, dow:'Mi', monthLabel:'Juli', mon:'JUL', time:'10:00–10:30', status:'wait', source:'outlook',
-    invitedBy:'Max Mustermann' }
+    invitedBy:'Max Mustermann', participants:'Max Mustermann' }
 ];
 
-/* mock availability (free/busy) — what Nylas returns for the advisor's day */
-const BUSY={ '08:00':null,'08:30':'Team-Standup','09:00':'Team-Standup',
-  '09:30':null,'10:00':null,'10:30':null,
-  '11:00':'Beratung Fam. Schmidt','11:30':'Beratung Fam. Schmidt',
-  '12:00':null,'12:30':'Mittagspause','13:00':null,'13:30':null,
-  '14:00':null,'14:30':null,'15:00':'Telefontermin Weber','15:30':null,'16:00':null,'16:30':null };
-const DAYS=[{dow:'Mo',d:7},{dow:'Di',d:8},{dow:'Mi',d:9},{dow:'Do',d:10},{dow:'Fr',d:11}];
+/* July 2026: 1st = Wednesday. weekday(d) index, So=0..Sa=6 */
+const DOW=['So','Mo','Di','Mi','Do','Fr','Sa'];
+const weekday=d=>DOW[((d-1)+3)%7];
+const AVAIL_TIMES=['09:00','09:30','10:00','11:30','13:00','13:30','14:00','14:30','15:30','16:00','16:30','17:00'];
+
+const TOOLINFO={ outlook:{name:'Outlook', logo:'logo-ms', via:'Outlook · Nylas'},
+                 calendly:{name:'Calendly', logo:'logo-cal', via:'Calendly'} };
 
 /* ---------------- meeting list ---------------- */
 const STAT={ wait:['stat-wait','schedule','Antwort ausstehend'], ok:['stat-ok','check_circle','Zugesagt'],
-  cancel:['stat-cancel','cancel','Abgesagt'], resched:['stat-resched','update','Neue Zeit vorgeschlagen'],
-  tent:['stat-tent','help','Mit Vorbehalt'] };
+  cancel:['stat-cancel','cancel','Abgesagt'], resched:['stat-resched','update','Neue Zeit vorgeschlagen'], tent:['stat-tent','help','Mit Vorbehalt'] };
 function statusChip(s){ const[c,i,t]=STAT[s]; return `<span class="stat ${c}"><span class="icon sm">${i}</span>${t}</span>`; }
-function techLine(txt){ return `<div class="tech ${techMode?'show':''}"><b>Nylas →</b> ${txt}</div>`; }
+function techLine(t){ return `<div class="tech ${techMode?'show':''}"><b>Nylas →</b> ${t}</div>`; }
 
 function renderMeetings(){
   const list=document.getElementById('meetingList');
   document.getElementById('mCount').textContent='('+meetings.length+')';
   if(!meetings.length){ list.innerHTML='<div class="empty">Keine anstehenden Gespräche.</div>'; return; }
   list.innerHTML=meetings.map(m=>{
-    const inv=m.type==='invite';
-    let actions='', tech='';
+    const inv=m.type==='invite'; let actions='',tech='';
     if(m.status==='cancel'){
       actions=`<button class="btn btn-sm" onclick="reschedule(${m.id})"><span class="icon sm">event_repeat</span>Neu planen</button>`;
     } else if(inv){
-      // RSVP on an incoming invite — the distinctly-Graph capability
       actions=`
-        ${m.status!=='ok' ? `<button class="btn btn-sm btn-primary" onclick="rsvp(${m.id},'ok')"><span class="icon sm">check</span>Zusagen</button>`:''}
-        ${m.status!=='tent' ? `<button class="btn btn-sm" onclick="rsvp(${m.id},'tent')"><span class="icon sm">help</span>Mit Vorbehalt</button>`:''}
+        ${m.status!=='ok'?`<button class="btn btn-sm btn-primary" onclick="rsvp(${m.id},'ok')"><span class="icon sm">check</span>Zusagen</button>`:''}
+        ${m.status!=='tent'?`<button class="btn btn-sm" onclick="rsvp(${m.id},'tent')"><span class="icon sm">help</span>Mit Vorbehalt</button>`:''}
         <button class="btn btn-sm" onclick="proposeNewTime(${m.id})"><span class="icon sm">schedule_send</span>Neue Zeit vorschlagen</button>
         <button class="btn btn-sm btn-danger" onclick="askCancel(${m.id})"><span class="icon sm">close</span>Absagen</button>`;
       tech=techLine(`<span class="mono">POST /v3/grants/{id}/events/${m.id}/send-rsvp</span> · status: yes / maybe / no`);
@@ -392,29 +334,30 @@ function renderMeetings(){
         <button class="btn btn-sm" onclick="reschedule(${m.id})"><span class="icon sm">event_repeat</span>Neue Zeit</button>
         <button class="btn btn-sm" onclick="editMeeting(${m.id})"><span class="icon sm">edit</span>Bearbeiten</button>
         <button class="btn btn-sm btn-danger" onclick="askCancel(${m.id})"><span class="icon sm">close</span>Absagen</button>`;
-      tech=techLine(`<span class="mono">PATCH / DELETE /v3/grants/{id}/events/${m.id}</span> — Änderung wird two-way nach Outlook gepusht`);
+      tech=techLine(`<span class="mono">PATCH / DELETE /v3/grants/{id}/events/${m.id}</span> — two-way nach Outlook gepusht`);
     }
     return `
-    <div class="meeting ${inv?'invite':''}" style="${m.status==='cancel'?'opacity:.55':''}">
-      <div class="m-date ${inv?'inv':''}"><div class="d">${m.day}</div><div class="mo">${m.mon}</div></div>
+    <div class="meeting ${m.status==='cancel'?'cancelled':''}">
       <div class="m-main">
         <div class="m-title">${m.title} ${statusChip(m.status)}</div>
         ${inv?`<div class="invited-by"><span class="icon sm">mail</span>Einladung von ${m.invitedBy}</div>`:''}
-        <div class="m-meta"><span class="icon sm">schedule</span>${m.dow} ${m.day}. ${m.monthLabel}, ${m.time}
-          <span class="dot">·</span><span class="icon sm">${m.kind.startsWith('Tel')?'call':'videocam'}</span>${m.kind}
-          <span class="dot">·</span><span class="src-chip"><span class="logo logo-ms"></span>Outlook</span></div>
-        <div class="m-actions">${actions}</div>
-        ${tech}
+        <div class="m-meta">
+          <span class="seg2"><span class="icon">event</span>${m.dow} ${m.day}. ${m.monthLabel}, ${m.time}</span>
+          <span class="sep">|</span>
+          <span class="seg2"><span class="icon">groups</span>${m.participants}</span>
+          <span class="sep">|</span>
+          <span class="mtype"><span class="icon">${m.kind.startsWith('Tel')?'call':'videocam'}</span>${m.kind}</span>
+        </div>
+        <div class="m-actions">${actions}</div>${tech}
       </div>
+      <button class="m-iconbtn" title="Mehr" onclick="event.stopPropagation()"><span class="icon">more_horiz</span></button>
     </div>`;
   }).join('');
 }
 
-/* ---------------- RSVP / actions ---------------- */
-function rsvp(id,s){ const m=meetings.find(x=>x.id===id); m.status=s; renderMeetings();
-  toast(s==='ok'?'Zugesagt · Antwort an Outlook gesendet':'Mit Vorbehalt zugesagt'); }
+/* RSVP & manage */
+function rsvp(id,s){ meetings.find(x=>x.id===id).status=s; renderMeetings(); toast(s==='ok'?'Zugesagt · Antwort an Outlook gesendet':'Mit Vorbehalt zugesagt'); }
 function askCancel(id){ cancelTargetId=id; const m=meetings.find(x=>x.id===id);
-  document.getElementById('cancelTitle').textContent = m.type==='invite'?'Termin absagen?':'Termin absagen?';
   document.getElementById('cancelText').textContent = m.type==='invite'
     ? 'Es wird eine Absage an den Organisator gesendet (Outlook „Ablehnen“).'
     : 'Der Kunde wird benachrichtigt und der Termin aus dem Outlook-Kalender entfernt.';
@@ -424,172 +367,145 @@ function confirmCancel(){ meetings.find(x=>x.id===cancelTargetId).status='cancel
 function editMeeting(id){ openDrawer('reschedule',id); }
 function reschedule(id){ openDrawer('reschedule',id); }
 function proposeNewTime(id){ openDrawer('propose',id); }
+function simulateOutlookChange(){ const m=meetings.find(x=>x.id===1); m.day=8;m.dow='Di';m.time='15:00–15:30';
+  renderMeetings(); toast('Aktualisiert aus Outlook (Nylas-Webhook) — Termin verschoben'); }
 
-/* simulate inbound webhook (two-way sync) */
-function simulateOutlookChange(){
-  const m=meetings.find(x=>x.id===1);
-  m.day=8; m.dow='Di'; m.time='15:00–15:30';
-  renderMeetings(); toast('Aktualisiert aus Outlook (Nylas-Webhook) — Termin verschoben');
-}
-
-/* ---------------- drawer ---------------- */
+/* ---------------- drawer & stepper ---------------- */
 function openDrawer(mode,id){
-  MODE=mode; activeMeetingId=id||null; pick={day:null,dow:null,time:null};
+  MODE=mode; activeMeetingId=id||null; STEP=1; pick={day:null,dow:null,time:null};
   const titles={ new:'Termin planen', reschedule:'Termin verschieben', propose:'Neue Zeit vorschlagen' };
   document.getElementById('dTitle').textContent=titles[mode];
   const m=id?meetings.find(x=>x.id===id):null;
-  document.getElementById('dSub').textContent = mode==='new'
-    ? 'mit Max Mustermann · Erstberatung'
+  document.getElementById('dSub').textContent = mode==='new' ? 'mit Max Mustermann · Erstberatung'
     : `${m.title} · aktuell ${m.dow} ${m.day}. Juli, ${m.time}`;
-  // propose mode is Outlook/calendar-only
-  if(mode==='propose') TOOL='outlook', syncSeg();
+  if(mode==='propose'){ TOOL='outlook'; syncSeg(); }
   renderBody();
-  document.getElementById('drawer').classList.add('show');
-  document.getElementById('scrim').classList.add('show');
+  document.getElementById('drawer').classList.add('show'); document.getElementById('scrim').classList.add('show');
 }
 function closeDrawer(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('scrim').classList.remove('show'); }
-function setTool(t){ TOOL=t; syncSeg(); pick={day:null,dow:null,time:null}; renderBody(); }
+function setTool(t){ TOOL=t; syncSeg(); STEP=1; pick={day:null,dow:null,time:null}; renderBody(); }
 function syncSeg(){ document.getElementById('segOutlook').classList.toggle('on',TOOL==='outlook');
   document.getElementById('segCalendly').classList.toggle('on',TOOL==='calendly'); }
 function toggleTech(v){ techMode=v; renderMeetings(); renderBody(); }
 
-/* native availability picker (Outlook via Nylas) */
-function dayStripHTML(){
-  return `<div class="daystrip">${DAYS.map(x=>`
-    <button class="daybtn ${pick.day===x.d?'sel':''}" onclick="pickDay(${x.d},'${x.dow}')">
-      <div class="dow">${x.dow}</div><div class="dn">${x.d}</div></button>`).join('')}</div>`;
-}
-function agendaHTML(){
-  if(!pick.day) return `<div class="muted" style="font-size:13px;padding:6px 2px">Wählen Sie oben einen Tag — finlink lädt die Verfügbarkeit aus Outlook.</div>`;
-  const rows=Object.keys(BUSY).map(t=>{
-    const busy=BUSY[t];
-    if(busy) return `<div class="row"><div class="t">${t}</div><div class="body"><div class="busy"><span class="icon sm">lock</span>${busy}</div></div></div>`;
-    return `<div class="row"><div class="t">${t}</div><div class="body">
-      <button class="free" onclick="pickTime('${t}')"><span class="icon sm">add</span>${t} – ${addHalfHour(t)} · frei</button></div></div>`;
-  }).join('');
-  return `<div class="agenda">
-    <div class="agenda-head"><span class="icon sm">event_available</span>Verfügbarkeit · ${pick.dow} ${pick.day}. Juli (aus Outlook)</div>
-    ${rows}</div>`;
-}
-function pickDay(d,dow){ pick.day=d; pick.dow=dow; pick.time=null; renderBody(); }
-function pickTime(t){ pick.time=t; renderBody(); commitFlow(); }
 function addHalfHour(t){ let[h,m]=t.split(':').map(Number); m+=30; if(m>=60){m-=60;h++;} return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
+function goStep(n){ STEP=n; renderBody(); }
+function pickDay(d){ pick.day=d; pick.dow=weekday(d); pick.time=null; STEP=2; renderBody(); }
+function pickTime(t){ pick.time=t; STEP=3; renderBody(); }
 
-/* faked Calendly iframe (contrast path) */
-function calendlyHTML(){
-  const days=[8,9,10,11,14,15,16,17,18];
-  let cells=''; for(let i=0;i<2;i++)cells+='<div class="day muted"></div>';
-  for(let d=1;d<=21;d++){ const a=days.includes(d);
-    cells+=`<div class="day ${a?'avail':'muted'}" ${a?`onclick="pickDay(${d},'Di')"`:''}>${d}</div>`; }
+/* ---- step renderers (identical for both tools) ---- */
+function stepperHTML(){
+  const lbl=MODE==='propose'?'Vorschlag':'Einladung';
+  const s=[['1','Datum'],['2','Uhrzeit'],['3',lbl]];
+  return `<div class="stepper">${s.map((x,i)=>{
+    const n=i+1, cls=STEP===n?'active':(STEP>n?'done':'');
+    const inner = STEP>n?'<span class="icon sm">check</span>':x[0];
+    return `<div class="stp ${cls}"><span class="n">${inner}</span>${x[1]}</div>${i<2?'<div class="line"></div>':''}`;
+  }).join('')}</div>`;
+}
+function srcLineHTML(){ const t=TOOLINFO[TOOL];
+  return `<div class="src-line">Verfügbarkeit über <span class="logo ${t.logo}"></span><b>${t.name}</b></div>`; }
+
+function calendarHTML(){
+  let cells=''; for(let i=0;i<2;i++) cells+='<div class="day muted"></div>'; // Mon,Tue blanks before Jul 1 (Wed)
+  for(let d=1; d<=31; d++){
+    const wd=weekday(d); const avail = wd!=='Sa' && wd!=='So' && d>=2; const sel=pick.day===d;
+    cells+=`<div class="day ${avail?'avail':'muted'} ${sel?'sel':''}" ${avail?`onclick="pickDay(${d})"`:''}>${d}</div>`;
+  }
   return `
-  <div class="embed-frame">
-    <div class="embed-bar"><span class="icon sm">lock</span><span class="mono">calendly.com/finlink/erstberatung</span>
-      <span style="margin-left:auto">iframe · eingebettet in finlink</span></div>
-    <div class="bk">
-      <div class="bk-side"><div class="bk-brand"><span class="logo logo-cal" style="width:18px;height:18px"></span>Calendly</div>
-        <div class="bk-evt">Erstberatung</div>
-        <div class="bk-fact"><span class="icon sm">schedule</span>30 Min.</div>
-        <div class="bk-fact"><span class="icon sm">videocam</span>Videocall</div></div>
-      <div class="bk-main"><div style="font-size:13px;font-weight:700;margin-bottom:8px">Datum wählen</div>
-        <div class="cal"><div class="dow">Mo</div><div class="dow">Di</div><div class="dow">Mi</div><div class="dow">Do</div><div class="dow">Fr</div><div class="dow">Sa</div><div class="dow">So</div>${cells}</div>
-      </div>
-    </div>
-  </div>`;
+    <div class="cal-month"><button onclick="event.stopPropagation()">‹</button><b>Juli 2026</b><button>›</button></div>
+    <div class="cal">${['Mo','Di','Mi','Do','Fr','Sa','So'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div>`;
+}
+function slotsHTML(){
+  return `<div class="slots">${AVAIL_TIMES.map(t=>`<button class="slot" onclick="pickTime('${t}')">${t}</button>`).join('')}</div>`;
+}
+function summaryHTML(){
+  const time=pick.time+'–'+addHalfHour(pick.time);
+  const evt = MODE==='propose'?'Neue Zeit – Rückfrage zur Finanzierung':'Erstberatung';
+  const t=TOOLINFO[TOOL];
+  return `
+    <div class="summary">
+      <div class="srow"><span class="icon sm">event</span><span class="lab">Termin</span><span class="val">${evt}</span></div>
+      <div class="srow"><span class="icon sm">calendar_today</span><span class="lab">Datum</span><span class="val">${pick.dow} ${pick.day}. Juli 2026</span></div>
+      <div class="srow"><span class="icon sm">schedule</span><span class="lab">Uhrzeit</span><span class="val">${time} · 30 Min.</span></div>
+      <div class="srow"><span class="icon sm">person</span><span class="lab">Mit</span><span class="val">Max Mustermann</span></div>
+      <div class="srow"><span class="icon sm">videocam</span><span class="lab">Ort</span><span class="val">Videocall (Teams)</span></div>
+      <div class="srow"><span class="logo ${t.logo}" style="margin:0 2px 0 2px"></span><span class="lab">Kalender</span><span class="val">${t.name}</span></div>
+    </div>`;
 }
 
 function renderBody(){
   document.getElementById('dFootSlot')?.remove();
   const body=document.getElementById('dBody');
+  const proposeNote = MODE==='propose'
+    ? `<div class="note note-amber"><span class="icon">info</span><div><b>Outlook „Neue Zeit vorschlagen“ ist über Nylas nicht 1:1 verfügbar.</b>
+        finlink setzt es als <b>Absage + Gegenvorschlag</b> um.</div></div>` : '';
 
-  if(MODE==='propose'){
-    // propose new time = decline + counter-proposal (the Nylas/Graph caveat)
-    body.innerHTML=`
-      <div class="note note-amber"><span class="icon">info</span>
-        <div><b>Outlook „Neue Zeit vorschlagen“ ist über Nylas nicht 1:1 verfügbar.</b>
-        finlink setzt es als <b>Absage + Gegenvorschlag</b> um: Ihre Wunschzeit geht als neue Einladung an den Kunden zurück.</div></div>
-      ${techMode?`<div class="pick-wrap" style="padding-top:0"><div class="tech show"><b>Nylas →</b>
-        <span class="mono">POST send-rsvp {status:"no"}</span> + <span class="mono">POST /events</span> (Gegenvorschlag)</div></div>`:''}
-      <div class="pick-wrap" style="padding-top:0">
-        <h3>Wunschzeit wählen</h3>${dayStripHTML()}${agendaHTML()}
-      </div>`;
-    return;
-  }
-
-  if(TOOL==='calendly'){
-    body.innerHTML=`
-      <div class="note note-green"><span class="icon">bolt</span>
-        <div><b>Calendly = iframe + Callback.</b> Auf <span class="mono">postMessage event_scheduled</span> erscheint der Termin sofort in finlink.</div></div>
-      ${calendlyHTML()}
-      ${techMode?`<div style="padding:0 22px 18px"><div class="tech show"><b>Calendly →</b> Embed-Widget, kein Nylas nötig — Kalender-Sync läuft trotzdem über Nylas im Hintergrund.</div></div>`:''}`;
-    return;
-  }
-
-  // Outlook native (via Nylas) — no iframe
-  body.innerHTML=`
-    <div class="note note-green"><span class="icon">check_circle</span>
-      <div><b>Native Verfügbarkeit aus Outlook.</b> finlink liest Frei/Belegt über Nylas und bucht direkt im Outlook-Kalender — kein eingebettetes Fenster, kein manueller Schritt.</div></div>
-    ${techMode?`<div style="padding:0 22px 6px"><div class="tech show"><b>Nylas →</b> <span class="mono">GET /v3/grants/{id}/calendars/free-busy</span></div></div>`:''}
-    <div class="pick-wrap">
-      <h3>Tag &amp; Uhrzeit wählen</h3>${dayStripHTML()}${agendaHTML()}
-    </div>`;
-}
-
-/* after picking a slot */
-function commitFlow(){
-  const time=pick.time+'–'+addHalfHour(pick.time);
-  if(MODE==='propose'){ proposeCommit(time); return; }
-  commitBooking(time); showSuccess();
-}
-function commitBooking(time){
-  if(MODE==='reschedule'&&activeMeetingId){
-    const m=meetings.find(x=>x.id===activeMeetingId);
-    m.day=pick.day; m.dow=pick.dow; m.time=time; m.status='ok';
-  } else {
-    meetings.unshift({ id:Date.now(), type:'booked', title:'Erstberatung', kind:'Videocall (Teams)',
-      day:pick.day, dow:pick.dow, monthLabel:'Juli', mon:'JUL', time, status:'ok', source:'outlook' });
-  }
-  renderMeetings();
-}
-function proposeCommit(time){
-  const m=meetings.find(x=>x.id===activeMeetingId);
-  m.status='resched';
-  renderMeetings();
-  const body=document.getElementById('dBody');
-  body.innerHTML=`
-    <div class="done">
-      <div class="ring" style="background:var(--ms-blue-l)"><span class="icon" style="color:var(--ms-blue)">schedule_send</span></div>
-      <h3>Neue Zeit vorgeschlagen</h3>
-      <p>Ihre Absage wurde gesendet und <b>${pick.dow} ${pick.day}. Juli, ${time}</b> ging als Gegenvorschlag an Max Mustermann zurück.</p>
-      <div class="done-card"><div class="m-title">${m.title} ${statusChip('resched')}</div>
-        <div class="m-meta"><span class="icon sm">schedule</span>Vorschlag: ${pick.dow} ${pick.day}. Juli, ${time}</div></div>
-    </div>`;
-  setFoot(`<button class="btn btn-primary btn-block" onclick="closeDrawer()">Fertig</button>`);
-}
-function showSuccess(){
-  const verb=MODE==='reschedule'?'verschoben':'gebucht';
-  const body=document.getElementById('dBody');
-  body.innerHTML=`
-    <div class="done">
-      <div class="ring"><span class="icon fill">check</span></div>
-      <h3>Termin ${verb} ✓</h3>
-      <p>Direkt im Outlook-Kalender ${verb} — über Nylas, ohne Umweg. Der Kunde erhält die Einladung per E-Mail.</p>
-      <div class="done-card">
-        <div class="m-title">Erstberatung ${statusChip('ok')}</div>
-        <div class="m-meta"><span class="icon sm">schedule</span>${pick.dow} ${pick.day}. Juli, ${pick.time}–${addHalfHour(pick.time)}
-          <span class="dot">·</span><span class="src-chip"><span class="logo logo-ms"></span>Outlook</span></div>
+  if(STEP===1){
+    body.innerHTML = stepperHTML()+srcLineHTML()+proposeNote+`
+      <div class="step-body"><h3><span class="icon sm">calendar_month</span>Datum wählen</h3>
+        ${calendarHTML()}</div>
+      ${techMode?techWrap(TOOL==='outlook'?'GET /v3/grants/{id}/calendars/free-busy':'Calendly Availability API'):''}`;
+  } else if(STEP===2){
+    body.innerHTML = stepperHTML()+srcLineHTML()+`
+      <div class="step-body">
+        <button class="backlink" onclick="goStep(1)"><span class="icon sm">chevron_left</span>Datum ändern</button>
+        <div class="sel-date">${pick.dow} ${pick.day}. Juli 2026</div>
+        <h3 style="justify-content:center"><span class="icon sm">schedule</span>Verfügbare Zeiten</h3>
+        ${slotsHTML()}
       </div>
-      ${techMode?`<div class="tech show" style="max-width:380px;margin:14px auto 0;text-align:left"><b>Nylas →</b> <span class="mono">POST /v3/grants/{id}/events</span> → sofort sichtbar in Outlook</div>`:''}
-    </div>`;
+      ${techMode?techWrap('freie Slots aus free-busy gefiltert'):''}`;
+  } else { /* STEP 3 — review & send */
+    const send = MODE==='propose'?'Vorschlag senden':'Einladung senden';
+    body.innerHTML = stepperHTML()+proposeNote+`
+      <div class="step-body">
+        <button class="backlink" onclick="goStep(2)"><span class="icon sm">chevron_left</span>Uhrzeit ändern</button>
+        <h3><span class="icon sm">mail</span>Prüfen &amp; ${MODE==='propose'?'vorschlagen':'einladen'}</h3>
+        ${summaryHTML()}
+        <div class="field"><label>Nachricht an den Kunden (optional)</label>
+          <textarea placeholder="z. B. Ich freue mich auf unser Gespräch…"></textarea></div>
+      </div>
+      ${techMode?techWrap(MODE==='propose'?'POST send-rsvp {no} + POST /events (Gegenvorschlag)':(TOOL==='outlook'?'POST /v3/grants/{id}/events':'Calendly event_scheduled → Webhook')):''}`;
+    setFoot(`<button class="btn" onclick="goStep(2)">Zurück</button>
+      <button class="btn btn-primary" onclick="finish()"><span class="icon sm">send</span>${send}</button>`);
+  }
+}
+function techWrap(t){ return `<div style="padding:0 22px 14px"><div class="tech show"><b>${TOOL==='calendly'&&MODE!=='propose'?'Calendly →':'Nylas →'}</b> <span class="mono">${t}</span></div></div>`; }
+
+/* ---- send / finish ---- */
+function finish(){
+  const time=pick.time+'–'+addHalfHour(pick.time);
+  if(MODE==='propose'){ const m=meetings.find(x=>x.id===activeMeetingId); m.status='resched'; renderMeetings(); doneScreen('propose',time); return; }
+  if(MODE==='reschedule'&&activeMeetingId){ const m=meetings.find(x=>x.id===activeMeetingId);
+    m.day=pick.day;m.dow=pick.dow;m.time=time;m.status='ok'; }
+  else { meetings.unshift({ id:Date.now(), type:'booked', title:'Erstberatung', kind:'Videocall (Teams)',
+    day:pick.day, dow:pick.dow, monthLabel:'Juli', mon:'JUL', time, status:'ok', source:TOOL }); }
+  renderMeetings(); doneScreen(MODE,time);
+}
+function doneScreen(mode,time){
+  const body=document.getElementById('dBody'); const t=TOOLINFO[TOOL];
+  if(mode==='propose'){
+    body.innerHTML=`<div class="done"><div class="ring" style="background:var(--ms-blue-l)"><span class="icon" style="color:var(--ms-blue)">schedule_send</span></div>
+      <h3>Neue Zeit vorgeschlagen</h3>
+      <p>Absage gesendet und <b>${pick.dow} ${pick.day}. Juli, ${time}</b> als Gegenvorschlag an Max Mustermann zurückgeschickt.</p>
+      <div class="done-card"><div class="m-title">Rückfrage zur Finanzierung ${statusChip('resched')}</div>
+        <div class="m-meta"><span class="icon sm">schedule</span>Vorschlag: ${pick.dow} ${pick.day}. Juli, ${time}</div></div></div>`;
+  } else {
+    const verb = mode==='reschedule'?'verschoben':'gebucht';
+    body.innerHTML=`<div class="done"><div class="ring"><span class="icon fill">check</span></div>
+      <h3>Einladung gesendet ✓</h3>
+      <p>Termin ${verb} und über <b>${t.name}</b> in den Kalender eingetragen. Max Mustermann erhält die Einladung per E-Mail.</p>
+      <div class="done-card"><div class="m-title">Erstberatung ${statusChip('ok')}</div>
+        <div class="m-meta"><span class="icon sm">schedule</span>${pick.dow} ${pick.day}. Juli, ${time}
+          <span class="dot">·</span><span class="src-chip"><span class="logo ${t.logo}"></span>${t.name}</span></div></div></div>`;
+  }
   setFoot(`<button class="btn btn-primary btn-block" onclick="closeDrawer()">Fertig</button>`);
 }
 function setFoot(html){ let f=document.getElementById('dFootSlot');
-  if(!f){ f=document.createElement('div'); f.className='d-foot'; f.id='dFootSlot'; document.getElementById('drawer').appendChild(f); }
-  f.innerHTML=html; }
+  if(!f){ f=document.createElement('div'); f.className='d-foot'; f.id='dFootSlot'; document.getElementById('drawer').appendChild(f); } f.innerHTML=html; }
 
-/* toast */
 function toast(msg){ const w=document.getElementById('toasts'); const t=document.createElement('div'); t.className='toast';
-  t.innerHTML=`<span class="icon fill">check_circle</span>${msg}`; w.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show'));
+  t.innerHTML=`<span class="icon fill">check_circle</span>${msg}`; w.appendChild(t); requestAnimationFrame(()=>t.classList.add('show'));
   setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),250); },2800); }
 
 renderMeetings();
