@@ -1,0 +1,284 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: Anträge
+    - generic [ref=e4]: /
+    - generic [ref=e5]: Max Mustermann
+    - generic [ref=e6]: 440.000 €
+    - generic [ref=e7]:
+      - generic [ref=e8]: notifications
+      - generic [ref=e9]: help
+      - generic [ref=e10]: language
+      - generic [ref=e11]: GS
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - heading "Max Mustermann" [level=1] [ref=e14]
+      - generic [ref=e15]: 440.000 €
+      - generic [ref=e16]: ">100% BLA"
+      - generic [ref=e17]:
+        - generic [ref=e18]: home
+        - text: Property found
+      - generic [ref=e19]:
+        - generic [ref=e20]: add
+        - text: Tag hinzufügen
+      - generic [ref=e21]:
+        - button "Finanzierungs-Assistent" [ref=e22] [cursor=pointer]
+        - button "visibility Kundensicht" [ref=e23] [cursor=pointer]:
+          - generic [ref=e24]: visibility
+          - text: Kundensicht
+        - button "⋯" [ref=e25] [cursor=pointer]
+    - generic [ref=e26]: "Antragsnummer: 333 000 000 007 771"
+  - generic [ref=e27]:
+    - generic [ref=e28]: Übersicht
+    - generic [ref=e29]: Antrag
+    - generic [ref=e30]: Kommunikation
+    - generic [ref=e31]: Dokumente
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - heading "Kundendetails" [level=2] [ref=e36]
+          - generic [ref=e37]:
+            - generic [ref=e38]: edit
+            - text: Bearbeiten
+        - generic [ref=e39]:
+          - generic [ref=e40]: E-Mail
+          - generic [ref=e41]: p.rompf+20260616-4@finlink.de
+          - generic [ref=e42]: Telefonnummer
+          - generic [ref=e43]: "+4923458887475"
+          - generic [ref=e44]: Berater/in
+          - generic [ref=e45]: Martina
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - heading "Übersicht" [level=2] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: edit
+            - text: Bearbeiten
+        - generic [ref=e51]:
+          - generic [ref=e52]: Finanzierungsprojekt
+          - generic [ref=e53]: Kapitalbeschaffung
+          - generic [ref=e54]: Immobiliennutzung
+          - generic [ref=e55]: Selbst nutzen
+          - generic [ref=e56]: Objektart
+          - generic [ref=e57]: Eigentumswohnung
+          - generic [ref=e58]: Beratungsgespräch
+          - generic [ref=e59]: Nicht geplant
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - heading "Antragsstatus" [level=2] [ref=e63]
+          - generic [ref=e64]: Aktiv
+        - generic [ref=e65]: "Schritt: 1/10 · Anfrage erstellt"
+      - generic [ref=e77]:
+        - heading "event Anstehende Gespräche (2)" [level=2] [ref=e79]:
+          - generic [ref=e80]: event
+          - text: Anstehende Gespräche
+          - generic [ref=e81]: (2)
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - text: Erstberatung
+                - generic [ref=e86]: Zugesagt
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - generic [ref=e89]: event
+                  - text: Mo 7. Juli, 14:00–14:30
+                - generic [ref=e90]: "|"
+                - generic [ref=e91]:
+                  - generic [ref=e92]: groups
+                  - text: Max Mustermann, Martina
+                - generic [ref=e93]: "|"
+                - generic [ref=e94]:
+                  - generic [ref=e95]: videocam
+                  - text: Microsoft Teams Meeting
+              - generic [ref=e96]:
+                - button "event_repeat Verschieben" [ref=e97] [cursor=pointer]:
+                  - generic [ref=e98]: event_repeat
+                  - text: Verschieben
+                - button "edit Bearbeiten" [ref=e99] [cursor=pointer]:
+                  - generic [ref=e100]: edit
+                  - text: Bearbeiten
+                - button "close Absagen" [ref=e101] [cursor=pointer]:
+                  - generic [ref=e102]: close
+                  - text: Absagen
+            - button "more_horiz" [ref=e103] [cursor=pointer]:
+              - generic [ref=e104]: more_horiz
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - text: Rückfrage zur Finanzierung
+                - generic [ref=e108]: Antwort ausstehend
+              - generic [ref=e109]:
+                - generic [ref=e110]: mail
+                - text: Einladung von Max Mustermann
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]: event
+                  - text: Mi 9. Juli, 10:00–10:30
+                - generic [ref=e114]: "|"
+                - generic [ref=e115]:
+                  - generic [ref=e116]: groups
+                  - text: Max Mustermann
+                - generic [ref=e117]: "|"
+                - generic [ref=e118]:
+                  - generic [ref=e119]: call
+                  - text: Telefon
+              - generic [ref=e120]:
+                - button "check Zusagen" [ref=e121] [cursor=pointer]:
+                  - generic [ref=e122]: check
+                  - text: Zusagen
+                - button "help Mit Vorbehalt" [ref=e123] [cursor=pointer]:
+                  - generic [ref=e124]: help
+                  - text: Mit Vorbehalt
+                - button "schedule_send Neue Zeit vorschlagen" [ref=e125] [cursor=pointer]:
+                  - generic [ref=e126]: schedule_send
+                  - text: Neue Zeit vorschlagen
+                - button "close Absagen" [ref=e127] [cursor=pointer]:
+                  - generic [ref=e128]: close
+                  - text: Absagen
+            - button "more_horiz" [ref=e129] [cursor=pointer]:
+              - generic [ref=e130]: more_horiz
+      - generic [ref=e131]:
+        - heading "Erstellen" [level=2] [ref=e133]
+        - generic [ref=e134]:
+          - button "edit_note Notiz hinzufügen" [ref=e135] [cursor=pointer]:
+            - generic [ref=e136]: edit_note
+            - text: Notiz hinzufügen
+          - button "check_circle ToDo hinzufügen" [ref=e137] [cursor=pointer]:
+            - generic [ref=e138]: check_circle
+            - text: ToDo hinzufügen
+          - button "mail E-Mail" [ref=e139] [cursor=pointer]:
+            - generic [ref=e140]: mail
+            - text: E-Mail
+          - button "calendar_month Termin Planen" [ref=e141] [cursor=pointer]:
+            - generic [ref=e142]: calendar_month
+            - text: Termin Planen
+  - complementary [ref=e143]:
+    - generic [ref=e144]:
+      - generic [ref=e145]:
+        - heading "Termin planen" [level=2] [ref=e146]
+        - generic [ref=e147]: mit Max Mustermann · Erstberatung
+      - button "close" [ref=e148] [cursor=pointer]:
+        - generic [ref=e149]: close
+    - generic [ref=e150]:
+      - generic [ref=e412]:
+        - generic [ref=e413]:
+          - generic [ref=e414]:
+            - generic [ref=e415]: event
+            - text: Erstberatung
+          - generic [ref=e416]:
+            - generic [ref=e417]: calendar_today
+            - generic [ref=e418]: Di 7. Juli 2026
+          - generic [ref=e419]:
+            - generic [ref=e420]: schedule
+            - text: 08:00–09:00 · 60 Min.
+          - generic [ref=e421]:
+            - generic [ref=e422]: videocam
+            - text: Videocall (Teams)
+        - generic [ref=e423]:
+          - generic [ref=e424]:
+            - generic [ref=e425]: group
+            - text: Gäste
+            - generic [ref=e426]: (1)
+          - generic [ref=e427]:
+            - generic [ref=e428]: P
+            - generic [ref=e429]: p.rompf+20260616-4@finlink.de
+            - generic [ref=e430]: Kunde
+            - button "close" [ref=e431] [cursor=pointer]:
+              - generic [ref=e432]: close
+          - generic [ref=e433]:
+            - textbox "E-Mail-Adresse hinzufügen" [ref=e434]
+            - button "add Hinzufügen" [ref=e435] [cursor=pointer]:
+              - generic [ref=e436]: add
+              - text: Hinzufügen
+      - generic [ref=e437]:
+        - generic [ref=e438]:
+          - generic [ref=e440]: Juli 2026
+          - generic [ref=e441]:
+            - generic [ref=e442]: Mo
+            - generic [ref=e443]: Di
+            - generic [ref=e444]: Mi
+            - generic [ref=e445]: Do
+            - generic [ref=e446]: Fr
+            - generic [ref=e447]: Sa
+            - generic [ref=e448]: So
+            - generic [ref=e451] [cursor=pointer]: "1"
+            - generic [ref=e452] [cursor=pointer]: "2"
+            - generic [ref=e453] [cursor=pointer]: "3"
+            - generic [ref=e454]: "4"
+            - generic [ref=e455]: "5"
+            - generic [ref=e456] [cursor=pointer]: "6"
+            - generic [ref=e457] [cursor=pointer]: "7"
+            - generic [ref=e458] [cursor=pointer]: "8"
+            - generic [ref=e459] [cursor=pointer]: "9"
+            - generic [ref=e460] [cursor=pointer]: "10"
+            - generic [ref=e461]: "11"
+            - generic [ref=e462]: "12"
+            - generic [ref=e463] [cursor=pointer]: "13"
+            - generic [ref=e464] [cursor=pointer]: "14"
+            - generic [ref=e465] [cursor=pointer]: "15"
+            - generic [ref=e466] [cursor=pointer]: "16"
+            - generic [ref=e467] [cursor=pointer]: "17"
+            - generic [ref=e468]: "18"
+            - generic [ref=e469]: "19"
+            - generic [ref=e470] [cursor=pointer]: "20"
+            - generic [ref=e471] [cursor=pointer]: "21"
+            - generic [ref=e472] [cursor=pointer]: "22"
+            - generic [ref=e473] [cursor=pointer]: "23"
+            - generic [ref=e474] [cursor=pointer]: "24"
+            - generic [ref=e475]: "25"
+            - generic [ref=e476]: "26"
+            - generic [ref=e477] [cursor=pointer]: "27"
+            - generic [ref=e478] [cursor=pointer]: "28"
+            - generic [ref=e479] [cursor=pointer]: "29"
+            - generic [ref=e480] [cursor=pointer]: "30"
+            - generic [ref=e481] [cursor=pointer]: "31"
+        - generic [ref=e482]:
+          - generic [ref=e483]:
+            - generic [ref=e484]: Di 7. Juli 2026
+            - generic [ref=e485]:
+              - generic [ref=e486]: Dauer
+              - generic [ref=e487]:
+                - button "30 Min." [ref=e488] [cursor=pointer]
+                - button "45 Min." [ref=e489] [cursor=pointer]
+                - button "60 Min." [ref=e490] [cursor=pointer]
+            - generic [ref=e491]:
+              - button "calendar_view_day Tag" [ref=e492] [cursor=pointer]:
+                - generic [ref=e493]: calendar_view_day
+                - text: Tag
+              - button "calendar_view_week Woche" [ref=e494] [cursor=pointer]:
+                - generic [ref=e495]: calendar_view_week
+                - text: Woche
+          - generic [ref=e496]:
+            - generic [ref=e497]:
+              - generic [ref=e498]: 08:00
+              - generic [ref=e499]: 09:00
+              - generic [ref=e500]: 10:00
+              - generic [ref=e501]: 11:00
+              - generic [ref=e502]: 12:00
+              - generic [ref=e503]: 13:00
+              - generic [ref=e504]: 14:00
+              - generic [ref=e505]: 15:00
+              - generic [ref=e506]: 16:00
+              - generic [ref=e507]: 17:00
+              - generic [ref=e508]: 18:00
+            - generic [ref=e509]:
+              - generic [ref=e521] [cursor=pointer]: 08:00–09:00
+              - generic [ref=e530]:
+                - generic [ref=e531]: Kreditkomitee
+                - generic [ref=e532]: 10:00–11:00
+              - generic [ref=e533]:
+                - generic [ref=e534]: Mittagspause
+                - generic [ref=e535]: 12:30–13:00
+              - generic [ref=e536]:
+                - generic [ref=e537]: Erstberatung – Mustermann
+                - generic [ref=e538]: 14:00–14:30
+              - generic [ref=e539]:
+                - generic [ref=e540]: Notartermin
+                - generic [ref=e541]: 16:30–17:30
+    - generic [ref=e542]:
+      - button "send Einladung senden" [ref=e543] [cursor=pointer]:
+        - generic [ref=e544]: send
+        - text: Einladung senden
+      - button "Abbrechen" [ref=e545] [cursor=pointer]
+  - generic [ref=e151]: Prototyp · Termin-Scheduling v2 · einheitlicher Flow (Mock)

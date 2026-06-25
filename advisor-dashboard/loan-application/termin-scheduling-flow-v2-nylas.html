@@ -112,7 +112,7 @@
   /* drawer */
   .scrim{position:fixed;inset:0;background:rgba(16,24,40,.42);opacity:0;pointer-events:none;transition:.2s;z-index:90}
   .scrim.show{opacity:1;pointer-events:auto}
-  .drawer{position:fixed;top:0;right:0;height:100%;width:560px;max-width:94vw;background:#fff;box-shadow:var(--sh-l);transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);z-index:100;display:flex;flex-direction:column}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:1000px;max-width:97vw;background:#fff;box-shadow:var(--sh-l);transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);z-index:100;display:flex;flex-direction:column}
   .drawer.show{transform:none}
   .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
   .d-head h2{font-size:17px;font-weight:700}.d-head .sub{color:var(--ink-3);font-size:13px;margin-top:2px}
@@ -183,7 +183,7 @@
   .done h3{font-size:18px;font-weight:700;margin-bottom:6px}
   .done p{color:var(--ink-2);max-width:360px;margin:0 auto 8px}
   .done-card{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;text-align:left;max-width:380px;margin:18px auto 0}
-  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-start}
 
   .dlg-scrim{position:fixed;inset:0;background:rgba(16,24,40,.42);display:none;place-items:center;z-index:120}
   .dlg-scrim.show{display:grid}
@@ -195,6 +195,84 @@
   .toast{background:var(--ink);color:#fff;border-radius:var(--r-m);padding:11px 16px;font-size:13px;font-weight:500;box-shadow:var(--sh-m);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(8px);transition:.2s}
   .toast.show{opacity:1;transform:none}.toast .icon{color:var(--green)}
   .proto-flag{position:fixed;left:12px;bottom:12px;z-index:50;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:11.5px;color:var(--ink-3);box-shadow:var(--sh-s)}
+  .btn:disabled{opacity:.5;pointer-events:none}
+
+  /* ===== booking v3 — overview + guests + calendar/timeline ===== */
+  .top-row{display:flex;gap:14px;margin:14px 22px 0;align-items:stretch}
+  .ov{flex:none;width:288px;border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;background:#FAFBFC}
+  .ov .evt{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:9px}
+  .ov .evt .icon{color:var(--primary)}
+  .ov .ov-line{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);margin-top:6px}
+  .ov .ov-line .icon{color:var(--ink-3);font-size:18px;flex:none}
+  .ov .ov-line b{font-weight:600}
+  .ov .ov-empty{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-3)}
+  .ov .ov-current{margin:9px 0 2px;padding:8px 10px;border-radius:var(--r-s);background:var(--amber-l);border:1px solid #FFE2AE;display:flex;align-items:center;gap:8px}
+  .ov .ov-current .icon{color:var(--amber);flex:none}
+  .ov .ov-current .lab{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#9a6200;font-weight:700;margin-bottom:1px}
+  .ov .ov-current b{font-size:13px;font-weight:700;color:#7a4e00}
+
+  .guests{flex:1;min-width:0;border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;background:#fff;display:flex;flex-direction:column}
+  .g-head{font-size:11.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .g-head .count{color:var(--ink-3);font-weight:600}
+  .g-item{display:flex;align-items:center;gap:9px;padding:6px 9px;border:1px solid var(--line);border-radius:var(--r-s);margin-bottom:5px;background:#fff}
+  .g-item .g-av{width:26px;height:26px;border-radius:50%;background:var(--primary-100);color:var(--primary-600);display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+  .g-item .g-mail{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .g-item .g-tag{font-size:10.5px;color:var(--ink-3);background:var(--line-2);border-radius:999px;padding:2px 8px;flex:none;font-weight:600}
+  .g-item .g-rm{width:28px;height:28px;border-radius:6px;color:var(--ink-3);display:grid;place-items:center;flex:none}
+  .g-item .g-rm:hover{background:var(--red-l);color:var(--red)}
+  .g-add{display:flex;gap:8px;margin-top:8px}
+  .g-add input{flex:1;border:1px solid var(--line);border-radius:var(--r-s);padding:9px 11px;font-family:inherit;font-size:13px}
+  .g-add input:focus{outline:none;border-color:var(--primary)}
+
+  /* two-pane: month calendar left, day/week view right */
+  .sched{display:flex;gap:22px;margin:18px 22px 20px;align-items:flex-start}
+  .sched-cal{flex:none;width:300px}
+  .sched-cal .cal-month{margin:0 0 10px;justify-content:flex-start;gap:10px}
+  .sched-cal .cal{margin:0;max-width:none}
+  .sched-cal .cal .day{font-size:13.5px}
+  .sched-view{flex:1;min-width:0}
+
+  .view-head{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+  .view-head .vh-date{font-weight:700;font-size:13.5px}
+  .view-head .toggle{margin-left:auto;display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .view-head .toggle button{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .view-head .toggle button.on{background:var(--ink);color:#fff}
+  .view-head .dur{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2)}
+  .view-head .dur .lbl{font-weight:600}
+  .view-head .dur .seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .view-head .dur .seg button{border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+  .view-head .dur .seg button.on{background:var(--primary);color:#fff}
+
+  /* day timeline */
+  .tl{display:flex;margin:0;border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
+  .tl-gut{width:46px;flex:none;position:relative;background:#FAFBFC;border-right:1px solid var(--line-2);height:480px}
+  .tl-gut .h{position:absolute;right:6px;font-size:10.5px;color:var(--ink-3);transform:translateY(-50%)}
+  .tl-col{position:relative;flex:1;height:480px}
+  .tl-line{position:absolute;left:0;right:0;border-top:1px solid var(--line-2)}
+  .tl-slot{position:absolute;left:5px;right:7px;border-radius:4px;cursor:pointer;z-index:2}
+  .tl-slot:hover{background:var(--primary-100);box-shadow:inset 0 0 0 1px var(--primary)}
+  .tl-slot.sel{background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;z-index:5}
+  .tl-busy{position:absolute;left:5px;right:7px;background:repeating-linear-gradient(45deg,#EEF1F4,#EEF1F4 6px,#E4E7EB 6px,#E4E7EB 12px);border-left:3px solid #90A4AE;border-radius:4px;padding:3px 8px;font-size:11px;line-height:1.25;color:#546E7A;overflow:hidden;z-index:3}
+  .tl-busy .bt{font-weight:600;color:#37474F}.tl-busy .bh{font-size:10px;color:#78909C}
+
+  /* outlook-style week grid */
+  .wk{margin:0;border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
+  .wk-head{display:grid;grid-template-columns:46px repeat(7,1fr)}
+  .wk-head .wh{padding:7px 2px;text-align:center;font-size:11px;color:var(--ink-3);border-left:1px solid var(--line-2);border-bottom:1px solid var(--line)}
+  .wk-head .sp{border-bottom:1px solid var(--line)}
+  .wk-head .wh b{display:block;font-size:15px;color:var(--ink);font-weight:700;margin-top:1px}
+  .wk-head .wh.sel{background:var(--primary-100)}.wk-head .wh.sel b{color:var(--primary-600)}
+  .wk-head .wh.off,.wk-head .wh.off b{color:#C5CDD4}
+  .wk-body{display:grid;grid-template-columns:46px repeat(7,1fr)}
+  .wk-gut{position:relative;height:420px;background:#FAFBFC;border-right:1px solid var(--line-2)}
+  .wk-gut .h{position:absolute;right:6px;font-size:10px;color:var(--ink-3);transform:translateY(-50%)}
+  .wk-col{position:relative;height:420px;border-left:1px solid var(--line-2)}
+  .wk-col.sel{background:#F5FBFA}.wk-col.wknd{background:#FAFBFC}
+  .wk-line{position:absolute;left:0;right:0;border-top:1px solid var(--line-2)}
+  .wk-slot{position:absolute;left:2px;right:2px;border-radius:3px;cursor:pointer;z-index:2}
+  .wk-slot:hover{background:var(--primary-100);box-shadow:inset 0 0 0 1px var(--primary)}
+  .wk-slot.sel{background:var(--primary);z-index:5}
+  .wk-busy{position:absolute;left:2px;right:2px;background:repeating-linear-gradient(45deg,#EEF1F4,#EEF1F4 5px,#E4E7EB 5px,#E4E7EB 10px);border-left:2px solid #90A4AE;border-radius:3px;font-size:9.5px;line-height:1.15;color:#546E7A;padding:2px 4px;overflow:hidden;z-index:3}
 </style>
 </head>
 <body>
@@ -239,9 +317,6 @@
     </div>
     <div class="card card-soft">
       <div class="card-head"><h2><span class="icon" style="color:var(--primary)">event</span>Anstehende Gespräche <span class="count" id="mCount">(2)</span></h2></div>
-      <div class="sync-bar"><span class="dot"></span><span class="logo logo-ms"></span> Outlook synchronisiert über
-        <span class="logo logo-nylas"></span><b>Nylas</b> · zuletzt vor 2&nbsp;Min.
-        <button class="sim" onclick="simulateOutlookChange()"><span class="icon sm">sync</span>Outlook-Änderung simulieren</button></div>
       <div id="meetingList"></div>
     </div>
     <div class="card">
@@ -261,17 +336,6 @@
 <aside class="drawer" id="drawer">
   <div class="d-head"><div><h2 id="dTitle">Termin planen</h2><div class="sub" id="dSub">mit Max Mustermann · Erstberatung</div></div>
     <button class="d-close" onclick="closeDrawer()"><span class="icon">close</span></button></div>
-  <div class="acct"><span class="dot"></span>
-    <div><div class="who">martina@sparkasse-musterstadt.de</div>
-      <div class="via"><span class="logo logo-ms"></span>Outlook · verbunden über <span class="logo logo-nylas"></span>Nylas</div></div>
-    <label class="tech-toggle"><input type="checkbox" id="techChk" onchange="toggleTech(this.checked)">Technik einblenden</label>
-  </div>
-  <div class="tool-bar"><span class="lbl">Tool des Beraters:</span>
-    <div class="seg">
-      <button id="segOutlook" class="on" onclick="setTool('outlook')"><span class="logo logo-ms"></span>Outlook (nativ)</button>
-      <button id="segCalendly" onclick="setTool('calendly')"><span class="logo logo-cal"></span>Calendly</button>
-    </div>
-  </div>
   <div class="d-body" id="dBody"></div>
 </aside>
 
@@ -287,8 +351,9 @@
 
 <script>
 /* ---------------- state ---------------- */
-let TOOL='outlook', MODE='new', techMode=false, STEP=1;
+let TOOL='outlook', MODE='new', techMode=false, viewMode='day', DUR=30;
 let pick={day:null,dow:null,time:null};
+let guests=[];
 let activeMeetingId=null, cancelTargetId=null;
 
 let meetings=[
@@ -303,15 +368,33 @@ let meetings=[
 /* July 2026: 1st = Wednesday. weekday(d) index, So=0..Sa=6 */
 const DOW=['So','Mo','Di','Mi','Do','Fr','Sa'];
 const weekday=d=>DOW[((d-1)+3)%7];
-const AVAIL_TIMES=['09:00','09:30','10:00','11:30','13:00','13:30','14:00','14:30','15:30','16:00','16:30','17:00'];
+/* working window + mock blocked times (Outlook free/busy) */
+const W_START=8, W_END=18;          // hours shown in day/week grid
+const tToMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m;};
+const minToT=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const DUR_OPTS=[30,45,60];
+const endOf=t=>minToT(tToMin(t)+DUR);                       // end time for current duration
+const durOf=r=>{const p=(r||'').split('–');return p.length===2?(tToMin(p[1])-tToMin(p[0])):30;};
+const BUSY={
+  2:[['08:30','09:15','E-Mail & Tagesplanung'],['11:00','12:00','Kreditkomitee'],['15:00','15:30','Rückruf Weber']],
+  3:[['09:00','09:30','Team-Standup'],['12:30','13:30','Mittagspause'],['16:00','17:00','Objektbewertung Lange']],
+  6:[['09:00','10:00','Team-Standup'],['12:30','13:30','Mittagspause'],['14:30','15:00','Rückruf Schmidt']],
+  7:[['10:00','11:00','Kreditkomitee'],['12:30','13:00','Mittagspause'],['14:00','14:30','Erstberatung – Mustermann'],['16:30','17:30','Notartermin']],
+  8:[['08:00','08:30','Tagesplanung'],['11:00','12:00','Beratung Lange'],['12:30','13:30','Mittagspause'],['15:30','16:30','Telefonat Schmidt']],
+  9:[['09:30','10:00','Team-Standup'],['10:00','10:30','Rückfrage – Mustermann'],['13:00','14:00','Mittagspause']],
+  10:[['09:00','10:30','Workshop Digitalisierung'],['12:30','13:30','Mittagspause'],['14:00','15:00','Beratung Yilmaz']]
+};
+const DEFAULT_BUSY=[['09:00','09:30','Team-Standup'],['12:30','13:30','Mittagspause'],['15:00','16:00','Interner Termin']];
+const busyFor=d=>BUSY[d]||DEFAULT_BUSY;
+const isAvailDay=d=>{const wd=weekday(d);return wd!=='Sa'&&wd!=='So'&&d>=1&&d<=31;};
 
 const TOOLINFO={ outlook:{name:'Outlook', logo:'logo-ms', via:'Outlook · Nylas'},
                  calendly:{name:'Calendly', logo:'logo-cal', via:'Calendly'} };
 
 /* ---------------- meeting list ---------------- */
-const STAT={ wait:['stat-wait','schedule','Antwort ausstehend'], ok:['stat-ok','check_circle','Zugesagt'],
+const STAT={ wait:['stat-wait','','Antwort ausstehend'], ok:['stat-ok','','Zugesagt'],
   cancel:['stat-cancel','cancel','Abgesagt'], resched:['stat-resched','update','Neue Zeit vorgeschlagen'], tent:['stat-tent','help','Mit Vorbehalt'] };
-function statusChip(s){ const[c,i,t]=STAT[s]; return `<span class="stat ${c}"><span class="icon sm">${i}</span>${t}</span>`; }
+function statusChip(s){ const[c,i,t]=STAT[s]; return `<span class="stat ${c}">${i?`<span class="icon sm">${i}</span>`:''}${t}</span>`; }
 function techLine(t){ return `<div class="tech ${techMode?'show':''}"><b>Nylas →</b> ${t}</div>`; }
 
 function renderMeetings(){
@@ -331,7 +414,7 @@ function renderMeetings(){
       tech=techLine(`<span class="mono">POST /v3/grants/{id}/events/${m.id}/send-rsvp</span> · status: yes / maybe / no`);
     } else {
       actions=`
-        <button class="btn btn-sm" onclick="reschedule(${m.id})"><span class="icon sm">event_repeat</span>Neue Zeit</button>
+        <button class="btn btn-sm" onclick="reschedule(${m.id})"><span class="icon sm">event_repeat</span>Verschieben</button>
         <button class="btn btn-sm" onclick="editMeeting(${m.id})"><span class="icon sm">edit</span>Bearbeiten</button>
         <button class="btn btn-sm btn-danger" onclick="askCancel(${m.id})"><span class="icon sm">close</span>Absagen</button>`;
       tech=techLine(`<span class="mono">PATCH / DELETE /v3/grants/{id}/events/${m.id}</span> — two-way nach Outlook gepusht`);
@@ -372,114 +455,176 @@ function simulateOutlookChange(){ const m=meetings.find(x=>x.id===1); m.day=8;m.
 
 /* ---------------- drawer & stepper ---------------- */
 function openDrawer(mode,id){
-  MODE=mode; activeMeetingId=id||null; STEP=1; pick={day:null,dow:null,time:null};
+  MODE=mode; activeMeetingId=id||null; viewMode='day'; TOOL='outlook';
   const titles={ new:'Termin planen', reschedule:'Termin verschieben', propose:'Neue Zeit vorschlagen' };
   document.getElementById('dTitle').textContent=titles[mode];
   const m=id?meetings.find(x=>x.id===id):null;
+  const defDay = m ? m.day : 7;
+  pick={day:defDay, dow:weekday(defDay), time:null};
+  DUR = (m && DUR_OPTS.includes(durOf(m.time))) ? durOf(m.time) : 30;
+  guests=['p.rompf+20260616-4@finlink.de'];
   document.getElementById('dSub').textContent = mode==='new' ? 'mit Max Mustermann · Erstberatung'
-    : `${m.title} · aktuell ${m.dow} ${m.day}. Juli, ${m.time}`;
-  if(mode==='propose'){ TOOL='outlook'; syncSeg(); }
+    : `mit Max Mustermann · ${m.title}`;
   renderBody();
   document.getElementById('drawer').classList.add('show'); document.getElementById('scrim').classList.add('show');
 }
 function closeDrawer(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('scrim').classList.remove('show'); }
-function setTool(t){ TOOL=t; syncSeg(); STEP=1; pick={day:null,dow:null,time:null}; renderBody(); }
-function syncSeg(){ document.getElementById('segOutlook').classList.toggle('on',TOOL==='outlook');
-  document.getElementById('segCalendly').classList.toggle('on',TOOL==='calendly'); }
+function setTool(t){ TOOL=t; syncSeg(); pick.time=null; renderBody(); }
+function syncSeg(){ document.getElementById('segOutlook')?.classList.toggle('on',TOOL==='outlook');
+  document.getElementById('segCalendly')?.classList.toggle('on',TOOL==='calendly'); }
 function toggleTech(v){ techMode=v; renderMeetings(); renderBody(); }
 
 function addHalfHour(t){ let[h,m]=t.split(':').map(Number); m+=30; if(m>=60){m-=60;h++;} return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
-function goStep(n){ STEP=n; renderBody(); }
-function pickDay(d){ pick.day=d; pick.dow=weekday(d); pick.time=null; STEP=2; renderBody(); }
-function pickTime(t){ pick.time=t; STEP=3; renderBody(); }
+function pickDay(d){ pick.day=d; pick.dow=weekday(d); pick.time=null; renderBody(); }
+function pickTime(t){ pick.time=t; renderBody(); }
+function pickSlot(d,t){ pick.day=d; pick.dow=weekday(d); pick.time=t; renderBody(); }
+function setView(v){ viewMode=v; renderBody(); }
+function setDur(d){ DUR=d; pick.time=null; renderBody(); }   // re-pick: a slot valid for 30 min may not fit 60
 
-/* ---- step renderers (identical for both tools) ---- */
-function stepperHTML(){
-  const lbl=MODE==='propose'?'Vorschlag':'Einladung';
-  const s=[['1','Datum'],['2','Uhrzeit'],['3',lbl]];
-  return `<div class="stepper">${s.map((x,i)=>{
-    const n=i+1, cls=STEP===n?'active':(STEP>n?'done':'');
-    const inner = STEP>n?'<span class="icon sm">check</span>':x[0];
-    return `<div class="stp ${cls}"><span class="n">${inner}</span>${x[1]}</div>${i<2?'<div class="line"></div>':''}`;
-  }).join('')}</div>`;
+/* ---- helpers ---- */
+function eventTitle(){
+  const m=activeMeetingId?meetings.find(x=>x.id===activeMeetingId):null;
+  if(MODE==='propose') return 'Neue Zeit – '+(m?m.title:'');
+  if(MODE==='reschedule') return m?m.title:'Termin';
+  return 'Erstberatung';
 }
-function srcLineHTML(){ const t=TOOLINFO[TOOL];
-  return `<div class="src-line">Verfügbarkeit über <span class="logo ${t.logo}"></span><b>${t.name}</b></div>`; }
+function initials(email){ const n=email.split('@')[0].replace(/[._+-].*/,''); return ((n[0]||'?')+(n[1]||'')).toUpperCase(); }
+function mondayOf(d){ const idx=((d-1)+3)%7; return d-(idx===0?6:idx-1); }   // idx: 0=So..6=Sa
+function dayInfo(n){ if(n<1) return {inMonth:false,disp:30+n,mon:'Jun'};
+  if(n>31) return {inMonth:false,disp:n-31,mon:'Aug'}; return {inMonth:true,disp:n,mon:'Jul'}; }
 
+/* ---- overview (the "when") ---- */
+function overviewHTML(){
+  const m = activeMeetingId ? meetings.find(x=>x.id===activeMeetingId) : null;
+  const current = (m && (MODE==='reschedule'||MODE==='propose'))
+    ? `<div class="ov-current"><span class="icon sm">history</span>
+        <div><span class="lab">Aktueller Termin</span><b>${m.dow} ${m.day}. ${m.monthLabel}, ${m.time}</b></div></div>`
+    : '';
+  const newLab = (MODE==='reschedule'||MODE==='propose')
+    ? `<div class="ov-line" style="margin-top:9px"><span class="icon sm">arrow_forward</span><b>Neuer Termin</b></div>` : '';
+  const body = pick.time
+    ? `${newLab}
+       <div class="ov-line"><span class="icon sm">calendar_today</span><b>${pick.dow} ${pick.day}. Juli 2026</b></div>
+       <div class="ov-line"><span class="icon sm">schedule</span>${pick.time}–${endOf(pick.time)} · ${DUR} Min.</div>
+       <div class="ov-line"><span class="icon sm">videocam</span>Videocall (Teams)</div>`
+    : `<div class="ov-empty" style="margin-top:9px"><span class="icon sm">touch_app</span>Bitte Tag &amp; Uhrzeit wählen</div>`;
+  return `<div class="ov"><div class="evt"><span class="icon">event</span>${eventTitle()}</div>${current}${body}</div>`;
+}
+
+/* ---- guests ---- */
+function guestsHTML(){
+  const items=guests.map((g,i)=>`<div class="g-item">
+      <span class="g-av">${initials(g)}</span>
+      <span class="g-mail">${g}</span>
+      ${i===0?'<span class="g-tag">Kunde</span>':''}
+      <button class="g-rm" title="Entfernen" onclick="removeGuest(${i})"><span class="icon sm">close</span></button>
+    </div>`).join('');
+  return `<div class="guests">
+    <div class="g-head"><span class="icon sm">group</span>Gäste <span class="count">(${guests.length})</span></div>
+    ${items}
+    <form class="g-add" onsubmit="return addGuest(event)">
+      <input type="email" id="guestInput" placeholder="E-Mail-Adresse hinzufügen" autocomplete="off" />
+      <button type="submit" class="btn btn-sm btn-primary"><span class="icon sm">add</span>Hinzufügen</button>
+    </form>
+  </div>`;
+}
+function addGuest(e){ e.preventDefault();
+  const inp=document.getElementById('guestInput'); const v=(inp.value||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ toast('Bitte eine gültige E-Mail-Adresse eingeben'); return false; }
+  if(guests.includes(v)){ toast('Diese Person ist bereits eingeladen'); return false; }
+  guests.push(v); renderBody(); return false; }
+function removeGuest(i){ guests.splice(i,1); renderBody(); }
+
+/* ---- month mini-calendar (left) ---- */
 function calendarHTML(){
-  let cells=''; for(let i=0;i<2;i++) cells+='<div class="day muted"></div>'; // Mon,Tue blanks before Jul 1 (Wed)
+  let cells=''; for(let i=0;i<2;i++) cells+='<div class="day muted"></div>'; // Jul 1 = Wed
   for(let d=1; d<=31; d++){
-    const wd=weekday(d); const avail = wd!=='Sa' && wd!=='So' && d>=2; const sel=pick.day===d;
+    const avail=isAvailDay(d); const sel=pick.day===d;
     cells+=`<div class="day ${avail?'avail':'muted'} ${sel?'sel':''}" ${avail?`onclick="pickDay(${d})"`:''}>${d}</div>`;
   }
   return `
-    <div class="cal-month"><button onclick="event.stopPropagation()">‹</button><b>Juli 2026</b><button>›</button></div>
+    <div class="cal-month"><b>Juli 2026</b></div>
     <div class="cal">${['Mo','Di','Mi','Do','Fr','Sa','So'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div>`;
 }
-function slotsHTML(){
-  return `<div class="slots">${AVAIL_TIMES.map(t=>`<button class="slot" onclick="pickTime('${t}')">${t}</button>`).join('')}</div>`;
+
+/* ---- day timeline ---- */
+function dayViewHTML(){
+  const d=pick.day, hpx=48, s0=W_START*60;
+  let labels='',lines='';
+  for(let h=W_START;h<=W_END;h++){ const top=(h-W_START)*hpx;
+    labels+=`<div class="h" style="top:${top}px">${String(h).padStart(2,'0')}:00</div>`;
+    lines+=`<div class="tl-line" style="top:${top}px"></div>`; }
+  let busy=''; busyFor(d).forEach(b=>{ const s=tToMin(b[0]),e=tToMin(b[1]);
+    busy+=`<div class="tl-busy" style="top:${(s-s0)/60*hpx}px;height:${(e-s)/60*hpx}px"><div class="bt">${b[2]}</div><div class="bh">${b[0]}–${b[1]}</div></div>`; });
+  let slots='';
+  for(let m=s0;m+DUR<=W_END*60;m+=30){
+    if(busyFor(d).some(b=>tToMin(b[0])<m+DUR && tToMin(b[1])>m)) continue;
+    const t=minToT(m), sel=pick.time===t;
+    const h = sel ? DUR/60*hpx : hpx/2;
+    slots+=`<div class="tl-slot ${sel?'sel':''}" style="top:${(m-s0)/60*hpx}px;height:${h}px" onclick="pickTime('${t}')">${sel?t+'–'+endOf(t):''}</div>`;
+  }
+  return `<div class="tl"><div class="tl-gut">${labels}</div><div class="tl-col">${lines}${slots}${busy}</div></div>`;
 }
-function summaryHTML(){
-  const time=pick.time+'–'+addHalfHour(pick.time);
-  const evt = MODE==='propose'?'Neue Zeit – Rückfrage zur Finanzierung':'Erstberatung';
-  const t=TOOLINFO[TOOL];
-  return `
-    <div class="summary">
-      <div class="srow"><span class="icon sm">event</span><span class="lab">Termin</span><span class="val">${evt}</span></div>
-      <div class="srow"><span class="icon sm">calendar_today</span><span class="lab">Datum</span><span class="val">${pick.dow} ${pick.day}. Juli 2026</span></div>
-      <div class="srow"><span class="icon sm">schedule</span><span class="lab">Uhrzeit</span><span class="val">${time} · 30 Min.</span></div>
-      <div class="srow"><span class="icon sm">person</span><span class="lab">Mit</span><span class="val">Max Mustermann</span></div>
-      <div class="srow"><span class="icon sm">videocam</span><span class="lab">Ort</span><span class="val">Videocall (Teams)</span></div>
-      <div class="srow"><span class="logo ${t.logo}" style="margin:0 2px 0 2px"></span><span class="lab">Kalender</span><span class="val">${t.name}</span></div>
-    </div>`;
+
+/* ---- outlook-style week view ---- */
+function weekViewHTML(){
+  const hpx=42, s0=W_START*60, mon=mondayOf(pick.day);
+  const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const cols=[]; for(let i=0;i<7;i++) cols.push(mon+i);
+  let head=`<div class="wh sp"></div>`;
+  cols.forEach((n,i)=>{ const info=dayInfo(n);
+    head+=`<div class="wh ${info.inMonth?'':'off'} ${info.inMonth&&n===pick.day?'sel':''}">${names[i]}<b>${info.disp}</b></div>`; });
+  let gut=''; for(let h=W_START;h<=W_END;h++) gut+=`<div class="h" style="top:${(h-W_START)*hpx}px">${String(h).padStart(2,'0')}</div>`;
+  let body='';
+  cols.forEach(n=>{ const info=dayInfo(n), avail=info.inMonth&&isAvailDay(n);
+    let lines=''; for(let h=W_START;h<=W_END;h++) lines+=`<div class="wk-line" style="top:${(h-W_START)*hpx}px"></div>`;
+    let busy=''; if(info.inMonth) busyFor(n).forEach(b=>{ const s=tToMin(b[0]),e=tToMin(b[1]);
+      busy+=`<div class="wk-busy" style="top:${(s-s0)/60*hpx}px;height:${(e-s)/60*hpx}px">${b[2]}</div>`; });
+    let slots=''; if(avail) for(let m=s0;m+DUR<=W_END*60;m+=30){
+      if(busyFor(n).some(b=>tToMin(b[0])<m+DUR && tToMin(b[1])>m)) continue;
+      const t=minToT(m), sel=(n===pick.day&&pick.time===t);
+      const h = sel ? DUR/60*hpx : hpx/2;
+      slots+=`<div class="wk-slot ${sel?'sel':''}" style="top:${(m-s0)/60*hpx}px;height:${h}px" onclick="pickSlot(${n},'${t}')"></div>`; }
+    const cls=!isAvailDay(n)?'wknd':(n===pick.day?'sel':'');
+    body+=`<div class="wk-col ${cls}">${lines}${busy}${slots}</div>`; });
+  return `<div class="wk"><div class="wk-head">${head}</div><div class="wk-body"><div class="wk-gut">${gut}</div>${body}</div></div>`;
 }
 
 function renderBody(){
   document.getElementById('dFootSlot')?.remove();
   const body=document.getElementById('dBody');
-  const proposeNote = MODE==='propose'
-    ? `<div class="note note-amber"><span class="icon">info</span><div><b>Outlook „Neue Zeit vorschlagen“ ist über Nylas nicht 1:1 verfügbar.</b>
-        finlink setzt es als <b>Absage + Gegenvorschlag</b> um.</div></div>` : '';
-
-  if(STEP===1){
-    body.innerHTML = stepperHTML()+srcLineHTML()+proposeNote+`
-      <div class="step-body"><h3><span class="icon sm">calendar_month</span>Datum wählen</h3>
-        ${calendarHTML()}</div>
-      ${techMode?techWrap(TOOL==='outlook'?'GET /v3/grants/{id}/calendars/free-busy':'Calendly Availability API'):''}`;
-  } else if(STEP===2){
-    body.innerHTML = stepperHTML()+srcLineHTML()+`
-      <div class="step-body">
-        <button class="backlink" onclick="goStep(1)"><span class="icon sm">chevron_left</span>Datum ändern</button>
-        <div class="sel-date">${pick.dow} ${pick.day}. Juli 2026</div>
-        <h3 style="justify-content:center"><span class="icon sm">schedule</span>Verfügbare Zeiten</h3>
-        ${slotsHTML()}
+  body.innerHTML =
+    `<div class="top-row">${overviewHTML()}${guestsHTML()}</div>` +
+    `<div class="sched">
+      <div class="sched-cal">${calendarHTML()}</div>
+      <div class="sched-view">
+        <div class="view-head"><span class="vh-date">${pick.dow} ${pick.day}. Juli 2026</span>
+          <div class="dur"><span class="lbl">Dauer</span><div class="seg">
+            ${DUR_OPTS.map(d=>`<button class="${DUR===d?'on':''}" onclick="setDur(${d})">${d} Min.</button>`).join('')}
+          </div></div>
+          <div class="toggle">
+            <button class="${viewMode==='day'?'on':''}" onclick="setView('day')"><span class="icon sm">calendar_view_day</span>Tag</button>
+            <button class="${viewMode==='week'?'on':''}" onclick="setView('week')"><span class="icon sm">calendar_view_week</span>Woche</button>
+          </div>
+        </div>
+        ${viewMode==='day'?dayViewHTML():weekViewHTML()}
       </div>
-      ${techMode?techWrap('freie Slots aus free-busy gefiltert'):''}`;
-  } else { /* STEP 3 — review & send */
-    const send = MODE==='propose'?'Vorschlag senden':'Einladung senden';
-    body.innerHTML = stepperHTML()+proposeNote+`
-      <div class="step-body">
-        <button class="backlink" onclick="goStep(2)"><span class="icon sm">chevron_left</span>Uhrzeit ändern</button>
-        <h3><span class="icon sm">mail</span>Prüfen &amp; ${MODE==='propose'?'vorschlagen':'einladen'}</h3>
-        ${summaryHTML()}
-        <div class="field"><label>Nachricht an den Kunden (optional)</label>
-          <textarea placeholder="z. B. Ich freue mich auf unser Gespräch…"></textarea></div>
-      </div>
-      ${techMode?techWrap(MODE==='propose'?'POST send-rsvp {no} + POST /events (Gegenvorschlag)':(TOOL==='outlook'?'POST /v3/grants/{id}/events':'Calendly event_scheduled → Webhook')):''}`;
-    setFoot(`<button class="btn" onclick="goStep(2)">Zurück</button>
-      <button class="btn btn-primary" onclick="finish()"><span class="icon sm">send</span>${send}</button>`);
-  }
+    </div>`;
+  const send = MODE==='propose'?'Vorschlag senden':'Einladung senden';
+  setFoot(`<button class="btn btn-primary" onclick="finish()" ${pick.time?'':'disabled'}><span class="icon sm">send</span>${send}</button>
+    <button class="btn" onclick="closeDrawer()">Abbrechen</button>`);
 }
-function techWrap(t){ return `<div style="padding:0 22px 14px"><div class="tech show"><b>${TOOL==='calendly'&&MODE!=='propose'?'Calendly →':'Nylas →'}</b> <span class="mono">${t}</span></div></div>`; }
 
 /* ---- send / finish ---- */
 function finish(){
-  const time=pick.time+'–'+addHalfHour(pick.time);
+  if(!pick.time){ toast('Bitte eine freie Uhrzeit wählen'); return; }
+  const time=pick.time+'–'+endOf(pick.time);
+  const who='Max Mustermann'+(guests.length>1?` +${guests.length-1}`:'');
   if(MODE==='propose'){ const m=meetings.find(x=>x.id===activeMeetingId); m.status='resched'; renderMeetings(); doneScreen('propose',time); return; }
   if(MODE==='reschedule'&&activeMeetingId){ const m=meetings.find(x=>x.id===activeMeetingId);
-    m.day=pick.day;m.dow=pick.dow;m.time=time;m.status='ok'; }
+    m.day=pick.day;m.dow=pick.dow;m.time=time;m.status='ok';m.participants=who; }
   else { meetings.unshift({ id:Date.now(), type:'booked', title:'Erstberatung', kind:'Videocall (Teams)',
-    day:pick.day, dow:pick.dow, monthLabel:'Juli', mon:'JUL', time, status:'ok', source:TOOL }); }
+    day:pick.day, dow:pick.dow, monthLabel:'Juli', mon:'JUL', time, status:'ok', source:TOOL, participants:who }); }
   renderMeetings(); doneScreen(MODE,time);
 }
 function doneScreen(mode,time){

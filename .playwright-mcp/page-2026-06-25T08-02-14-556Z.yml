@@ -1,0 +1,163 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: Anträge
+    - generic [ref=e4]: /
+    - generic [ref=e5]: Max Mustermann
+    - generic [ref=e6]: 440.000 €
+    - generic [ref=e7]:
+      - generic [ref=e8]: notifications
+      - generic [ref=e9]: help
+      - generic [ref=e10]: language
+      - generic [ref=e11]: GS
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - heading "Max Mustermann" [level=1] [ref=e14]
+      - generic [ref=e15]: 440.000 €
+      - generic [ref=e16]: ">100% BLA"
+      - generic [ref=e17]:
+        - generic [ref=e18]: home
+        - text: Property found
+      - generic [ref=e19]:
+        - generic [ref=e20]: add
+        - text: Tag hinzufügen
+      - generic [ref=e21]:
+        - button "Finanzierungs-Assistent" [ref=e22] [cursor=pointer]
+        - button "visibility Kundensicht" [ref=e23] [cursor=pointer]:
+          - generic [ref=e24]: visibility
+          - text: Kundensicht
+        - button "⋯" [ref=e25] [cursor=pointer]
+    - generic [ref=e26]: "Antragsnummer: 333 000 000 007 771"
+  - generic [ref=e27]:
+    - generic [ref=e28]: Übersicht
+    - generic [ref=e29]: Antrag
+    - generic [ref=e30]: Kommunikation
+    - generic [ref=e31]: Dokumente
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - heading "Kundendetails" [level=2] [ref=e36]
+          - generic [ref=e37]:
+            - generic [ref=e38]: edit
+            - text: Bearbeiten
+        - generic [ref=e39]:
+          - generic [ref=e40]: E-Mail
+          - generic [ref=e41]: p.rompf+20260616-4@finlink.de
+          - generic [ref=e42]: Telefonnummer
+          - generic [ref=e43]: "+4923458887475"
+          - generic [ref=e44]: Berater/in
+          - generic [ref=e45]: Martina
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - heading "Übersicht" [level=2] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: edit
+            - text: Bearbeiten
+        - generic [ref=e51]:
+          - generic [ref=e52]: Finanzierungsprojekt
+          - generic [ref=e53]: Kapitalbeschaffung
+          - generic [ref=e54]: Immobiliennutzung
+          - generic [ref=e55]: Selbst nutzen
+          - generic [ref=e56]: Objektart
+          - generic [ref=e57]: Eigentumswohnung
+          - generic [ref=e58]: Beratungsgespräch
+          - generic [ref=e59]: Nicht geplant
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - heading "Antragsstatus" [level=2] [ref=e63]
+          - generic [ref=e64]: Aktiv
+        - generic [ref=e65]: "Schritt: 1/10 · Anfrage erstellt"
+      - generic [ref=e77]:
+        - heading "event Anstehende Gespräche (2)" [level=2] [ref=e79]:
+          - generic [ref=e80]: event
+          - text: Anstehende Gespräche
+          - generic [ref=e81]: (2)
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - text: Erstberatung
+                - generic [ref=e86]: Zugesagt
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - generic [ref=e89]: event
+                  - text: Mo 7. Juli, 14:00–14:30
+                - generic [ref=e90]: "|"
+                - generic [ref=e91]:
+                  - generic [ref=e92]: groups
+                  - text: Max Mustermann, Martina
+                - generic [ref=e93]: "|"
+                - generic [ref=e94]:
+                  - generic [ref=e95]: videocam
+                  - text: Microsoft Teams Meeting
+              - generic [ref=e96]:
+                - button "event_repeat Neue Zeit" [ref=e97] [cursor=pointer]:
+                  - generic [ref=e98]: event_repeat
+                  - text: Neue Zeit
+                - button "edit Bearbeiten" [ref=e99] [cursor=pointer]:
+                  - generic [ref=e100]: edit
+                  - text: Bearbeiten
+                - button "close Absagen" [ref=e101] [cursor=pointer]:
+                  - generic [ref=e102]: close
+                  - text: Absagen
+            - button "more_horiz" [ref=e103] [cursor=pointer]:
+              - generic [ref=e104]: more_horiz
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - text: Rückfrage zur Finanzierung
+                - generic [ref=e108]: Antwort ausstehend
+              - generic [ref=e109]:
+                - generic [ref=e110]: mail
+                - text: Einladung von Max Mustermann
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]: event
+                  - text: Mi 9. Juli, 10:00–10:30
+                - generic [ref=e114]: "|"
+                - generic [ref=e115]:
+                  - generic [ref=e116]: groups
+                  - text: Max Mustermann
+                - generic [ref=e117]: "|"
+                - generic [ref=e118]:
+                  - generic [ref=e119]: call
+                  - text: Telefon
+              - generic [ref=e120]:
+                - button "check Zusagen" [ref=e121] [cursor=pointer]:
+                  - generic [ref=e122]: check
+                  - text: Zusagen
+                - button "help Mit Vorbehalt" [ref=e123] [cursor=pointer]:
+                  - generic [ref=e124]: help
+                  - text: Mit Vorbehalt
+                - button "schedule_send Neue Zeit vorschlagen" [ref=e125] [cursor=pointer]:
+                  - generic [ref=e126]: schedule_send
+                  - text: Neue Zeit vorschlagen
+                - button "close Absagen" [ref=e127] [cursor=pointer]:
+                  - generic [ref=e128]: close
+                  - text: Absagen
+            - button "more_horiz" [ref=e129] [cursor=pointer]:
+              - generic [ref=e130]: more_horiz
+      - generic [ref=e131]:
+        - heading "Erstellen" [level=2] [ref=e133]
+        - generic [ref=e134]:
+          - button "edit_note Notiz hinzufügen" [ref=e135] [cursor=pointer]:
+            - generic [ref=e136]: edit_note
+            - text: Notiz hinzufügen
+          - button "check_circle ToDo hinzufügen" [ref=e137] [cursor=pointer]:
+            - generic [ref=e138]: check_circle
+            - text: ToDo hinzufügen
+          - button "mail E-Mail" [ref=e139] [cursor=pointer]:
+            - generic [ref=e140]: mail
+            - text: E-Mail
+          - button "calendar_month Termin Planen" [ref=e141] [cursor=pointer]:
+            - generic [ref=e142]: calendar_month
+            - text: Termin Planen
+  - complementary [ref=e143]:
+    - generic [ref=e144]:
+      - generic [ref=e145]:
+        - heading "Termin planen" [level=2] [ref=e146]
+        - generic [ref=e147]: mit Max Mustermann · Erstberatung
+      - button "close" [ref=e148] [cursor=pointer]:
+        - generic [ref=e149]: close
+  - generic [ref=e151]: Prototyp · Termin-Scheduling v2 · einheitlicher Flow (Mock)
