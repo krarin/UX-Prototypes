@@ -23,6 +23,8 @@
             'qa-pass-light':     '#E9FCF2',
             'qa-warn':           '#FF9F1A',
             'qa-warn-light':     '#FFF5E8',
+            'qa-info':           '#2196F3',
+            'qa-info-light':     '#E8F2FE',
             'qa-fail':           '#FF5656',
             'qa-fail-light':     '#FFEEEE',
             'qa-ignored':        '#4B7BEC',
@@ -86,6 +88,7 @@
           note: 'Wir haben Ihren Reisepass erhalten. Um Ihren Antrag weiterzubearbeiten, benötigen wir zusätzlich eine aktuelle Meldebescheinigung.' },
         { id: 206, name: 'Aufenthaltstitel', docStatus: 'pending',
           warnings: ['Aufenthaltstitel läuft in weniger als 6 Monaten ab'] },
+        { id: 501, name: 'Kontoauszug', docStatus: 'ok' },
       ]
     },
     {
@@ -121,6 +124,17 @@
         style={{ fontSize: size, color, lineHeight: 1, flexShrink: 0, display: 'inline-block',
           fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>
         warning
+      </span>
+    );
+  }
+
+  /* ── Info icon — Material Symbols "info" filled, blue (replaces amber warning icon) ── */
+  function InfoIcon({ size = 16, className = '', color = '#9e9e9e' }) {
+    return (
+      <span className={`icon ${className}`}
+        style={{ fontSize: size, color, lineHeight: 1, flexShrink: 0, display: 'inline-block',
+          fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>
+        info
       </span>
     );
   }
@@ -546,7 +560,7 @@
         {resolved ? (
           <span className="icon icon-filled text-[18px] text-qa-ignored" style={{ lineHeight:1, fontVariationSettings:"'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20" }}>info</span>
         ) : (
-          <WarnIcon size={18} color={hasOpenFail ? '#FF5656' : '#FF9F1A'} />
+          hasOpenFail ? <WarnIcon size={18} color="#FF5656" /> : <InfoIcon size={18} />
         )}
 
         <Tooltip anchor={anchor}>
@@ -554,7 +568,7 @@
             {items.map((it, i) => {
               const cs = it.currentStatus;
               const isItemResolved = cs === 'manually_released' || cs === 'requested' || cs === 'pass';
-              const dotClass = isItemResolved ? 'bg-qa-pass' : (cs === 'fail' ? 'bg-qa-fail' : 'bg-amber-400');
+              const dotClass = isItemResolved ? 'bg-qa-pass' : (cs === 'fail' ? 'bg-qa-fail' : 'bg-qa-info');
               return (
                 <li key={i} className="flex flex-col gap-0.5">
                   <div className="flex items-start gap-2 text-[12px] leading-snug">
@@ -650,9 +664,9 @@
     );
   }
 
-  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {}, dynamicChecksByDoc = {} }) {
+  function CategoryGroup({ group, selectedId, onSelect, checkedIds, onCheck, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {}, dynamicChecksByDoc = {}, bankFailDocIds = new Set() }) {
     const [open, setOpen] = React.useState(false);
-    const approvedCount = group.items.filter(i => (docStatusOverrides[i.id] ?? i.docStatus) === 'ok').length;
+    const approvedCount = group.items.filter(i => !bankFailDocIds.has(i.id) && (docStatusOverrides[i.id] ?? i.docStatus) === 'ok').length;
     const totalCount = group.items.length;
 
     // Dynamic count of "Neu" docs in this group: isNew=true AND no advisor action taken yet
@@ -724,7 +738,8 @@
             {group.items.map(item => {
               const active = item.id === selectedId;
               const slots  = supportingSlots[item.id] || [];
-              const effectiveStatus = docStatusOverrides[item.id] ?? item.docStatus;
+              const hasBankFail = bankFailDocIds.has(item.id);
+              const effectiveStatus = hasBankFail ? 'pending' : (docStatusOverrides[item.id] ?? item.docStatus);
               const ignoredNotes = ignoredNotesByDoc[item.id] ?? null;
               const isApprovedWithNote = effectiveStatus === 'ok' && ignoredNotes && ignoredNotes.length > 0;
               // Has the advisor taken any action on this doc? Used to hide the "Neu" label after first interaction.
@@ -763,9 +778,11 @@
                         {item.name}
                       </span>
                       {item.isNew && !hasActionBeenTaken && <NewBadge />}
-                      {isApprovedWithNote
-                        ? <SidebarIgnoreNoteIcon notes={ignoredNotes} />
-                        : <WarningBadge docId={item.id} dynamicChecks={dynamicChecksByDoc[item.id] || []} />}
+                      {hasBankFail
+                        ? <WarnIcon size={18} color="#FF5656" />
+                        : isApprovedWithNote
+                          ? <SidebarIgnoreNoteIcon notes={ignoredNotes} />
+                          : <WarningBadge docId={item.id} dynamicChecks={dynamicChecksByDoc[item.id] || []} />}
                     </button>
                   </li>
                   {/* Supporting slots — indented with dashed grey connector */}
@@ -808,9 +825,37 @@
   }
 
   /* ── Sidebar ── */
-  function Sidebar({ selectedId, onSelect, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {}, dynamicChecksByDoc = {} }) {
+  function Sidebar({ selectedId, onSelect, supportingSlots = {}, docStatusOverrides = {}, ignoredNotesByDoc = {}, dynamicChecksByDoc = {}, selectedBankId = 'finlink', onBankChange, bankFailDocIds = new Set() }) {
     const [activeTab, setActiveTab] = React.useState('antragsunterlagen');
     const [checkedIds, setCheckedIds] = React.useState(new Set());
+    const [listMenuOpen, setListMenuOpen] = React.useState(false);
+    const selectedListId = selectedBankId;
+    function setSelectedListId(id) { onBankChange && onBankChange(id); }
+    const [visibleListId, setVisibleListId] = React.useState('finlink');
+
+    const LISTS = [
+      { id: 'psd',     name: 'PSD Bank West', subtitle: 'eG. / 267.437,50 € / 4,29 %', kind: 'list' },
+      { id: 'axa',     name: 'AXA Konzern',   subtitle: 'AG / 212.500,00 € / 3,71 %',  kind: 'list' },
+      { id: 'mylist',  name: 'My list',       kind: 'list' },
+      { id: 'finlink', name: 'FinLink',       kind: 'avatar', letter: 'F', color: 'bg-primary-500' },
+      { id: 'coba',    name: 'CoBa',          kind: 'avatar', letter: 'C', color: 'bg-[#f5a623]' },
+      { id: 'ing',     name: 'ING',           kind: 'avatar', letter: 'I', color: 'bg-[#ff6200]' },
+    ];
+    const selectedList = LISTS.find(l => l.id === selectedListId) || LISTS[0];
+    const selectedIsVisible = visibleListId === selectedListId;
+
+    function renderListIcon(list, sizeClass, textClass) {
+      if (list.kind === 'avatar') {
+        return (
+          <div className={`${sizeClass} rounded ${list.color} flex items-center justify-center flex-shrink-0`}>
+            <span className={`${textClass} font-bold text-white leading-none`}>{list.letter}</span>
+          </div>
+        );
+      }
+      return (
+        <span className={`icon ${sizeClass === 'w-5 h-5' ? 'text-[18px]' : 'text-[20px]'} text-neutral-400 flex items-center justify-center flex-shrink-0`}>format_list_bulleted</span>
+      );
+    }
 
     const allIds = ALL_DOCS.map(d => d.id);
     const allChecked = allIds.every(id => checkedIds.has(id));
@@ -851,23 +896,66 @@
         </div>
 
         {/* ── Source bar ── */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200">
-          <button className="flex items-center gap-1.5 text-primary-600 hover:text-primary-700 transition-colors">
-            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-bold text-white leading-none">F</span>
-            </div>
-            <span className="text-[13px] font-medium">FinLink</span>
-            <span className="icon text-[16px]">arrow_drop_down</span>
-          </button>
-          <div className="flex items-center gap-1.5">
-            <button className="flex items-center gap-1 h-6 px-2 rounded-full bg-primary-500 text-white text-[11px] font-medium hover:bg-primary-600 transition-colors">
-              <span className="icon text-[13px]">visibility</span>
-              Sichtbar
+        <div className="border-b border-neutral-200 flex items-center gap-2 px-3 pt-3 pb-2">
+          {/* Outlined list selector with floating label */}
+          <div className="relative flex-1 min-w-0">
+            <label className="absolute -top-2 left-2.5 px-1 bg-white text-[10px] font-medium text-neutral-500 leading-none pointer-events-none">
+              Unterlagenliste
+            </label>
+            <button
+              onClick={() => setListMenuOpen(o => !o)}
+              className="w-full h-9 flex items-center gap-2 border border-neutral-300 rounded px-2.5 text-left hover:border-neutral-400 focus:border-primary-500 focus:outline-none transition-colors"
+            >
+              {renderListIcon(selectedList, 'w-5 h-5', 'text-[10px]')}
+              <span className="flex-1 text-[13px] text-neutral-800 truncate">{selectedList.name}</span>
+              <span className="icon text-[18px] text-neutral-400 flex-shrink-0">expand_more</span>
             </button>
-            <button className="w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600 rounded hover:bg-neutral-100">
-              <span className="icon text-[18px]">more_horiz</span>
-            </button>
+
+            {/* ── List dropdown ── */}
+            {listMenuOpen && (
+              <React.Fragment>
+                <div className="fixed inset-0 z-20" onClick={() => setListMenuOpen(false)} />
+                <div className="absolute left-0 top-full mt-1 w-full bg-white rounded-lg shadow-xl border border-neutral-200 py-1 z-30">
+                  {LISTS.map(list => (
+                    <button
+                      key={list.id}
+                      onClick={() => { setSelectedListId(list.id); setListMenuOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors text-left ${
+                        list.id === selectedListId ? 'bg-neutral-50' : ''
+                      }`}
+                    >
+                      {renderListIcon(list, 'w-6 h-6', 'text-[11px]')}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[14px] text-neutral-800 leading-tight truncate">{list.name}</div>
+                        {list.subtitle && (
+                          <div className="text-[13px] text-neutral-500 leading-tight truncate">{list.subtitle}</div>
+                        )}
+                      </div>
+                      {visibleListId === list.id && (
+                        <span className="icon text-[18px] text-neutral-500 flex-shrink-0">visibility</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </React.Fragment>
+            )}
           </div>
+
+          {/* Visibility toggle + overflow menu */}
+          <button
+            onClick={() => setVisibleListId(selectedIsVisible ? null : selectedListId)}
+            className={`flex items-center gap-1 h-9 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0 transition-colors ${
+              selectedIsVisible
+                ? 'bg-primary-500 text-white hover:bg-primary-600'
+                : 'border border-neutral-300 text-neutral-600 hover:bg-neutral-50'
+            }`}
+          >
+            <span className="icon text-[13px]">{selectedIsVisible ? 'visibility' : 'visibility_off'}</span>
+            {selectedIsVisible ? 'Sichtbar' : 'Nicht sichtbar'}
+          </button>
+          <button className="w-8 h-9 flex items-center justify-center text-neutral-400 hover:text-neutral-600 rounded hover:bg-neutral-100 flex-shrink-0">
+            <span className="icon text-[18px]">more_horiz</span>
+          </button>
         </div>
 
         {/* ── Select all ── */}
@@ -896,6 +984,7 @@
               docStatusOverrides={docStatusOverrides}
               ignoredNotesByDoc={ignoredNotesByDoc}
               dynamicChecksByDoc={dynamicChecksByDoc}
+              bankFailDocIds={bankFailDocIds}
             />
           ))}
         </div>
@@ -1087,6 +1176,40 @@
       { id:'302-3', name:'Architektenunterschrift', description:'Unterschrift des Architekten erforderlich',
         status:'warning', result:'Stempel aber keine Unterschrift', override:null, remediation:null },
     ],
+    501: [
+      { id:'501-1', name:'Dokument lesbar und vollständig',
+        description:'Dokument muss klar lesbar und vollständig sein',
+        status:'pass', result:'Lesbarkeit und Vollständigkeit bestätigt', override:null, remediation:null },
+      { id:'501-2', name:'Kontoinhaber stimmt überein',
+        description:'Kontoinhaber muss mit Antragsteller übereinstimmen',
+        status:'pass', result:'Melissa Mustermann bestätigt', override:null, remediation:null },
+      { id:'501-3', name:'Aktualität maximal ein Monat',
+        description:'Kontoauszug darf nicht älter als ein Monat sein',
+        status:'pass', result:'Datum: 02.06.2026 – aktuell', override:null, remediation:null },
+    ],
+  };
+
+  const KONTOAUSZUG_BANK_REQUIREMENTS = {
+    docId: 501,
+    common: [
+      { id:'bs-501-1', name:'Deckungseignkapital',
+        status:'pass', result:'Deckung bestätigt', override:null, remediation:null },
+    ],
+    byBank: {
+      finlink: { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'not_required', result:'nicht erforderlich', override:null, remediation:null },
+      psd:     { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'fail', result:'Nachweis der Mittelherkunft erforderlich (PSD Bank West)', override:null,
+                 remediation:{ type:'request_document', label:'Dokument anfordern', slotName:'Nachweis der Mittelherkunft' } },
+      axa:     { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'not_required', result:'nicht erforderlich', override:null, remediation:null },
+      mylist:  { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'not_required', result:'nicht erforderlich', override:null, remediation:null },
+      coba:    { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'not_required', result:'nicht erforderlich', override:null, remediation:null },
+      ing:     { id:'bs-501-2', name:'Nachweis der Mittelherkunft',
+                 status:'not_required', result:'nicht erforderlich', override:null, remediation:null },
+    }
   };
 
   const DEFAULT_QA_CHECKS = [
@@ -1111,14 +1234,19 @@
       pending: { bg:'bg-qa-pending', icon:'hourglass_empty',   label:'Ausstehend'          },
     }[status];
     if (status === 'warning') return (
-      <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap bg-qa-warn w-full">
-        <WarnIcon size={13} color="white" />
+      <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap bg-qa-info w-full">
+        <InfoIcon size={13} color="white" />
         Warnung
       </span>
     );
     if (status === 'requested') return (
       <span className="flex items-center px-2 py-0.5 rounded text-[11px] font-medium text-white whitespace-nowrap w-full bg-neutral-600">
         Angefordert
+      </span>
+    );
+    if (status === 'not_required') return (
+      <span className="flex items-center px-2 py-0.5 rounded text-[11px] font-medium text-neutral-400 whitespace-nowrap w-full bg-neutral-100 border border-neutral-200">
+        Nicht erforderlich
       </span>
     );
     if (!cfg) return null;
@@ -1269,7 +1397,7 @@
   }
 
   /* ── V2: single QA row inside a group card ── */
-  function QARow({ check, variant, isLast, showRightCell = true, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck }) {
+  function QARow({ check, variant, isLast, showRightCell = true, indent = false, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck }) {
     const isError = variant === 'error';
     const isWarn  = variant === 'warning';
     const isPass  = variant === 'pass';
@@ -1283,7 +1411,7 @@
     return (
       <React.Fragment>
         {/* Left cell: icon + text */}
-        <div className={`flex items-center gap-2 px-3 min-h-10 py-1.5 bg-white ${borderClass}`}>
+        <div className={`flex items-center gap-2 ${indent ? 'pl-9 pr-3' : 'px-3'} min-h-10 py-1.5 bg-white ${borderClass}`}>
           {/* Icon */}
           {(isError || isWarn) && isResolved && (
             <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
@@ -1292,7 +1420,7 @@
             <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} color="#FF5656" /></span>
           )}
           {isWarn && !isResolved && (
-            <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>
+            <span className="flex-shrink-0 inline-flex"><InfoIcon size={20} /></span>
           )}
           {isPass && (
             <span className="icon text-[20px] text-[#20bf6b] flex-shrink-0" style={{ lineHeight:1, fontVariationSettings:"'FILL' 0,'wght' 700,'GRAD' 0,'opsz' 20" }}>check</span>
@@ -1332,14 +1460,14 @@
                     {/* Optional remediation request — for both Fehler and Warnungen */}
                     {check.remediation?.type === 'request_document' && (
                       <button onClick={() => onOpenRequestModal(check)}
-                        className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[14px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
+                        className="h-6 px-2 rounded-[4px] bg-primary-500 text-white text-[13px] font-medium leading-[20px] tracking-[0px] hover:bg-primary-600 transition-colors flex items-center whitespace-nowrap">
                         {check.remediation.label}
                       </button>
                     )}
                     {/* Manuell freigeben — Fehler only (Ambers don't block, so no override needed) */}
                     {isError && (
                       <button onClick={() => onOpenManualReleaseModal(check)}
-                        className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[14px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
+                        className="h-6 px-2 rounded-[4px] border border-[#b0bec5] bg-white text-[13px] font-medium leading-[20px] tracking-[0px] text-[#4b5961] hover:bg-neutral-50 transition-colors flex items-center whitespace-nowrap">
                         Manuell freigeben
                       </button>
                     )}
@@ -1381,16 +1509,38 @@
     );
   }
 
-  /* ── V3: unified Prüfungen panel — single table with all checks ── */
-  function QAPanel({ doc, checks, readOnly = false, onChecksUpdate, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck, onRerun }) {
+  /* ── Prüfungen panel: Allgemeine Prüfungen + Bankspezifische Anforderungen ── */
+  function QAPanel({ doc, checks, bankSection, selectedBankId, bankCheckStates = {}, readOnly = false, onChecksUpdate, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onResetCheck, onRerun }) {
     const [isRunning, setIsRunning] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
-    const [bestandeneExpanded, setBestandeneExpanded] = React.useState(false);
 
-    // Collapse the Bestandene sub-section whenever the doc changes
-    React.useEffect(() => { setBestandeneExpanded(false); }, [doc?.id]);
+    // Allgemeine Prüfungen
+    const [allgExpanded, setAllgExpanded] = React.useState(false);
+    const [allgBestandeneExpanded, setAllgBestandeneExpanded] = React.useState(false);
 
-    // Bucket each check: visible in main vs hidden in the "Bestandene" sub-section
+    // Bankspezifische Anforderungen
+    const [bankExpanded, setBankExpanded] = React.useState(false);
+    const [bankBestandeneExpanded, setBankBestandeneExpanded] = React.useState(false);
+
+    // Auto-expand Allgemeine Prüfungen when doc has original errors
+    React.useEffect(() => {
+      const origChecks = QA_CHECKS[doc?.id] || [];
+      const hasOrigErrors = origChecks.some(c => c.status === 'fail' || c.status === 'warning');
+      setAllgExpanded(hasOrigErrors);
+      setAllgBestandeneExpanded(false);
+    }, [doc?.id]);
+
+    // Auto-expand Bankspezifische Anforderungen when bank has a failing check
+    React.useEffect(() => {
+      if (!bankSection) return;
+      const bankBase = (bankSection.byBank || {})[selectedBankId] || (bankSection.byBank || {}).finlink;
+      const override = (bankCheckStates || {})[bankBase?.id];
+      const cur = override ? { ...bankBase, ...override } : bankBase;
+      setBankExpanded(cur?.status === 'fail');
+      setBankBestandeneExpanded(false);
+    }, [selectedBankId, doc?.id]);
+
+    // Bucket standard checks into visible (errors/warnings) and bestanden (passed/resolved)
     const visibleRows = [];
     const bestandeneRows = [];
     checks.forEach(c => {
@@ -1407,10 +1557,35 @@
       else visibleRows.push({ check: c, variant });
     });
 
-    const totalCount = visibleRows.length + bestandeneRows.length;
-    const allPassed = visibleRows.length === 0 && bestandeneRows.length > 0;
-    const hasActionable = visibleRows.some(r => r.variant === 'error' || r.variant === 'warning');
-    const gridCols = hasActionable ? 'minmax(0, 1fr) max-content' : 'minmax(0, 1fr)';
+    const hasAllgErrors   = visibleRows.length > 0;
+    const allgErrorCount  = visibleRows.filter(r => r.variant === 'error').length;
+    const hasAllgActionable = visibleRows.some(r => r.variant === 'error' || r.variant === 'warning');
+    const allgGridCols    = hasAllgActionable ? 'minmax(0, 1fr) max-content' : 'minmax(0, 1fr)';
+
+    // Bank check resolution
+    let isBankFail = false, isBankResolved = false, bankCheck = null;
+    const bankPassRows = [];
+    if (bankSection) {
+      const bankBase    = bankSection.byBank[selectedBankId] || bankSection.byBank.finlink;
+      const bankOverride = bankCheckStates[bankBase.id];
+      bankCheck = bankOverride ? { ...bankBase, ...bankOverride } : bankBase;
+      isBankFail     = bankCheck.status === 'fail';
+      isBankResolved = bankCheck.status === 'requested' || bankCheck.status === 'manually_released';
+      // Common checks always go to bestanden
+      bankSection.common.forEach(c => bankPassRows.push({ check: c, isNotRequired: false }));
+      // Bank-specific check: bestanden unless actively failing or freshly resolved
+      if (!isBankFail) {
+        if (bankCheck.status === 'not_required') {
+          bankPassRows.push({ check: bankCheck, isNotRequired: true });
+        } else if (bankCheck.status === 'pass' || (isBankResolved && !bankCheck.fresh)) {
+          bankPassRows.push({ check: bankCheck, isNotRequired: false });
+        }
+      }
+    }
+    const bankErrorCount  = bankSection && isBankFail ? 1 : 0;
+    const showBankTopRow  = bankSection && (isBankFail || (isBankResolved && bankCheck?.fresh));
+    const totalErrorCount = allgErrorCount + bankErrorCount;
+    const allPassed       = !hasAllgErrors && !bankErrorCount;
 
     function handleRerun() {
       setIsRunning(true);
@@ -1419,12 +1594,11 @@
 
     return (
       <div className={`min-w-[640px] ${allPassed ? 'w-full max-w-[640px]' : 'w-fit max-w-full'}`}>
-        {/* Single unified Prüfungen card */}
         <div className="rounded-[8px] overflow-hidden border border-[#eaeaea] w-full">
-          {/* Header — toggle on left, rerun action on right */}
-          <div className={`flex items-center justify-between bg-white px-3 h-9 gap-6 ${expanded && (visibleRows.length > 0 || bestandeneRows.length > 0) ? 'border-b border-[#eceff1]' : ''}`}>
-            <button onClick={() => setExpanded(x => !x)}
-              className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+
+          {/* ── Outer header ── */}
+          <div className={`flex items-center justify-between bg-white px-3 h-9 gap-6 ${expanded ? 'border-b border-[#eceff1]' : ''}`}>
+            <button onClick={() => setExpanded(x => !x)} className="flex items-center gap-2 hover:opacity-70 transition-opacity">
               <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">Prüfungen</span>
               <span className={`icon text-[16px] text-[#37474f] transition-transform ${expanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
             </button>
@@ -1439,44 +1613,123 @@
 
           {expanded && (
             <>
-              {/* Main visible rows */}
-              {visibleRows.length > 0 && (
-                <div className="grid" style={{ gridTemplateColumns: gridCols }}>
-                  {visibleRows.map((row, i) => (
-                    <QARow key={row.check.id} check={row.check} variant={row.variant}
-                      isLast={i === visibleRows.length - 1 && bestandeneRows.length === 0}
-                      showRightCell={hasActionable && !readOnly}
-                      onOpenRequestModal={onOpenRequestModal}
-                      onOpenManualReleaseModal={onOpenManualReleaseModal}
-                      onOpenCustomerNoteModal={onOpenCustomerNoteModal}
-                      onResetCheck={onResetCheck}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* ── Allgemeine Prüfungen section ── */}
+              <div className={bankSection ? 'border-b border-[#eceff1]' : ''}>
+                <button onClick={() => setAllgExpanded(x => !x)}
+                  className={`w-full flex items-center gap-2 px-3 h-9 bg-white hover:bg-neutral-50 transition-colors ${allgExpanded ? 'border-b border-[#eceff1]' : ''}`}>
+                  <span className={`icon text-[16px] text-[#37474f] transition-transform ${allgExpanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
+                  <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">Allgemeine Prüfungen</span>
+                  {hasAllgErrors
+                    ? <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500 text-white leading-none whitespace-nowrap">{allgErrorCount} Fehler</span>
+                    : <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500 text-white leading-none whitespace-nowrap">Alle bestanden</span>
+                  }
+                </button>
 
-              {/* Bestandene Prüfungen sub-section — collapsed by default */}
-              {bestandeneRows.length > 0 && (
-                <>
-                  <button onClick={() => setBestandeneExpanded(x => !x)}
-                    className={`w-full flex items-center justify-between bg-white px-3 h-9 hover:bg-neutral-50 transition-colors ${visibleRows.length > 0 ? 'border-t border-[#eceff1]' : ''} ${bestandeneExpanded ? 'border-b border-[#eceff1]' : ''}`}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">Bestandene Prüfungen ({bestandeneRows.length})</span>
-                      <span className={`icon text-[16px] text-[#37474f] transition-transform ${bestandeneExpanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
-                    </div>
+                {allgExpanded && (
+                  <>
+                    {visibleRows.length > 0 && (
+                      <div className="grid" style={{ gridTemplateColumns: allgGridCols }}>
+                        {visibleRows.map((row, i) => (
+                          <QARow key={row.check.id} check={row.check} variant={row.variant}
+                            isLast={i === visibleRows.length - 1 && bestandeneRows.length === 0}
+                            showRightCell={hasAllgActionable && !readOnly}
+                            indent={true}
+                            onOpenRequestModal={onOpenRequestModal}
+                            onOpenManualReleaseModal={onOpenManualReleaseModal}
+                            onOpenCustomerNoteModal={onOpenCustomerNoteModal}
+                            onResetCheck={onResetCheck}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {bestandeneRows.length > 0 && (
+                      <>
+                        <button onClick={() => setAllgBestandeneExpanded(x => !x)}
+                          className={`w-full flex items-center gap-2 px-3 h-9 bg-white hover:bg-neutral-50 transition-colors
+                            ${visibleRows.length > 0 ? 'border-t border-[#eceff1]' : ''}
+                            ${allgBestandeneExpanded ? 'border-b border-[#eceff1]' : ''}`}>
+                          <span className={`icon text-[16px] text-neutral-400 transition-transform ${allgBestandeneExpanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
+                          <span className="text-[12px] text-[#37474f] leading-[20px]">Bestanden ({bestandeneRows.length})</span>
+                        </button>
+                        {allgBestandeneExpanded && (
+                          <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
+                            {bestandeneRows.map((row, i) => (
+                              <QARow key={row.check.id} check={row.check} variant={row.variant}
+                                isLast={i === bestandeneRows.length - 1}
+                                showRightCell={false}
+                                indent={true}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* ── Bankspezifische Anforderungen section ── */}
+              {bankSection && (
+                <div>
+                  <button onClick={() => setBankExpanded(x => !x)}
+                    className={`w-full flex items-center gap-2 px-3 h-9 bg-white hover:bg-neutral-50 transition-colors ${bankExpanded ? 'border-b border-[#eceff1]' : ''}`}>
+                    <span className={`icon text-[16px] text-[#37474f] transition-transform ${bankExpanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
+                    <span className="text-[12px] font-medium text-[#37474f] leading-[20px]">Bankspezifische Anforderungen</span>
+                    {bankErrorCount > 0
+                      ? <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500 text-white leading-none whitespace-nowrap">1 Fehler</span>
+                      : <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500 text-white leading-none whitespace-nowrap">Alle bestanden</span>
+                    }
                   </button>
 
-                  {bestandeneExpanded && (
-                    <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
-                      {bestandeneRows.map((row, i) => (
-                        <QARow key={row.check.id} check={row.check} variant={row.variant}
-                          isLast={i === bestandeneRows.length - 1}
-                          showRightCell={false}
-                        />
-                      ))}
-                    </div>
+                  {bankExpanded && (
+                    <>
+                      {showBankTopRow && bankCheck && (
+                        <div className={`grid ${bankPassRows.length > 0 ? 'border-b border-[#eceff1]' : ''}`}
+                          style={{ gridTemplateColumns: readOnly ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) max-content' }}>
+                          <QARow check={bankCheck}
+                            variant="error"
+                            isLast={true}
+                            showRightCell={!readOnly}
+                            indent={true}
+                            onOpenRequestModal={() => onOpenRequestModal && onOpenRequestModal(bankCheck)}
+                            onOpenManualReleaseModal={() => onOpenManualReleaseModal && onOpenManualReleaseModal(bankCheck)}
+                            onOpenCustomerNoteModal={onOpenCustomerNoteModal}
+                            onResetCheck={onResetCheck}
+                          />
+                        </div>
+                      )}
+
+                      {bankPassRows.length > 0 && (
+                        <>
+                          <button onClick={() => setBankBestandeneExpanded(x => !x)}
+                            className={`w-full flex items-center gap-2 px-3 h-9 bg-white hover:bg-neutral-50 transition-colors ${bankBestandeneExpanded ? 'border-b border-[#eceff1]' : ''}`}>
+                            <span className={`icon text-[16px] text-neutral-400 transition-transform ${bankBestandeneExpanded ? '' : '-rotate-90'}`} style={{ lineHeight:1 }}>expand_more</span>
+                            <span className="text-[12px] text-[#37474f] leading-[20px]">Bestanden ({bankPassRows.length})</span>
+                          </button>
+                          {bankBestandeneExpanded && (
+                            <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
+                              {bankPassRows.map((row, i) => row.isNotRequired ? (
+                                <div key={row.check.id} className={`flex items-center gap-2 pl-9 pr-3 min-h-10 py-1.5 bg-white ${i < bankPassRows.length - 1 ? 'border-b border-[#eceff1]' : ''}`}>
+                                  <span className="icon text-[20px] text-neutral-300 flex-shrink-0" style={{ lineHeight:1 }}>remove</span>
+                                  <span className="flex-1 text-[12px] leading-[16px] text-[#4b5961]">{row.check.name}</span>
+                                  <span className="flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium text-neutral-400 whitespace-nowrap bg-neutral-100 border border-neutral-200">Nicht erforderlich</span>
+                                </div>
+                              ) : (
+                                <QARow key={row.check.id} check={row.check}
+                                  variant="pass"
+                                  isLast={i === bankPassRows.length - 1}
+                                  showRightCell={false}
+                                  indent={true}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
-                </>
+                </div>
               )}
             </>
           )}
@@ -1679,8 +1932,8 @@
 
           <div className="flex flex-col gap-4 px-6 py-4">
             {/* Warning banner */}
-            <div className="flex items-center gap-2 p-2 bg-qa-warn-light">
-              <span className="flex-shrink-0 inline-flex"><WarnIcon size={20} /></span>
+            <div className="flex items-center gap-2 p-2 bg-qa-info-light">
+              <span className="flex-shrink-0 inline-flex"><InfoIcon size={20} /></span>
               <span className="text-[14px] text-[#4b5961] tracking-[0.25px]">{check.result}</span>
             </div>
 
@@ -2042,7 +2295,7 @@
   }
 
   /* ── Main viewer ── */
-  function DocumentViewer({ doc, slot, docNote, checks, customerNotes = [], activeEntityId, canApprove = true, pendingNewVersion = null, versionHistory = null, onShowReplaceOrKeep, onVersionTabChange, onAddCustomerNote, onEditCustomerNote, onDeleteCustomerNote, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus }) {
+  function DocumentViewer({ doc, slot, docNote, checks, customerNotes = [], activeEntityId, canApprove = true, pendingNewVersion = null, versionHistory = null, onShowReplaceOrKeep, onVersionTabChange, onAddCustomerNote, onEditCustomerNote, onDeleteCustomerNote, onOpenRequestModal, onOpenManualReleaseModal, onOpenCustomerNoteModal, onChecksUpdate, onResetCheck, onRerun, onApproveDoc, effectiveDocStatus, selectedBankId = 'finlink', bankCheckStates = {} }) {
     // Determine active check set: old-version snapshot or live checks
     const activeChecks = versionHistory && versionHistory.activeTab === 'old'
       ? versionHistory.old.checks
@@ -2152,7 +2405,7 @@
 
         {/* Prüfungen table — version tabs + check panel */}
         {doc && activeChecks.length > 0 && (
-          <div className="flex-shrink-0 bg-white border-b border-neutral-200">
+          <div className="flex-shrink-0 bg-neutral-100 border-b border-neutral-200">
             {/* Version tabs (only when advisor chose "Keep Both") */}
             {versionHistory && (
               <VersionTabs
@@ -2174,6 +2427,9 @@
               <QAPanel
                 doc={doc}
                 checks={activeChecks}
+                bankSection={doc?.id === 501 ? KONTOAUSZUG_BANK_REQUIREMENTS : null}
+                selectedBankId={selectedBankId}
+                bankCheckStates={bankCheckStates}
                 readOnly={isOldVersionActive}
                 onChecksUpdate={onChecksUpdate}
                 onOpenRequestModal={onOpenRequestModal}
@@ -2213,6 +2469,86 @@
                   style={{ height: '900px', border: 'none' }}
                   title="Energieausweis"
                 />
+              ) : doc?.id === 501 ? (
+                /* Mock Kontoauszug */
+                <div style={{ fontFamily: "'Roboto', sans-serif", maxWidth: 680, margin: '0 auto', border: '1px solid #e0e0e0', borderRadius: 4, overflow: 'hidden' }}>
+                  {/* Bank header */}
+                  <div style={{ background: '#00877A', color: 'white', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: 1 }}>FinBank AG</div>
+                      <div style={{ fontSize: 11, opacity: 0.8 }}>Kontoauszug</div>
+                    </div>
+                    <div style={{ textAlign: 'right', fontSize: 12, opacity: 0.9 }}>
+                      <div>Auszug Nr. 6 / 2026</div>
+                      <div>01.06.2026 – 30.06.2026</div>
+                    </div>
+                  </div>
+                  {/* Account info */}
+                  <div style={{ background: '#f5f5f5', padding: '12px 24px', borderBottom: '1px solid #e0e0e0' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                      {[
+                        ['Kontoinhaber', 'Melissa Mustermann'],
+                        ['IBAN', 'DE89 3704 0044 0532 0130 00'],
+                        ['Kontonummer', '0532013000'],
+                        ['BIC', 'FNBKDE21XXX'],
+                      ].map(([label, value]) => (
+                        <div key={label}>
+                          <div style={{ fontSize: 10, color: '#9e9e9e', textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: '#212121', fontFamily: label === 'IBAN' || label === 'BIC' ? 'monospace' : 'inherit' }}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Table header */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 120px', background: '#fafafa', borderBottom: '2px solid #e0e0e0', padding: '8px 24px' }}>
+                    {['Datum', 'Buchungstext', 'Betrag (EUR)'].map((h, i) => (
+                      <div key={h} style={{ fontSize: 11, color: '#757575', fontWeight: 500, textAlign: i === 2 ? 'right' : 'left' }}>{h}</div>
+                    ))}
+                  </div>
+                  {/* Transactions */}
+                  {[
+                    ['02.06.2026', 'SEPA-Überweisung', 'Gehalt Mai – FinLink GmbH', '+4.250,00', '#20BF6B'],
+                    ['05.06.2026', 'Lastschrift', 'Miete Juni – Wohnungsverwaltung Peters', '−1.100,00', '#e53935'],
+                    ['10.06.2026', 'Dauerauftrag', 'Versicherung – Allianz Lebensversicherung', '−185,50', '#e53935'],
+                    ['15.06.2026', 'SEPA-Überweisung', 'Eigenkapital-Rücklage Sparkonto', '−2.000,00', '#e53935'],
+                    ['18.06.2026', 'Kartenzahlung', 'REWE Berlin-Mitte', '−84,36', '#e53935'],
+                    ['22.06.2026', 'Lastschrift', 'Strom & Gas – Vattenfall GmbH', '−127,80', '#e53935'],
+                    ['28.06.2026', 'Kartenzahlung', 'Tankstelle Shell, Berlin', '−62,40', '#e53935'],
+                  ].map(([date, type, desc, amount, color], i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 120px', borderBottom: '1px solid #f0f0f0', padding: '10px 24px', alignItems: 'start' }}>
+                      <div style={{ fontSize: 12, color: '#616161', whiteSpace: 'nowrap' }}>{date}</div>
+                      <div>
+                        <div style={{ fontSize: 12, color: '#212121' }}>{type}</div>
+                        <div style={{ fontSize: 11, color: '#9e9e9e' }}>{desc}</div>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 500, color, textAlign: 'right' }}>{amount}</div>
+                    </div>
+                  ))}
+                  {/* Balance footer */}
+                  <div style={{ background: '#fafafa', borderTop: '2px solid #e0e0e0', padding: '12px 24px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 24 }}>
+                      {[
+                        ['Anfangssaldo', '5.183,92 EUR', '#212121'],
+                        ['Gesamtzugänge', '+4.250,00 EUR', '#20BF6B'],
+                        ['Gesamtabgänge', '−3.560,06 EUR', '#e53935'],
+                      ].map(([label, value, color]) => (
+                        <div key={label}>
+                          <div style={{ fontSize: 10, color: '#9e9e9e', textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color }}>{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 10, color: '#9e9e9e', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Schlusssaldo</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: '#212121' }}>5.873,86 EUR</div>
+                    </div>
+                  </div>
+                  {/* Footer */}
+                  <div style={{ padding: '8px 24px', borderTop: '1px solid #eeeeee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 10, color: '#bdbdbd' }}>Auszugsdatum: 30.06.2026 | FinBank AG, Bankhaus Berlin | BLZ: 700 101 11</div>
+                    <div style={{ fontSize: 10, color: '#bdbdbd' }}>Seite 1 von 1</div>
+                  </div>
+                </div>
               ) : doc?.id === 201 || doc?.id === 202 || doc?.id === 204 ? (
                 <iframe
                   src="assets/gehaltsabrechnung-august.pdf"
@@ -2338,6 +2674,20 @@
   /* ── App ── */
   function App() {
     const [selectedId, setSelectedId] = React.useState(null);
+    const [selectedBankId, setSelectedBankId] = React.useState('finlink');
+    /* Bank-specific check overrides, keyed by bankId → { checkId → override } */
+    const [bankCheckOverrides, setBankCheckOverrides] = React.useState({});
+
+    /* Docs whose bank-specific checks are currently failing for the selected bank */
+    const bankFailDocIds = React.useMemo(() => {
+      const ids = new Set();
+      const bankBase = (KONTOAUSZUG_BANK_REQUIREMENTS.byBank || {})[selectedBankId]
+        || (KONTOAUSZUG_BANK_REQUIREMENTS.byBank || {}).finlink;
+      const override = ((bankCheckOverrides[selectedBankId]) || {})[bankBase?.id];
+      const cur = override ? { ...bankBase, ...override } : bankBase;
+      if (cur?.status === 'fail') ids.add(KONTOAUSZUG_BANK_REQUIREMENTS.docId);
+      return ids;
+    }, [selectedBankId, bankCheckOverrides]);
 
     /* QA checks state — keyed by doc id, initialised from QA_CHECKS */
     const [docChecks, setDocChecks] = React.useState(() => {
@@ -2526,6 +2876,26 @@
     }
 
     function handleConfirmRequest(check, note) {
+      /* Bank-specific check (id starts with 'bs-') */
+      if (check.id.startsWith('bs-')) {
+        const docId = 501;
+        const slotId = `slot-${Date.now()}`;
+        const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: note || null };
+        const requestNote = { note, advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: new Date().toISOString() };
+        setSupportingSlots(prev => ({ ...prev, [docId]: [...(prev[docId] || []), newSlot] }));
+        setBankCheckOverrides(prev => ({
+          ...prev,
+          [selectedBankId]: { ...(prev[selectedBankId] || {}), [check.id]: { status: 'requested', requestNote, fresh: true } }
+        }));
+        if (note) {
+          const sharedNote = { id: `cn-${slotId}`, note, advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: new Date().toISOString() };
+          setCustomerNotesByEntity(prev => ({ ...prev, [slotId]: [sharedNote], [docId]: [sharedNote, ...(prev[docId] || [])] }));
+        }
+        setRequestModal(null);
+        showToast('Anfrage gesendet. Der Kunde sieht den Ablehnungsgrund und die nächsten Schritte in seinem Dashboard.');
+        return;
+      }
+
       const docId = selectedDoc.id;
       const slotId = `slot-${Date.now()}`;
       const newSlot = { id: slotId, name: check.remediation.slotName || check.remediation.label, docStatus: 'pending', note: note || null };
@@ -2567,12 +2937,16 @@
     }
 
     function handleManualReleaseConfirm(check, reason) {
-      const manualRelease = {
-        reason,
-        advisorName: ADVISOR.name,
-        initials: ADVISOR.initials,
-        timestamp: new Date().toISOString(),
-      };
+      const manualRelease = { reason, advisorName: ADVISOR.name, initials: ADVISOR.initials, timestamp: new Date().toISOString() };
+      if (check.id.startsWith('bs-')) {
+        setBankCheckOverrides(prev => ({
+          ...prev,
+          [selectedBankId]: { ...(prev[selectedBankId] || {}), [check.id]: { status: 'manually_released', manualRelease, fresh: true } }
+        }));
+        setManualReleaseModal(null);
+        showToast('Manuell freigegeben');
+        return;
+      }
       setDocChecks(prev => {
         const docId = selectedDoc.id;
         return {
@@ -2607,6 +2981,14 @@
     }
 
     function handleResetCheck(checkId) {
+      if (checkId.startsWith('bs-')) {
+        setBankCheckOverrides(prev => {
+          const bankOverrides = { ...(prev[selectedBankId] || {}) };
+          delete bankOverrides[checkId];
+          return { ...prev, [selectedBankId]: bankOverrides };
+        });
+        return;
+      }
       const orig = (QA_CHECKS[selectedDoc?.id] || []).find(c => c.id === checkId);
       if (orig) updateCheck(selectedDoc.id, checkId, { ...orig, notes: [], manualRelease: null, requestNote: null, fresh: false });
     }
@@ -2677,6 +3059,9 @@
             docStatusOverrides={docStatusOverrides}
             ignoredNotesByDoc={ignoredNotesByDoc}
             dynamicChecksByDoc={docChecks}
+            selectedBankId={selectedBankId}
+            onBankChange={setSelectedBankId}
+            bankFailDocIds={bankFailDocIds}
           />
           <DocumentViewer
             doc={selectedDoc}
@@ -2702,6 +3087,8 @@
             onApproveDoc={handleApproveDoc}
             effectiveDocStatus={effectiveDocStatus}
             canApprove={canApprove}
+            selectedBankId={selectedBankId}
+            bankCheckStates={bankCheckOverrides[selectedBankId] || {}}
           />
           <PageRail doc={selectedDoc} />
         </div>

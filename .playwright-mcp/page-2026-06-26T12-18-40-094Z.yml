@@ -1,0 +1,102 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e3]: L
+    - generic [ref=e4]:
+      - img [ref=e6] [cursor=pointer]
+      - generic [ref=e8]: My Day
+    - generic [ref=e9]:
+      - generic [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+        - generic [ref=e14]: "39"
+      - generic [ref=e15]: Loans
+    - generic [ref=e16]:
+      - generic [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+        - generic [ref=e23]: "1"
+      - generic [ref=e24]: Leads
+    - generic [ref=e25]:
+      - img [ref=e27] [cursor=pointer]
+      - generic [ref=e30]: Sources
+    - generic [ref=e31]:
+      - img [ref=e33] [cursor=pointer]
+      - generic [ref=e35]: Accounting
+    - generic [ref=e36]:
+      - img [ref=e38] [cursor=pointer]
+      - generic [ref=e39]: Reporting
+    - generic [ref=e40]:
+      - img [ref=e42] [cursor=pointer]
+      - generic [ref=e46]: Lead-Shop
+    - generic [ref=e47]:
+      - img [ref=e49] [cursor=pointer]
+      - generic [ref=e52]: Email
+  - generic [ref=e53]:
+    - generic [ref=e54]:
+      - img [ref=e55]
+      - text: This applicant doesn't have an active account and doesn't have access to the client portal.
+      - link "Activate account" [ref=e57] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=e58] [cursor=pointer]: ×
+    - generic [ref=e59]:
+      - img [ref=e61] [cursor=pointer]
+      - generic [ref=e63] [cursor=pointer]:
+        - img [ref=e64]
+        - generic [ref=e67]: "3"
+      - generic [ref=e68]: EN
+      - generic [ref=e69]:
+        - generic [ref=e70]: LA
+        - generic [ref=e71]:
+          - generic [ref=e72]: Loanlink Admin Advisor
+          - generic [ref=e73]: Administrator
+    - generic [ref=e74]:
+      - generic [ref=e75]:
+        - generic [ref=e77]:
+          - text: Mr Test Data Verif
+          - generic [ref=e78]: 231.710,00 €
+          - generic [ref=e79]: "Case ID: 408"
+        - generic [ref=e80]:
+          - button "Use Cases" [ref=e81] [cursor=pointer]
+          - button "Loan simulator" [ref=e82] [cursor=pointer]:
+            - img [ref=e83]
+            - text: Loan simulator
+          - button "Client view" [ref=e85] [cursor=pointer]:
+            - img [ref=e86]
+            - text: Client view
+          - button [ref=e89] [cursor=pointer]:
+            - img [ref=e90]
+          - button [ref=e94] [cursor=pointer]:
+            - img [ref=e95]
+      - generic [ref=e100]:
+        - generic [ref=e101] [cursor=pointer]: Property found
+        - generic [ref=e103] [cursor=pointer]:
+          - img [ref=e104]
+          - text: "Onboarding: LoanLink24 Mortgage GmbH"
+        - button "+ add new" [ref=e107] [cursor=pointer]
+      - generic [ref=e108]:
+        - generic [ref=e109] [cursor=pointer]: Übersicht
+        - generic [ref=e110] [cursor=pointer]: Antrag
+        - generic [ref=e111] [cursor=pointer]: Antragsvalidierung
+        - generic [ref=e112] [cursor=pointer]: Manuelle Angebote
+        - generic [ref=e113] [cursor=pointer]: Immobilienbewertung
+        - generic [ref=e114] [cursor=pointer]:
+          - text: Dokumente
+          - img [ref=e115]
+        - generic [ref=e119] [cursor=pointer]: PDF
+    - generic [ref=e122]:
+      - img [ref=e123]
+      - generic [ref=e128]:
+        - generic [ref=e129]: Übersicht
+        - generic [ref=e130]: Dieser Bereich ist noch nicht verfügbar.
+  - generic [ref=e131]:
+    - generic [ref=e132]:
+      - generic [ref=e133]:
+        - generic [ref=e134]:
+          - generic [ref=e135]: comment
+          - text: Kommentare
+        - text: "Feld:"
+      - button "×" [ref=e136] [cursor=pointer]
+    - generic [ref=e138]: Noch keine Kommentare
+    - generic [ref=e139]:
+      - generic [ref=e140]:
+        - generic [ref=e141]: KH
+        - textbox "Kommentar schreiben… (Strg+Enter zum Senden)" [ref=e142]
+      - button "Senden" [ref=e144] [cursor=pointer]

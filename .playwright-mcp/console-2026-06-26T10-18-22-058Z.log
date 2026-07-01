@@ -1,0 +1,24 @@
+[     230ms] TypeError: Cannot set properties of null (setting 'innerHTML')
+    at updateCounts (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3113:19)
+    at http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3931:3
+[     382ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8899/favicon.ico:0
+[   31370ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3909:28)
+[   31371ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3923:21)
+[   31661ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3909:28)
+[   31661ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3923:21)
+[   32767ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3909:28)
+[   32767ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3923:21)
+[   34142ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3909:28)
+[   35016ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3923:21)
+[   35107ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3909:28)
+[   35409ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v2-usability-testing.html:3923:21)

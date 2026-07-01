@@ -1,0 +1,13 @@
+[     229ms] TypeError: Cannot read properties of null (reading 'style')
+    at toggleContent (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3228:19)
+    at applyToggleState (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3234:37)
+    at http://localhost:8899/data-validation/application-form/table-validation-v7.html:3984:3
+[     347ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8899/favicon.ico:0
+[    6043ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[    6960ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)
+[    8358ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   17514ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)

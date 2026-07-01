@@ -1,0 +1,20 @@
+[    1659ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[    7822ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   12616ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)
+[   12870ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   29816ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)
+[   33897ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   33897ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)
+[   38083ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   38138ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3947:28)
+[   43690ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3961:21)

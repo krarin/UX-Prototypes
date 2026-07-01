@@ -1,0 +1,100 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: DigitalQA Doc Center
+    - generic [ref=e6]: /
+    - generic [ref=e7]: V7 – Upload Additional Document Flow
+    - generic [ref=e8]:
+      - generic [ref=e9]: science
+      - text: Prototype · 2 patterns
+  - generic [ref=e10]:
+    - generic [ref=e12]: cancel
+    - generic [ref=e13]:
+      - generic [ref=e14]: "Szenario: Exposé — Neues Dokument nach Ablehnung"
+      - paragraph [ref=e15]: "Das Exposé wurde vom Kunden hochgeladen, aber von der QA abgelehnt: das Dokument ist unleserlich und älter als 3 Monate. Der Berater hat eine Neuanforderung gestellt. Der Kunde hat jetzt ein neues Exposé hochgeladen. Unten sind zwei UX-Muster für den Umgang mit diesem Ersatz-Upload."
+  - generic [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - generic [ref=e19]: A
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Versionierter Dokument-Slot
+          - paragraph [ref=e22]: Versionshistorie immer sichtbar im Slot · kein expliziter Bestätigungsschritt
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: check_circle
+            - generic [ref=e27]: Exposé
+            - generic [ref=e28]: 2 Versionen
+            - button "more_horiz" [ref=e29] [cursor=pointer]:
+              - generic [ref=e30]: more_horiz
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - button "V2 Aktuelle Version check_circle Prüfung bestanden MM Melissa Mustermann · 28. Jun. 2026, 09:15 check_circle expand_less" [ref=e33] [cursor=pointer]:
+                - generic [ref=e34]: V2
+                - generic [ref=e35]:
+                  - generic [ref=e36]:
+                    - generic [ref=e37]: Aktuelle Version
+                    - generic [ref=e38]:
+                      - generic [ref=e39]: check_circle
+                      - text: Prüfung bestanden
+                  - generic [ref=e40]:
+                    - generic [ref=e41]: MM
+                    - generic [ref=e42]: Melissa Mustermann
+                    - generic [ref=e43]: ·
+                    - generic [ref=e44]: 28. Jun. 2026, 09:15
+                - generic [ref=e45]: check_circle
+                - generic [ref=e46]: expand_less
+              - generic [ref=e47]:
+                - generic [ref=e48]: QA-Prüfungen
+                - generic [ref=e49]:
+                  - generic [ref=e50]:
+                    - generic [ref=e51]: check_circle
+                    - text: Bestanden
+                  - generic [ref=e52]: Lesbarkeit
+                - generic [ref=e53]:
+                  - generic [ref=e54]:
+                    - generic [ref=e55]: check_circle
+                    - text: Bestanden
+                  - generic [ref=e56]: Aktualität
+            - button "V1 Archiviert Durch neue Version ersetzt MM Melissa Mustermann · 05. Mär. 2026, 14:32 archive expand_more" [ref=e58] [cursor=pointer]:
+              - generic [ref=e59]: V1
+              - generic [ref=e60]:
+                - generic [ref=e61]:
+                  - generic [ref=e62]: Archiviert
+                  - generic [ref=e63]: Durch neue Version ersetzt
+                - generic [ref=e64]:
+                  - generic [ref=e65]: MM
+                  - generic [ref=e66]: Melissa Mustermann
+                  - generic [ref=e67]: ·
+                  - generic [ref=e68]: 05. Mär. 2026, 14:32
+              - generic [ref=e69]: archive
+              - generic [ref=e70]: expand_more
+        - generic [ref=e71]: "Wie es funktioniert: Jeder Upload erzeugt eine neue Version im selben Slot. Die aktuelle Version ist immer oben sichtbar. Ältere Versionen werden archiviert und können jederzeit aufgeklappt werden, inkl. der QA-Ergebnisse zum Zeitpunkt des Uploads."
+    - generic [ref=e72]:
+      - generic [ref=e73]:
+        - generic [ref=e74]: B
+        - generic [ref=e75]:
+          - paragraph [ref=e76]: Ersetzen mit Bestätigung
+          - paragraph [ref=e77]: Expliziter Vergleich vor dem Ersetzen · Slot zeigt nur aktuelle Version
+      - generic [ref=e78]:
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e125]: hourglass_empty
+            - generic [ref=e126]: Exposé
+            - button "history 1 frühere Version" [ref=e127] [cursor=pointer]:
+              - generic [ref=e128]: history
+              - text: 1 frühere Version
+            - button "more_horiz" [ref=e129] [cursor=pointer]:
+              - generic [ref=e130]: more_horiz
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - generic [ref=e133]: MM
+              - generic [ref=e134]: Melissa Mustermann
+              - generic [ref=e135]: ·
+              - generic [ref=e136]: 28. Jun. 2026, 09:15
+            - generic [ref=e138]:
+              - generic [ref=e139]: progress_activity
+              - text: QA-Prüfung läuft…
+        - generic [ref=e119]: "Wie es funktioniert: Geht eine neue Datei ein, erscheint ein Vergleich zwischen der aktuellen (abgelehnten) und der eingehenden Version. Nach Bestätigung startet die QA-Prüfung sofort. Die alte Version bleibt über „Frühere Version\" abrufbar, inklusive der originalen QA-Ergebnisse."
+        - button "replay Demo zurücksetzen" [ref=e120] [cursor=pointer]:
+          - generic [ref=e121]: replay
+          - text: Demo zurücksetzen

@@ -1,0 +1,9 @@
+[     348ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8899/favicon.ico:0
+[    1141ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3956:28)
+[    1326ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3970:21)
+[    2382ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3956:28)
+[    2783ms] TypeError: e.target.closest is not a function
+    at HTMLDocument.<anonymous> (http://localhost:8899/data-validation/application-form/table-validation-v7.html:3970:21)
