@@ -343,6 +343,44 @@ html, body {
 }
 
 /* ------------------------------------------
+   INFO BAR
+------------------------------------------ */
+
+.info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  padding: var(--space-s) var(--space-l);
+  background: var(--color-neutral-light-000);
+  border-bottom: 1px solid var(--color-neutral-light-500);
+  flex-shrink: 0;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-family);
+  font-size: var(--body-small-size);
+  line-height: var(--body-small-line-height);
+  white-space: nowrap;
+}
+
+.info-label { color: var(--color-neutral-dark-300); }
+
+.info-value {
+  color: var(--color-neutral-dark-800);
+  font-weight: var(--font-weight-medium);
+}
+
+.info-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--color-neutral-light-500);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------
    TAB BAR
 ------------------------------------------ */
 

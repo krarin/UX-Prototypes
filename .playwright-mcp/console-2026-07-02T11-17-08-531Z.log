@@ -1,0 +1,19 @@
+[92483592ms] TypeError: window.clarity is not a function
+    at https://www.baufi24.de/baufinanzierung-beratung/:223:12
+    at i.dispatch (https://web.cmp.usercentrics.eu/ui/v/4.4.0/WebSdk.lib.50719a09.js:728:18)
+    at i.dispatchConsentDetails (https://web.cmp.usercentrics.eu/ui/v/4.4.0/WebSdk.lib.50719a09.js:691:16)
+    at a.<anonymous> (https://web.cmp.usercentrics.eu/ui/v/4.4.0/GdprCmpController.e9ae571d.js:615:66)
+    at Object.<anonymous> (https://web.cmp.usercentrics.eu/ui/loader.js:169:19)
+    at r (https://web.cmp.usercentrics.eu/ui/loader.js:70:21)
+    at c (https://web.cmp.usercentrics.eu/ui/loader.js:85:13)
+[92485196ms] TypeError: window.clarity is not a function
+    at https://www.baufi24.de/baufinanzierung-beratung/:223:12
+    at i.dispatch (https://web.cmp.usercentrics.eu/ui/v/4.4.0/WebSdk.lib.50719a09.js:728:18)
+    at i.dispatchConsentDetails (https://web.cmp.usercentrics.eu/ui/v/4.4.0/WebSdk.lib.50719a09.js:691:16)
+    at a.<anonymous> (https://web.cmp.usercentrics.eu/ui/v/4.4.0/GdprCmpController.e9ae571d.js:615:66)
+    at Object.<anonymous> (https://web.cmp.usercentrics.eu/ui/loader.js:169:19)
+    at r (https://web.cmp.usercentrics.eu/ui/loader.js:70:21)
+    at c (https://web.cmp.usercentrics.eu/ui/loader.js:85:13)
+[92485434ms] [INFO] XING Pixel: Validation successful. @ https://static.xingcdn.com/xingtrk/index.js:0
+[95353108ms] [ERROR] Failed to load resource: net::ERR_NETWORK_CHANGED @ https://o.clarity.ms/collect:0
+[95353733ms] [ERROR] Failed to load resource: net::ERR_NETWORK_CHANGED @ https://o.clarity.ms/collect:0

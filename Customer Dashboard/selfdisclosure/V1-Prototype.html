@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Selbstauskunft — Objekt &amp; Finanzierung (V1 Prototype)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+  <link rel="stylesheet" href="../../design-system/layout.css" />
+  <link rel="stylesheet" href="../../design-system/components.css" />
+
+  <style>
+    /* ============================================
+       PAGE-SPECIFIC ADDITIONS — power-user-form-design
+       (dense, section-grouped, multi-column form —
+       no step-gating. Built with tokens only.)
+       ============================================ */
+
+    /* Deliberate deviation from the CLAUDE.md card-width table:
+       this is a dense power-user data-entry screen on a wide
+       external monitor, not a customer-facing single-column form —
+       the skill explicitly calls for using full available width. */
+    .content-inner { max-width: none; }
+
+    .toolbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space-s);
+      margin-bottom: var(--space-m);
+    }
+
+    .toolbar-label {
+      font-family: var(--font-family);
+      font-size: var(--microcopy-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    .density-toggle {
+      display: inline-flex;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .density-toggle button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px var(--space-s);
+      font-family: var(--font-family);
+      font-size: var(--microcopy-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-400);
+      border-radius: 3px;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .density-toggle button.active { background: var(--color-neutral-dark-900); color: var(--color-neutral-light-000); }
+
+    /* Fieldset-based field groups */
+    .field-group { border: none; margin: 0; padding: 0 0 var(--space-m); }
+    .field-group:last-child { padding-bottom: 0; }
+
+    .field-group-legend {
+      display: block;
+      font-family: var(--font-family);
+      font-size: var(--input-label-size);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-neutral-dark-800);
+      padding: 0;
+      margin-bottom: 4px;
+    }
+
+    .req { color: var(--color-error-500); }
+
+    .field-group-hint {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-family);
+      font-size: var(--microcopy-size);
+      line-height: var(--microcopy-line-height);
+      color: var(--color-info);
+      margin: 0 0 6px;
+    }
+
+    .field-group-hint .material-symbols-outlined { font-size: 13px; }
+
+    /* Chip-style radios: real <input type=radio> visually hidden,
+       <label> styled as the visible chip — full native keyboard support. */
+    .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+
+    .chip-input { position: absolute; opacity: 0; width: 1px; height: 1px; overflow: hidden; }
+
+    .chip-label {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-800);
+      background: var(--color-neutral-light-000);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .chip-label:hover { border-color: var(--color-primary-300); }
+
+    .chip-input:checked + .chip-label {
+      border-color: var(--color-primary-500);
+      background: var(--color-primary-100);
+      color: var(--color-primary-700);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .chip-input:focus-visible + .chip-label { box-shadow: var(--focus-ring); }
+
+    select.form-input:focus-visible { box-shadow: var(--focus-ring); }
+
+    .field-error-msg {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-error-600);
+      margin-top: 4px;
+    }
+
+    .field-error-msg.visible { display: flex; }
+    .field-error-msg .material-symbols-outlined { font-size: 14px; }
+
+    .field-group.has-error .chip-label { border-color: var(--color-error-500); }
+    .field-group.has-error .field-group-legend { color: var(--color-error-600); }
+    .field-group.has-error .form-input { border-color: var(--color-error-500); }
+
+    .step-status-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+    .step-status-icon.pending    { color: var(--color-neutral-light-500); }
+    .step-status-icon.incomplete { color: var(--color-warning-high); }
+    .step-status-icon.complete   { color: var(--color-success); }
+
+    .two-col-applicants { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-l); align-items: start; }
+
+    @media (max-width: 1000px) {
+      .two-col-applicants { grid-template-columns: 1fr; }
+    }
+
+    .applicant-2-placeholder {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      border: 1px dashed var(--color-neutral-light-500);
+      border-radius: var(--radius-m);
+      padding: var(--space-m);
+      color: var(--color-neutral-dark-300);
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      height: 100%;
+    }
+
+    .applicant-2-placeholder .material-symbols-outlined { font-size: 18px; }
+
+    /* Density variants — toggle, not hard-coded (per skill §2 caveat) */
+    [data-density="compact"] .form-input   { padding: 6px var(--space-s); }
+    [data-density="compact"] .chip-label   { padding: 5px 10px; }
+    [data-density="compact"] .field-group  { padding-bottom: var(--space-s); }
+    [data-density="compact"] .field-grid-2,
+    [data-density="compact"] .field-grid-4 { gap: var(--space-s); margin-bottom: var(--space-s); }
+    [data-density="compact"] .form-card    { padding: var(--space-m); }
+    [data-density="compact"] .form-card + .form-card { margin-top: var(--space-m); }
+
+    [data-density="comfortable"] .form-input   { padding: var(--space-s) var(--space-m); }
+    [data-density="comfortable"] .chip-label   { padding: var(--space-xs) var(--space-m); }
+    [data-density="comfortable"] .field-group  { padding-bottom: var(--space-m); }
+    [data-density="comfortable"] .form-card    { padding: var(--space-l); }
+
+    /* Sticky bottom action bar — always reachable, shows save-state live */
+    .action-bar {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-m);
+      background: var(--color-neutral-light-000);
+      border-top: 1px solid var(--color-neutral-light-500);
+      padding: var(--space-s) var(--space-l);
+      margin: var(--space-l) calc(-1 * var(--space-l)) calc(-1 * var(--space-l));
+      box-shadow: var(--shadow-m);
+      z-index: var(--z-raised);
+    }
+
+    .action-bar-status {
+      font-family: var(--font-family);
+      font-size: var(--body-small-size);
+      color: var(--color-neutral-dark-400);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-bar-status.error   { color: var(--color-error-600); }
+    .action-bar-status.success { color: var(--color-success); }
+    .action-bar-status .material-symbols-outlined { font-size: 16px; }
+
+    .action-bar-hint {
+      font-family: var(--font-family);
+      font-size: var(--microcopy-size);
+      color: var(--color-neutral-dark-300);
+    }
+
+    /* .section-nav-item's own `display: flex` (from components.css) beats
+       the UA [hidden] rule on specificity ties — force it explicitly. */
+    #section-nav [hidden] { display: none !important; }
+
+    kbd {
+      font-family: var(--font-family);
+      font-size: 11px;
+      border: 1px solid var(--color-neutral-light-500);
+      border-bottom-width: 2px;
+      border-radius: 3px;
+      padding: 1px 5px;
+      background: var(--color-neutral-light-200);
+      color: var(--color-neutral-dark-600);
+    }
+  </style>
+</head>
+<body>
+
+<script src="../../design-system/shell.js"></script>
+<script>
+  Shell.init({
+    title:     "Iva Petrova",
+    subtitle:  "Selbstauskunft · Objekt & Finanzierung",
+    activeNav: "antraege",
+    infoItems: [
+      { label: "Kundennummer", value: "333 000 000 512" },
+      { label: "Telefon",      value: "+49 176 55512340" },
+      { label: "E-Mail",       value: "iva.petrova@example.com" },
+      { label: "Berater/in",   value: "Martina" }
+    ],
+    actions: [
+      { label: "Kundensicht", type: "secondary", icon: "visibility" }
+    ]
+  });
+</script>
+
+<div id="proto-content" data-density="compact">
+
+  <!-- ============================================
+       SECTION-JUMP NAV — anchors + live completion status
+       (not a wizard: every field below is always visible;
+       this only scrolls and shows what's done vs. missing)
+  ============================================ -->
+  <nav class="section-sidebar" id="section-nav" aria-label="Selbstauskunft-Abschnitte">
+    <p class="section-sidebar-title">Finanzierungsvorhaben</p>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-zweck')">
+      <span class="section-nav-item-label">Finanzierungszweck</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-zweck">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-objekt')">
+      <span class="section-nav-item-label">Objekt gefunden?</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-objekt">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-immobilienart')" id="nav-immobilienart" hidden>
+      <span class="section-nav-item-label">Immobilienart</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-immobilienart">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-nutzung')">
+      <span class="section-nav-item-label">Nutzung</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-nutzung">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-antragsteller')">
+      <span class="section-nav-item-label">Antragsteller</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-antragsteller">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-persoenlich')">
+      <span class="section-nav-item-label">Persönliche Angaben</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-persoenlich">radio_button_unchecked</span>
+    </button>
+    <button class="section-nav-item indented" type="button" onclick="jumpTo('fs-mit')" id="nav-mit" hidden>
+      <span class="section-nav-item-label">Mitantragsteller</span>
+      <span class="material-symbols-outlined step-status-icon pending" id="dot-mit">radio_button_unchecked</span>
+    </button>
+  </nav>
+
+  <!-- ============================================
+       MAIN CONTENT — everything on one screen
+  ============================================ -->
+  <div class="content-inner">
+
+    <div class="toolbar-row">
+      <span class="toolbar-label">Dichte</span>
+      <div class="density-toggle">
+        <button type="button" data-density="comfortable" onclick="setDensity('comfortable')">Komfortabel</button>
+        <button type="button" data-density="compact" class="active" onclick="setDensity('compact')">Kompakt</button>
+      </div>
+    </div>
+
+    <div class="error-summary" id="error-summary" role="alert"></div>
+
+    <!-- ── Card A: Finanzierungsvorhaben ── -->
+    <div class="form-card">
+      <h2 class="form-card-heading">Finanzierungsvorhaben</h2>
+
+      <fieldset class="field-group" id="fs-zweck">
+        <legend class="field-group-legend">Finanzierungszweck <span class="req">*</span></legend>
+        <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Laut Beratungsnotiz möchte die Kundin eine bestehende Eigentumswohnung kaufen.</p>
+        <div class="chip-row" role="radiogroup" aria-label="Finanzierungszweck">
+          <input class="chip-input" type="radio" name="zweck" id="zweck-neubau" value="neubau-broker" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-neubau">Neubau vom Bauträger</label>
+          <input class="chip-input" type="radio" name="zweck" id="zweck-bestand" value="bestehend-kauf" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-bestand">Kauf einer bestehenden Immobilie</label>
+          <input class="chip-input" type="radio" name="zweck" id="zweck-bauvorhaben" value="eigenes-bauvorhaben" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-bauvorhaben">Eigenes Bauvorhaben</label>
+          <input class="chip-input" type="radio" name="zweck" id="zweck-modernisierung" value="modernisierung" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-modernisierung">Modernisierung</label>
+          <input class="chip-input" type="radio" name="zweck" id="zweck-anschluss" value="anschlussfinanzierung" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-anschluss">Anschlussfinanzierung</label>
+          <input class="chip-input" type="radio" name="zweck" id="zweck-kapital" value="kapitalbeschaffung" onchange="updateNav()" />
+          <label class="chip-label" for="zweck-kapital">Kapitalbeschaffung</label>
+        </div>
+        <p class="field-error-msg" id="err-zweck"><span class="material-symbols-outlined">error</span>Bitte einen Finanzierungszweck auswählen.</p>
+      </fieldset>
+
+      <fieldset class="field-group" id="fs-objekt">
+        <legend class="field-group-legend">Objekt bereits gefunden? <span class="req">*</span></legend>
+        <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Exposé liegt bereits vor — Lindenstraße 14, 50674 Köln.</p>
+        <div class="chip-row" role="radiogroup" aria-label="Objekt bereits gefunden?">
+          <input class="chip-input" type="radio" name="objekt" id="objekt-ja" value="ja" onchange="onFieldChange()" />
+          <label class="chip-label" for="objekt-ja">Ja</label>
+          <input class="chip-input" type="radio" name="objekt" id="objekt-nein" value="nein" onchange="onFieldChange()" />
+          <label class="chip-label" for="objekt-nein">Nein</label>
+        </div>
+        <p class="field-error-msg" id="err-objekt"><span class="material-symbols-outlined">error</span>Bitte auswählen, ob bereits ein Objekt gefunden wurde.</p>
+      </fieldset>
+
+      <!-- 9 options — per skill §5, beyond ~6 a searchable/native select beats chips -->
+      <fieldset class="field-group" id="fs-immobilienart" hidden>
+        <legend class="field-group-legend">Immobilienart <span class="req">*</span></legend>
+        <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Laut Exposé: Eigentumswohnung, Baujahr 2016, 78 m².</p>
+        <select class="form-input" id="immobilienart-select" style="max-width:320px" onchange="updateNav()">
+          <option value="">Bitte wählen…</option>
+          <option value="eigentumswohnung">Eigentumswohnung</option>
+          <option value="mehrfamilienhaus">Mehrfamilienhaus</option>
+          <option value="doppelhaushaelfte">Doppelhaushälfte</option>
+          <option value="reihenendhaus">Reihenendhaus</option>
+          <option value="grundstueck">Grundstück</option>
+          <option value="reihenmittelhaus">Reihenmittelhaus</option>
+          <option value="wohn-geschaeftshaus">Wohn- und Geschäftshaus</option>
+          <option value="einfamilienhaus">Einfamilienhaus</option>
+          <option value="zweifamilienhaus">Zweifamilienhaus</option>
+        </select>
+        <p class="field-error-msg" id="err-immobilienart"><span class="material-symbols-outlined">error</span>Bitte eine Immobilienart auswählen.</p>
+      </fieldset>
+
+      <fieldset class="field-group" id="fs-nutzung">
+        <legend class="field-group-legend">Nutzung <span class="req">*</span></legend>
+        <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Kundin zieht selbst ein, keine Vermietungsabsicht.</p>
+        <div class="chip-row" role="radiogroup" aria-label="Nutzung">
+          <input class="chip-input" type="radio" name="nutzung" id="nutzung-selbst" value="selbst-nutzen" onchange="updateNav()" />
+          <label class="chip-label" for="nutzung-selbst">Selbst nutzen</label>
+          <input class="chip-input" type="radio" name="nutzung" id="nutzung-vermieten" value="vermieten" onchange="updateNav()" />
+          <label class="chip-label" for="nutzung-vermieten">Vermieten</label>
+          <input class="chip-input" type="radio" name="nutzung" id="nutzung-teilweise" value="teilweise-vermieten" onchange="updateNav()" />
+          <label class="chip-label" for="nutzung-teilweise">Teilweise vermieten</label>
+        </div>
+        <p class="field-error-msg" id="err-nutzung"><span class="material-symbols-outlined">error</span>Bitte die Nutzung auswählen.</p>
+      </fieldset>
+
+      <fieldset class="field-group" id="fs-antragsteller">
+        <legend class="field-group-legend">Antragsteller <span class="req">*</span></legend>
+        <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Kundin ist verheiratet — Ehemann als Mitantragsteller vorgesehen.</p>
+        <div class="chip-row" role="radiogroup" aria-label="Antragsteller">
+          <input class="chip-input" type="radio" name="antragsteller" id="antragsteller-allein" value="allein" onchange="onFieldChange()" />
+          <label class="chip-label" for="antragsteller-allein">Alleine</label>
+          <input class="chip-input" type="radio" name="antragsteller" id="antragsteller-zuzweit" value="zu-zweit" onchange="onFieldChange()" />
+          <label class="chip-label" for="antragsteller-zuzweit">Mit einer weiteren Person</label>
+        </div>
+        <p class="field-error-msg" id="err-antragsteller"><span class="material-symbols-outlined">error</span>Bitte auswählen, ob allein oder zu zweit beantragt wird.</p>
+      </fieldset>
+    </div>
+
+    <!-- ── Card B: Antragstellerdaten ── -->
+    <div class="form-card">
+      <h2 class="form-card-heading">Antragstellerdaten</h2>
+      <div class="two-col-applicants">
+
+        <fieldset class="field-group" id="fs-persoenlich">
+          <legend class="field-group-legend">Antragsteller 1 <span class="req">*</span></legend>
+          <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Personalausweis liegt vor: Iva Petrova, geb. 03.05.1990.</p>
+          <div class="field-grid-2">
+            <div class="form-field">
+              <label class="form-field-label" for="p1-anrede">Anrede *</label>
+              <div class="form-input-wrap">
+                <select class="form-input" id="p1-anrede" onchange="updateNav()">
+                  <option value=""></option>
+                  <option>Herr</option><option>Frau</option><option>Divers</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-field-label" for="p1-titel">Titel</label>
+              <div class="form-input-wrap">
+                <select class="form-input" id="p1-titel" onchange="updateNav()">
+                  <option value=""></option>
+                  <option>Dr.</option><option>Prof.</option><option>Prof. Dr.</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-field-label" for="p1-vorname">Vorname *</label>
+              <div class="form-input-wrap"><input class="form-input" type="text" id="p1-vorname" inputmode="text" oninput="updateNav()" onblur="updateNav()" /></div>
+            </div>
+            <div class="form-field">
+              <label class="form-field-label" for="p1-nachname">Nachname *</label>
+              <div class="form-input-wrap"><input class="form-input" type="text" id="p1-nachname" inputmode="text" oninput="updateNav()" onblur="updateNav()" /></div>
+            </div>
+          </div>
+          <p class="field-error-msg" id="err-persoenlich"><span class="material-symbols-outlined">error</span>Bitte Anrede, Vorname und Nachname ausfüllen.</p>
+        </fieldset>
+
+        <div id="mit-slot">
+          <fieldset class="field-group" id="fs-mit" hidden>
+            <legend class="field-group-legend">Antragsteller 2 (Mitantragsteller) <span class="req">*</span></legend>
+            <p class="field-group-hint"><span class="material-symbols-outlined">fact_check</span>Personalausweis liegt vor: Michael Petrov, geb. 21.11.1988.</p>
+            <div class="field-grid-2">
+              <div class="form-field">
+                <label class="form-field-label" for="p2-anrede">Anrede *</label>
+                <div class="form-input-wrap">
+                  <select class="form-input" id="p2-anrede" onchange="updateNav()">
+                    <option value=""></option>
+                    <option>Herr</option><option>Frau</option><option>Divers</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label" for="p2-titel">Titel</label>
+                <div class="form-input-wrap">
+                  <select class="form-input" id="p2-titel" onchange="updateNav()">
+                    <option value=""></option>
+                    <option>Dr.</option><option>Prof.</option><option>Prof. Dr.</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label" for="p2-vorname">Vorname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" id="p2-vorname" oninput="updateNav()" onblur="updateNav()" /></div>
+              </div>
+              <div class="form-field">
+                <label class="form-field-label" for="p2-nachname">Nachname *</label>
+                <div class="form-input-wrap"><input class="form-input" type="text" id="p2-nachname" oninput="updateNav()" onblur="updateNav()" /></div>
+              </div>
+            </div>
+            <p class="field-error-msg" id="err-mit"><span class="material-symbols-outlined">error</span>Bitte Anrede, Vorname und Nachname ausfüllen.</p>
+          </fieldset>
+
+          <div class="applicant-2-placeholder" id="mit-placeholder">
+            <span class="material-symbols-outlined">person_add</span>
+            Kein weiterer Antragsteller — erscheint automatisch, sobald oben „Mit einer weiteren Person" gewählt wird.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Sticky action bar ── -->
+    <div class="action-bar">
+      <span class="action-bar-status" id="action-bar-status">
+        <span class="material-symbols-outlined">edit</span>Ungespeicherte Änderungen
+      </span>
+      <span class="action-bar-hint"><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>S</kbd> zum Speichern</span>
+      <button class="btn btn-primary" type="button" onclick="handleSave()">
+        <span class="material-symbols-outlined">save</span>Speichern
+      </button>
+    </div>
+
+  </div>
+</div><!-- #proto-content -->
+
+<script>
+/* ============================================
+   FIELD MAP — id prefixes used for status + validation.
+   "immobilienart" and "mit" only count while their fieldset is visible
+   (conditional on 'objekt-gefunden' / 'antragsteller' respectively).
+============================================ */
+
+var FIELDS = ['zweck', 'objekt', 'immobilienart', 'nutzung', 'antragsteller', 'persoenlich', 'mit'];
+var validated = false; // becomes true after first Save attempt — gates the "incomplete" (amber) state
+
+function jumpTo(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setDensity(mode) {
+  document.getElementById('proto-content').setAttribute('data-density', mode);
+  document.querySelectorAll('.density-toggle button').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.density === mode);
+  });
+}
+
+/* Conditional visibility — Immobilienart depends on "Objekt gefunden? = Ja",
+   Mitantragsteller depends on "Antragsteller = Mit einer weiteren Person". */
+function updateConditionalVisibility() {
+  var objektJa = !!document.getElementById('objekt-ja') && document.getElementById('objekt-ja').checked;
+  var immoFs   = document.getElementById('fs-immobilienart');
+  var immoNav  = document.getElementById('nav-immobilienart');
+  immoFs.hidden  = !objektJa;
+  immoNav.hidden = !objektJa;
+  if (!objektJa) document.getElementById('immobilienart-select').value = '';
+
+  var zuZweit = !!document.getElementById('antragsteller-zuzweit') && document.getElementById('antragsteller-zuzweit').checked;
+  var mitFs   = document.getElementById('fs-mit');
+  var mitNav  = document.getElementById('nav-mit');
+  mitFs.hidden = !zuZweit;
+  mitNav.hidden = !zuZweit;
+  document.getElementById('mit-placeholder').hidden = zuZweit;
+}
+
+function onFieldChange() {
+  updateConditionalVisibility();
+  updateNav();
+}
+
+/* Completeness per field group */
+function completeness() {
+  var immoVisible = !document.getElementById('fs-immobilienart').hidden;
+  var mitVisible  = !document.getElementById('fs-mit').hidden;
+
+  return {
+    zweck:         !!document.querySelector('input[name="zweck"]:checked'),
+    objekt:        !!document.querySelector('input[name="objekt"]:checked'),
+    immobilienart: immoVisible ? document.getElementById('immobilienart-select').value !== '' : true,
+    nutzung:       !!document.querySelector('input[name="nutzung"]:checked'),
+    antragsteller: !!document.querySelector('input[name="antragsteller"]:checked'),
+    persoenlich:   !!(document.getElementById('p1-anrede').value && document.getElementById('p1-vorname').value.trim() && document.getElementById('p1-nachname').value.trim()),
+    mit:           mitVisible ? !!(document.getElementById('p2-anrede').value && document.getElementById('p2-vorname').value.trim() && document.getElementById('p2-nachname').value.trim()) : true,
+    _immoVisible:  immoVisible,
+    _mitVisible:   mitVisible
+  };
+}
+
+function updateNav() {
+  var c = completeness();
+
+  FIELDS.forEach(function (key) {
+    var complete = c[key];
+    var status = complete ? 'complete' : (validated ? 'incomplete' : 'pending');
+
+    var dot = document.getElementById('dot-' + key);
+    if (dot) {
+      dot.textContent = status === 'complete' ? 'check_circle' : status === 'incomplete' ? 'error' : 'radio_button_unchecked';
+      dot.className = 'material-symbols-outlined step-status-icon ' + status;
+    }
+
+    var fs = document.getElementById('fs-' + key);
+    var err = document.getElementById('err-' + key);
+    var showError = status === 'incomplete';
+    if (fs)  fs.classList.toggle('has-error', showError);
+    if (err) err.classList.toggle('visible', showError);
+  });
+
+  updateActionBar(c);
+}
+
+function relevantMissing(c) {
+  return FIELDS.filter(function (key) {
+    if (key === 'immobilienart' && !c._immoVisible) return false;
+    if (key === 'mit' && !c._mitVisible) return false;
+    return !c[key];
+  });
+}
+
+var LABELS = {
+  zweck: 'Finanzierungszweck', objekt: 'Objekt gefunden?', immobilienart: 'Immobilienart',
+  nutzung: 'Nutzung', antragsteller: 'Antragsteller', persoenlich: 'Persönliche Angaben', mit: 'Mitantragsteller'
+};
+
+function updateActionBar(c) {
+  var bar = document.getElementById('action-bar-status');
+  var summary = document.getElementById('error-summary');
+
+  if (!validated) {
+    bar.className = 'action-bar-status';
+    bar.innerHTML = '<span class="material-symbols-outlined">edit</span>Ungespeicherte Änderungen';
+    summary.classList.remove('visible');
+    summary.innerHTML = '';
+    return;
+  }
+
+  var missing = relevantMissing(c);
+  if (missing.length > 0) {
+    bar.className = 'action-bar-status error';
+    bar.innerHTML = '<span class="material-symbols-outlined">error</span>' + missing.length + ' Pflichtfeld' + (missing.length === 1 ? '' : 'er') + ' fehlen';
+    summary.classList.add('visible');
+    summary.innerHTML = '<strong style="font-family:var(--font-family);font-size:var(--body-small-size);color:var(--color-error-700)">Bitte ergänzen:</strong>' +
+      missing.map(function (key) {
+        return '<a onclick="jumpTo(\'fs-' + key + '\')">→ ' + LABELS[key] + '</a>';
+      }).join('');
+  } else {
+    bar.className = 'action-bar-status success';
+    bar.innerHTML = '<span class="material-symbols-outlined">check_circle</span>Gespeichert';
+    summary.classList.remove('visible');
+    summary.innerHTML = '';
+  }
+}
+
+function handleSave() {
+  validated = true;
+  updateNav();
+  var firstError = document.querySelector('.field-group.has-error');
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var focusable = firstError.querySelector('input:not([type=radio]), select, .chip-input');
+    if (focusable) focusable.focus();
+  }
+}
+
+/* Ctrl/Cmd+S saves instead of triggering the browser's Save-Page dialog */
+document.addEventListener('keydown', function (e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    handleSave();
+  }
+});
+
+/* Bake correct initial state before shell.js captures #proto-content's
+   innerHTML (see shell.js — it swaps document.body on DOMContentLoaded). */
+updateConditionalVisibility();
+updateNav();
+
+/* Autofocus must wait for shell:ready — shell.js reparses this content
+   into a fresh DOM, so any element reference taken beforehand is stale. */
+document.addEventListener('shell:ready', function () {
+  var first = document.getElementById('zweck-neubau');
+  if (first) first.focus();
+});
+</script>
+
+</body>
+</html>
