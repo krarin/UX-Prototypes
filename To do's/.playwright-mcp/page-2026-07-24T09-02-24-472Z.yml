@@ -1,0 +1,316 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - complementary [ref=f9e3]:
+      - navigation [ref=f9e8]:
+        - link "wb_sunny Mein Tag 8" [ref=f9e9] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e10]: wb_sunny
+          - generic [ref=f9e11]: Mein Tag
+          - generic [ref=f9e12]: "8"
+        - link "folder_shared Anträge" [ref=f9e13] [cursor=pointer]:
+          - /url: todo-sorting-v1.html
+          - generic [ref=f9e14]: folder_shared
+          - generic [ref=f9e15]: Anträge
+        - link "person Leads" [ref=f9e16] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e17]: person
+          - generic [ref=f9e18]: Leads
+        - link "hub Quellen" [ref=f9e19] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e20]: hub
+          - generic [ref=f9e21]: Quellen
+        - link "apartment Unternehmen" [ref=f9e22] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e23]: apartment
+          - generic [ref=f9e24]: Unternehmen
+        - link "receipt_long Buchhaltung" [ref=f9e25] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e26]: receipt_long
+          - generic [ref=f9e27]: Buchhaltung
+        - link "bar_chart Reporting" [ref=f9e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e29]: bar_chart
+          - generic [ref=f9e30]: Reporting
+        - link "storefront Lead-Shop warning" [ref=f9e31] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e32]: storefront
+          - generic [ref=f9e33]: Lead-Shop
+          - generic [ref=f9e34]: warning
+        - link "mail E-Mail" [ref=f9e35] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e36]: mail
+          - generic [ref=f9e37]: E-Mail
+        - link "settings System" [ref=f9e38] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f9e39]: settings
+          - generic [ref=f9e40]: System
+    - generic [ref=f9e41]:
+      - banner [ref=f9e42]:
+        - button "auto_awesome" [ref=f9e43] [cursor=pointer]
+        - button "add" [ref=f9e45] [cursor=pointer]
+        - button "notifications 29" [ref=f9e47] [cursor=pointer]:
+          - generic [ref=f9e48]: notifications
+          - generic [ref=f9e49]: "29"
+        - button "help" [ref=f9e50] [cursor=pointer]
+        - button "DE expand_more" [ref=f9e52] [cursor=pointer]:
+          - text: DE
+          - generic [ref=f9e53]: expand_more
+        - generic [ref=f9e55] [cursor=pointer]:
+          - generic [ref=f9e57]:
+            - generic [ref=f9e58]: Gernot Schusser
+            - generic [ref=f9e59]: Finanzberater
+          - generic [ref=f9e60]: expand_more
+      - generic [ref=f9e61]:
+        - generic [ref=f9e62]:
+          - generic [ref=f9e63]:
+            - heading "Mein Tag" [level=1] [ref=f9e64]
+            - paragraph [ref=f9e65]: Freitag, 24. Juli 2026
+          - button "cloud_upload Kunde lädt Dokument hoch" [ref=f9e66] [cursor=pointer]:
+            - generic [ref=f9e67]: cloud_upload
+            - text: Kunde lädt Dokument hoch
+        - generic [ref=f9e68]:
+          - generic [ref=f9e69]:
+            - button "Heute fällig" [ref=f9e70] [cursor=pointer]
+            - button "Morgen fällig" [ref=f9e71] [cursor=pointer]
+            - button "Alle" [ref=f9e72] [cursor=pointer]
+          - generic [ref=f9e73] [cursor=pointer]:
+            - checkbox "Erledigte" [ref=f9e74]
+            - text: Erledigte
+          - generic [ref=f9e75]:
+            - generic: search
+            - textbox "Suche" [ref=f9e76]:
+              - /placeholder: Suchen nach Kundennummer, To do …
+            - generic: /
+          - button "person Antragsteller expand_more" [ref=f9e78] [cursor=pointer]:
+            - generic [ref=f9e79]: person
+            - text: Antragsteller
+            - generic [ref=f9e80]: expand_more
+          - button "flag Status expand_more" [ref=f9e82] [cursor=pointer]:
+            - generic [ref=f9e83]: flag
+            - text: Status
+            - generic [ref=f9e84]: expand_more
+          - button "filter_list Berater 2 expand_more" [ref=f9e553] [cursor=pointer]:
+            - generic [ref=f9e87]: filter_list
+            - text: Berater
+            - generic [ref=f9e554]: "2"
+            - generic [ref=f9e88]: expand_more
+          - button "add To do hinzufügen" [ref=f9e89] [cursor=pointer]:
+            - generic [ref=f9e90]: add
+            - text: To do hinzufügen
+          - generic "Zeilendichte" [ref=f9e91]:
+            - button "density_medium" [ref=f9e92] [cursor=pointer]
+            - button "density_small" [ref=f9e94] [cursor=pointer]
+        - generic [ref=f9e555]:
+          - generic [ref=f9e556]:
+            - text: "Berater: 2 Berater"
+            - button "close" [ref=f9e557] [cursor=pointer]
+          - button "Filter zurücksetzen" [ref=f9e559] [cursor=pointer]
+        - table [ref=f9e97]:
+          - rowgroup [ref=f9e98]:
+            - row [ref=f9e99]:
+              - columnheader "Erledigt" [ref=f9e100]
+              - columnheader "To do unfold_more" [ref=f9e102] [cursor=pointer]:
+                - generic [ref=f9e103]:
+                  - text: To do
+                  - generic [ref=f9e104]: unfold_more
+              - columnheader "Fälligkeitsdatum arrow_upward" [ref=f9e105] [cursor=pointer]:
+                - generic [ref=f9e106]:
+                  - text: Fälligkeitsdatum
+                  - generic [ref=f9e107]: arrow_upward
+              - columnheader "Status unfold_more" [ref=f9e108] [cursor=pointer]:
+                - generic [ref=f9e109]:
+                  - text: Status
+                  - generic [ref=f9e110]: unfold_more
+              - columnheader "Antragsteller unfold_more" [ref=f9e111] [cursor=pointer]:
+                - generic [ref=f9e112]:
+                  - text: Antragsteller
+                  - generic [ref=f9e113]: unfold_more
+              - columnheader "Berater unfold_more" [ref=f9e114] [cursor=pointer]:
+                - generic [ref=f9e115]:
+                  - text: Berater
+                  - generic [ref=f9e116]: unfold_more
+              - columnheader "Tags" [ref=f9e117]
+          - rowgroup [ref=f9e118]:
+            - row [ref=f9e560]:
+              - cell [ref=f9e561]:
+                - checkbox "Als erledigt markieren" [ref=f9e562] [cursor=pointer]
+              - cell "Selbstauskunft von Familie Weber prüfen sticky_note_2 Bearbeiten Löschen" [ref=f9e563]:
+                - generic [ref=f9e564]:
+                  - generic [ref=f9e565]: Selbstauskunft von Familie Weber prüfen
+                  - generic "Notiz vorhanden" [ref=f9e566]: sticky_note_2
+                  - generic [ref=f9e567]:
+                    - button "Bearbeiten" [ref=f9e568] [cursor=pointer]:
+                      - generic [ref=f9e569]: edit
+                    - button "Löschen" [ref=f9e570] [cursor=pointer]:
+                      - generic [ref=f9e571]: delete
+              - cell "schedule vor 3 Tagen · 09:00" [ref=f9e572]:
+                - generic [ref=f9e573]:
+                  - generic [ref=f9e574]: schedule
+                  - text: vor 3 Tagen · 09:00
+              - cell [ref=f9e575]
+              - cell [ref=f9e578]:
+                - generic [ref=f9e579]:
+                  - link "Familie Weber" [ref=f9e580] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=f9e581] [cursor=pointer]
+              - cell "BK Bernd Krüger" [ref=f9e583]:
+                - generic [ref=f9e584]:
+                  - generic "Bernd Krüger" [ref=f9e585]: BK
+                  - generic [ref=f9e586]: Bernd Krüger
+              - cell [ref=f9e587]:
+                - button "Dokumente" [ref=f9e589] [cursor=pointer]
+            - row [ref=f9e590]:
+              - cell [ref=f9e591]:
+                - checkbox "Als erledigt markieren" [ref=f9e592] [cursor=pointer]
+              - 'cell "Rückruf: offene Fragen zur Finanzierung Bearbeiten Löschen" [ref=f9e593]':
+                - generic [ref=f9e594]:
+                  - generic [ref=f9e595]: "Rückruf: offene Fragen zur Finanzierung"
+                  - generic [ref=f9e596]:
+                    - button "Bearbeiten" [ref=f9e597] [cursor=pointer]:
+                      - generic [ref=f9e598]: edit
+                    - button "Löschen" [ref=f9e599] [cursor=pointer]:
+                      - generic [ref=f9e600]: delete
+              - cell "schedule vor 2 Tagen · 14:00" [ref=f9e601]:
+                - generic [ref=f9e602]:
+                  - generic [ref=f9e603]: schedule
+                  - text: vor 2 Tagen · 14:00
+              - cell [ref=f9e604]
+              - cell [ref=f9e607]:
+                - generic [ref=f9e608]:
+                  - link "Thomas Berger" [ref=f9e609] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=f9e610] [cursor=pointer]
+              - cell "LB Lena Bachmann" [ref=f9e612]:
+                - generic [ref=f9e613]:
+                  - generic "Lena Bachmann" [ref=f9e614]: LB
+                  - generic [ref=f9e615]: Lena Bachmann
+              - cell [ref=f9e616]:
+                - button "Rückruf" [ref=f9e618] [cursor=pointer]
+            - row [ref=f9e619]:
+              - cell [ref=f9e620]:
+                - checkbox "Als erledigt markieren" [ref=f9e621] [cursor=pointer]
+              - cell "Dokumente von Familie Weber prüfen Neu sticky_note_2 Bearbeiten Löschen" [ref=f9e622]:
+                - generic [ref=f9e623]:
+                  - generic [ref=f9e624]: Dokumente von Familie Weber prüfen
+                  - generic [ref=f9e625]: Neu
+                  - generic "Notiz vorhanden" [ref=f9e626]: sticky_note_2
+                  - generic [ref=f9e627]:
+                    - button "Bearbeiten" [ref=f9e628] [cursor=pointer]:
+                      - generic [ref=f9e629]: edit
+                    - button "Löschen" [ref=f9e630] [cursor=pointer]:
+                      - generic [ref=f9e631]: delete
+              - cell "schedule Heute" [ref=f9e632]:
+                - generic [ref=f9e633]:
+                  - generic [ref=f9e634]: schedule
+                  - text: Heute
+              - cell [ref=f9e635]
+              - cell [ref=f9e638]:
+                - generic [ref=f9e639]:
+                  - link "Familie Weber" [ref=f9e640] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=f9e641] [cursor=pointer]
+              - cell "BK Bernd Krüger" [ref=f9e643]:
+                - generic [ref=f9e644]:
+                  - generic "Bernd Krüger" [ref=f9e645]: BK
+                  - generic [ref=f9e646]: Bernd Krüger
+              - cell [ref=f9e647]:
+                - button "Dokumente" [ref=f9e649] [cursor=pointer]
+            - row [ref=f9e650]:
+              - cell [ref=f9e651]:
+                - checkbox "Als erledigt markieren" [ref=f9e652] [cursor=pointer]
+              - cell "Beratungstermin Julia Hoffmann Bearbeiten Löschen" [ref=f9e653]:
+                - generic [ref=f9e654]:
+                  - generic [ref=f9e655]: Beratungstermin Julia Hoffmann
+                  - generic [ref=f9e656]:
+                    - button "Bearbeiten" [ref=f9e657] [cursor=pointer]:
+                      - generic [ref=f9e658]: edit
+                    - button "Löschen" [ref=f9e659] [cursor=pointer]:
+                      - generic [ref=f9e660]: delete
+              - cell "schedule Dienstag · 10:00" [ref=f9e661]:
+                - generic [ref=f9e662]:
+                  - generic [ref=f9e663]: schedule
+                  - text: Dienstag · 10:00
+              - cell [ref=f9e664]
+              - cell [ref=f9e667]:
+                - generic [ref=f9e668]:
+                  - link "Julia Hoffmann" [ref=f9e669] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=f9e670] [cursor=pointer]
+              - cell "LB Lena Bachmann" [ref=f9e672]:
+                - generic [ref=f9e673]:
+                  - generic "Lena Bachmann" [ref=f9e674]: LB
+                  - generic [ref=f9e675]: Lena Bachmann
+              - cell [ref=f9e676]:
+                - button "Termin" [ref=f9e678] [cursor=pointer]
+            - row [ref=f9e679]:
+              - cell [ref=f9e680]:
+                - checkbox "Als erledigt markieren" [ref=f9e681] [cursor=pointer]
+              - 'cell "Nachfassen Lead: Petra Schulz Bearbeiten Löschen" [ref=f9e682]':
+                - generic [ref=f9e683]:
+                  - generic [ref=f9e684]: "Nachfassen Lead: Petra Schulz"
+                  - generic [ref=f9e685]:
+                    - button "Bearbeiten" [ref=f9e686] [cursor=pointer]:
+                      - generic [ref=f9e687]: edit
+                    - button "Löschen" [ref=f9e688] [cursor=pointer]:
+                      - generic [ref=f9e689]: delete
+              - cell "schedule in 7 Tagen" [ref=f9e690]:
+                - generic [ref=f9e691]:
+                  - generic [ref=f9e692]: schedule
+                  - text: in 7 Tagen
+              - cell [ref=f9e693]
+              - cell [ref=f9e696]:
+                - generic [ref=f9e697]:
+                  - link "Petra Schulz" [ref=f9e698] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=f9e699] [cursor=pointer]
+              - cell "LB Lena Bachmann" [ref=f9e701]:
+                - generic [ref=f9e702]:
+                  - generic "Lena Bachmann" [ref=f9e703]: LB
+                  - generic [ref=f9e704]: Lena Bachmann
+              - cell [ref=f9e705]:
+                - generic [ref=f9e706]:
+                  - button "Rückruf" [ref=f9e707] [cursor=pointer]
+                  - button "Lead" [ref=f9e708] [cursor=pointer]
+        - generic [ref=f9e467]:
+          - generic [ref=f9e468]:
+            - generic [ref=f9e469]: Einträge pro Seite
+            - combobox [ref=f9e470]:
+              - option "10"
+              - option "25" [selected]
+              - option "50"
+          - generic [ref=f9e471]:
+            - generic [ref=f9e472]: 1–5 von 5
+            - button "chevron_left" [disabled] [ref=f9e473]
+            - button "chevron_right" [disabled] [ref=f9e475]
+  - dialog [ref=f9e477]:
+    - generic [ref=f9e478]:
+      - heading [level=2] [ref=f9e479]: To do hinzufügen
+      - button [ref=f9e480] [cursor=pointer]:
+        - generic [ref=f9e481]: close
+    - generic [ref=f9e482]:
+      - generic [ref=f9e483]:
+        - generic [ref=f9e484]: Titel *
+        - textbox [ref=f9e485]:
+          - /placeholder: Was ist zu tun?
+      - generic [ref=f9e486]:
+        - generic [ref=f9e487]: Fälligkeitsdatum
+        - textbox [ref=f9e488]
+      - generic [ref=f9e489]:
+        - generic [ref=f9e490]: Antragsteller (optional)
+        - textbox [ref=f9e492]:
+          - /placeholder: Kundennummer oder Name …
+        - generic [ref=f9e493]: Ohne Antragsteller = eigenes To do ohne Kundenbezug.
+      - generic [ref=f9e494]:
+        - generic [ref=f9e495]: Tags
+        - textbox [ref=f9e497]:
+          - /placeholder: Tag eingeben + Enter
+      - generic [ref=f9e498]:
+        - generic [ref=f9e499]: Notiz (optional)
+        - textbox [ref=f9e500]:
+          - /placeholder: Zusätzliche Details …
+    - generic [ref=f9e501]:
+      - button [ref=f9e502] [cursor=pointer]:
+        - generic [ref=f9e503]: check
+        - text: Speichern
+      - button [ref=f9e504] [cursor=pointer]: Speichern & neues
+      - button [ref=f9e505] [cursor=pointer]: Abbrechen

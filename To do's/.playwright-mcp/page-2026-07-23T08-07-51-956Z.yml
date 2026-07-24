@@ -1,0 +1,479 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - navigation [ref=e8]:
+        - link "wb_sunny Mein Tag 99+" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e10]: wb_sunny
+          - generic [ref=e11]: Mein Tag
+          - generic [ref=e12]: 99+
+        - link "folder_shared Anträge" [ref=e13] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e14]: folder_shared
+          - generic [ref=e15]: Anträge
+        - link "person Leads" [ref=e16] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e17]: person
+          - generic [ref=e18]: Leads
+        - link "hub Quellen" [ref=e19] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e20]: hub
+          - generic [ref=e21]: Quellen
+        - link "apartment Unternehmen" [ref=e22] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e23]: apartment
+          - generic [ref=e24]: Unternehmen
+        - link "receipt_long Buchhaltung" [ref=e25] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e26]: receipt_long
+          - generic [ref=e27]: Buchhaltung
+        - link "bar_chart Reporting" [ref=e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e29]: bar_chart
+          - generic [ref=e30]: Reporting
+        - link "storefront Lead-Shop warning" [ref=e31] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e32]: storefront
+          - generic [ref=e33]: Lead-Shop
+          - generic [ref=e34]: warning
+        - link "mail E-Mail" [ref=e35] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e36]: mail
+          - generic [ref=e37]: E-Mail
+        - link "settings System" [ref=e38] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e39]: settings
+          - generic [ref=e40]: System
+    - generic [ref=e41]:
+      - banner [ref=e42]:
+        - button "auto_awesome" [ref=e43] [cursor=pointer]
+        - button "add" [ref=e45] [cursor=pointer]
+        - button "notifications 29" [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]: notifications
+          - generic [ref=e49]: "29"
+        - button "help" [ref=e50] [cursor=pointer]
+        - button "DE expand_more" [ref=e52] [cursor=pointer]:
+          - text: DE
+          - generic [ref=e53]: expand_more
+        - generic [ref=e55] [cursor=pointer]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Gernot Schusser
+            - generic [ref=e59]: Global admin
+          - generic [ref=e60]: expand_more
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - heading "Anträge" [level=1] [ref=e63]
+          - generic [ref=e64]:
+            - button "list Liste" [ref=e65] [cursor=pointer]:
+              - generic [ref=e66]: list
+              - text: Liste
+            - button "view_kanban Pipeline" [ref=e67] [cursor=pointer]:
+              - generic [ref=e68]: view_kanban
+              - text: Pipeline
+          - generic [ref=e69]:
+            - textbox "Suchen nach Namen, Telef…" [ref=e70]
+            - button "Suchen" [ref=e71] [cursor=pointer]
+          - generic [ref=e72]:
+            - button "filter_list Filter" [ref=e73] [cursor=pointer]:
+              - generic [ref=e74]: filter_list
+              - text: Filter
+            - button "download Importieren" [ref=e75] [cursor=pointer]:
+              - generic [ref=e76]: download
+              - text: Importieren
+            - button "person_add Hinzufügen" [ref=e77] [cursor=pointer]:
+              - generic [ref=e78]: person_add
+              - text: Hinzufügen
+        - generic [ref=e79]:
+          - checkbox "Filter bei Suche löschen" [checked] [ref=e80]
+          - text: Filter bei Suche löschen
+        - generic [ref=e81]:
+          - strong [ref=e82]: 25 Anträge
+          - text: •
+          - strong [ref=e83]: 13.287.333 €
+          - text: Darlehenssumme
+        - table [ref=e86]:
+          - rowgroup [ref=e87]:
+            - row [ref=e88]:
+              - columnheader [ref=e89]:
+                - checkbox [ref=e91]
+              - columnheader "Antragsteller/In unfold_more" [ref=e92] [cursor=pointer]:
+                - generic [ref=e93]:
+                  - text: Antragsteller/In
+                  - generic [ref=e94]: unfold_more
+              - columnheader "Volumen unfold_more" [ref=e95] [cursor=pointer]:
+                - generic [ref=e96]:
+                  - text: Volumen
+                  - generic [ref=e97]: unfold_more
+              - columnheader "Stadt unfold_more" [ref=e98] [cursor=pointer]:
+                - generic [ref=e99]:
+                  - text: Stadt
+                  - generic [ref=e100]: unfold_more
+              - columnheader "Status unfold_more" [ref=e101] [cursor=pointer]:
+                - generic [ref=e102]:
+                  - text: Status
+                  - generic [ref=e103]: unfold_more
+              - columnheader "Berater/In unfold_more" [ref=e104] [cursor=pointer]:
+                - generic [ref=e105]:
+                  - text: Berater/In
+                  - generic [ref=e106]: unfold_more
+              - columnheader "Letzte Aktivität unfold_more" [ref=e107] [cursor=pointer]:
+                - generic [ref=e108]:
+                  - text: Letzte Aktivität
+                  - generic [ref=e109]: unfold_more
+              - columnheader [ref=e110]:
+                - button "ToDos nach Fälligkeit sortieren" [ref=e111] [cursor=pointer]:
+                  - text: ToDos
+                  - generic [ref=e112]: unfold_more
+              - columnheader "Tags" [ref=e113]
+          - rowgroup [ref=e114]:
+            - row [ref=e115]:
+              - cell [ref=e116]:
+                - checkbox [ref=e117]
+              - cell "Andrii Bugai" [ref=e118]
+              - cell "166.250,00 €" [ref=e121]
+              - cell "München" [ref=e122]
+              - cell "Anfrage erstellt" [ref=e123]
+              - cell "Gernot Schusser" [ref=e124]
+              - cell "23.07.2026 - 08:45" [ref=e125]
+              - cell "check" [ref=e126]
+              - cell [ref=e130]
+            - row [ref=e131]:
+              - cell [ref=e132]:
+                - checkbox [ref=e133]
+              - cell "Ivan Ivanovich" [ref=e134]
+              - cell "310.000,00 €" [ref=e137]
+              - cell "Berlin" [ref=e138]
+              - cell "Selbstauskunft gestartet" [ref=e139]
+              - cell "Gernot Schusser" [ref=e140]
+              - cell "23.07.2026 - 08:42" [ref=e141]
+              - cell "check" [ref=e142]
+              - cell [ref=e146]
+            - row [ref=e147]:
+              - cell [ref=e148]:
+                - checkbox [ref=e149]
+              - cell "QAShyann Zemlak home" [ref=e150]:
+                - generic [ref=e151]:
+                  - generic [ref=e152] [cursor=pointer]: QAShyann Zemlak
+                  - generic [ref=e153]: home
+              - cell "151.320,00 €" [ref=e154]
+              - cell "Potsdam" [ref=e155]
+              - cell "Anfrage erstellt" [ref=e156]
+              - cell "Gernot Schusser" [ref=e157]
+              - cell "22.07.2026 - 17:14" [ref=e158]
+              - cell "—" [ref=e159]
+              - cell [ref=e160]
+            - row [ref=e161]:
+              - cell [ref=e162]:
+                - checkbox [ref=e163]
+              - cell "Test IMPORT NEW MAPI3776 IMPORT NEW home" [ref=e164]:
+                - generic [ref=e165]:
+                  - generic [ref=e166] [cursor=pointer]: Test IMPORT NEW MAPI3776 IMPORT NEW
+                  - generic [ref=e167]: home
+              - cell "451.000,00 €" [ref=e168]
+              - cell "Berlin" [ref=e169]
+              - cell "Anfrage erstellt" [ref=e170]
+              - cell "Gernot Schusser" [ref=e171]
+              - cell "22.07.2026 - 16:20" [ref=e172]
+              - cell "—" [ref=e173]
+              - cell [ref=e174]
+            - row [ref=e175]:
+              - cell [ref=e176]:
+                - checkbox [ref=e177]
+              - cell "asdas dasdasd Neu" [ref=e178]:
+                - generic [ref=e179]:
+                  - generic [ref=e180] [cursor=pointer]: asdas dasdasd
+                  - generic [ref=e181]: Neu
+              - cell "-249.992,76 €" [ref=e182]
+              - cell "Ahrensfelde" [ref=e183]
+              - cell "Selbstauskunft vollständig" [ref=e184]
+              - cell "Gernot Schusser" [ref=e185]
+              - cell "22.07.2026 - 13:29" [ref=e186]
+              - cell "priority_high" [ref=e187]
+              - cell [ref=e191]
+            - row [ref=e192]:
+              - cell [ref=e193]:
+                - checkbox [ref=e194]
+              - cell "iiivvv aaaannn Neu" [ref=e195]:
+                - generic [ref=e196]:
+                  - generic [ref=e197] [cursor=pointer]: iiivvv aaaannn
+                  - generic [ref=e198]: Neu
+              - cell "307.850,00 €" [ref=e199]
+              - cell "Berlin" [ref=e200]
+              - cell "Anfrage erstellt" [ref=e201]
+              - cell "Gernot Schusser" [ref=e202]
+              - cell "22.07.2026 - 13:25" [ref=e203]
+              - cell "—" [ref=e204]
+              - cell [ref=e205]
+            - row [ref=e206]:
+              - cell [ref=e207]:
+                - checkbox [ref=e208]
+              - cell "Andrii Bugai Neu" [ref=e209]:
+                - generic [ref=e210]:
+                  - generic [ref=e211] [cursor=pointer]: Andrii Bugai
+                  - generic [ref=e212]: Neu
+              - cell "166.250,00 €" [ref=e213]
+              - cell "München-Flughafen" [ref=e214]
+              - cell "Selbstauskunft gestartet" [ref=e215]
+              - cell "Gernot Schusser" [ref=e216]
+              - cell "22.07.2026 - 12:07" [ref=e217]
+              - cell "check" [ref=e218]
+              - cell [ref=e222]
+            - row [ref=e223]:
+              - cell [ref=e224]:
+                - checkbox [ref=e225]
+              - cell "Andrii Bugai Neu" [ref=e226]:
+                - generic [ref=e227]:
+                  - generic [ref=e228] [cursor=pointer]: Andrii Bugai
+                  - generic [ref=e229]: Neu
+              - cell "166.250,00 €" [ref=e230]
+              - cell "München" [ref=e231]
+              - cell "Anfrage erstellt" [ref=e232]
+              - cell "Gernot Schusser" [ref=e233]
+              - cell "22.07.2026 - 11:11" [ref=e234]
+              - cell "—" [ref=e235]
+              - cell [ref=e236]
+            - row [ref=e237]:
+              - cell [ref=e238]:
+                - checkbox [ref=e239]
+              - cell "Andrii Bugai Neu" [ref=e240]:
+                - generic [ref=e241]:
+                  - generic [ref=e242] [cursor=pointer]: Andrii Bugai
+                  - generic [ref=e243]: Neu
+              - cell "166.250,00 €" [ref=e244]
+              - cell "München" [ref=e245]
+              - cell "Anfrage erstellt" [ref=e246]
+              - cell "Gernot Schusser" [ref=e247]
+              - cell "22.07.2026 - 11:06" [ref=e248]
+              - cell "—" [ref=e249]
+              - cell [ref=e250]
+            - row [ref=e251]:
+              - cell [ref=e252]:
+                - checkbox [ref=e253]
+              - cell "murat ehyphtest2 home" [ref=e254]:
+                - generic [ref=e255]:
+                  - generic [ref=e256] [cursor=pointer]: murat ehyphtest2
+                  - generic [ref=e257]: home
+              - cell "101.570,00 €" [ref=e258]
+              - cell "Berlin" [ref=e259]
+              - cell "Anfrage erstellt" [ref=e260]
+              - cell "Gernot Schusser" [ref=e261]
+              - cell "22.07.2026 - 10:19" [ref=e262]
+              - cell "—" [ref=e263]
+              - cell [ref=e264]
+            - row [ref=e265]:
+              - cell [ref=e266]:
+                - checkbox [ref=e267]
+              - cell "Luis Gamero Neu" [ref=e268]:
+                - generic [ref=e269]:
+                  - generic [ref=e270] [cursor=pointer]: Luis Gamero
+                  - generic [ref=e271]: Neu
+              - cell "301.089,00 €" [ref=e272]
+              - cell "Berlin" [ref=e273]
+              - cell "Selbstauskunft gestartet" [ref=e274]
+              - cell "Gernot Schusser" [ref=e275]
+              - cell "21.07.2026 - 13:43" [ref=e276]
+              - cell "check" [ref=e277]
+              - cell [ref=e281]
+            - row [ref=e282]:
+              - cell [ref=e283]:
+                - checkbox [ref=e284]
+              - cell "Mudasir test home" [ref=e285]:
+                - generic [ref=e286]:
+                  - generic [ref=e287] [cursor=pointer]: Mudasir test
+                  - generic [ref=e288]: home
+              - cell "1.070.700,00 €" [ref=e289]
+              - cell "München" [ref=e290]
+              - cell "Selbstauskunft vollständig" [ref=e291]
+              - cell "Gernot Schusser" [ref=e292]
+              - cell "21.07.2026 - 12:49" [ref=e293]
+              - cell "priority_high check" [ref=e294]:
+                - generic [ref=e295]:
+                  - generic [ref=e296]: priority_high
+                  - generic [ref=e298]: check
+              - cell [ref=e300]
+            - row [ref=e301]:
+              - cell [ref=e302]:
+                - checkbox [ref=e303]
+              - cell "luis gamero home Neu" [ref=e304]:
+                - generic [ref=e305]:
+                  - generic [ref=e306] [cursor=pointer]: luis gamero
+                  - generic [ref=e307]: home
+                  - generic [ref=e308]: Neu
+              - cell "396.000,00 €" [ref=e309]
+              - cell "Berlin" [ref=e310]
+              - cell "Selbstauskunft gestartet" [ref=e311]
+              - cell "Gernot Schusser" [ref=e312]
+              - cell "20.07.2026 - 12:45" [ref=e313]
+              - cell "—" [ref=e314]
+              - cell [ref=e315]
+            - row [ref=e316]:
+              - cell [ref=e317]:
+                - checkbox [ref=e318]
+              - cell "Artur Morgan Neu" [ref=e319]:
+                - generic [ref=e320]:
+                  - generic [ref=e321] [cursor=pointer]: Artur Morgan
+                  - generic [ref=e322]: Neu
+              - cell "338.566,30 €" [ref=e323]
+              - cell "Borkum" [ref=e324]
+              - cell "Selbstauskunft vollständig" [ref=e325]
+              - cell "Gernot Schusser" [ref=e326]
+              - cell "17.07.2026 - 16:44" [ref=e327]
+              - cell "priority_high" [ref=e328]
+              - cell [ref=e332]
+            - row [ref=e333]:
+              - cell [ref=e334]:
+                - checkbox [ref=e335]
+              - cell "Sara Gamarra home" [ref=e336]:
+                - generic [ref=e337]:
+                  - generic [ref=e338] [cursor=pointer]: Sara Gamarra
+                  - generic [ref=e339]: home
+              - cell "338.000,00 €" [ref=e340]
+              - cell "Berlin" [ref=e341]
+              - cell "Anfrage erstellt" [ref=e342]
+              - cell "Octavio Herrera Guardiola" [ref=e343]
+              - cell "17.07.2026 - 14:49" [ref=e344]
+              - cell "priority_high" [ref=e345]
+              - cell [ref=e349]
+            - row [ref=e350]:
+              - cell [ref=e351]:
+                - checkbox [ref=e352]
+              - cell "Aliyah-S Reichel-CIO home Neu" [ref=e353]:
+                - generic [ref=e354]:
+                  - generic [ref=e355] [cursor=pointer]: Aliyah-S Reichel-CIO
+                  - generic [ref=e356]: home
+                  - generic [ref=e357]: Neu
+              - cell "567.445,00 €" [ref=e358]
+              - cell "Berlin" [ref=e359]
+              - cell "Anfrage erstellt" [ref=e360]
+              - cell "Gernot Schusser" [ref=e361]
+              - cell "17.07.2026 - 14:36" [ref=e362]
+              - cell "priority_high" [ref=e363]
+              - cell [ref=e367]
+            - row [ref=e368]:
+              - cell [ref=e369]:
+                - checkbox [ref=e370]
+              - cell "Artur Morgan home Neu" [ref=e371]:
+                - generic [ref=e372]:
+                  - generic [ref=e373] [cursor=pointer]: Artur Morgan
+                  - generic [ref=e374]: home
+                  - generic [ref=e375]: Neu
+              - cell "5.498.500,00 €" [ref=e376]
+              - cell "Adelebsen" [ref=e377]
+              - cell "Anfrage erstellt" [ref=e378]
+              - cell "Gernot Schusser" [ref=e379]
+              - cell "17.07.2026 - 14:35" [ref=e380]
+              - cell "—" [ref=e381]
+              - cell [ref=e382]
+            - row [ref=e383]:
+              - cell [ref=e384]:
+                - checkbox [ref=e385]
+              - cell "Yvonne-S Just-CIO home Neu" [ref=e386]:
+                - generic [ref=e387]:
+                  - generic [ref=e388] [cursor=pointer]: Yvonne-S Just-CIO
+                  - generic [ref=e389]: home
+                  - generic [ref=e390]: Neu
+              - cell "567.445,00 €" [ref=e391]
+              - cell "Berlin" [ref=e392]
+              - cell "Anfrage erstellt" [ref=e393]
+              - cell "Gernot Schusser" [ref=e394]
+              - cell "17.07.2026 - 14:25" [ref=e395]
+              - cell "priority_high" [ref=e396]
+              - cell [ref=e400]
+            - row [ref=e401]:
+              - cell [ref=e402]:
+                - checkbox [ref=e403]
+              - cell "Maxime Musterfraus home" [ref=e404]:
+                - generic [ref=e405]:
+                  - generic [ref=e406] [cursor=pointer]: Maxime Musterfraus
+                  - generic [ref=e407]: home
+              - cell "170.000,00 €" [ref=e408]
+              - cell "Oberursel (Taunus)" [ref=e409]
+              - cell "Anfrage erstellt" [ref=e410]
+              - cell "Gernot Schusser" [ref=e411]
+              - cell "17.07.2026 - 09:54" [ref=e412]
+              - cell "—" [ref=e413]
+              - cell [ref=e414]
+            - row [ref=e415]:
+              - cell [ref=e416]:
+                - checkbox [ref=e417]
+              - cell "iva ivava" [ref=e418]
+              - cell "325.700,00 €" [ref=e421]
+              - cell "Berlin" [ref=e422]
+              - cell "Selbstauskunft gestartet" [ref=e423]
+              - cell "53Rohirrim" [ref=e424]
+              - cell "17.07.2026 - 09:16" [ref=e425]
+              - cell "check" [ref=e426]
+              - cell [ref=e430]
+            - row [ref=e431]:
+              - cell [ref=e432]:
+                - checkbox [ref=e433]
+              - cell "Jonas Vollmer" [ref=e434]
+              - cell "289.000,00 €" [ref=e437]
+              - cell "Hamburg" [ref=e438]
+              - cell "Anfrage erstellt" [ref=e439]
+              - cell "Gernot Schusser" [ref=e440]
+              - cell "16.07.2026 - 15:02" [ref=e441]
+              - cell "—" [ref=e442]
+              - cell [ref=e443]
+            - row [ref=e444]:
+              - cell [ref=e445]:
+                - checkbox [ref=e446]
+              - cell "Petra Lindqvist home" [ref=e447]:
+                - generic [ref=e448]:
+                  - generic [ref=e449] [cursor=pointer]: Petra Lindqvist
+                  - generic [ref=e450]: home
+              - cell "412.300,00 €" [ref=e451]
+              - cell "Köln" [ref=e452]
+              - cell "Selbstauskunft vollständig" [ref=e453]
+              - cell "Gernot Schusser" [ref=e454]
+              - cell "16.07.2026 - 11:20" [ref=e455]
+              - cell "priority_high" [ref=e456]
+              - cell [ref=e460]
+            - row [ref=e461]:
+              - cell [ref=e462]:
+                - checkbox [ref=e463]
+              - cell "Ömer Yıldız" [ref=e464]
+              - cell "198.500,00 €" [ref=e467]
+              - cell "Stuttgart" [ref=e468]
+              - cell "Anfrage erstellt" [ref=e469]
+              - cell "Gernot Schusser" [ref=e470]
+              - cell "15.07.2026 - 17:41" [ref=e471]
+              - cell "—" [ref=e472]
+              - cell [ref=e473]
+            - row [ref=e474]:
+              - cell [ref=e475]:
+                - checkbox [ref=e476]
+              - cell "Claudia Berg home" [ref=e477]:
+                - generic [ref=e478]:
+                  - generic [ref=e479] [cursor=pointer]: Claudia Berg
+                  - generic [ref=e480]: home
+              - cell "734.900,00 €" [ref=e481]
+              - cell "Frankfurt am Main" [ref=e482]
+              - cell "Selbstauskunft gestartet" [ref=e483]
+              - cell "Octavio Herrera Guardiola" [ref=e484]
+              - cell "15.07.2026 - 09:08" [ref=e485]
+              - cell "check" [ref=e486]
+              - cell [ref=e490]
+            - row [ref=e491]:
+              - cell [ref=e492]:
+                - checkbox [ref=e493]
+              - cell "Robert Hoffmann" [ref=e494]
+              - cell "255.000,00 €" [ref=e497]
+              - cell "Bremen" [ref=e498]
+              - cell "Anfrage erstellt" [ref=e499]
+              - cell "Gernot Schusser" [ref=e500]
+              - cell "14.07.2026 - 16:33" [ref=e501]
+              - cell "—" [ref=e502]
+              - cell [ref=e503]
+        - generic [ref=e504]:
+          - generic [ref=e505] [cursor=pointer]:
+            - text: Einträge pro Seite 25
+            - generic [ref=e506]: expand_more
+          - generic [ref=e507]: 1 – 25 von 9978
+          - generic [ref=e508]:
+            - button "chevron_left" [ref=e509] [cursor=pointer]
+            - button "chevron_right" [ref=e511] [cursor=pointer]
+  - generic:
+    - generic: Sortieren nach Fälligkeit
+    - generic: Früheste zuerst
+  - generic [ref=e513]: swap_vert

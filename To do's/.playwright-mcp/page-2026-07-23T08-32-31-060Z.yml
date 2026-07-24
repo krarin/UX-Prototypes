@@ -1,0 +1,651 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - complementary [ref=f4e3]:
+      - navigation [ref=f4e8]:
+        - link "wb_sunny Mein Tag 99+" [ref=f4e9] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e10]: wb_sunny
+          - generic [ref=f4e11]: Mein Tag
+          - generic [ref=f4e12]: 99+
+        - link "folder_shared Anträge" [ref=f4e13] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e14]: folder_shared
+          - generic [ref=f4e15]: Anträge
+        - link "person Leads" [ref=f4e16] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e17]: person
+          - generic [ref=f4e18]: Leads
+        - link "hub Quellen" [ref=f4e19] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e20]: hub
+          - generic [ref=f4e21]: Quellen
+        - link "apartment Unternehmen" [ref=f4e22] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e23]: apartment
+          - generic [ref=f4e24]: Unternehmen
+        - link "receipt_long Buchhaltung" [ref=f4e25] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e26]: receipt_long
+          - generic [ref=f4e27]: Buchhaltung
+        - link "bar_chart Reporting" [ref=f4e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e29]: bar_chart
+          - generic [ref=f4e30]: Reporting
+        - link "storefront Lead-Shop warning" [ref=f4e31] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e32]: storefront
+          - generic [ref=f4e33]: Lead-Shop
+          - generic [ref=f4e34]: warning
+        - link "mail E-Mail" [ref=f4e35] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e36]: mail
+          - generic [ref=f4e37]: E-Mail
+        - link "settings System" [ref=f4e38] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f4e39]: settings
+          - generic [ref=f4e40]: System
+    - generic [ref=f4e41]:
+      - banner [ref=f4e42]:
+        - button "auto_awesome" [ref=f4e43] [cursor=pointer]
+        - button "add" [ref=f4e45] [cursor=pointer]
+        - button "notifications 29" [ref=f4e47] [cursor=pointer]:
+          - generic [ref=f4e48]: notifications
+          - generic [ref=f4e49]: "29"
+        - button "help" [ref=f4e50] [cursor=pointer]
+        - button "DE expand_more" [ref=f4e52] [cursor=pointer]:
+          - text: DE
+          - generic [ref=f4e53]: expand_more
+        - generic [ref=f4e55] [cursor=pointer]:
+          - generic [ref=f4e57]:
+            - generic [ref=f4e58]: Gernot Schusser
+            - generic [ref=f4e59]: Global admin
+          - generic [ref=f4e60]: expand_more
+      - generic [ref=f4e61]:
+        - generic [ref=f4e62]:
+          - heading "Anträge" [level=1] [ref=f4e63]
+          - generic [ref=f4e64]:
+            - button "list Liste" [ref=f4e65] [cursor=pointer]:
+              - generic [ref=f4e66]: list
+              - text: Liste
+            - button "view_kanban Pipeline" [active] [ref=f4e67] [cursor=pointer]:
+              - generic [ref=f4e68]: view_kanban
+              - text: Pipeline
+          - generic [ref=f4e69]:
+            - textbox "Suchen nach Namen, Telef…" [ref=f4e70]
+            - button "Suchen" [ref=f4e71] [cursor=pointer]
+          - generic [ref=f4e72]:
+            - button "filter_list Filter" [ref=f4e73] [cursor=pointer]:
+              - generic [ref=f4e74]: filter_list
+              - text: Filter
+            - button "download Importieren" [ref=f4e75] [cursor=pointer]:
+              - generic [ref=f4e76]: download
+              - text: Importieren
+            - button "person_add Hinzufügen" [ref=f4e77] [cursor=pointer]:
+              - generic [ref=f4e78]: person_add
+              - text: Hinzufügen
+        - generic [ref=f4e79]:
+          - checkbox "Filter bei Suche löschen" [checked] [ref=f4e80]
+          - text: Filter bei Suche löschen
+        - generic [ref=f4e516]:
+          - generic [ref=f4e517]:
+            - button "swap_vert Nach Fälligkeitsdatum sortieren expand_more" [ref=f4e519] [cursor=pointer]:
+              - generic [ref=f4e520]: swap_vert
+              - generic [ref=f4e521]: Nach Fälligkeitsdatum sortieren
+              - generic [ref=f4e522]: expand_more
+            - generic [ref=f4e523]:
+              - generic [ref=f4e524]: drag_indicator
+              - text: Karten per Drag & Drop zwischen Spalten verschieben
+          - generic [ref=f4e525]:
+            - generic [ref=f4e526]:
+              - generic [ref=f4e527]:
+                - generic [ref=f4e528]:
+                  - text: Anfrage erstellt
+                  - generic [ref=f4e529]: info
+                - generic [ref=f4e530]: "7328 Anträge : 6.3B €"
+              - generic [ref=f4e531]:
+                - generic [ref=f4e532]:
+                  - generic [ref=f4e533]: home
+                  - generic [ref=f4e534]: Test IMPORT NEW MAPI3776 IMPORT NEW
+                  - generic [ref=f4e535]: 451.000 € · 10115 Berlin
+                - generic [ref=f4e536]:
+                  - generic [ref=f4e537]: Neu
+                  - generic [ref=f4e539]: iiivvv aaaannn
+                  - generic [ref=f4e540]: 307.850 € · 12689 Berlin
+                - generic [ref=f4e541]:
+                  - generic [ref=f4e542]: Neu
+                  - generic [ref=f4e544]: Andrii Bugai
+                  - generic [ref=f4e545]: 166.250 € · 80331 München
+                - generic [ref=f4e546]:
+                  - generic [ref=f4e547]: Neu
+                  - generic [ref=f4e549]: Andrii Bugai
+                  - generic [ref=f4e550]: 166.250 € · 80331 München
+                - generic [ref=f4e551]:
+                  - generic [ref=f4e552]: home
+                  - generic [ref=f4e553]: murat ehyphtest2
+                  - generic [ref=f4e554]: 101.570 € · 10179 Berlin
+                - generic [ref=f4e555]:
+                  - generic [ref=f4e556]: QAShyann Zemlak
+                  - generic [ref=f4e557]: 151.320 € · 14461 Potsdam
+                - generic [ref=f4e558]:
+                  - generic [ref=f4e559]: Sara Gamarra
+                  - generic [ref=f4e560]: 338.000 € · 10557 Berlin
+                  - generic [ref=f4e562]:
+                    - generic [ref=f4e563]: check
+                    - generic [ref=f4e565]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e566]:
+                    - generic [ref=f4e567]: event
+                    - text: "Nächste Fälligkeit: 12.07.2026"
+                - generic [ref=f4e568]:
+                  - generic [ref=f4e569]: Neu
+                  - generic [ref=f4e571]: Artur Morgan
+                  - generic [ref=f4e572]: 5.498.500 € · 37139 Adelebsen
+                - generic [ref=f4e573]:
+                  - generic [ref=f4e574]: Neu
+                  - generic [ref=f4e576]: Ivantest Domnich
+                  - generic [ref=f4e577]: 567.445 € · 16356 Ahrensfelde
+                  - generic [ref=f4e579]:
+                    - generic [ref=f4e580]: check
+                    - generic [ref=f4e582]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e583]:
+                    - generic [ref=f4e584]: event
+                    - text: "Nächste Fälligkeit: 16.07.2026"
+            - generic [ref=f4e585]:
+              - generic [ref=f4e586]:
+                - generic [ref=f4e587]:
+                  - text: Selbstauskunft gestartet
+                  - generic [ref=f4e588]: info
+                - generic [ref=f4e589]: "1014 Anträge : 9.8B €"
+              - generic [ref=f4e590]:
+                - generic [ref=f4e591]:
+                  - generic [ref=f4e592]: Neu
+                  - generic [ref=f4e594]: Andrii Bugai
+                  - generic [ref=f4e595]: 166.250 € · 85356 München-Flughafen
+                  - generic [ref=f4e597]:
+                    - generic [ref=f4e598]: check
+                    - generic [ref=f4e600]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e601]:
+                    - generic [ref=f4e602]: event
+                    - text: "Nächste Fälligkeit: 25.07.2026"
+                - generic [ref=f4e603]:
+                  - generic [ref=f4e604]: Neu
+                  - generic [ref=f4e606]: Ivan Ivanovich
+                  - generic [ref=f4e607]: 310.000 € · 12689 Berlin
+                  - generic [ref=f4e609]:
+                    - generic [ref=f4e610]: check
+                    - generic [ref=f4e612]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e613]:
+                    - generic [ref=f4e614]: event
+                    - text: "Nächste Fälligkeit: 24.07.2026"
+                - generic [ref=f4e615]:
+                  - generic [ref=f4e616]: Neu
+                  - generic [ref=f4e618]: Luis Gamero
+                  - generic [ref=f4e619]: 301.089 € · 10777 Berlin
+                - generic [ref=f4e620]:
+                  - generic [ref=f4e621]: home
+                  - generic [ref=f4e622]: Neu
+                  - generic [ref=f4e624]: luis gamero
+                  - generic [ref=f4e625]: 396.000 € · 10559 Berlin
+                - generic [ref=f4e626]:
+                  - generic [ref=f4e627]: home
+                  - generic [ref=f4e628]: Maxime Musterfrau
+                  - generic [ref=f4e629]: 170.000 € · 61440 Oberursel (Taunus)
+                - generic [ref=f4e630]:
+                  - generic [ref=f4e631]: home
+                  - generic [ref=f4e632]: Karina Hoffmann
+                  - generic [ref=f4e633]: 296.280 € · 12435 Berlin
+                  - generic [ref=f4e635]:
+                    - generic [ref=f4e636]: description
+                    - generic [ref=f4e638]: Dokumente hochgeladen
+                    - generic [ref=f4e639]: "+3"
+                  - generic [ref=f4e640]:
+                    - generic [ref=f4e641]: event
+                    - text: "Nächste Fälligkeit: 20.07.2026"
+                - generic [ref=f4e642]:
+                  - generic [ref=f4e643]: home
+                  - generic [ref=f4e644]: Erika von Beer
+                  - generic [ref=f4e645]: 515.000 € · 13189 Berlin
+                - generic [ref=f4e646]:
+                  - generic [ref=f4e647]: home
+                  - generic [ref=f4e648]: murat testehyphome
+                  - generic [ref=f4e649]: 331.021 € · 12689 Berlin
+                  - generic [ref=f4e651]:
+                    - generic [ref=f4e652]: check
+                    - generic [ref=f4e654]: Benedikt test
+                  - generic [ref=f4e655]:
+                    - generic [ref=f4e656]: event
+                    - text: "Nächste Fälligkeit: 14.07.2026"
+                - generic [ref=f4e657]:
+                  - generic [ref=f4e658]: home
+                  - generic [ref=f4e659]: iva ivava
+                  - generic [ref=f4e660]: 325.700 € · 12689 Berlin
+                - generic [ref=f4e661]:
+                  - generic [ref=f4e662]: home
+                  - generic [ref=f4e663]: Test Dominik
+                  - generic [ref=f4e664]: 225.500 € · 24796 Bredenbek
+                  - generic [ref=f4e666]:
+                    - generic [ref=f4e667]: check
+                    - generic [ref=f4e669]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e670]:
+                    - generic [ref=f4e671]: event
+                    - text: "Nächste Fälligkeit: 11.07.2026"
+            - generic [ref=f4e672]:
+              - generic [ref=f4e673]:
+                - generic [ref=f4e674]:
+                  - text: Selbstauskunft vollständig
+                  - generic [ref=f4e675]: info
+                - generic [ref=f4e676]: "325 Anträge : 372.1M €"
+              - generic [ref=f4e677]:
+                - generic [ref=f4e678]:
+                  - generic [ref=f4e679]: Neu
+                  - generic [ref=f4e681]: asdas dasdasd
+                  - generic [ref=f4e682]: "-249.993 € · 16356 Ahrensfelde"
+                  - generic [ref=f4e684]:
+                    - generic [ref=f4e685]: check
+                    - generic [ref=f4e687]: Antrag prüfen - Kunde hat Selbstaus…
+                  - generic [ref=f4e688]:
+                    - generic [ref=f4e689]: event
+                    - text: "Nächste Fälligkeit: 18.07.2026"
+                - generic [ref=f4e690]:
+                  - generic [ref=f4e691]: Neu
+                  - generic [ref=f4e693]: Artur Morgan
+                  - generic [ref=f4e694]: 338.566 € · 26757 Borkum
+                  - generic [ref=f4e696]:
+                    - generic [ref=f4e697]: check
+                    - generic [ref=f4e699]: Antrag prüfen - Kunde hat Selbstaus…
+                  - generic [ref=f4e700]:
+                    - generic [ref=f4e701]: event
+                    - text: "Nächste Fälligkeit: 10.07.2026"
+                - generic [ref=f4e702]:
+                  - generic [ref=f4e703]: home
+                  - generic [ref=f4e704]: GabTest a3419aba
+                  - generic [ref=f4e705]: 353.125 € · 22307 Hamburg
+                - generic [ref=f4e706]:
+                  - generic [ref=f4e707]: Neu
+                  - generic [ref=f4e709]: Luis Gamero
+                  - generic [ref=f4e710]: 136.000 € · 10559 Berlin
+                  - generic [ref=f4e712]:
+                    - generic [ref=f4e713]: description
+                    - generic [ref=f4e715]: Dokumente hochgeladen
+                    - generic [ref=f4e716]: "+2"
+                  - generic [ref=f4e717]:
+                    - generic [ref=f4e718]: event
+                    - text: "Nächste Fälligkeit: 22.07.2026"
+                - generic [ref=f4e719]:
+                  - generic [ref=f4e720]: home
+                  - generic [ref=f4e721]: Octavio Herrera
+                  - generic [ref=f4e722]: 1.321.000 € · 10557 Berlin
+                  - generic [ref=f4e724]:
+                    - generic [ref=f4e725]: check
+                    - generic [ref=f4e727]: Antrag prüfen - Kunde hat Selbstaus…
+                  - generic [ref=f4e728]:
+                    - generic [ref=f4e729]: event
+                    - text: "Nächste Fälligkeit: 13.07.2026"
+                - generic [ref=f4e730]:
+                  - generic [ref=f4e731]: home
+                  - generic [ref=f4e732]: luis gamero
+                  - generic [ref=f4e733]: 360.560 € · 10559 Berlin
+                - generic [ref=f4e734]:
+                  - generic [ref=f4e735]: home
+                  - generic [ref=f4e736]: t t
+                  - generic [ref=f4e737]: 257.625 € · 04229 Leipzig
+                  - generic [ref=f4e739]:
+                    - generic [ref=f4e740]: check
+                    - generic [ref=f4e742]: Kunden t t zurückrufen
+                    - generic [ref=f4e743]: "+2"
+                  - generic [ref=f4e744]:
+                    - generic [ref=f4e745]: event
+                    - text: "Nächste Fälligkeit: 09.07.2026"
+                - generic [ref=f4e746]:
+                  - generic [ref=f4e747]: home
+                  - generic [ref=f4e748]: Luis 3
+                  - generic [ref=f4e749]: 144.000 € · 10559 Berlin
+                  - generic [ref=f4e751]:
+                    - generic [ref=f4e752]: check
+                    - generic [ref=f4e754]: Kunde möchte Selbstauskunft än…
+                    - generic [ref=f4e755]: "+2"
+                  - generic [ref=f4e756]:
+                    - generic [ref=f4e757]: event
+                    - text: "Nächste Fälligkeit: 17.07.2026"
+                - generic [ref=f4e758]:
+                  - generic [ref=f4e759]: home
+                  - generic [ref=f4e760]: Luis Gamero
+                  - generic [ref=f4e761]: 375.700 € · 10559 Berlin
+                  - generic [ref=f4e763]:
+                    - generic [ref=f4e764]: check
+                    - generic [ref=f4e766]: Antrag prüfen - Kunde hat Selbstaus…
+                  - generic [ref=f4e767]:
+                    - generic [ref=f4e768]: event
+                    - text: "Nächste Fälligkeit: 21.07.2026"
+            - generic [ref=f4e769]:
+              - generic [ref=f4e770]:
+                - generic [ref=f4e771]:
+                  - text: Finanzierungsvorschläge erstellt
+                  - generic [ref=f4e772]: info
+                - generic [ref=f4e773]: "428 Anträge : 306M €"
+              - generic [ref=f4e774]:
+                - generic [ref=f4e775]:
+                  - generic [ref=f4e776]: home
+                  - generic [ref=f4e777]: GabTest a3419aba
+                  - generic [ref=f4e778]: 353.125 € · 22307 Hamburg
+                  - generic [ref=f4e780]:
+                    - generic [ref=f4e781]: check
+                    - generic [ref=f4e783]: Potentielle Antragsdubletten prüfen…
+                  - generic [ref=f4e784]:
+                    - generic [ref=f4e785]: event
+                    - text: "Nächste Fälligkeit: 15.07.2026"
+                - generic [ref=f4e786]:
+                  - generic [ref=f4e787]: home
+                  - generic [ref=f4e788]: James Rivarola
+                  - generic [ref=f4e789]: 3.318 € · 12049 Berlin
+                - generic [ref=f4e790]:
+                  - generic [ref=f4e791]: home
+                  - generic [ref=f4e792]:
+                    - generic [ref=f4e793]: Urlaubsvertretung
+                    - generic [ref=f4e794]: "+1"
+                  - generic [ref=f4e795]: Stefan Wen
+                  - generic [ref=f4e796]: 100.278 € · 80333 München
+                  - generic [ref=f4e798]:
+                    - generic [ref=f4e799]: check
+                    - generic [ref=f4e801]: Erunfie
+                    - generic [ref=f4e802]: "+3"
+                  - generic [ref=f4e803]:
+                    - generic [ref=f4e804]: event
+                    - text: "Nächste Fälligkeit: 23.07.2026"
+                - generic [ref=f4e805]:
+                  - generic [ref=f4e806]: home
+                  - generic [ref=f4e807]: Lou Bulle
+                  - generic [ref=f4e808]: 447.500 € · 22081 Hamburg
+                - generic [ref=f4e809]:
+                  - generic [ref=f4e810]: home
+                  - generic [ref=f4e811]: Maxime Musterfrau1805_1
+                  - generic [ref=f4e812]: 127.438 € · 61440 Oberursel (Taunus)
+                - generic [ref=f4e813]:
+                  - generic [ref=f4e814]: home
+                  - generic [ref=f4e815]: mama mam
+                  - generic [ref=f4e816]: 728.110 € · 10117 Berlin
+                  - generic [ref=f4e818]:
+                    - generic [ref=f4e819]: description
+                    - generic [ref=f4e821]: Dokumente hochgeladen
+                - generic [ref=f4e822]:
+                  - generic [ref=f4e823]: home
+                  - generic [ref=f4e824]: vikas rent5540
+                  - generic [ref=f4e825]: 52.000 € · 10117 Berlin
+                - generic [ref=f4e826]:
+                  - generic [ref=f4e827]: home
+                  - generic [ref=f4e828]: Daniel Läufer
+                  - generic [ref=f4e829]: 299.091 € · 40477 Düsseldorf
+                - generic [ref=f4e830]:
+                  - generic [ref=f4e831]: home
+                  - generic [ref=f4e832]:
+                    - generic [ref=f4e833]: blue card1
+                    - generic [ref=f4e834]: practice
+                  - generic [ref=f4e835]: Karina Hoffmann
+                  - generic [ref=f4e836]: 296.280 € · 12435 Berlin
+                  - generic [ref=f4e838]:
+                    - generic [ref=f4e839]: check
+                    - generic [ref=f4e841]: Kunde möchte Selbstauskunft än…
+                    - generic [ref=f4e842]: "+5"
+                  - generic [ref=f4e843]:
+                    - generic [ref=f4e844]: event
+                    - text: "Nächste Fälligkeit: 08.07.2026"
+                - generic [ref=f4e845]:
+                  - generic [ref=f4e846]: home
+                  - generic [ref=f4e847]: offer benedikt
+                  - generic [ref=f4e848]: 98.500 € · 22946 Dahmker
+                  - generic [ref=f4e850]:
+                    - generic [ref=f4e851]: check
+                    - generic [ref=f4e853]: Antrag prüfen - Kunde hat ein Angeb…
+                  - generic [ref=f4e854]:
+                    - generic [ref=f4e855]: event
+                    - text: "Nächste Fälligkeit: 26.07.2026"
+                - generic [ref=f4e856]:
+                  - generic [ref=f4e857]: home
+                  - generic [ref=f4e858]: Suresh offerapplied78h2
+                  - generic [ref=f4e859]: 475.000 € · 10115 Berlin
+            - generic [ref=f4e860]:
+              - generic [ref=f4e861]:
+                - generic [ref=f4e862]:
+                  - text: Finanzierung angefragt
+                  - generic [ref=f4e863]: info
+                - generic [ref=f4e864]: "179 Anträge : 76.7M €"
+              - generic [ref=f4e865]:
+                - generic [ref=f4e866]:
+                  - generic [ref=f4e867]: home
+                  - generic [ref=f4e868]: zero loann
+                  - generic [ref=f4e869]: 0 € · 10179 Berlin
+                  - generic [ref=f4e871]:
+                    - generic [ref=f4e872]: check
+                    - generic [ref=f4e874]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e875]:
+                    - generic [ref=f4e876]: event
+                    - text: "Nächste Fälligkeit: 27.07.2026"
+                - generic [ref=f4e877]:
+                  - generic [ref=f4e878]: home
+                  - generic [ref=f4e879]:
+                    - generic [ref=f4e880]: ING
+                    - generic [ref=f4e881]: Urlaubsvertretung
+                    - generic [ref=f4e882]: "+1"
+                  - generic [ref=f4e883]: Erika Mustermann
+                  - generic [ref=f4e884]: 0 € · 63225 Langen (Hessen)
+                  - generic [ref=f4e886]:
+                    - generic [ref=f4e887]: check
+                    - generic [ref=f4e889]: Antrag prüfen - Kunde hat ein …
+                    - generic [ref=f4e890]: "+3"
+                  - generic [ref=f4e891]:
+                    - generic [ref=f4e892]: event
+                    - text: "Nächste Fälligkeit: 28.07.2026"
+                - generic [ref=f4e893]:
+                  - generic [ref=f4e894]: home
+                  - generic [ref=f4e895]: Maxime Musterfrau020226
+                  - generic [ref=f4e896]: 198.000 € · 61440 Oberursel (Taunus)
+                  - generic [ref=f4e898]:
+                    - generic [ref=f4e899]: check
+                    - generic [ref=f4e901]: Antrag prüfen - Kunde hat eine Fina…
+                    - generic [ref=f4e902]: "+1"
+                  - generic [ref=f4e903]:
+                    - generic [ref=f4e904]: event
+                    - text: "Nächste Fälligkeit: 29.07.2026"
+                - generic [ref=f4e905]:
+                  - generic [ref=f4e906]: home
+                  - generic [ref=f4e907]: offer search benedikt
+                  - generic [ref=f4e908]: 82.284 € · 48341 Altenberge
+                  - generic [ref=f4e910]:
+                    - generic [ref=f4e911]: check
+                    - generic [ref=f4e913]: Ölk
+                    - generic [ref=f4e914]: "+2"
+                  - generic [ref=f4e915]:
+                    - generic [ref=f4e916]: event
+                    - text: "Nächste Fälligkeit: 30.07.2026"
+                - generic [ref=f4e917]:
+                  - generic [ref=f4e918]: home
+                  - generic [ref=f4e919]: Christian Lükens
+                  - generic [ref=f4e920]: 111.500 € · 31547 Rehburg-Loccum
+                  - generic [ref=f4e922]:
+                    - generic [ref=f4e923]: check
+                    - generic [ref=f4e925]: Add a new ToDo for 3 applicati…
+                    - generic [ref=f4e926]: "+5"
+                  - generic [ref=f4e927]:
+                    - generic [ref=f4e928]: event
+                    - text: "Nächste Fälligkeit: 31.07.2026"
+                - generic [ref=f4e929]:
+                  - generic [ref=f4e930]: home
+                  - generic [ref=f4e931]: Don't touch If you are no Ben4
+                  - generic [ref=f4e932]: 148.968 € · 53902 Bad Münstereifel
+                  - generic [ref=f4e934]:
+                    - generic [ref=f4e935]: check
+                    - generic [ref=f4e937]: Antrag prüfen - Kunde hat eine…
+                    - generic [ref=f4e938]: "+1"
+                  - generic [ref=f4e939]:
+                    - generic [ref=f4e940]: event
+                    - text: "Nächste Fälligkeit: 01.08.2026"
+                - generic [ref=f4e941]:
+                  - generic [ref=f4e942]: home
+                  - generic [ref=f4e943]: Suresh offerappliedyaea
+                  - generic [ref=f4e944]: 475.000 € · 10115 Berlin
+                  - generic [ref=f4e946]:
+                    - generic [ref=f4e947]: check
+                    - generic [ref=f4e949]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e950]:
+                    - generic [ref=f4e951]: event
+                    - text: "Nächste Fälligkeit: 02.08.2026"
+                - generic [ref=f4e952]:
+                  - generic [ref=f4e953]: home
+                  - generic [ref=f4e954]: Suresh offerappliede639
+                  - generic [ref=f4e955]: 475.000 € · 10115 Berlin
+                  - generic [ref=f4e957]:
+                    - generic [ref=f4e958]: check
+                    - generic [ref=f4e960]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e961]:
+                    - generic [ref=f4e962]: event
+                    - text: "Nächste Fälligkeit: 03.08.2026"
+            - generic [ref=f4e963]:
+              - generic [ref=f4e964]:
+                - generic [ref=f4e965]:
+                  - text: Kreditprüfung eingereicht
+                  - generic [ref=f4e966]: info
+                - generic [ref=f4e967]: "3 Anträge : 1M €"
+              - generic [ref=f4e968]:
+                - generic [ref=f4e969]:
+                  - generic [ref=f4e970]: home
+                  - generic [ref=f4e971]: Blub
+                  - generic [ref=f4e973]: Stefan Wen
+                  - generic [ref=f4e974]: 100.278 € · 80333 München
+                  - generic [ref=f4e976]:
+                    - generic [ref=f4e977]: check
+                    - generic [ref=f4e979]: Blub
+                  - generic [ref=f4e980]:
+                    - generic [ref=f4e981]: event
+                    - text: "Nächste Fälligkeit: 23.07.2026"
+                - generic [ref=f4e982]:
+                  - generic [ref=f4e983]: home
+                  - generic [ref=f4e984]: mortgagehubone benedikt
+                  - generic [ref=f4e985]: 492.850 € · 49844 Bawinkel
+                  - generic [ref=f4e987]:
+                    - generic [ref=f4e988]: description
+                    - generic [ref=f4e990]: Dokumente hochgeladen
+                    - generic [ref=f4e991]: "+2"
+                  - generic [ref=f4e992]:
+                    - generic [ref=f4e993]: event
+                    - text: "Nächste Fälligkeit: 19.07.2026"
+                - generic [ref=f4e994]:
+                  - generic [ref=f4e995]: home
+                  - generic [ref=f4e996]: Sarah Testerado
+                  - generic [ref=f4e997]: 426.280 € · 10247 Berlin
+                  - generic [ref=f4e999]:
+                    - generic [ref=f4e1000]: description
+                    - generic [ref=f4e1002]: Dokumente hochgeladen
+                    - generic [ref=f4e1003]: "+2"
+                  - generic [ref=f4e1004]:
+                    - generic [ref=f4e1005]: event
+                    - text: "Nächste Fälligkeit: 26.07.2026"
+            - generic [ref=f4e1006]:
+              - generic [ref=f4e1007]:
+                - generic [ref=f4e1008]:
+                  - text: Kreditprüfung in Bearbeitung
+                  - generic [ref=f4e1009]: info
+                - generic [ref=f4e1010]: "1 Antrag : 533.2K €"
+              - generic [ref=f4e1012]:
+                - generic [ref=f4e1013]: home
+                - generic [ref=f4e1014]: Reklamiert
+                - generic [ref=f4e1016]: gab 1019-4
+                - generic [ref=f4e1017]: 533.150 € · 22309 Hamburg
+                - generic [ref=f4e1019]:
+                  - generic [ref=f4e1020]: check
+                  - generic [ref=f4e1022]: "1234"
+                  - generic [ref=f4e1023]: "+2"
+                - generic [ref=f4e1024]:
+                  - generic [ref=f4e1025]: event
+                  - text: "Nächste Fälligkeit: 20.07.2026"
+            - generic [ref=f4e1026]:
+              - generic [ref=f4e1027]:
+                - generic [ref=f4e1028]:
+                  - text: Finanzierung bestätigt
+                  - generic [ref=f4e1029]: info
+                - generic [ref=f4e1030]: "46 Anträge : 25.5M €"
+              - generic [ref=f4e1031]:
+                - generic [ref=f4e1032]:
+                  - generic [ref=f4e1033]: home
+                  - generic [ref=f4e1034]: Gewonnen
+                  - generic [ref=f4e1036]: Stefan Wen
+                  - generic [ref=f4e1037]: 100.278 € · 80333 München
+                  - generic [ref=f4e1039]:
+                    - generic [ref=f4e1040]: check
+                    - generic [ref=f4e1042]: Anschlussfinanzierung (78.594,…
+                    - generic [ref=f4e1043]: "+27"
+                  - generic [ref=f4e1044]:
+                    - generic [ref=f4e1045]: event
+                    - text: "Nächste Fälligkeit: 05.08.2026"
+                - generic [ref=f4e1046]:
+                  - generic [ref=f4e1047]: home
+                  - generic [ref=f4e1048]: gabÖä 1019-5
+                  - generic [ref=f4e1049]: 533.125 € · 22301 Hamburg
+                  - generic [ref=f4e1051]:
+                    - generic [ref=f4e1052]: check
+                    - generic [ref=f4e1054]: Antrag prüfen - Kunde hat eine…
+                    - generic [ref=f4e1055]: "+1"
+                  - generic [ref=f4e1056]:
+                    - generic [ref=f4e1057]: event
+                    - text: "Nächste Fälligkeit: 28.07.2026"
+                - generic [ref=f4e1058]:
+                  - generic [ref=f4e1059]: home
+                  - generic [ref=f4e1060]: gab 1019
+                  - generic [ref=f4e1061]: 533.150 € · 22305 Hamburg
+                  - generic [ref=f4e1063]:
+                    - generic [ref=f4e1064]: check
+                    - generic [ref=f4e1066]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e1067]:
+                    - generic [ref=f4e1068]: event
+                    - text: "Nächste Fälligkeit: 25.07.2026"
+                - generic [ref=f4e1069]:
+                  - generic [ref=f4e1070]: home
+                  - generic [ref=f4e1071]: Anzak Leadingggg13
+                  - generic [ref=f4e1072]: 367.890 € · 13059 Berlin
+                  - generic [ref=f4e1074]:
+                    - generic [ref=f4e1075]: check
+                    - generic [ref=f4e1077]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e1078]:
+                    - generic [ref=f4e1079]: event
+                    - text: "Nächste Fälligkeit: 22.07.2026"
+                - generic [ref=f4e1080]:
+                  - generic [ref=f4e1081]: home
+                  - generic [ref=f4e1082]:
+                    - generic [ref=f4e1083]: Gewonnen
+                    - generic [ref=f4e1084]: skyline
+                    - generic [ref=f4e1085]: blue card1
+                  - generic [ref=f4e1086]: Stefan Stehula
+                  - generic [ref=f4e1087]: 108.000 € · 35232 Dautphetal
+                  - generic [ref=f4e1089]:
+                    - generic [ref=f4e1090]: check
+                    - generic [ref=f4e1092]: A New ToDo
+                  - generic [ref=f4e1093]:
+                    - generic [ref=f4e1094]: event
+                    - text: "Nächste Fälligkeit: 10.08.2026"
+                - generic [ref=f4e1095]:
+                  - generic [ref=f4e1096]: home
+                  - generic [ref=f4e1097]: vikas emailcheck12
+                  - generic [ref=f4e1098]: 347.500 € · 24796 Bredenbek
+                - generic [ref=f4e1099]:
+                  - generic [ref=f4e1100]: home
+                  - generic [ref=f4e1101]: vikas vikko
+                  - generic [ref=f4e1102]: 345.000 € · 10179 Berlin
+                  - generic [ref=f4e1104]:
+                    - generic [ref=f4e1105]: check
+                    - generic [ref=f4e1107]: Antrag prüfen - Kunde hat eine Fina…
+                  - generic [ref=f4e1108]:
+                    - generic [ref=f4e1109]: event
+                    - text: "Nächste Fälligkeit: 30.07.2026"
+                - generic [ref=f4e1110]:
+                  - generic [ref=f4e1111]: home
+                  - generic [ref=f4e1112]: Gewonnen
+                  - generic [ref=f4e1114]: Kevin Knorr
+                  - generic [ref=f4e1115]: 94.000 € · 75323 Bad Wildbad (Calmba…
+                - generic [ref=f4e1116]:
+                  - generic [ref=f4e1117]: home
+                  - generic [ref=f4e1118]: Jochen Wöhrle
+                  - generic [ref=f4e1119]: 1.000.000 € · 88090 Immenstaad am Boden…
+                - generic [ref=f4e1120]:
+                  - generic [ref=f4e1121]: home
+                  - generic [ref=f4e1122]: Gewonnen
+                  - generic [ref=f4e1124]: Tim Laube
+                  - generic [ref=f4e1125]: 237.000 € · 27777 Ganderkesee
+  - generic [ref=f4e514]: swap_vert

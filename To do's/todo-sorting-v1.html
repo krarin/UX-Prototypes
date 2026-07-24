@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anträge — ToDo-Sortierung</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Design system (one folder deep → ../design-system/) -->
+  <link rel="stylesheet" href="../design-system/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body {
+      font-family: var(--font-family);
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-200);
+    }
+
+    /* ---------- APP SHELL ---------- */
+    .app { display: flex; height: 100vh; width: 100vw; }
+
+    .rail {
+      width: 72px; min-width: 72px;
+      background: var(--color-neutral-dark-900);
+      display: flex; flex-direction: column;
+    }
+    .rail-logo {
+      height: 56px; display: flex; align-items: center; justify-content: center;
+      background: var(--color-neutral-light-000);
+      flex-shrink: 0;
+    }
+    .rail-logo svg { width: 30px; height: 30px; }
+
+    .rail-nav { display: flex; flex-direction: column; padding-top: var(--space-s); overflow: hidden; }
+    .rail-item {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 2px; cursor: pointer;
+      color: var(--color-neutral-dark-200);
+      text-decoration: none;
+      transition: color var(--transition-base), background var(--transition-base);
+    }
+    .rail-item:hover { color: var(--color-neutral-light-000); background: var(--color-neutral-dark-800); }
+    .rail-item.active { color: var(--color-primary-300); background: var(--color-neutral-dark-800); }
+    .rail-item.active::before {
+      content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px;
+      background: var(--color-primary-400); border-radius: 0 2px 2px 0;
+    }
+    .rail-item .material-symbols-outlined { font-size: 22px; }
+    .rail-label { font-size: 9px; letter-spacing: .2px; text-align: center; line-height: 1.15; }
+    .rail-badge {
+      position: absolute; top: 4px; right: 14px;
+      background: var(--color-error-500); color: #fff;
+      font-size: 8px; font-weight: 700; line-height: 1;
+      padding: 2px 3px; border-radius: var(--radius-full); min-width: 15px; text-align: center;
+    }
+    .rail-warn {
+      position: absolute; top: 6px; right: 16px;
+      color: var(--color-warning-high); font-size: 12px;
+    }
+
+    /* ---------- MAIN ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    .topbar {
+      height: 56px; flex-shrink: 0;
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: var(--space-s); padding: 0 var(--space-l);
+    }
+    .top-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: var(--radius-s);
+      border: none; background: none; cursor: pointer;
+      color: var(--color-neutral-dark-400); position: relative;
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .top-icon .material-symbols-outlined { font-size: 22px; }
+    .top-icon.sparkle { color: var(--color-primary-500); }
+    .top-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--color-error-500); color: #fff;
+      font-size: 9px; font-weight: 700; line-height: 1;
+      padding: 2px 4px; border-radius: var(--radius-full);
+    }
+    .top-lang {
+      display: inline-flex; align-items: center; gap: 2px; cursor: pointer;
+      border: none; background: none; padding: var(--space-xs) var(--space-s);
+      border-radius: var(--radius-s); color: var(--color-neutral-dark-800);
+      font-family: var(--font-family); font-size: 14px; font-weight: 500;
+    }
+    .top-lang:hover { background: var(--color-neutral-light-200); }
+    .top-divider { width: 1px; height: 28px; background: var(--color-neutral-light-500); margin: 0 var(--space-xs); }
+    .top-user { display: inline-flex; align-items: center; gap: var(--space-s); cursor: pointer;
+      padding: var(--space-xs) var(--space-s); border-radius: var(--radius-s); }
+    .top-user:hover { background: var(--color-neutral-light-200); }
+    .top-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+      background: var(--color-primary-200); }
+    .top-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .top-user-name { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .top-user-role { font-size: 11px; color: var(--color-neutral-dark-300); }
+
+    /* ---------- CONTENT ---------- */
+    .content { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: var(--space-l) var(--space-l) 0; }
+
+    .toolbar { display: flex; align-items: center; gap: var(--space-m); flex-wrap: wrap; }
+    .page-title { font-size: 22px; font-weight: 500; margin: 0; color: var(--color-neutral-dark-900); }
+
+    .segmented { display: inline-flex; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); overflow: hidden; background: var(--color-neutral-light-000); }
+    .segmented button {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: none; background: none; cursor: pointer;
+      padding: 7px 14px; font-family: var(--font-family); font-size: 13px; font-weight: 500;
+      color: var(--color-neutral-dark-400);
+    }
+    .segmented button .material-symbols-outlined { font-size: 18px; }
+    .segmented button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .segmented button + button { border-left: 1px solid var(--color-neutral-light-500); }
+
+    .search-wrap { display: flex; align-items: center; gap: var(--space-s); }
+    .search-input {
+      width: 240px; padding: 8px 12px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); font-family: var(--font-family); font-size: 14px;
+      color: var(--color-neutral-dark-900); background: var(--color-neutral-light-000);
+    }
+    .search-input::placeholder { color: var(--color-neutral-dark-300); }
+    .search-input:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: 13px; font-weight: 500;
+      cursor: pointer; border: 1px solid transparent; white-space: nowrap;
+      transition: background var(--transition-base), border-color var(--transition-base);
+    }
+    .btn .material-symbols-outlined { font-size: 18px; }
+    .btn-primary { background: var(--color-primary-500); color: #fff; border-color: var(--color-primary-500); }
+    .btn-primary:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); }
+    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800);
+      border-color: var(--color-neutral-light-500); }
+    .btn-secondary:hover { background: var(--color-neutral-light-200); }
+
+    .toolbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--space-s); }
+
+    .checkline { display: flex; align-items: center; gap: 8px; margin-top: 10px;
+      font-size: 13px; color: var(--color-neutral-dark-600); }
+    .checkline input { accent-color: var(--color-primary-500); width: 15px; height: 15px; }
+
+    .summary { margin: var(--space-m) 0 var(--space-s); font-size: 13px; color: var(--color-neutral-dark-400); }
+    .summary strong { color: var(--color-neutral-dark-800); font-weight: 500; }
+
+    /* ---------- TABLE ---------- */
+    .table-card {
+      flex: 1; min-height: 0; display: flex; flex-direction: column;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-bottom: none;
+      border-radius: var(--radius-m) var(--radius-m) 0 0;
+      overflow: hidden;
+    }
+    .table-scroll { overflow: auto; flex: 1; min-height: 0; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      position: sticky; top: 0; z-index: 2;
+      background: var(--color-neutral-light-200);
+      text-align: left; padding: 12px 16px;
+      font-size: 12px; font-weight: 500; letter-spacing: .2px;
+      color: var(--color-neutral-dark-400);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      white-space: nowrap; user-select: none;
+    }
+    th.sortable { cursor: pointer; }
+    th.sortable:hover { color: var(--color-neutral-dark-800); }
+    .th-inner { display: inline-flex; align-items: center; gap: 4px; }
+    .sort-ico {
+      font-size: 16px; color: var(--color-neutral-dark-200);
+      transition: color var(--transition-base);
+    }
+    th.sortable:hover .sort-ico { color: var(--color-neutral-dark-400); }
+    th.sorted { color: var(--color-primary-600); }
+    th.sorted .sort-ico { color: var(--color-primary-500); }
+
+    /* dedicated ToDo sort button so it has its own tooltip target */
+    .todo-sort-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      border: none; background: none; cursor: pointer; padding: 2px 4px;
+      margin: -2px -4px; border-radius: var(--radius-s);
+      font: inherit; letter-spacing: inherit; color: inherit;
+    }
+    .todo-sort-btn:hover { background: var(--color-neutral-light-500); }
+
+    tbody td {
+      padding: 13px 16px; font-size: 13.5px; color: var(--color-neutral-dark-800);
+      border-bottom: 1px solid var(--color-neutral-light-200);
+      white-space: nowrap; vertical-align: middle;
+    }
+    tbody tr { transition: background var(--transition-fast); }
+    tbody tr:hover { background: var(--color-neutral-light-100); }
+    .row-check input { accent-color: var(--color-primary-500); width: 15px; height: 15px; }
+
+    .applicant { color: var(--color-primary-600); font-weight: 500; cursor: pointer; }
+    .applicant:hover { text-decoration: underline; }
+    .name-cell { display: inline-flex; align-items: center; gap: 6px; }
+    .ico-home { font-size: 16px; color: var(--color-neutral-dark-300); }
+    .tag-neu {
+      font-size: 10px; font-weight: 500; color: var(--color-info);
+      background: var(--color-info-light); border: 1px solid #cddcfb;
+      padding: 1px 6px; border-radius: var(--radius-full);
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .num.neg { color: var(--color-error-600); }
+
+    /* ---------- TODO CHIPS ---------- */
+    .todo-cell { display: inline-flex; align-items: center; gap: 5px; }
+    .todo-chip {
+      position: relative;
+      width: 22px; height: 22px; border-radius: var(--radius-s);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: default;
+    }
+    .todo-chip .material-symbols-outlined { font-size: 15px; color: #fff; font-variation-settings: 'FILL' 1; }
+    .todo-chip.overdue { background: var(--color-error-500); }
+    .todo-chip.soon    { background: var(--color-warning-high); }
+    .todo-chip.later   { background: var(--color-success); }
+    .todo-more { font-size: 11px; color: var(--color-neutral-dark-300); font-weight: 500; }
+    .todo-empty { color: var(--color-neutral-light-500); }
+
+    /* ---------- FOOTER ---------- */
+    .table-footer {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end;
+      gap: var(--space-l); padding: 10px var(--space-l);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: 0 0 var(--radius-m) var(--radius-m);
+      font-size: 13px; color: var(--color-neutral-dark-400);
+    }
+    .pager-select {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      padding: 4px 8px; cursor: pointer; color: var(--color-neutral-dark-800);
+    }
+    .pager-nav { display: inline-flex; gap: 4px; }
+    .pager-nav button {
+      width: 28px; height: 28px; border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-000); border-radius: var(--radius-s);
+      cursor: pointer; color: var(--color-neutral-dark-600);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .pager-nav button:hover { background: var(--color-neutral-light-200); }
+
+    /* ---------- VIEW SWITCH ---------- */
+    #view-list { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    #view-pipeline { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    #view-list[hidden], #view-pipeline[hidden] { display: none; }
+
+    /* ---------- PIPELINE TOOLBAR ---------- */
+    .pipe-toolbar {
+      display: flex; align-items: center; gap: var(--space-m);
+      margin: var(--space-m) 0 var(--space-m);
+    }
+    .pipe-hint { display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; color: var(--color-neutral-dark-300); }
+    .pipe-hint .material-symbols-outlined { font-size: 16px; }
+
+    .sortmenu { position: relative; }
+    #pipeSortBtn.active-sort { border-color: var(--color-primary-400); color: var(--color-primary-600); }
+    #pipeSortBtn.active-sort .material-symbols-outlined { color: var(--color-primary-500); }
+    .sortmenu-pop {
+      position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-overlay);
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m); box-shadow: var(--shadow-m);
+      padding: 6px; min-width: 268px;
+    }
+    .sortmenu-pop button {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      border: none; background: none; cursor: pointer; text-align: left;
+      padding: 9px 10px; border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: 13.5px; color: var(--color-neutral-dark-800);
+    }
+    .sortmenu-pop button:hover { background: var(--color-neutral-light-200); }
+    .sortmenu-pop button .check { font-size: 18px; color: var(--color-primary-500); visibility: hidden; }
+    .sortmenu-pop button.selected .check { visibility: visible; }
+    .sortmenu-pop button.selected { color: var(--color-primary-600); font-weight: 500; }
+
+    /* ---------- BOARD ---------- */
+    .board {
+      flex: 1; min-height: 0;
+      display: flex; gap: var(--space-m);
+      overflow-x: auto; overflow-y: hidden;
+      padding-bottom: var(--space-m);
+    }
+    .pcol {
+      flex: 0 0 244px; width: 244px;
+      display: flex; flex-direction: column; min-height: 0;
+      background: var(--color-neutral-light-200);
+      border-radius: var(--radius-m);
+    }
+    .pcol-head { padding: 12px 12px 8px; flex-shrink: 0; }
+    .pcol-title {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900);
+    }
+    .pcol-title .info { font-size: 15px; color: var(--color-neutral-dark-200); }
+    .pcol-meta { margin-top: 3px; font-size: 11.5px; color: var(--color-neutral-dark-300); }
+    .pcol-body {
+      flex: 1; min-height: 0; overflow-y: auto;
+      padding: 0 8px 8px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .pcol-body.drag-over { background: var(--color-primary-100); outline: 2px dashed var(--color-primary-300); outline-offset: -4px; border-radius: var(--radius-s); }
+
+    /* ---------- PIPELINE CARD ---------- */
+    .pcard {
+      position: relative;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m);
+      padding: 10px 12px; cursor: grab;
+      box-shadow: var(--shadow-xs);
+      transition: box-shadow var(--transition-base), border-color var(--transition-base), transform var(--transition-fast);
+    }
+    .pcard:hover { box-shadow: var(--shadow-s); border-color: var(--color-neutral-dark-200); }
+    .pcard:active { cursor: grabbing; }
+    .pcard.dragging { opacity: .45; box-shadow: var(--shadow-l); }
+    .pcard-home { position: absolute; top: 10px; right: 10px; font-size: 16px; color: var(--color-neutral-dark-300); }
+    .pcard-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; padding-right: 18px; }
+    .pchip {
+      font-size: 10px; font-weight: 500; line-height: 1.4;
+      padding: 1px 7px; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .pchip.neu   { color: var(--color-info); background: var(--color-info-light); border: 1px solid #cddcfb; }
+    .pchip.blue  { color: #fff; background: #5B6BE8; }
+    .pchip.orange{ color: #fff; background: var(--color-warning-high); }
+    .pchip.teal  { color: #fff; background: var(--color-primary-500); }
+    .pchip.green { color: #fff; background: var(--color-success); }
+    .pchip.red   { color: #fff; background: var(--color-error-500); }
+    .pchip.gray  { color: var(--color-neutral-dark-600); background: var(--color-neutral-light-500); }
+    .pcard-name {
+      font-size: 13.5px; font-weight: 500; color: var(--color-primary-600);
+      line-height: 1.3; padding-right: 18px; word-break: break-word;
+    }
+    .pcard-sub { margin-top: 2px; font-size: 12px; color: var(--color-neutral-dark-400); }
+    .pcard-todos { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+    .ptodo { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 1.3; }
+    .ptodo .pt-ico {
+      flex-shrink: 0; width: 16px; height: 16px; border-radius: 3px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .ptodo .pt-ico .material-symbols-outlined { font-size: 12px; color: #fff; font-variation-settings: 'FILL' 1; }
+    .ptodo.action .pt-ico { background: var(--color-error-500); }
+    .ptodo.action .pt-txt { color: var(--color-error-600); }
+    .ptodo.soon   .pt-ico { background: var(--color-warning-high); }
+    .ptodo.soon   .pt-txt { color: var(--color-warning-high); }
+    .ptodo.info  .pt-ico { background: transparent; color: var(--color-primary-500); }
+    .ptodo.info  .pt-ico .material-symbols-outlined { color: var(--color-primary-500); font-size: 15px; }
+    .ptodo.info  .pt-txt { color: var(--color-primary-600); }
+    .pt-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pt-more {
+      flex-shrink: 0; font-size: 10.5px; color: var(--color-neutral-dark-400);
+      background: var(--color-neutral-light-200); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-full); padding: 0 5px; margin-left: auto;
+    }
+    .pcard-due { margin-top: 7px; display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--color-neutral-dark-300); }
+    .pcard-due .material-symbols-outlined { font-size: 13px; }
+    .pcard.sort-flash { animation: sortflash .5s ease; }
+    @keyframes sortflash { 0% { background: var(--color-primary-100); } 100% { background: var(--color-neutral-light-000); } }
+
+    /* ---------- CUSTOM TOOLTIP ---------- */
+    #tooltip {
+      position: fixed; z-index: var(--z-toast);
+      background: var(--color-neutral-dark-900); color: #fff;
+      font-size: 12px; line-height: 1.4; font-family: var(--font-family);
+      padding: 7px 10px; border-radius: var(--radius-s);
+      box-shadow: var(--shadow-m); pointer-events: none;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity .12s ease, transform .12s ease;
+      max-width: 260px; white-space: normal;
+    }
+    #tooltip.show { opacity: 1; transform: translateY(0); }
+    #tooltip .tt-title { font-weight: 500; }
+    #tooltip .tt-sub { color: var(--color-neutral-dark-200); margin-top: 2px; }
+    #tooltip::after {
+      content: ""; position: absolute; bottom: -5px; left: var(--arrow-x, 16px);
+      border: 5px solid transparent; border-top-color: var(--color-neutral-dark-900); border-bottom: none;
+    }
+
+    /* toast for demo feedback */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--color-neutral-dark-900); color: #fff;
+      padding: 10px 18px; border-radius: var(--radius-full); font-size: 13px;
+      box-shadow: var(--shadow-l); opacity: 0; transition: opacity .18s ease, transform .18s ease;
+      z-index: var(--z-toast); display: inline-flex; align-items: center; gap: 8px;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast .material-symbols-outlined { font-size: 18px; color: var(--color-primary-300); }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- RAIL -->
+  <aside class="rail">
+    <div class="rail-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="7" fill="#009688"/>
+        <path d="M11 8h11v3.4h-7.2v3.3h6.4v3.4h-6.4V24H11V8Z" fill="#fff"/>
+      </svg>
+    </div>
+    <nav class="rail-nav">
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">wb_sunny</span><span class="rail-label">Mein Tag</span><span class="rail-badge">99+</span></a>
+      <a class="rail-item active" href="#"><span class="material-symbols-outlined">folder_shared</span><span class="rail-label">Anträge</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">person</span><span class="rail-label">Leads</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">hub</span><span class="rail-label">Quellen</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">apartment</span><span class="rail-label">Unternehmen</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">receipt_long</span><span class="rail-label">Buchhaltung</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">bar_chart</span><span class="rail-label">Reporting</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">storefront</span><span class="rail-label">Lead-Shop</span><span class="rail-warn material-symbols-outlined">warning</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">mail</span><span class="rail-label">E-Mail</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">settings</span><span class="rail-label">System</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="top-icon sparkle"><span class="material-symbols-outlined">auto_awesome</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">add</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">notifications</span><span class="top-badge">29</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">help</span></button>
+      <button class="top-lang">DE <span class="material-symbols-outlined">expand_more</span></button>
+      <div class="top-divider"></div>
+      <div class="top-user">
+        <div class="top-avatar"></div>
+        <div class="top-user-info">
+          <span class="top-user-name">Gernot Schusser</span>
+          <span class="top-user-role">Global admin</span>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-neutral-dark-400)">expand_more</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="toolbar">
+        <h1 class="page-title">Anträge</h1>
+        <div class="segmented">
+          <button id="seg-list" class="active"><span class="material-symbols-outlined">list</span> Liste</button>
+          <button id="seg-pipe"><span class="material-symbols-outlined">view_kanban</span> Pipeline</button>
+        </div>
+        <div class="search-wrap">
+          <input class="search-input" placeholder="Suchen nach Namen, Telef…" />
+          <button class="btn btn-primary">Suchen</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-secondary"><span class="material-symbols-outlined">filter_list</span> Filter</button>
+          <button class="btn btn-secondary"><span class="material-symbols-outlined">download</span> Importieren</button>
+          <button class="btn btn-primary"><span class="material-symbols-outlined">person_add</span> Hinzufügen</button>
+        </div>
+      </div>
+
+      <label class="checkline">
+        <input type="checkbox" checked /> Filter bei Suche löschen
+      </label>
+
+      <!-- ===================== LIST VIEW ===================== -->
+      <div id="view-list">
+      <div class="summary"><strong>25 Anträge</strong> • <strong>13.287.333 €</strong> Darlehenssumme</div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table id="grid">
+            <thead>
+              <tr>
+                <th style="width:44px"><span class="row-check"><input type="checkbox" id="check-all"/></span></th>
+                <th class="sortable" data-key="name">    <span class="th-inner">Antragsteller/In <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th class="sortable" data-key="volume">  <span class="th-inner">Volumen <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th class="sortable" data-key="city">    <span class="th-inner">Stadt <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th class="sortable" data-key="status">  <span class="th-inner">Status <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th class="sortable" data-key="advisor"> <span class="th-inner">Berater/In <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th class="sortable" data-key="activity"><span class="th-inner">Letzte Aktivität <span class="material-symbols-outlined sort-ico">unfold_more</span></span></th>
+                <th data-key="todo">
+                  <button class="todo-sort-btn" id="todoSort" aria-label="ToDos nach Fälligkeit sortieren">
+                    ToDos <span class="material-symbols-outlined sort-ico" id="todoIco">unfold_more</span>
+                  </button>
+                </th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-footer">
+        <span class="pager-select">Einträge pro Seite 25 <span class="material-symbols-outlined" style="font-size:16px">expand_more</span></span>
+        <span>1 – 25 von 9978</span>
+        <span class="pager-nav">
+          <button><span class="material-symbols-outlined" style="font-size:16px">chevron_left</span></button>
+          <button><span class="material-symbols-outlined" style="font-size:16px">chevron_right</span></button>
+        </span>
+      </div>
+      </div><!-- /#view-list -->
+
+      <!-- ===================== PIPELINE VIEW ===================== -->
+      <div id="view-pipeline" hidden>
+        <div class="pipe-toolbar">
+          <div class="sortmenu">
+            <button class="btn btn-secondary" id="pipeSortBtn">
+              <span class="material-symbols-outlined">swap_vert</span>
+              <span id="pipeSortLabel">Nach Fälligkeitsdatum sortieren</span>
+              <span class="material-symbols-outlined" style="font-size:18px">expand_more</span>
+            </button>
+            <div class="sortmenu-pop" id="pipeSortPop" hidden>
+              <button data-dir="newest"><span class="material-symbols-outlined check">check</span>Fälligkeitsdatum – neueste zuerst</button>
+              <button data-dir="oldest"><span class="material-symbols-outlined check">check</span>Fälligkeitsdatum – älteste zuerst</button>
+              <button data-dir="none"><span class="material-symbols-outlined check">check</span>Sortierung aufheben</button>
+            </div>
+          </div>
+          <span class="pipe-hint"><span class="material-symbols-outlined">drag_indicator</span> Karten per Drag &amp; Drop zwischen Spalten verschieben</span>
+        </div>
+        <div class="board" id="board"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+<div id="toast"><span class="material-symbols-outlined">swap_vert</span><span id="toast-text"></span></div>
+
+<script>
+/* ============================================================
+   TODAY (prototype reference date) = 2026-07-23
+============================================================ */
+const TODAY = new Date(2026, 6, 23);
+const DAY = 86400000;
+
+function deDate(d) {
+  return String(d.getDate()).padStart(2,'0') + '.' +
+         String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+}
+function due(d) { return { date: d, iso: d.getTime() }; }
+
+/* Each row may have ToDos, each with a due date + title.
+   Sorting the ToDo column sorts rows by their EARLIEST open due date. */
+const DATA = [
+  { name:"Andrii Bugai", volume:166250, city:"München", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"23.07.2026 - 08:45", activityIso:Date.UTC(2026,6,23,8,45), neu:false, home:false,
+    todos:[{title:"Unterlagen anfordern", d:new Date(2026,7,5)}] },
+  { name:"Ivan Ivanovich", volume:310000, city:"Berlin", status:"Selbstauskunft gestartet", advisor:"Gernot Schusser", activity:"23.07.2026 - 08:42", activityIso:Date.UTC(2026,6,23,8,42), neu:false, home:false,
+    todos:[{title:"Selbstauskunft nachfassen", d:new Date(2026,6,24)}] },
+  { name:"QAShyann Zemlak", volume:151320, city:"Potsdam", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 17:14", activityIso:Date.UTC(2026,6,22,17,14), neu:false, home:true, todos:[] },
+  { name:"Test IMPORT NEW MAPI3776 IMPORT NEW", volume:451000, city:"Berlin", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 16:20", activityIso:Date.UTC(2026,6,22,16,20), neu:false, home:true, todos:[] },
+  { name:"asdas dasdasd", volume:-249992.76, city:"Ahrensfelde", status:"Selbstauskunft vollständig", advisor:"Gernot Schusser", activity:"22.07.2026 - 13:29", activityIso:Date.UTC(2026,6,22,13,29), neu:true, home:false,
+    todos:[{title:"Bonität prüfen", d:new Date(2026,6,18)}] },
+  { name:"iiivvv aaaannn", volume:307850, city:"Berlin", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 13:25", activityIso:Date.UTC(2026,6,22,13,25), neu:true, home:false, todos:[] },
+  { name:"Andrii Bugai", volume:166250, city:"München-Flughafen", status:"Selbstauskunft gestartet", advisor:"Gernot Schusser", activity:"22.07.2026 - 12:07", activityIso:Date.UTC(2026,6,22,12,7), neu:true, home:false,
+    todos:[{title:"Rückruf vereinbaren", d:new Date(2026,6,25)}] },
+  { name:"Andrii Bugai", volume:166250, city:"München", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 11:11", activityIso:Date.UTC(2026,6,22,11,11), neu:true, home:false, todos:[] },
+  { name:"Andrii Bugai", volume:166250, city:"München", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 11:06", activityIso:Date.UTC(2026,6,22,11,6), neu:true, home:false, todos:[] },
+  { name:"murat ehyphtest2", volume:101570, city:"Berlin", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"22.07.2026 - 10:19", activityIso:Date.UTC(2026,6,22,10,19), neu:false, home:true, todos:[] },
+  { name:"Luis Gamero", volume:301089, city:"Berlin", status:"Selbstauskunft gestartet", advisor:"Gernot Schusser", activity:"21.07.2026 - 13:43", activityIso:Date.UTC(2026,6,21,13,43), neu:true, home:false,
+    todos:[{title:"Termin bestätigen", d:new Date(2026,6,30)}] },
+  { name:"Mudasir test", volume:1070700, city:"München", status:"Selbstauskunft vollständig", advisor:"Gernot Schusser", activity:"21.07.2026 - 12:49", activityIso:Date.UTC(2026,6,21,12,49), neu:false, home:true,
+    todos:[{title:"Objektunterlagen prüfen", d:new Date(2026,6,15)},{title:"Finanzierungsvorschlag", d:new Date(2026,6,28)}] },
+  { name:"luis gamero", volume:396000, city:"Berlin", status:"Selbstauskunft gestartet", advisor:"Gernot Schusser", activity:"20.07.2026 - 12:45", activityIso:Date.UTC(2026,6,20,12,45), neu:true, home:true, todos:[] },
+  { name:"Artur Morgan", volume:338566.30, city:"Borkum", status:"Selbstauskunft vollständig", advisor:"Gernot Schusser", activity:"17.07.2026 - 16:44", activityIso:Date.UTC(2026,6,17,16,44), neu:true, home:false,
+    todos:[{title:"Kreditvertrag vorbereiten", d:new Date(2026,6,10)}] },
+  { name:"Sara Gamarra", volume:338000, city:"Berlin", status:"Anfrage erstellt", advisor:"Octavio Herrera Guardiola", activity:"17.07.2026 - 14:49", activityIso:Date.UTC(2026,6,17,14,49), neu:false, home:true,
+    todos:[{title:"Erstberatung dokumentieren", d:new Date(2026,6,12)}] },
+  { name:"Aliyah-S Reichel-CIO", volume:567445, city:"Berlin", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"17.07.2026 - 14:36", activityIso:Date.UTC(2026,6,17,14,36), neu:true, home:true,
+    todos:[{title:"Bonität prüfen", d:new Date(2026,6,16)}] },
+  { name:"Artur Morgan", volume:5498500, city:"Adelebsen", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"17.07.2026 - 14:35", activityIso:Date.UTC(2026,6,17,14,35), neu:true, home:true, todos:[] },
+  { name:"Yvonne-S Just-CIO", volume:567445, city:"Berlin", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"17.07.2026 - 14:25", activityIso:Date.UTC(2026,6,17,14,25), neu:true, home:true,
+    todos:[{title:"Selbstauskunft nachfassen", d:new Date(2026,6,17)}] },
+  { name:"Maxime Musterfraus", volume:170000, city:"Oberursel (Taunus)", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"17.07.2026 - 09:54", activityIso:Date.UTC(2026,6,17,9,54), neu:false, home:true, todos:[] },
+  { name:"iva ivava", volume:325700, city:"Berlin", status:"Selbstauskunft gestartet", advisor:"53Rohirrim", activity:"17.07.2026 - 09:16", activityIso:Date.UTC(2026,6,17,9,16), neu:false, home:false,
+    todos:[{title:"Angebot versenden", d:new Date(2026,7,12)}] },
+  { name:"Jonas Vollmer", volume:289000, city:"Hamburg", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"16.07.2026 - 15:02", activityIso:Date.UTC(2026,6,16,15,2), neu:false, home:false, todos:[] },
+  { name:"Petra Lindqvist", volume:412300, city:"Köln", status:"Selbstauskunft vollständig", advisor:"Gernot Schusser", activity:"16.07.2026 - 11:20", activityIso:Date.UTC(2026,6,16,11,20), neu:false, home:true,
+    todos:[{title:"Nachweise anfordern", d:new Date(2026,6,20)}] },
+  { name:"Ömer Yıldız", volume:198500, city:"Stuttgart", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"15.07.2026 - 17:41", activityIso:Date.UTC(2026,6,15,17,41), neu:false, home:false, todos:[] },
+  { name:"Claudia Berg", volume:734900, city:"Frankfurt am Main", status:"Selbstauskunft gestartet", advisor:"Octavio Herrera Guardiola", activity:"15.07.2026 - 09:08", activityIso:Date.UTC(2026,6,15,9,8), neu:false, home:true,
+    todos:[{title:"Termin bestätigen", d:new Date(2026,6,23)}] },
+  { name:"Robert Hoffmann", volume:255000, city:"Bremen", status:"Anfrage erstellt", advisor:"Gernot Schusser", activity:"14.07.2026 - 16:33", activityIso:Date.UTC(2026,6,14,16,33), neu:false, home:false, todos:[] },
+];
+
+/* urgency bucket from due date */
+function bucket(d) {
+  const diff = Math.floor((d - TODAY) / DAY);
+  if (diff < 0) return 'overdue';
+  if (diff <= 3) return 'soon';
+  return 'later';
+}
+const BUCKET_LABEL = { overdue:'Überfällig', soon:'Bald fällig', later:'Fällig' };
+
+/* earliest due timestamp for a row, or Infinity if no todos */
+function earliestDue(row) {
+  if (!row.todos || !row.todos.length) return Infinity;
+  return Math.min(...row.todos.map(t => t.d.getTime()));
+}
+
+function fmtEuro(v) {
+  const s = new Intl.NumberFormat('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}).format(v);
+  return s + ' €';
+}
+
+/* ---------------- RENDER ---------------- */
+const rowsEl = document.getElementById('rows');
+
+function renderTodoCell(row) {
+  if (!row.todos || !row.todos.length) return '<span class="todo-empty">—</span>';
+  const sorted = [...row.todos].sort((a,b)=>a.d - b.d);
+  const shown = sorted.slice(0,2);
+  let html = '<span class="todo-cell">';
+  shown.forEach(t => {
+    const b = bucket(t.d);
+    html += `<span class="todo-chip ${b}" data-tt-title="${t.title}" data-tt-sub="${BUCKET_LABEL[b]} · Fälligkeit ${deDate(t.d)}">`
+          + `<span class="material-symbols-outlined">${b==='overdue'?'priority_high':'check'}</span></span>`;
+  });
+  if (sorted.length > 2) html += `<span class="todo-more">+${sorted.length-2}</span>`;
+  html += '</span>';
+  return html;
+}
+
+function render(list) {
+  rowsEl.innerHTML = list.map(row => `
+    <tr>
+      <td class="row-check"><input type="checkbox"/></td>
+      <td><span class="name-cell">
+        <span class="applicant">${row.name}</span>
+        ${row.home ? '<span class="material-symbols-outlined ico-home">home</span>' : ''}
+        ${row.neu ? '<span class="tag-neu">Neu</span>' : ''}
+      </span></td>
+      <td class="num ${row.volume<0?'neg':''}">${fmtEuro(row.volume)}</td>
+      <td>${row.city}</td>
+      <td>${row.status}</td>
+      <td>${row.advisor}</td>
+      <td>${row.activity}</td>
+      <td>${renderTodoCell(row)}</td>
+      <td></td>
+    </tr>
+  `).join('');
+}
+
+/* ---------------- SORTING ---------------- */
+let current = { key:null, dir:null }; // dir: 'asc' | 'desc' ; for todo: 'earliest' | 'latest'
+let working = [...DATA];
+
+function clearHeaderStates() {
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.classList.remove('sorted');
+    th.querySelector('.sort-ico').textContent = 'unfold_more';
+  });
+  document.getElementById('todoIco').textContent = 'unfold_more';
+  document.querySelector('th[data-key="todo"]').classList.remove('sorted');
+}
+
+function applyGenericSort(key, dir) {
+  const collator = new Intl.Collator('de', { numeric:true, sensitivity:'base' });
+  working = [...DATA].sort((a,b) => {
+    let av, bv, cmp;
+    if (key === 'volume') { av=a.volume; bv=b.volume; cmp = av-bv; }
+    else if (key === 'activity') { cmp = a.activityIso - b.activityIso; }
+    else { cmp = collator.compare(String(a[key]), String(b[key])); }
+    return dir === 'asc' ? cmp : -cmp;
+  });
+  render(working);
+}
+
+function applyTodoSort(dir) {
+  // dir 'earliest' → ascending due date ; 'latest' → descending.
+  // Rows without todos always sink to the bottom.
+  working = [...DATA].sort((a,b) => {
+    const ae = earliestDue(a), be = earliestDue(b);
+    if (ae === Infinity && be === Infinity) return 0;
+    if (ae === Infinity) return 1;
+    if (be === Infinity) return -1;
+    return dir === 'earliest' ? ae - be : be - ae;
+  });
+  render(working);
+}
+
+/* generic column headers */
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    const dir = (current.key === key && current.dir === 'asc') ? 'desc' : 'asc';
+    current = { key, dir };
+    clearHeaderStates();
+    th.classList.add('sorted');
+    th.querySelector('.sort-ico').textContent = dir === 'asc' ? 'arrow_upward' : 'arrow_downward';
+    applyGenericSort(key, dir);
+  });
+});
+
+/* ToDo column — special cycle: earliest → latest → earliest … */
+const todoBtn = document.getElementById('todoSort');
+const todoIco = document.getElementById('todoIco');
+const todoTh  = document.querySelector('th[data-key="todo"]');
+
+function todoState() { return current.key === 'todo' ? current.dir : null; }
+
+/* the tooltip PREVIEWS what a click will do next */
+function todoTooltip() {
+  const next = nextTodoDir();
+  return {
+    title: 'Sortieren nach Fälligkeit',
+    sub: next === 'earliest' ? 'Früheste zuerst' : 'Späteste zuerst'
+  };
+}
+function nextTodoDir() {
+  const s = todoState();
+  if (s === 'earliest') return 'latest';   // currently earliest → click gives latest
+  return 'earliest';                        // none or latest → click gives earliest
+}
+
+todoBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const dir = nextTodoDir();
+  current = { key:'todo', dir };
+  clearHeaderStates();
+  todoTh.classList.add('sorted');
+  todoIco.textContent = dir === 'earliest' ? 'arrow_upward' : 'arrow_downward';
+  applyTodoSort(dir);
+  showToast(dir === 'earliest'
+    ? 'Sortiert nach Fälligkeit — Früheste zuerst'
+    : 'Sortiert nach Fälligkeit — Späteste zuerst');
+  // refresh tooltip text to reflect the new "next action"
+  if (tooltipTarget === todoBtn) positionTooltip(todoBtn, todoTooltip());
+});
+
+/* ---------------- TOOLTIP ENGINE ---------------- */
+const tip = document.getElementById('tooltip');
+let tooltipTarget = null;
+
+function positionTooltip(el, content) {
+  tip.innerHTML = `<div class="tt-title">${content.title}</div>` +
+                  (content.sub ? `<div class="tt-sub">${content.sub}</div>` : '');
+  const r = el.getBoundingClientRect();
+  tip.style.display = 'block';
+  const tr = tip.getBoundingClientRect();
+  let left = r.left + r.width/2 - tr.width/2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tr.width - 8));
+  const top = r.bottom + 10;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.style.setProperty('--arrow-x', (r.left + r.width/2 - left - 5) + 'px');
+  requestAnimationFrame(() => tip.classList.add('show'));
+}
+function hideTooltip() {
+  tip.classList.remove('show');
+  tooltipTarget = null;
+}
+
+/* ToDo sort icon tooltip */
+todoBtn.addEventListener('mouseenter', () => { tooltipTarget = todoBtn; positionTooltip(todoBtn, todoTooltip()); });
+todoBtn.addEventListener('mouseleave', hideTooltip);
+todoBtn.addEventListener('focus',      () => { tooltipTarget = todoBtn; positionTooltip(todoBtn, todoTooltip()); });
+todoBtn.addEventListener('blur',       hideTooltip);
+
+/* per-ToDo chip tooltips (delegated) */
+rowsEl.addEventListener('mouseover', (e) => {
+  const chip = e.target.closest('.todo-chip');
+  if (!chip) return;
+  tooltipTarget = chip;
+  positionTooltip(chip, { title: chip.dataset.ttTitle, sub: chip.dataset.ttSub });
+});
+rowsEl.addEventListener('mouseout', (e) => {
+  if (e.target.closest('.todo-chip')) hideTooltip();
+});
+
+/* ---------------- TOAST ---------------- */
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toast-text');
+let toastTimer;
+function showToast(msg) {
+  toastText.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* select-all */
+document.getElementById('check-all').addEventListener('change', (e) => {
+  document.querySelectorAll('#rows input[type=checkbox]').forEach(c => c.checked = e.target.checked);
+});
+
+/* ============================================================
+   PIPELINE (KANBAN) VIEW
+============================================================ */
+const COLUMNS = [
+  { id:'c1', title:'Anfrage erstellt',                count:'7328 Anträge', sum:'6.3B €'   },
+  { id:'c2', title:'Selbstauskunft gestartet',        count:'1014 Anträge', sum:'9.8B €'   },
+  { id:'c3', title:'Selbstauskunft vollständig',      count:'325 Anträge',  sum:'372.1M €' },
+  { id:'c4', title:'Finanzierungsvorschläge erstellt',count:'428 Anträge',  sum:'306M €'   },
+  { id:'c5', title:'Finanzierung angefragt',          count:'179 Anträge',  sum:'76.7M €'  },
+  { id:'c6', title:'Kreditprüfung eingereicht',       count:'3 Anträge',    sum:'1M €'     },
+  { id:'c7', title:'Kreditprüfung in Bearbeitung',    count:'1 Antrag',     sum:'533.2K €' },
+  { id:'c8', title:'Finanzierung bestätigt',          count:'46 Anträge',   sum:'25.5M €'  },
+];
+
+// td helper: t=title, k=kind ('action'|'info'), d=due date (optional)
+function td(t, k, d) { return { t, k, d: d || null }; }
+const D = (m, day) => new Date(2026, m-1, day);
+
+let PIPE = [
+  // ---- c1: Anfrage erstellt ----
+  { col:'c1', name:'Test IMPORT NEW MAPI3776 IMPORT NEW', sub:'451.000 € · 10115 Berlin', home:true },
+  { col:'c1', name:'iiivvv aaaannn', sub:'307.850 € · 12689 Berlin', neu:true },
+  { col:'c1', name:'Andrii Bugai', sub:'166.250 € · 80331 München', neu:true },
+  { col:'c1', name:'Andrii Bugai', sub:'166.250 € · 80331 München', neu:true },
+  { col:'c1', name:'murat ehyphtest2', sub:'101.570 € · 10179 Berlin', home:true },
+  { col:'c1', name:'QAShyann Zemlak', sub:'151.320 € · 14461 Potsdam' },
+  { col:'c1', name:'Sara Gamarra', sub:'338.000 € · 10557 Berlin', todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,12))] },
+  { col:'c1', name:'Artur Morgan', sub:'5.498.500 € · 37139 Adelebsen', neu:true },
+  { col:'c1', name:'Ivantest Domnich', sub:'567.445 € · 16356 Ahrensfelde', neu:true, todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,16))] },
+
+  // ---- c2: Selbstauskunft gestartet ----
+  { col:'c2', name:'Andrii Bugai', sub:'166.250 € · 85356 München-Flughafen', neu:true, todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,25))] },
+  { col:'c2', name:'Ivan Ivanovich', sub:'310.000 € · 12689 Berlin', neu:true, todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,24))] },
+  { col:'c2', name:'Luis Gamero', sub:'301.089 € · 10777 Berlin', neu:true },
+  { col:'c2', name:'luis gamero', sub:'396.000 € · 10559 Berlin', neu:true, home:true },
+  { col:'c2', name:'Maxime Musterfrau', sub:'170.000 € · 61440 Oberursel (Taunus)', home:true },
+  { col:'c2', name:'Karina Hoffmann', sub:'296.280 € · 12435 Berlin', home:true, todos:[td('Dokumente hochgeladen','info'), td('Der Kunde hat Dokumente zur Pr…','action',D(7,20)), td('x','action'), td('y','action')] },
+  { col:'c2', name:'Erika von Beer', sub:'515.000 € · 13189 Berlin', home:true },
+  { col:'c2', name:'murat testehyphome', sub:'331.021 € · 12689 Berlin', home:true, todos:[td('Benedikt test','action',D(7,14))] },
+  { col:'c2', name:'iva ivava', sub:'325.700 € · 12689 Berlin', home:true },
+  { col:'c2', name:'Test Dominik', sub:'225.500 € · 24796 Bredenbek', home:true, todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,11))] },
+
+  // ---- c3: Selbstauskunft vollständig ----
+  { col:'c3', name:'asdas dasdasd', sub:'-249.993 € · 16356 Ahrensfelde', neu:true, todos:[td('Antrag prüfen - Kunde hat Selbstaus…','action',D(7,18))] },
+  { col:'c3', name:'Artur Morgan', sub:'338.566 € · 26757 Borkum', neu:true, todos:[td('Antrag prüfen - Kunde hat Selbstaus…','action',D(7,10))] },
+  { col:'c3', name:'GabTest a3419aba', sub:'353.125 € · 22307 Hamburg', home:true },
+  { col:'c3', name:'Luis Gamero', sub:'136.000 € · 10559 Berlin', neu:true, todos:[td('Dokumente hochgeladen','info'), td('Der Kunde hat Dokumente zur Pr…','action',D(7,22)), td('x','action')] },
+  { col:'c3', name:'Octavio Herrera', sub:'1.321.000 € · 10557 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat Selbstaus…','action',D(7,13))] },
+  { col:'c3', name:'luis gamero', sub:'360.560 € · 10559 Berlin', home:true },
+  { col:'c3', name:'t t', sub:'257.625 € · 04229 Leipzig', home:true, todos:[td('Kunden t t zurückrufen','action',D(7,9)), td('x','action'), td('y','action')] },
+  { col:'c3', name:'Luis 3', sub:'144.000 € · 10559 Berlin', home:true, todos:[td('Kunde möchte Selbstauskunft än…','action',D(7,17)), td('x','action'), td('y','action')] },
+  { col:'c3', name:'Luis Gamero', sub:'375.700 € · 10559 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat Selbstaus…','action',D(7,21))] },
+
+  // ---- c4: Finanzierungsvorschläge erstellt ----
+  { col:'c4', name:'GabTest a3419aba', sub:'353.125 € · 22307 Hamburg', home:true, todos:[td('Potentielle Antragsdubletten prüfen…','action',D(7,15))] },
+  { col:'c4', name:'James Rivarola', sub:'3.318 € · 12049 Berlin', home:true },
+  { col:'c4', name:'Stefan Wen', sub:'100.278 € · 80333 München', home:true, tags:[{l:'Urlaubsvertretung',c:'blue'},{l:'+1',c:'gray'}], todos:[td('Erunfie','action',D(7,23)), td('x','action'), td('y','action'), td('z','action')] },
+  { col:'c4', name:'Lou Bulle', sub:'447.500 € · 22081 Hamburg', home:true },
+  { col:'c4', name:'Maxime Musterfrau1805_1', sub:'127.438 € · 61440 Oberursel (Taunus)', home:true },
+  { col:'c4', name:'mama mam', sub:'728.110 € · 10117 Berlin', home:true, todos:[td('Dokumente hochgeladen','info')] },
+  { col:'c4', name:'vikas rent5540', sub:'52.000 € · 10117 Berlin', home:true },
+  { col:'c4', name:'Daniel Läufer', sub:'299.091 € · 40477 Düsseldorf', home:true },
+  { col:'c4', name:'Karina Hoffmann', sub:'296.280 € · 12435 Berlin', home:true, tags:[{l:'blue card1',c:'teal'},{l:'practice',c:'red'}], todos:[td('Kunde möchte Selbstauskunft än…','action',D(7,8)), td('a','action'),td('b','action'),td('c','action'),td('d','action'),td('e','action')] },
+  { col:'c4', name:'offer benedikt', sub:'98.500 € · 22946 Dahmker', home:true, todos:[td('Antrag prüfen - Kunde hat ein Angeb…','action',D(7,26))] },
+  { col:'c4', name:'Suresh offerapplied78h2', sub:'475.000 € · 10115 Berlin', home:true },
+
+  // ---- c5: Finanzierung angefragt ----
+  { col:'c5', name:'zero loann', sub:'0 € · 10179 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(7,27))] },
+  { col:'c5', name:'Erika Mustermann', sub:'0 € · 63225 Langen (Hessen)', home:true, tags:[{l:'ING',c:'orange'},{l:'Urlaubsvertretung',c:'blue'},{l:'+1',c:'gray'}], todos:[td('Antrag prüfen - Kunde hat ein …','action',D(7,28)), td('a','action'),td('b','action'),td('c','action')] },
+  { col:'c5', name:'Maxime Musterfrau020226', sub:'198.000 € · 61440 Oberursel (Taunus)', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(7,29)), td('x','action')] },
+  { col:'c5', name:'offer search benedikt', sub:'82.284 € · 48341 Altenberge', home:true, todos:[td('Ölk','action',D(7,30)), td('x','action'), td('y','action')] },
+  { col:'c5', name:'Christian Lükens', sub:'111.500 € · 31547 Rehburg-Loccum', home:true, todos:[td('Add a new ToDo for 3 applicati…','action',D(7,31)), td('a','action'),td('b','action'),td('c','action'),td('d','action'),td('e','action')] },
+  { col:'c5', name:"Don't touch If you are no Ben4", sub:'148.968 € · 53902 Bad Münstereifel', home:true, todos:[td('Antrag prüfen - Kunde hat eine…','action',D(8,1)), td('x','action')] },
+  { col:'c5', name:'Suresh offerappliedyaea', sub:'475.000 € · 10115 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(8,2))] },
+  { col:'c5', name:'Suresh offerappliede639', sub:'475.000 € · 10115 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(8,3))] },
+
+  // ---- c6: Kreditprüfung eingereicht ----
+  { col:'c6', name:'Stefan Wen', sub:'100.278 € · 80333 München', home:true, tags:[{l:'Blub',c:'gray'}], todos:[td('Blub','action',D(7,23))] },
+  { col:'c6', name:'mortgagehubone benedikt', sub:'492.850 € · 49844 Bawinkel', home:true, todos:[td('Dokumente hochgeladen','info'), td('Antrag prüfen - Kunde hat eine…','action',D(7,19)), td('x','action')] },
+  { col:'c6', name:'Sarah Testerado', sub:'426.280 € · 10247 Berlin', home:true, todos:[td('Dokumente hochgeladen','info'), td('Antrag prüfen - Kunde hat eine…','action',D(7,26)), td('x','action')] },
+
+  // ---- c7: Kreditprüfung in Bearbeitung ----
+  { col:'c7', name:'gab 1019-4', sub:'533.150 € · 22309 Hamburg', home:true, tags:[{l:'Reklamiert',c:'red'}], todos:[td('1234','action',D(7,20)), td('x','action'), td('y','action')] },
+
+  // ---- c8: Finanzierung bestätigt ----
+  { col:'c8', name:'Stefan Wen', sub:'100.278 € · 80333 München', home:true, tags:[{l:'Gewonnen',c:'green'}], todos:[td('Anschlussfinanzierung (78.594,…','action',D(8,5)), ...Array(27).fill(td('x','action'))] },
+  { col:'c8', name:'gabÖä 1019-5', sub:'533.125 € · 22301 Hamburg', home:true, todos:[td('Antrag prüfen - Kunde hat eine…','action',D(7,28)), td('x','action')] },
+  { col:'c8', name:'gab 1019', sub:'533.150 € · 22305 Hamburg', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(7,25))] },
+  { col:'c8', name:'Anzak Leadingggg13', sub:'367.890 € · 13059 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(7,22))] },
+  { col:'c8', name:'Stefan Stehula', sub:'108.000 € · 35232 Dautphetal', home:true, tags:[{l:'Gewonnen',c:'green'},{l:'skyline',c:'teal'},{l:'blue card1',c:'teal'}], todos:[td('A New ToDo','action',D(8,10))] },
+  { col:'c8', name:'vikas emailcheck12', sub:'347.500 € · 24796 Bredenbek', home:true },
+  { col:'c8', name:'vikas vikko', sub:'345.000 € · 10179 Berlin', home:true, todos:[td('Antrag prüfen - Kunde hat eine Fina…','action',D(7,30))] },
+  { col:'c8', name:'Kevin Knorr', sub:'94.000 € · 75323 Bad Wildbad (Calmba…', home:true, tags:[{l:'Gewonnen',c:'green'}] },
+  { col:'c8', name:'Jochen Wöhrle', sub:'1.000.000 € · 88090 Immenstaad am Boden…', home:true },
+  { col:'c8', name:'Tim Laube', sub:'237.000 € · 27777 Ganderkesee', home:true, tags:[{l:'Gewonnen',c:'green'}] },
+];
+// stamp an id + original index + a sortable due date (earliest action todo) on each card
+PIPE.forEach((c, i) => {
+  c.id = 'p' + i;
+  c._i = i;
+  const dated = (c.todos || []).filter(t => t.d).map(t => t.d.getTime());
+  c.due = dated.length ? Math.min(...dated) : null;
+});
+
+const boardEl = document.getElementById('board');
+
+function renderCardTodos(c) {
+  if (!c.todos || !c.todos.length) return '';
+  const first = c.todos[0];
+  const extra = c.todos.length - 1;
+  let cls = first.k === 'info' ? 'info' : 'action';
+  if (first.k === 'action' && first.d && bucket(first.d) === 'soon') cls = 'action soon';
+  const icon = first.k === 'info' ? 'description' : 'check';
+  let html = '<div class="pcard-todos"><div class="ptodo ' + cls + '">'
+    + '<span class="pt-ico"><span class="material-symbols-outlined">' + icon + '</span></span>'
+    + '<span class="pt-txt">' + first.t + '</span>'
+    + (extra > 0 ? '<span class="pt-more">+' + extra + '</span>' : '')
+    + '</div></div>';
+  return html;
+}
+
+function renderCard(c) {
+  const chips = [];
+  if (c.neu) chips.push('<span class="pchip neu">Neu</span>');
+  (c.tags || []).forEach(t => chips.push('<span class="pchip ' + (t.c || 'gray') + '">' + t.l + '</span>'));
+  const chipRow = chips.length ? '<div class="pcard-chips">' + chips.join('') + '</div>' : '';
+  const dueLine = c.due
+    ? '<div class="pcard-due"><span class="material-symbols-outlined">event</span>Nächste Fälligkeit: ' + deDate(new Date(c.due)) + '</div>'
+    : '';
+  return '<div class="pcard" draggable="true" data-id="' + c.id + '">'
+    + (c.home ? '<span class="pcard-home material-symbols-outlined">home</span>' : '')
+    + chipRow
+    + '<div class="pcard-name">' + c.name + '</div>'
+    + '<div class="pcard-sub">' + c.sub + '</div>'
+    + renderCardTodos(c)
+    + dueLine
+    + '</div>';
+}
+
+function renderPipeline() {
+  boardEl.innerHTML = COLUMNS.map(col => {
+    const cards = PIPE.filter(c => c.col === col.id);
+    return '<section class="pcol">'
+      + '<div class="pcol-head">'
+      +   '<div class="pcol-title">' + col.title + ' <span class="material-symbols-outlined info">info</span></div>'
+      +   '<div class="pcol-meta">' + col.count + ' : ' + col.sum + '</div>'
+      + '</div>'
+      + '<div class="pcol-body" data-col="' + col.id + '">' + cards.map(renderCard).join('') + '</div>'
+      + '</section>';
+  }).join('');
+  attachDnD();
+}
+
+/* ---------------- DRAG & DROP ---------------- */
+let draggedId = null;
+
+function attachDnD() {
+  boardEl.querySelectorAll('.pcard').forEach(card => {
+    card.addEventListener('dragstart', () => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      boardEl.querySelectorAll('.pcol-body').forEach(b => b.classList.remove('drag-over'));
+    });
+  });
+  boardEl.querySelectorAll('.pcol-body').forEach(body => {
+    body.addEventListener('dragover', e => { e.preventDefault(); body.classList.add('drag-over'); });
+    body.addEventListener('dragleave', e => { if (!body.contains(e.relatedTarget)) body.classList.remove('drag-over'); });
+    body.addEventListener('drop', e => {
+      e.preventDefault();
+      body.classList.remove('drag-over');
+      if (!draggedId) return;
+      const targetCol = body.dataset.col;
+      const beforeId = cardBeforeWhichToInsert(body, e.clientY);
+      moveCard(draggedId, targetCol, beforeId);
+    });
+  });
+}
+
+function cardBeforeWhichToInsert(body, y) {
+  const cards = [...body.querySelectorAll('.pcard:not(.dragging)')];
+  for (const el of cards) {
+    const r = el.getBoundingClientRect();
+    if (y < r.top + r.height / 2) return el.dataset.id;
+  }
+  return null; // append at end
+}
+
+function moveCard(id, targetCol, beforeId) {
+  const idx = PIPE.findIndex(c => c.id === id);
+  if (idx === -1) return;
+  const [card] = PIPE.splice(idx, 1);
+  card.col = targetCol;
+  if (beforeId) {
+    const bi = PIPE.findIndex(c => c.id === beforeId);
+    PIPE.splice(bi, 0, card);
+  } else {
+    // append after the last card currently in the target column
+    let lastIdx = -1;
+    PIPE.forEach((c, i) => { if (c.col === targetCol) lastIdx = i; });
+    PIPE.splice(lastIdx + 1, 0, card);
+  }
+  renderPipeline();
+  const moved = boardEl.querySelector('[data-id="' + id + '"]');
+  if (moved) { moved.classList.add('sort-flash'); setTimeout(() => moved.classList.remove('sort-flash'), 500); }
+}
+
+/* ---------------- PIPELINE SORT ---------------- */
+let pipeSort = 'none';
+const pipeSortBtn = document.getElementById('pipeSortBtn');
+const pipeSortLabel = document.getElementById('pipeSortLabel');
+const pipeSortPop = document.getElementById('pipeSortPop');
+const SORT_LABELS = {
+  none:   'Nach Fälligkeitsdatum sortieren',
+  newest: 'Fälligkeit: neueste zuerst',
+  oldest: 'Fälligkeit: älteste zuerst',
+};
+
+pipeSortBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  pipeSortPop.hidden = !pipeSortPop.hidden;
+});
+document.addEventListener('click', () => { pipeSortPop.hidden = true; });
+pipeSortPop.addEventListener('click', e => e.stopPropagation());
+
+pipeSortPop.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    pipeSort = btn.dataset.dir;
+    applyPipeSort(pipeSort);
+    pipeSortLabel.textContent = SORT_LABELS[pipeSort];
+    pipeSortBtn.classList.toggle('active-sort', pipeSort !== 'none');
+    pipeSortPop.querySelectorAll('button').forEach(b => b.classList.toggle('selected', b.dataset.dir === pipeSort));
+    pipeSortPop.hidden = true;
+    if (pipeSort !== 'none') showToast('Karten sortiert — ' + (pipeSort === 'newest' ? 'Fälligkeit, neueste zuerst' : 'Fälligkeit, älteste zuerst'));
+  });
+});
+
+function applyPipeSort(dir) {
+  const byCol = {};
+  COLUMNS.forEach(c => byCol[c.id] = []);
+  PIPE.forEach(c => byCol[c.col].push(c));
+  Object.values(byCol).forEach(list => {
+    list.sort((a, b) => {
+      if (dir === 'none') return a._i - b._i;
+      if (a.due === null && b.due === null) return a._i - b._i;
+      if (a.due === null) return 1;   // no ToDo → bottom
+      if (b.due === null) return -1;
+      return dir === 'newest' ? b.due - a.due : a.due - b.due;
+    });
+  });
+  PIPE = COLUMNS.flatMap(c => byCol[c.id]);
+  renderPipeline();
+}
+
+/* ---------------- VIEW TOGGLE ---------------- */
+const segList = document.getElementById('seg-list');
+const segPipe = document.getElementById('seg-pipe');
+const viewList = document.getElementById('view-list');
+const viewPipe = document.getElementById('view-pipeline');
+let pipeBuilt = false;
+
+function showList() {
+  viewList.hidden = false; viewPipe.hidden = true;
+  segList.classList.add('active'); segPipe.classList.remove('active');
+}
+function showPipeline() {
+  viewList.hidden = true; viewPipe.hidden = false;
+  segPipe.classList.add('active'); segList.classList.remove('active');
+  if (!pipeBuilt) { renderPipeline(); pipeBuilt = true; }
+}
+segList.addEventListener('click', showList);
+segPipe.addEventListener('click', showPipeline);
+
+/* initial paint */
+render(DATA);
+</script>
+</body>
+</html>

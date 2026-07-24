@@ -1,0 +1,349 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - navigation [ref=e8]:
+        - link "wb_sunny Mein Tag 8" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e10]: wb_sunny
+          - generic [ref=e11]: Mein Tag
+          - generic [ref=e12]: "8"
+        - link "folder_shared Anträge" [ref=e13] [cursor=pointer]:
+          - /url: todo-sorting-v1.html
+          - generic [ref=e14]: folder_shared
+          - generic [ref=e15]: Anträge
+        - link "person Leads" [ref=e16] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e17]: person
+          - generic [ref=e18]: Leads
+        - link "hub Quellen" [ref=e19] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e20]: hub
+          - generic [ref=e21]: Quellen
+        - link "apartment Unternehmen" [ref=e22] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e23]: apartment
+          - generic [ref=e24]: Unternehmen
+        - link "receipt_long Buchhaltung" [ref=e25] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e26]: receipt_long
+          - generic [ref=e27]: Buchhaltung
+        - link "bar_chart Reporting" [ref=e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e29]: bar_chart
+          - generic [ref=e30]: Reporting
+        - link "storefront Lead-Shop warning" [ref=e31] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e32]: storefront
+          - generic [ref=e33]: Lead-Shop
+          - generic [ref=e34]: warning
+        - link "mail E-Mail" [ref=e35] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e36]: mail
+          - generic [ref=e37]: E-Mail
+        - link "settings System" [ref=e38] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e39]: settings
+          - generic [ref=e40]: System
+    - generic [ref=e41]:
+      - banner [ref=e42]:
+        - button "auto_awesome" [ref=e43] [cursor=pointer]
+        - button "add" [ref=e45] [cursor=pointer]
+        - button "notifications 29" [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]: notifications
+          - generic [ref=e49]: "29"
+        - button "help" [ref=e50] [cursor=pointer]
+        - button "DE expand_more" [ref=e52] [cursor=pointer]:
+          - text: DE
+          - generic [ref=e53]: expand_more
+        - generic [ref=e55] [cursor=pointer]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Gernot Schusser
+            - generic [ref=e59]: Finanzberater
+          - generic [ref=e60]: expand_more
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - heading "Mein Tag" [level=1] [ref=e64]
+            - paragraph [ref=e65]: Freitag, 24. Juli 2026
+          - button "cloud_upload Kunde lädt Dokument hoch" [ref=e66] [cursor=pointer]:
+            - generic [ref=e67]: cloud_upload
+            - text: Kunde lädt Dokument hoch
+        - generic [ref=e68]:
+          - button "add To do hinzufügen" [ref=e69] [cursor=pointer]:
+            - generic [ref=e70]: add
+            - text: To do hinzufügen
+          - generic [ref=e71]:
+            - generic: search
+            - textbox "Suche" [ref=e72]:
+              - /placeholder: Suchen nach Kundennummer, To do …
+            - generic: /
+          - button "person Person expand_more" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: person
+            - text: Person
+            - generic [ref=e76]: expand_more
+          - button "flag Status expand_more" [ref=e78] [cursor=pointer]:
+            - generic [ref=e79]: flag
+            - text: Status
+            - generic [ref=e80]: expand_more
+          - generic [ref=e81]:
+            - button "Heute & überfällig" [ref=e82] [cursor=pointer]
+            - button "Alle offenen" [ref=e83] [cursor=pointer]
+          - generic [ref=e84] [cursor=pointer]:
+            - checkbox "Erledigte" [ref=e85]
+            - text: Erledigte
+          - generic "Zeilendichte" [ref=e86]:
+            - button "density_medium" [ref=e87] [cursor=pointer]
+            - button "density_small" [ref=e89] [cursor=pointer]
+        - table [ref=e92]:
+          - rowgroup [ref=e93]:
+            - row [ref=e94]:
+              - columnheader "Erledigt" [ref=e95]
+              - columnheader "To do unfold_more" [ref=e97] [cursor=pointer]:
+                - generic [ref=e98]:
+                  - text: To do
+                  - generic [ref=e99]: unfold_more
+              - columnheader "Fälligkeitsdatum arrow_upward" [ref=e100] [cursor=pointer]:
+                - generic [ref=e101]:
+                  - text: Fälligkeitsdatum
+                  - generic [ref=e102]: arrow_upward
+              - columnheader "Status unfold_more" [ref=e103] [cursor=pointer]:
+                - generic [ref=e104]:
+                  - text: Status
+                  - generic [ref=e105]: unfold_more
+              - columnheader "Person unfold_more" [ref=e106] [cursor=pointer]:
+                - generic [ref=e107]:
+                  - text: Person
+                  - generic [ref=e108]: unfold_more
+              - columnheader "Tags" [ref=e109]
+              - columnheader [ref=e110]
+          - rowgroup [ref=e111]:
+            - row [ref=e112]:
+              - cell [ref=e113]:
+                - checkbox "Als erledigt markieren" [ref=e114] [cursor=pointer]
+              - cell "Selbstauskunft von Familie Weber prüfen sticky_note_2" [ref=e115]:
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Selbstauskunft von Familie Weber prüfen
+                  - generic "Notiz vorhanden" [ref=e118]: sticky_note_2
+              - cell "schedule vor 3 Tagen · 09:00 21.07.2026" [ref=e119]:
+                - generic [ref=e120]:
+                  - generic [ref=e121]:
+                    - generic [ref=e122]: schedule
+                    - text: vor 3 Tagen · 09:00
+                  - generic [ref=e123]: 21.07.2026
+              - cell [ref=e124]
+              - cell [ref=e127]:
+                - generic [ref=e128]:
+                  - link "Familie Weber" [ref=e129] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e130] [cursor=pointer]
+              - cell [ref=e132]:
+                - button "Dokumente" [ref=e134] [cursor=pointer]
+              - cell [ref=e135]:
+                - button "Aktionen" [ref=e136] [cursor=pointer]:
+                  - generic [ref=e137]: more_vert
+            - row [ref=e138]:
+              - cell [ref=e139]:
+                - checkbox "Als erledigt markieren" [ref=e140] [cursor=pointer]
+              - 'cell "Rückruf: offene Fragen zur Finanzierung" [ref=e141]'
+              - cell "schedule vor 2 Tagen · 14:00 22.07.2026" [ref=e144]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]:
+                    - generic [ref=e147]: schedule
+                    - text: vor 2 Tagen · 14:00
+                  - generic [ref=e148]: 22.07.2026
+              - cell [ref=e149]
+              - cell [ref=e152]:
+                - generic [ref=e153]:
+                  - link "Thomas Berger" [ref=e154] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e155] [cursor=pointer]
+              - cell [ref=e157]:
+                - button "Rückruf" [ref=e159] [cursor=pointer]
+              - cell [ref=e160]:
+                - button "Aktionen" [ref=e161] [cursor=pointer]:
+                  - generic [ref=e162]: more_vert
+            - row [ref=e163]:
+              - cell [ref=e164]:
+                - checkbox "Als erledigt markieren" [ref=e165] [cursor=pointer]
+              - cell "Bonitätsunterlagen nachfordern sticky_note_2" [ref=e166]:
+                - generic [ref=e167]:
+                  - generic [ref=e168]: Bonitätsunterlagen nachfordern
+                  - generic "Notiz vorhanden" [ref=e169]: sticky_note_2
+              - cell "schedule Gestern 23.07.2026" [ref=e170]:
+                - generic [ref=e171]:
+                  - generic [ref=e172]:
+                    - generic [ref=e173]: schedule
+                    - text: Gestern
+                  - generic [ref=e174]: 23.07.2026
+              - cell [ref=e175]
+              - cell [ref=e178]:
+                - generic [ref=e179]:
+                  - link "Sandra Klein" [ref=e180] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e181] [cursor=pointer]
+              - cell [ref=e183]:
+                - button "Dokumente" [ref=e185] [cursor=pointer]
+              - cell [ref=e186]:
+                - button "Aktionen" [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]: more_vert
+            - row [ref=e189]:
+              - cell [ref=e190]:
+                - checkbox "Als erledigt markieren" [ref=e191] [cursor=pointer]
+              - cell "Angebot Lassestraße finalisieren sticky_note_2" [ref=e192]:
+                - generic [ref=e193]:
+                  - generic [ref=e194]: Angebot Lassestraße finalisieren
+                  - generic "Notiz vorhanden" [ref=e195]: sticky_note_2
+              - cell "schedule Heute · 08:00 24.07.2026" [ref=e196]:
+                - generic [ref=e197]:
+                  - generic [ref=e198]:
+                    - generic [ref=e199]: schedule
+                    - text: Heute · 08:00
+                  - generic [ref=e200]: 24.07.2026
+              - cell [ref=e201]
+              - cell [ref=e204]:
+                - generic [ref=e205]:
+                  - link "Familie Öztürk" [ref=e206] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e207] [cursor=pointer]
+              - cell [ref=e209]:
+                - button "Angebot" [ref=e211] [cursor=pointer]
+              - cell [ref=e212]:
+                - button "Aktionen" [ref=e213] [cursor=pointer]:
+                  - generic [ref=e214]: more_vert
+            - row [ref=e215]:
+              - cell [ref=e216]:
+                - checkbox "Als erledigt markieren" [ref=e217] [cursor=pointer]
+              - cell "Termin mit Michael Braun vorbereiten" [ref=e218]
+              - cell "schedule Heute · 11:30 24.07.2026" [ref=e221]:
+                - generic [ref=e222]:
+                  - generic [ref=e223]:
+                    - generic [ref=e224]: schedule
+                    - text: Heute · 11:30
+                  - generic [ref=e225]: 24.07.2026
+              - cell [ref=e226]
+              - cell [ref=e229]:
+                - generic [ref=e230]:
+                  - link "Michael Braun" [ref=e231] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e232] [cursor=pointer]
+              - cell [ref=e234]:
+                - button "Termin" [ref=e236] [cursor=pointer]
+              - cell [ref=e237]:
+                - button "Aktionen" [ref=e238] [cursor=pointer]:
+                  - generic [ref=e239]: more_vert
+            - row [ref=e240]:
+              - cell [ref=e241]:
+                - checkbox "Als erledigt markieren" [ref=e242] [cursor=pointer]
+              - cell "Wochenreport an Teamleitung senden" [ref=e243]
+              - cell "schedule Heute · 16:00 24.07.2026" [ref=e246]:
+                - generic [ref=e247]:
+                  - generic [ref=e248]:
+                    - generic [ref=e249]: schedule
+                    - text: Heute · 16:00
+                  - generic [ref=e250]: 24.07.2026
+              - cell [ref=e251]
+              - cell "Ohne Person" [ref=e254]
+              - cell [ref=e255]:
+                - button "Intern" [ref=e257] [cursor=pointer]
+              - cell [ref=e258]:
+                - button "Aktionen" [ref=e259] [cursor=pointer]:
+                  - generic [ref=e260]: more_vert
+            - row [ref=e261]:
+              - cell [ref=e262]:
+                - checkbox "Als erledigt markieren" [ref=e263] [cursor=pointer]
+              - cell "Dokumente von Familie Weber prüfen Neu sticky_note_2" [ref=e264]:
+                - generic [ref=e265]:
+                  - generic [ref=e266]: Dokumente von Familie Weber prüfen
+                  - generic [ref=e267]: Neu
+                  - generic "Notiz vorhanden" [ref=e268]: sticky_note_2
+              - cell "schedule Heute 24.07.2026" [ref=e269]:
+                - generic [ref=e270]:
+                  - generic [ref=e271]:
+                    - generic [ref=e272]: schedule
+                    - text: Heute
+                  - generic [ref=e273]: 24.07.2026
+              - cell [ref=e274]
+              - cell [ref=e277]:
+                - generic [ref=e278]:
+                  - link "Familie Weber" [ref=e279] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e280] [cursor=pointer]
+              - cell [ref=e282]:
+                - button "Dokumente" [ref=e284] [cursor=pointer]
+              - cell [ref=e285]:
+                - button "Aktionen" [ref=e286] [cursor=pointer]:
+                  - generic [ref=e287]: more_vert
+            - row [ref=e288]:
+              - cell [ref=e289]:
+                - checkbox "Als erledigt markieren" [ref=e290] [cursor=pointer]
+              - cell "Potentielle Antragsdubletten prüfen Neu sticky_note_2" [ref=e291]:
+                - generic [ref=e292]:
+                  - generic [ref=e293]: Potentielle Antragsdubletten prüfen
+                  - generic [ref=e294]: Neu
+                  - generic "Notiz vorhanden" [ref=e295]: sticky_note_2
+              - cell "schedule Morgen 25.07.2026" [ref=e296]:
+                - generic [ref=e297]:
+                  - generic [ref=e298]:
+                    - generic [ref=e299]: schedule
+                    - text: Morgen
+                  - generic [ref=e300]: 25.07.2026
+              - cell [ref=e301]
+              - cell [ref=e304]:
+                - generic [ref=e305]:
+                  - link "Dr. Andreas Vogel" [ref=e306] [cursor=pointer]:
+                    - /url: "#"
+                  - button "info" [ref=e307] [cursor=pointer]
+              - cell [ref=e309]:
+                - button "Prüfung" [ref=e311] [cursor=pointer]
+              - cell [ref=e312]:
+                - button "Aktionen" [ref=e313] [cursor=pointer]:
+                  - generic [ref=e314]: more_vert
+        - generic [ref=e315]:
+          - generic [ref=e316]:
+            - generic [ref=e317]: Einträge pro Seite
+            - combobox [ref=e318]:
+              - option "10"
+              - option "25" [selected]
+              - option "50"
+          - generic [ref=e319]:
+            - generic [ref=e320]: 1–8 von 8
+            - button "chevron_left" [disabled] [ref=e321]
+            - button "chevron_right" [disabled] [ref=e323]
+  - dialog "To do bearbeiten" [ref=e355]:
+    - generic [ref=e326]:
+      - heading "To do hinzufügen" [level=2] [ref=e356]
+      - button "close" [ref=e357] [cursor=pointer]
+    - generic [ref=e330]:
+      - generic [ref=e331]:
+        - generic [ref=e332]: Titel *
+        - textbox "Titel *" [active] [ref=e358]:
+          - /placeholder: Was ist zu tun?
+      - generic [ref=e334]:
+        - generic [ref=e335]: Fälligkeitsdatum
+        - textbox "Fälligkeitsdatum" [ref=e359]: 2026-07-24
+      - generic [ref=e337]:
+        - generic [ref=e338]: Person (optional)
+        - textbox "Person (optional)" [ref=e360]:
+          - /placeholder: Kundennummer oder Name …
+        - generic [ref=e341]: Ohne Person = eigenes To do ohne Kundenbezug.
+      - generic [ref=e342]:
+        - generic [ref=e343]: Tags
+        - textbox "Tag eingeben + Enter" [ref=e361]
+        - generic [ref=e362]:
+          - button "+ Dokumente" [ref=e363] [cursor=pointer]
+          - button "+ Rückruf" [ref=e364] [cursor=pointer]
+          - button "+ Termin" [ref=e365] [cursor=pointer]
+          - button "+ Angebot" [ref=e366] [cursor=pointer]
+          - button "+ Prüfung" [ref=e367] [cursor=pointer]
+          - button "+ Intern" [ref=e368] [cursor=pointer]
+          - button "+ Lead" [ref=e369] [cursor=pointer]
+      - generic [ref=e346]:
+        - generic [ref=e347]: Notiz (optional)
+        - textbox "Notiz (optional)" [ref=e370]:
+          - /placeholder: Zusätzliche Details …
+    - generic [ref=e349]:
+      - button "check Speichern" [ref=e371] [cursor=pointer]:
+        - generic [ref=e351]: check
+        - text: Speichern
+      - button "Speichern & neues" [ref=e372] [cursor=pointer]
+      - button "Abbrechen" [ref=e373] [cursor=pointer]
