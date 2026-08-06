@@ -117,7 +117,7 @@
       position: absolute; left: 9px; font-size: 18px; color: var(--color-neutral-dark-300); pointer-events: none;
     }
     .search-input {
-      width: 280px; padding: 8px 12px 8px 32px; border: 1px solid var(--color-neutral-light-500);
+      width: 340px; padding: 8px 34px 8px 32px; border: 1px solid var(--color-neutral-light-500);
       border-radius: var(--radius-s); font-size: 14px; color: var(--color-neutral-dark-900);
       background: var(--color-neutral-light-000);
     }
@@ -254,18 +254,12 @@
     .risk-icon { color: var(--color-error-500); font-size: 22px; flex-shrink: 0; }
     .risk-text { font-size: 14px; color: var(--color-neutral-dark-900); }
     .risk-text b { font-weight: 700; }
-    .risk-toggle { margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; border: none; background: none;
-      cursor: pointer; color: var(--color-primary-600); font-weight: 500; font-size: 13px; padding: 4px 6px; border-radius: var(--radius-s); }
-    .risk-toggle:hover { background: var(--color-primary-100); }
-    .risk-toggle .chev { font-size: 20px; transition: transform var(--transition-base); }
-    .risk.open .risk-toggle .chev { transform: rotate(180deg); }
-    .risk-list { display: none; padding: 2px 14px 10px 44px; }
-    .risk.open .risk-list { display: block; }
-    .risk-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--color-neutral-light-300, #E4E7EC); }
-    .risk-name { color: var(--color-primary-600); font-weight: 500; text-decoration: none; }
-    .risk-name:hover { text-decoration: underline; }
-    .risk-amp { color: var(--color-neutral-dark-300); }
-    .risk-home { color: var(--color-neutral-dark-400); font-size: 18px; }
+    .risk-open { margin-left: 4px; flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center;
+      justify-content: center; border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-radius: var(--radius-full);
+      background: var(--color-neutral-light-000, #fff); cursor: pointer; color: var(--color-neutral-dark-900);
+      box-shadow: var(--shadow-xs); transition: background var(--transition-base), border-color var(--transition-base); }
+    .risk-open:hover { background: var(--color-primary-100); border-color: var(--color-primary-500); color: var(--color-primary-600); }
+    .risk-open .material-symbols-outlined { font-size: 18px; }
 
     /* ---------- TABLE ---------- */
     .table-wrap { flex-shrink: 0; overflow-x: auto; background: var(--color-neutral-light-000);
@@ -286,9 +280,8 @@
     th.sorted .th-inner .material-symbols-outlined { opacity: 1; color: var(--color-primary-600); }
     th.sortable:hover .th-inner .material-symbols-outlined { opacity: .5; }
 
-    /* density */
-    :root { --row-pad-y: 12px; }
-    body.compact { --row-pad-y: 6px; }
+    /* density (compact only) */
+    :root { --row-pad-y: 6px; }
 
     table.todos tbody td {
       padding: var(--row-pad-y) 12px; border-bottom: 1px solid var(--color-neutral-light-200);
@@ -296,7 +289,7 @@
       font-size: var(--body-regular-size); vertical-align: middle;
     }
     table.todos tbody td:last-child { border-right: none; }
-    body.compact table.todos tbody td { font-size: 13px; }
+    table.todos tbody td { font-size: 13px; }
     table.todos tbody tr { position: relative; transition: background var(--transition-fast); }
     table.todos tbody tr:hover { background: var(--color-neutral-light-100); }
     table.todos tbody tr.row-focus { background: var(--color-primary-100); }
@@ -318,7 +311,7 @@
     td.cell-check { width: 40px; text-align: center; padding-right: 0; }
     .rcheck {
       -webkit-appearance: none; appearance: none; margin: 0;
-      width: 20px; height: 20px; border: 2px solid var(--color-neutral-light-500);
+      width: 20px; height: 20px; border: 1px solid var(--color-neutral-light-500);
       border-radius: 50%; cursor: pointer; position: relative; background: var(--color-neutral-light-000);
       transition: border-color var(--transition-fast), background var(--transition-fast);
       display: inline-block; vertical-align: middle;
@@ -353,6 +346,15 @@
     }
     .pill .status-dot { width: 7px; height: 7px; }
 
+    /* status full-fill block (table cell) */
+    td.cell-status { padding: 0; }
+    .status-block {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; min-height: calc(var(--row-pad-y) * 2 + 20px);
+      padding: 0 10px; font-size: 13px; font-weight: 500; line-height: 1.3;
+      color: var(--color-neutral-light-000); text-align: center; white-space: nowrap;
+    }
+
     /* person cell */
     .person { display: inline-flex; align-items: center; gap: 4px; }
     .person-link { color: var(--color-primary-600); font-weight: 500; text-decoration: none; cursor: pointer; }
@@ -381,6 +383,30 @@
     .tag:hover { border-color: var(--color-primary-400); color: var(--color-primary-700); }
 
     /* inline row actions (next to title) */
+    /* custom tooltips (dark, rounded, downward caret) */
+    [data-tip] { position: relative; }
+    [data-tip]::after, [data-tip]::before {
+      position: absolute; opacity: 0; pointer-events: none;
+      transition: opacity var(--transition-fast) 0.05s; z-index: var(--z-toast);
+    }
+    [data-tip]::after {
+      content: attr(data-tip);
+      left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+      background: #2b2b33; color: #fff; font-size: 12px; font-weight: 500; line-height: 1.3;
+      white-space: nowrap; padding: 6px 10px; border-radius: 6px; box-shadow: var(--shadow-m);
+    }
+    [data-tip]::before {
+      content: ""; left: 50%; bottom: calc(100% + 3px); transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #2b2b33;
+    }
+    [data-tip]:hover::after, [data-tip]:hover::before { opacity: 1; }
+    /* below variant — for elements near the top edge (topbar) */
+    [data-tip-pos="below"]::after { bottom: auto; top: calc(100% + 8px); }
+    [data-tip-pos="below"]::before {
+      bottom: auto; top: calc(100% + 3px);
+      border-top-color: transparent; border-bottom-color: #2b2b33;
+    }
+
     .row-actions { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; }
     .row-act { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
       width: 26px; height: 26px; border-radius: var(--radius-s); display: inline-flex; align-items: center; justify-content: center;
@@ -558,10 +584,10 @@
   <!-- MAIN -->
   <div class="main">
     <header class="topbar">
-      <button class="top-icon sparkle" title="Assistent"><span class="material-symbols-outlined">auto_awesome</span></button>
-      <button class="top-icon" title="Neu"><span class="material-symbols-outlined">add</span></button>
-      <button class="top-icon" title="Benachrichtigungen"><span class="material-symbols-outlined">notifications</span><span class="top-badge">29</span></button>
-      <button class="top-icon" title="Hilfe"><span class="material-symbols-outlined">help</span></button>
+      <button class="top-icon sparkle" data-tip="Assistent" data-tip-pos="below"><span class="material-symbols-outlined">auto_awesome</span></button>
+      <button class="top-icon" data-tip="Neu" data-tip-pos="below"><span class="material-symbols-outlined">add</span></button>
+      <button class="top-icon" data-tip="Benachrichtigungen" data-tip-pos="below"><span class="material-symbols-outlined">notifications</span><span class="top-badge">29</span></button>
+      <button class="top-icon" data-tip="Hilfe" data-tip-pos="below"><span class="material-symbols-outlined">help</span></button>
       <button class="top-lang">DE <span class="material-symbols-outlined">expand_more</span></button>
       <div class="top-divider"></div>
       <div class="top-user">
@@ -587,12 +613,10 @@
         <div class="risk-head" id="riskHead">
           <span class="material-symbols-outlined risk-icon">warning</span>
           <span class="risk-text"><b id="riskCount">0</b> aktive Anträge haben keine To-do's</span>
-          <button class="risk-toggle" id="riskToggle" aria-expanded="false">
-            <span id="riskToggleText">anzeigen</span>
-            <span class="material-symbols-outlined chev">expand_more</span>
+          <button class="risk-open" id="riskToggle" title="Anträge in neuem Tab öffnen" aria-label="Anträge in neuem Tab öffnen">
+            <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
-        <div class="risk-list" id="riskList"></div>
       </div>
 
       <!-- TOOLBAR -->
@@ -610,6 +634,8 @@
           <span class="search-kbd desktop-only">/</span>
         </div>
 
+        <button class="btn btn-primary" id="btnAdd"><span class="material-symbols-outlined">add</span> To do hinzufügen</button>
+
         <div style="position:relative">
           <button class="btn btn-secondary" id="btnPerson"><span class="material-symbols-outlined">person</span> Antragsteller <span class="material-symbols-outlined">expand_more</span></button>
           <div class="menu" id="menuPerson"></div>
@@ -621,18 +647,11 @@
         </div>
 
         <div style="position:relative">
-          <button class="btn btn-secondary" id="btnBerater"><span class="material-symbols-outlined">filter_list</span> Berater <span class="btn-badge" id="beraterCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
+          <button class="btn btn-secondary" id="btnBerater"><span class="material-symbols-outlined">person</span> Berater <span class="btn-badge" id="beraterCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
           <div class="menu berater-menu" id="menuBerater"></div>
         </div>
 
         <div class="spacer"></div>
-
-        <button class="btn btn-primary" id="btnAdd"><span class="material-symbols-outlined">add</span> To do hinzufügen</button>
-
-        <div class="segmented desktop-only" id="densitySeg" title="Zeilendichte">
-          <button data-density="comfortable" class="active"><span class="material-symbols-outlined">density_medium</span></button>
-          <button data-density="compact"><span class="material-symbols-outlined">density_small</span></button>
-        </div>
 
         <button class="btn btn-secondary mobile-only" id="btnSortMobile"><span class="material-symbols-outlined">swap_vert</span> Sortieren</button>
       </div>
@@ -672,8 +691,8 @@
         </div>
         <div class="footer-right">
           <span id="rangeLabel">0–0 von 0</span>
-          <button class="pager-btn" id="prevPage" title="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
-          <button class="pager-btn" id="nextPage" title="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+          <button class="pager-btn" id="prevPage" data-tip="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
+          <button class="pager-btn" id="nextPage" data-tip="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
       </div>
     </div>
@@ -688,7 +707,7 @@
 <aside class="panel" id="panel" aria-hidden="true" role="dialog" aria-label="To do bearbeiten">
   <div class="panel-head">
     <h2 id="panelTitle">To do hinzufügen</h2>
-    <button class="top-icon" id="panelClose" title="Schließen (Esc)"><span class="material-symbols-outlined">close</span></button>
+    <button class="top-icon" id="panelClose" data-tip="Schließen (Esc)"><span class="material-symbols-outlined">close</span></button>
   </div>
   <div class="panel-body">
     <div class="field" id="fTitel">
@@ -726,7 +745,7 @@
   </div>
   <div class="panel-foot">
     <button class="btn btn-primary" id="btnSave"><span class="material-symbols-outlined">check</span> Speichern</button>
-    <button class="btn btn-secondary" id="btnSaveNew" title="Speichern und Formular für nächstes To do offen lassen">Speichern &amp; neues</button>
+    <button class="btn btn-secondary" id="btnSaveNew" data-tip="Speichern und Formular für nächstes To do offen lassen">Speichern &amp; neues</button>
     <div class="spacer"></div>
     <button class="btn btn-ghost" id="btnCancel">Abbrechen</button>
   </div>
@@ -903,6 +922,10 @@ function statusPill(st){
   const s = STATUS[st];
   return `<span class="pill" style="color:${s.color};background:${s.bg}"><span class="status-dot" style="background:${s.dot}"></span>${s.label}</span>`;
 }
+function statusBlock(st){
+  const s = STATUS[st];
+  return `<span class="status-block" style="background:${s.dot}">${s.label}</span>`;
+}
 function tagsHtml(tags){
   if(!tags || !tags.length) return '<span style="color:var(--color-neutral-dark-200)">–</span>';
   return `<div class="tags">${tags.map(t=>`<button class="tag" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;
@@ -912,22 +935,23 @@ function initials(name){ const p = name.trim().split(/\s+/); return ((p[0]||'')[
 function avatarColor(name){ let h=0; for(let i=0;i<name.length;i++) h=(h+name.charCodeAt(i))%AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
 function beraterHtml(name){
   if(!name) return '<span class="person-none">–</span>';
-  return `<span class="berater"><span class="avatar" style="background:${avatarColor(name)}" title="${esc(name)}">${esc(initials(name).toUpperCase())}</span><span class="berater-name">${esc(name)}</span></span>`;
+  return `<span class="berater"><span class="avatar" style="background:${avatarColor(name)}" data-tip="${esc(name)}">${esc(initials(name).toUpperCase())}</span><span class="berater-name">${esc(name)}</span></span>`;
 }
 function personHtml(t){
   if(!t.person) return '<span class="person-none">Ohne Antragsteller</span>';
   return `<span class="person"><a class="person-link" href="#">${esc(t.person.name)}</a>
-    <button class="person-info" data-kn="${esc(t.person.kundennummer)}" data-name="${esc(t.person.name)}" title="Kundeninfo"><span class="material-symbols-outlined">info</span></button></span>`;
+    <button class="person-info" data-kn="${esc(t.person.kundennummer)}" data-name="${esc(t.person.name)}" data-tip="Kundeninfo"><span class="material-symbols-outlined">info</span></button></span>`;
 }
 function dueHtml(t){
   return `<span class="due-line"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}</span>`;
 }
 const ROW_ACTIONS = `<span class="row-actions">
-  <button class="row-act" data-act="edit" title="Bearbeiten" aria-label="Bearbeiten"><span class="material-symbols-outlined">edit</span></button>
-  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button></span>`;
+  <button class="row-act" data-act="edit" data-tip="Bearbeiten" aria-label="Bearbeiten"><span class="material-symbols-outlined">edit</span></button>
+  <button class="row-act" data-act="verlauf" data-tip="Verlauf" aria-label="Verlauf"><span class="material-symbols-outlined">history</span></button>
+  <button class="row-act" data-act="delete" data-tip="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button></span>`;
 // Geburtstags-To-do: Kuchen-Icon + „Gruß senden"-Mail-Aktion
 const MAIL_ACTION = `<span class="row-actions">
-  <button class="row-act mail" data-act="mail" title="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button></span>`;
+  <button class="row-act mail" data-act="mail" data-tip="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button></span>`;
 function actionsFor(t){ return t.kind==='geburtstag' ? MAIL_ACTION : ROW_ACTIONS; }
 function titleHtml(t){
   if(t.kind==='geburtstag'){
@@ -935,7 +959,7 @@ function titleHtml(t){
   }
   const isNew = t.quelle==='system' && !t.quittiert;
   const badge = isNew ? '<span class="badge-new">Neu</span>' : '';
-  const note = t.notiz ? '<span class="material-symbols-outlined todo-note-ind" title="Notiz vorhanden">sticky_note_2</span>' : '';
+  const note = t.notiz ? '<span class="material-symbols-outlined todo-note-ind" data-tip="Notiz vorhanden">sticky_note_2</span>' : '';
   return `<div class="todo-main"><span class="todo-title">${esc(t.titel)}</span>${badge}${note}${ROW_ACTIONS}</div>`;
 }
 
@@ -960,7 +984,7 @@ function render(){
       </td>
       <td>${titleHtml(t)}</td>
       <td>${dueHtml(t)}</td>
-      <td>${statusPill(st)}</td>
+      <td class="cell-status">${statusBlock(st)}</td>
       <td>${personHtml(t)}</td>
       <td>${beraterHtml(t.berater)}</td>
       <td>${tagsHtml(t.tags)}</td>
@@ -1066,12 +1090,6 @@ $('#quickSeg').addEventListener('click', e => {
   state.quick = b.dataset.quick; state.page=0;
   document.querySelectorAll('#quickSeg button').forEach(x=>x.classList.toggle('active', x===b));
   render();
-});
-
-$('#densitySeg').addEventListener('click', e => {
-  const b = e.target.closest('button'); if(!b) return;
-  document.querySelectorAll('#densitySeg button').forEach(x=>x.classList.toggle('active', x===b));
-  document.body.classList.toggle('compact', b.dataset.density==='compact');
 });
 
 // sorting
@@ -1512,18 +1530,10 @@ function renderRisk(){
   if(!n){ banner.style.display = 'none'; return; }
   banner.style.display = '';
   $('#riskCount').textContent = n;
-  const link = (label, kn) => `<a class="risk-name" href="?antrag=${encodeURIComponent(kn)}" target="_blank" rel="noopener">${label}</a>`;
-  $('#riskList').innerHTML = ANTRAEGE_OHNE_TODO.map(a => {
-    const names = a.name2 ? `${esc(a.name1)}, ${esc(a.name2)}` : esc(a.name1);
-    const neu = a.neu ? '<span class="badge-new">Neu</span>' : '';
-    return `<div class="risk-item">${link(names, a.kn1)}<span class="material-symbols-outlined risk-home" title="Darlehensantrag">home</span>${neu}</div>`;
-  }).join('');
 }
-$('#riskHead').addEventListener('click', e => {
-  if(e.target.closest('.risk-name')) return;   // Namen-Links nicht abfangen
-  const open = $('#riskBanner').classList.toggle('open');
-  $('#riskToggleText').textContent = open ? 'ausblenden' : 'anzeigen';
-  $('#riskToggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+/* Mock: öffnet die Übersicht der Anträge ohne To-do in einem neuen Tab */
+$('#riskHead').addEventListener('click', () => {
+  window.open('?antraege-ohne-todo=1', '_blank', 'noopener');
 });
 
 /* ---------- init ---------- */
