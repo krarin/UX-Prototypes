@@ -1,0 +1,31 @@
+- generic [ref=f4e2]:
+  - link "← Alle Projekte" [ref=f4e3] [cursor=pointer]:
+    - /url: ../index.html
+  - paragraph [ref=f4e4]: Projekt
+  - heading "To do's" [level=1] [ref=f4e5]
+  - paragraph [ref=f4e6]: Prototypen
+  - generic [ref=f4e7]:
+    - generic [ref=f4e8]:
+      - generic [ref=f4e9]: Mein Tag · V1
+      - generic [ref=f4e10]: Mein Tag
+      - paragraph [ref=f4e11]: Zentrale To-do-Arbeitsfläche des Beraters. Dichte Tabelle mit Status-Stripe, Sortierung, Filtern & Suche, Abhaken mit Undo, Anlege-Panel, simuliertem System-Auslöser („Kunde lädt Dokument hoch"), Dichte-Toggle und Tastatur-Navigation. Responsiv Tabelle ↔ Kartenliste.
+      - link "Öffnen" [ref=f4e12] [cursor=pointer]:
+        - /url: mein-tag-v1.html
+    - generic [ref=f4e13]:
+      - generic [ref=f4e14]: Mein Tag · V2
+      - generic [ref=f4e15]: Mein Tag
+      - paragraph [ref=f4e16]: "Wie V1, plus Wochenkalender im Splitscreen: Kalender- und To-do-Pane einzeln ein-/ausklappbar, Wochennavigation (zurück / vor / Heute), Termine pro Tag. Feineres Häkchen in der Erledigt-Checkbox."
+      - link "Öffnen" [ref=f4e17] [cursor=pointer]:
+        - /url: mein-tag-v2.html
+    - generic [ref=f4e18]:
+      - generic [ref=f4e19]: Mein Tag · FINAL
+      - generic [ref=f4e20]: Mein Tag
+      - paragraph [ref=f4e21]: Stand nach dem Usability-Test, basiert auf V2. Die Status-Spalte ist entfallen – ihre Aussage steckt jetzt als Label („Überfällig / Heute / Morgen / Erledigt") direkt in der Spalte „Fälligkeit"; das Datum steht absolut daneben. Neuer Filter „Fälligkeit" filtert genau nach diesen Labels.
+      - link "Öffnen" [ref=f4e22] [cursor=pointer]:
+        - /url: mein-tag-final.html
+    - generic [ref=f4e23]:
+      - generic [ref=f4e24]: Prototype 1
+      - generic [ref=f4e25]: ToDo-Sortierung
+      - paragraph [ref=f4e26]: Anträge-Liste mit sortierbaren Spalten – ToDo-Spalte sortiert nach Fälligkeit (früheste/späteste zuerst). Umschaltbar auf Pipeline-Ansicht mit verschiebbaren Karten (Drag & Drop) und Sortierung nach Fälligkeitsdatum.
+      - link "Öffnen" [ref=f4e27] [cursor=pointer]:
+        - /url: todo-sorting-v1.html

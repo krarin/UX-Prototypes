@@ -1,0 +1,776 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - navigation [ref=e8]:
+        - link "assignment_turned_in To do's 12" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e10]: assignment_turned_in
+          - generic [ref=e11]: To do's
+          - generic [ref=e12]: "12"
+        - link "folder_shared Anträge" [ref=e13] [cursor=pointer]:
+          - /url: todo-sorting-v1.html
+          - generic [ref=e14]: folder_shared
+          - generic [ref=e15]: Anträge
+        - link "person Leads" [ref=e16] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e17]: person
+          - generic [ref=e18]: Leads
+        - link "hub Quellen" [ref=e19] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e20]: hub
+          - generic [ref=e21]: Quellen
+        - link "apartment Unternehmen" [ref=e22] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e23]: apartment
+          - generic [ref=e24]: Unternehmen
+        - link "receipt_long Buchhaltung" [ref=e25] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e26]: receipt_long
+          - generic [ref=e27]: Buchhaltung
+        - link "bar_chart Reporting" [ref=e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e29]: bar_chart
+          - generic [ref=e30]: Reporting
+        - link "storefront Lead-Shop warning" [ref=e31] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e32]: storefront
+          - generic [ref=e33]: Lead-Shop
+          - generic [ref=e34]: warning
+        - link "mail E-Mail" [ref=e35] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e36]: mail
+          - generic [ref=e37]: E-Mail
+        - link "settings System" [ref=e38] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e39]: settings
+          - generic [ref=e40]: System
+    - generic [ref=e41]:
+      - banner [ref=e42]:
+        - button "auto_awesome" [ref=e43] [cursor=pointer]
+        - button "add" [ref=e45] [cursor=pointer]
+        - button "notifications 29" [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]: notifications
+          - generic [ref=e49]: "29"
+        - button "help" [ref=e50] [cursor=pointer]
+        - button "DE expand_more" [ref=e52] [cursor=pointer]:
+          - text: DE
+          - generic [ref=e53]: expand_more
+        - generic [ref=e55] [cursor=pointer]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Gernot Schusser
+            - generic [ref=e59]: Finanzberater
+          - generic [ref=e60]: expand_more
+        - 'generic "Prototyp-Schalter: Kennzahlen-Karten (Arbeitslast heute/morgen, Leads, Provision) ein-/ausblenden" [ref=e62] [cursor=pointer]':
+          - checkbox "monitoring Arbeitslast"
+          - generic [ref=e64]:
+            - generic [ref=e65]: monitoring
+            - generic [ref=e66]: Arbeitslast
+      - generic [ref=e67]:
+        - generic [ref=e69]:
+          - generic [ref=e70]: assignment_turned_in
+          - heading "To do's" [level=1] [ref=e72]
+          - generic [ref=e73]:
+            - textbox "Suche" [ref=e74]:
+              - /placeholder: Suchen nach Kundennummer, To do …
+            - generic: /
+            - generic: search
+        - generic [ref=e77] [cursor=pointer]:
+          - generic [ref=e78]: warning
+          - generic [ref=e79]: 3 aktive Anträge haben keine To-do's
+          - button "Anträge in neuem Tab öffnen" [ref=e80]:
+            - generic [ref=e81]: arrow_forward
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - button "Heute fällig" [ref=e84] [cursor=pointer]
+            - button "Morgen fällig" [ref=e85] [cursor=pointer]
+            - button "Alle" [ref=e86] [cursor=pointer]
+            - button "Erledigte" [ref=e87] [cursor=pointer]
+          - button "event Fälligkeit expand_more" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]: event
+            - text: Fälligkeit
+            - generic [ref=e91]: expand_more
+          - button "sell Art expand_more" [ref=e93] [cursor=pointer]:
+            - generic [ref=e94]: sell
+            - text: Art
+            - generic [ref=e95]: expand_more
+          - button "person Berater expand_more" [ref=e97] [cursor=pointer]:
+            - generic [ref=e98]: person
+            - text: Berater
+            - generic [ref=e99]: expand_more
+          - button "swap_vert Sortieren 1 expand_more" [ref=e101] [cursor=pointer]:
+            - generic [ref=e102]: swap_vert
+            - text: Sortieren
+            - generic [ref=e103]: "1"
+            - generic [ref=e104]: expand_more
+          - button "calendar_month Kalender" [pressed] [ref=e105] [cursor=pointer]:
+            - generic [ref=e106]: calendar_month
+            - text: Kalender
+          - generic "Zeilendichte" [ref=e107]:
+            - button "density_medium" [ref=e108] [cursor=pointer]
+            - button "density_small" [ref=e110] [cursor=pointer]
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - generic [ref=e115]:
+                - generic [ref=e116]: checklist
+                - text: To-dos
+              - button "chevron_left" [ref=e117] [cursor=pointer]
+            - generic [ref=e119]:
+              - table [ref=e121]:
+                - rowgroup [ref=e122]:
+                  - row [ref=e123]:
+                    - columnheader "Erledigt" [ref=e124]
+                    - columnheader "To do unfold_more" [ref=e126] [cursor=pointer]:
+                      - generic [ref=e127]:
+                        - text: To do
+                        - generic [ref=e128]: unfold_more
+                    - columnheader "Fälligkeit arrow_upward" [ref=e129] [cursor=pointer]:
+                      - generic [ref=e130]:
+                        - text: Fälligkeit
+                        - generic [ref=e131]: arrow_upward
+                    - columnheader "Antragsteller unfold_more" [ref=e132] [cursor=pointer]:
+                      - generic [ref=e133]:
+                        - text: Antragsteller
+                        - generic [ref=e134]: unfold_more
+                - rowgroup [ref=e135]:
+                  - button "To do hinzufügen" [ref=e136] [cursor=pointer]:
+                    - cell [ref=e137]
+                    - cell "add To do hinzufügen" [ref=e138]:
+                      - generic [ref=e139]:
+                        - generic [ref=e140]: add
+                        - text: To do hinzufügen
+                - rowgroup [ref=e141]:
+                  - row [ref=e142]:
+                    - cell [ref=e143]:
+                      - checkbox "Als erledigt markieren" [ref=e144] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Selbstauskunft von Andreas Weber prüfen Verlauf anzeigen Löschen" [ref=e145]':
+                      - generic [ref=e146]:
+                        - 'img "Art: Unterlagen" [ref=e147]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e148]: Selbstauskunft von Andreas Weber prüfen
+                        - generic [ref=e149]:
+                          - button "Verlauf anzeigen" [ref=e150] [cursor=pointer]:
+                            - generic [ref=e151]: history
+                          - button "Löschen" [ref=e152] [cursor=pointer]:
+                            - generic [ref=e153]: delete
+                    - cell "Überfällig schedule Di, 21.07. · 09:00 Fälligkeit um einen Tag verschieben, auf 22.07.2026" [ref=e154]:
+                      - generic [ref=e155]:
+                        - generic [ref=e156]: Überfällig
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e158]:
+                          - generic [ref=e159]: schedule
+                          - text: Di, 21.07. · 09:00
+                        - button "Fälligkeit um einen Tag verschieben, auf 22.07.2026" [ref=e160] [cursor=pointer]: +1 Tag
+                    - cell "Andreas Weber , Claudia Weber Kontaktdaten der Antragsteller anzeigen" [ref=e161]:
+                      - generic [ref=e162]:
+                        - link "Andreas Weber" [ref=e163] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e164]: ","
+                        - link "Claudia Weber" [ref=e165] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e166] [cursor=pointer]:
+                          - generic [ref=e167]: info
+                  - row [ref=e168]:
+                    - cell [ref=e169]:
+                      - checkbox "Als erledigt markieren" [ref=e170] [cursor=pointer]
+                    - 'cell "Art: Rückruf Rückruf: offene Fragen zur Finanzierung Verlauf anzeigen Löschen" [ref=e171]':
+                      - generic [ref=e172]:
+                        - 'img "Art: Rückruf" [ref=e173]': phone_in_talk
+                        - generic "Klicken, um den Titel zu ändern" [ref=e174]: "Rückruf: offene Fragen zur Finanzierung"
+                        - generic [ref=e175]:
+                          - button "Verlauf anzeigen" [ref=e176] [cursor=pointer]:
+                            - generic [ref=e177]: history
+                          - button "Löschen" [ref=e178] [cursor=pointer]:
+                            - generic [ref=e179]: delete
+                    - cell "Überfällig schedule Mi, 22.07. · 14:00 Fälligkeit um einen Tag verschieben, auf 23.07.2026" [ref=e180]:
+                      - generic [ref=e181]:
+                        - generic [ref=e182]: Überfällig
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e184]:
+                          - generic [ref=e185]: schedule
+                          - text: Mi, 22.07. · 14:00
+                        - button "Fälligkeit um einen Tag verschieben, auf 23.07.2026" [ref=e186] [cursor=pointer]: +1 Tag
+                    - cell [ref=e187]:
+                      - generic [ref=e188]:
+                        - link "Thomas Berger" [ref=e189] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e190] [cursor=pointer]:
+                          - generic [ref=e191]: info
+                  - row [ref=e192]:
+                    - cell [ref=e193]:
+                      - checkbox "Als erledigt markieren" [ref=e194] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Bonitätsunterlagen nachfordern Verlauf anzeigen Löschen" [ref=e195]':
+                      - generic [ref=e196]:
+                        - 'img "Art: Unterlagen" [ref=e197]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e198]: Bonitätsunterlagen nachfordern
+                        - generic [ref=e199]:
+                          - button "Verlauf anzeigen" [ref=e200] [cursor=pointer]:
+                            - generic [ref=e201]: history
+                          - button "Löschen" [ref=e202] [cursor=pointer]:
+                            - generic [ref=e203]: delete
+                    - cell "Überfällig schedule Do, 23.07. Fälligkeit um einen Tag verschieben, auf 24.07.2026" [ref=e204]:
+                      - generic [ref=e205]:
+                        - generic [ref=e206]: Überfällig
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e208]:
+                          - generic [ref=e209]: schedule
+                          - text: Do, 23.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 24.07.2026" [ref=e210] [cursor=pointer]: +1 Tag
+                    - cell [ref=e211]:
+                      - generic [ref=e212]:
+                        - link "Sandra Klein" [ref=e213] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e214] [cursor=pointer]:
+                          - generic [ref=e215]: info
+                  - row [ref=e216]:
+                    - cell [ref=e217]:
+                      - checkbox "Als erledigt markieren" [ref=e218] [cursor=pointer]
+                    - 'cell "Art: Aufgabe Angebot Lassestraße finalisieren Verlauf anzeigen Löschen" [ref=e219]':
+                      - generic [ref=e220]:
+                        - 'img "Art: Aufgabe" [ref=e221]': assignment
+                        - generic "Klicken, um den Titel zu ändern" [ref=e222]: Angebot Lassestraße finalisieren
+                        - generic [ref=e223]:
+                          - button "Verlauf anzeigen" [ref=e224] [cursor=pointer]:
+                            - generic [ref=e225]: history
+                          - button "Löschen" [ref=e226] [cursor=pointer]:
+                            - generic [ref=e227]: delete
+                    - cell "Heute schedule Fr, 24.07. · 08:00 Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e228]:
+                      - generic [ref=e229]:
+                        - generic [ref=e230]: Heute
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e232]:
+                          - generic [ref=e233]: schedule
+                          - text: Fr, 24.07. · 08:00
+                        - button "Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e234] [cursor=pointer]: +1 Tag
+                    - cell "Mehmet Öztürk , Elif Öztürk Kontaktdaten der Antragsteller anzeigen" [ref=e235]:
+                      - generic [ref=e236]:
+                        - link "Mehmet Öztürk" [ref=e237] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e238]: ","
+                        - link "Elif Öztürk" [ref=e239] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e240] [cursor=pointer]:
+                          - generic [ref=e241]: info
+                  - row [ref=e242]:
+                    - cell [ref=e243]:
+                      - checkbox "Als erledigt markieren" [ref=e244] [cursor=pointer]
+                    - 'cell "Art: Termin Termin mit Michael Braun vorbereiten Verlauf anzeigen Löschen" [ref=e245]':
+                      - generic [ref=e246]:
+                        - 'img "Art: Termin" [ref=e247]': event
+                        - generic "Klicken, um den Titel zu ändern" [ref=e248]: Termin mit Michael Braun vorbereiten
+                        - generic [ref=e249]:
+                          - button "Verlauf anzeigen" [ref=e250] [cursor=pointer]:
+                            - generic [ref=e251]: history
+                          - button "Löschen" [ref=e252] [cursor=pointer]:
+                            - generic [ref=e253]: delete
+                    - cell "Heute schedule Fr, 24.07. · 11:30 Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e254]:
+                      - generic [ref=e255]:
+                        - generic [ref=e256]: Heute
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e258]:
+                          - generic [ref=e259]: schedule
+                          - text: Fr, 24.07. · 11:30
+                        - button "Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e260] [cursor=pointer]: +1 Tag
+                    - cell [ref=e261]:
+                      - generic [ref=e262]:
+                        - link "Michael Braun" [ref=e263] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e264] [cursor=pointer]:
+                          - generic [ref=e265]: info
+                  - row [ref=e266]:
+                    - cell [ref=e267]:
+                      - checkbox "Als erledigt markieren" [ref=e268] [cursor=pointer]
+                    - 'cell "Art: Kundendokument Dokumente von Andreas Weber prüfen Neu Verlauf anzeigen Löschen" [ref=e269]':
+                      - generic [ref=e270]:
+                        - 'img "Art: Kundendokument" [ref=e271]': cloud_upload
+                        - generic "Klicken, um den Titel zu ändern" [ref=e272]: Dokumente von Andreas Weber prüfen
+                        - generic [ref=e273]: Neu
+                        - generic [ref=e274]:
+                          - button "Verlauf anzeigen" [ref=e275] [cursor=pointer]:
+                            - generic [ref=e276]: history
+                          - button "Löschen" [ref=e277] [cursor=pointer]:
+                            - generic [ref=e278]: delete
+                    - cell "Heute schedule Fr, 24.07. Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e279]:
+                      - generic [ref=e280]:
+                        - generic [ref=e281]: Heute
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e283]:
+                          - generic [ref=e284]: schedule
+                          - text: Fr, 24.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 25.07.2026" [ref=e285] [cursor=pointer]: +1 Tag
+                    - cell "Andreas Weber , Claudia Weber Kontaktdaten der Antragsteller anzeigen" [ref=e286]:
+                      - generic [ref=e287]:
+                        - link "Andreas Weber" [ref=e288] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e289]: ","
+                        - link "Claudia Weber" [ref=e290] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e291] [cursor=pointer]:
+                          - generic [ref=e292]: info
+                  - row [ref=e293]:
+                    - cell [ref=e294]:
+                      - checkbox "Als erledigt markieren" [ref=e295] [cursor=pointer]
+                    - 'cell "Art: Geburtstag Michael Braun hat heute Geburtstag Verlauf anzeigen Geburtstagsgruß senden" [ref=e296]':
+                      - generic [ref=e297]:
+                        - 'img "Art: Geburtstag" [ref=e298]': cake
+                        - generic [ref=e299]: Michael Braun hat heute Geburtstag
+                        - generic [ref=e300]:
+                          - button "Verlauf anzeigen" [ref=e301] [cursor=pointer]:
+                            - generic [ref=e302]: history
+                          - button "Geburtstagsgruß senden" [ref=e303] [cursor=pointer]:
+                            - generic [ref=e304]: mail
+                    - cell "Heute schedule Fr, 24.07." [ref=e305]:
+                      - generic [ref=e306]:
+                        - generic [ref=e307]: Heute
+                        - generic [ref=e309]:
+                          - generic [ref=e310]: schedule
+                          - text: Fr, 24.07.
+                    - cell [ref=e311]:
+                      - generic [ref=e312]:
+                        - link "Michael Braun" [ref=e313] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e314] [cursor=pointer]:
+                          - generic [ref=e315]: info
+                  - row [ref=e316]:
+                    - cell [ref=e317]:
+                      - checkbox "Als erledigt markieren" [ref=e318] [cursor=pointer]
+                    - 'cell "Art: Geburtstag Julia Hoffmann hat heute Geburtstag Verlauf anzeigen Geburtstagsgruß senden" [ref=e319]':
+                      - generic [ref=e320]:
+                        - 'img "Art: Geburtstag" [ref=e321]': cake
+                        - generic [ref=e322]: Julia Hoffmann hat heute Geburtstag
+                        - generic [ref=e323]:
+                          - button "Verlauf anzeigen" [ref=e324] [cursor=pointer]:
+                            - generic [ref=e325]: history
+                          - button "Geburtstagsgruß senden" [ref=e326] [cursor=pointer]:
+                            - generic [ref=e327]: mail
+                    - cell "Heute schedule Fr, 24.07." [ref=e328]:
+                      - generic [ref=e329]:
+                        - generic [ref=e330]: Heute
+                        - generic [ref=e332]:
+                          - generic [ref=e333]: schedule
+                          - text: Fr, 24.07.
+                    - cell "Julia Hoffmann , Tobias Hoffmann Kontaktdaten der Antragsteller anzeigen" [ref=e334]:
+                      - generic [ref=e335]:
+                        - link "Julia Hoffmann" [ref=e336] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e337]: ","
+                        - link "Tobias Hoffmann" [ref=e338] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e339] [cursor=pointer]:
+                          - generic [ref=e340]: info
+                  - row [ref=e341]:
+                    - cell [ref=e342]:
+                      - checkbox "Als erledigt markieren" [ref=e343] [cursor=pointer]
+                    - 'cell "Art: Systemhinweis Potentielle Antragsdubletten prüfen Neu Verlauf anzeigen Löschen" [ref=e344]':
+                      - generic [ref=e345]:
+                        - 'img "Art: Systemhinweis" [ref=e346]': notifications_active
+                        - generic "Klicken, um den Titel zu ändern" [ref=e347]: Potentielle Antragsdubletten prüfen
+                        - generic [ref=e348]: Neu
+                        - generic [ref=e349]:
+                          - button "Verlauf anzeigen" [ref=e350] [cursor=pointer]:
+                            - generic [ref=e351]: history
+                          - button "Löschen" [ref=e352] [cursor=pointer]:
+                            - generic [ref=e353]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e354]:
+                      - generic [ref=e355]:
+                        - generic [ref=e356]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e358]:
+                          - generic [ref=e359]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e360] [cursor=pointer]: +1 Tag
+                    - cell [ref=e361]:
+                      - generic [ref=e362]:
+                        - link "Dr. Andreas Vogel" [ref=e363] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e364] [cursor=pointer]:
+                          - generic [ref=e365]: info
+                  - row [ref=e366]:
+                    - cell [ref=e367]:
+                      - checkbox "Als erledigt markieren" [ref=e368] [cursor=pointer]
+                    - 'cell "Art: Kundendokument Gehaltsnachweise von Sandra Klein prüfen Neu Verlauf anzeigen Löschen" [ref=e369]':
+                      - generic [ref=e370]:
+                        - 'img "Art: Kundendokument" [ref=e371]': cloud_upload
+                        - generic "Klicken, um den Titel zu ändern" [ref=e372]: Gehaltsnachweise von Sandra Klein prüfen
+                        - generic [ref=e373]: Neu
+                        - generic [ref=e374]:
+                          - button "Verlauf anzeigen" [ref=e375] [cursor=pointer]:
+                            - generic [ref=e376]: history
+                          - button "Löschen" [ref=e377] [cursor=pointer]:
+                            - generic [ref=e378]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e379]:
+                      - generic [ref=e380]:
+                        - generic [ref=e381]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e383]:
+                          - generic [ref=e384]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e385] [cursor=pointer]: +1 Tag
+                    - cell [ref=e386]:
+                      - generic [ref=e387]:
+                        - link "Sandra Klein" [ref=e388] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e389] [cursor=pointer]:
+                          - generic [ref=e390]: info
+                  - row [ref=e391]:
+                    - cell [ref=e392]:
+                      - checkbox "Als erledigt markieren" [ref=e393] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Einkommensnachweise Berger prüfen Verlauf anzeigen Löschen" [ref=e394]':
+                      - generic [ref=e395]:
+                        - 'img "Art: Unterlagen" [ref=e396]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e397]: Einkommensnachweise Berger prüfen
+                        - generic [ref=e398]:
+                          - button "Verlauf anzeigen" [ref=e399] [cursor=pointer]:
+                            - generic [ref=e400]: history
+                          - button "Löschen" [ref=e401] [cursor=pointer]:
+                            - generic [ref=e402]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e403]:
+                      - generic [ref=e404]:
+                        - generic [ref=e405]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e407]:
+                          - generic [ref=e408]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e409] [cursor=pointer]: +1 Tag
+                    - cell [ref=e410]:
+                      - generic [ref=e411]:
+                        - link "Thomas Berger" [ref=e412] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e413] [cursor=pointer]:
+                          - generic [ref=e414]: info
+                  - row [ref=e415]:
+                    - cell [ref=e416]:
+                      - checkbox "Als erledigt markieren" [ref=e417] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Objektunterlagen Klein anfordern Verlauf anzeigen Löschen" [ref=e418]':
+                      - generic [ref=e419]:
+                        - 'img "Art: Unterlagen" [ref=e420]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e421]: Objektunterlagen Klein anfordern
+                        - generic [ref=e422]:
+                          - button "Verlauf anzeigen" [ref=e423] [cursor=pointer]:
+                            - generic [ref=e424]: history
+                          - button "Löschen" [ref=e425] [cursor=pointer]:
+                            - generic [ref=e426]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e427]:
+                      - generic [ref=e428]:
+                        - generic [ref=e429]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e431]:
+                          - generic [ref=e432]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e433] [cursor=pointer]: +1 Tag
+                    - cell [ref=e434]:
+                      - generic [ref=e435]:
+                        - link "Sandra Klein" [ref=e436] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e437] [cursor=pointer]:
+                          - generic [ref=e438]: info
+                  - row [ref=e439]:
+                    - cell [ref=e440]:
+                      - checkbox "Als erledigt markieren" [ref=e441] [cursor=pointer]
+                    - 'cell "Art: Kundendokument Dokumente von Petra Schulz prüfen Neu Verlauf anzeigen Löschen" [ref=e442]':
+                      - generic [ref=e443]:
+                        - 'img "Art: Kundendokument" [ref=e444]': cloud_upload
+                        - generic "Klicken, um den Titel zu ändern" [ref=e445]: Dokumente von Petra Schulz prüfen
+                        - generic [ref=e446]: Neu
+                        - generic [ref=e447]:
+                          - button "Verlauf anzeigen" [ref=e448] [cursor=pointer]:
+                            - generic [ref=e449]: history
+                          - button "Löschen" [ref=e450] [cursor=pointer]:
+                            - generic [ref=e451]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e452]:
+                      - generic [ref=e453]:
+                        - generic [ref=e454]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e456]:
+                          - generic [ref=e457]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e458] [cursor=pointer]: +1 Tag
+                    - cell [ref=e459]:
+                      - generic [ref=e460]:
+                        - link "Petra Schulz" [ref=e461] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e462] [cursor=pointer]:
+                          - generic [ref=e463]: info
+                  - row [ref=e464]:
+                    - cell [ref=e465]:
+                      - checkbox "Als erledigt markieren" [ref=e466] [cursor=pointer]
+                    - 'cell "Art: Aufgabe Finanzierungsbestätigung Öztürk erstellen Verlauf anzeigen Löschen" [ref=e467]':
+                      - generic [ref=e468]:
+                        - 'img "Art: Aufgabe" [ref=e469]': assignment
+                        - generic "Klicken, um den Titel zu ändern" [ref=e470]: Finanzierungsbestätigung Öztürk erstellen
+                        - generic [ref=e471]:
+                          - button "Verlauf anzeigen" [ref=e472] [cursor=pointer]:
+                            - generic [ref=e473]: history
+                          - button "Löschen" [ref=e474] [cursor=pointer]:
+                            - generic [ref=e475]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e476]:
+                      - generic [ref=e477]:
+                        - generic [ref=e478]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e480]:
+                          - generic [ref=e481]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e482] [cursor=pointer]: +1 Tag
+                    - cell "Mehmet Öztürk , Elif Öztürk Kontaktdaten der Antragsteller anzeigen" [ref=e483]:
+                      - generic [ref=e484]:
+                        - link "Mehmet Öztürk" [ref=e485] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e486]: ","
+                        - link "Elif Öztürk" [ref=e487] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e488] [cursor=pointer]:
+                          - generic [ref=e489]: info
+                  - row [ref=e490]:
+                    - cell [ref=e491]:
+                      - checkbox "Als erledigt markieren" [ref=e492] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Grundbuchauszug Braun anfordern Verlauf anzeigen Löschen" [ref=e493]':
+                      - generic [ref=e494]:
+                        - 'img "Art: Unterlagen" [ref=e495]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e496]: Grundbuchauszug Braun anfordern
+                        - generic [ref=e497]:
+                          - button "Verlauf anzeigen" [ref=e498] [cursor=pointer]:
+                            - generic [ref=e499]: history
+                          - button "Löschen" [ref=e500] [cursor=pointer]:
+                            - generic [ref=e501]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e502]:
+                      - generic [ref=e503]:
+                        - generic [ref=e504]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e506]:
+                          - generic [ref=e507]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e508] [cursor=pointer]: +1 Tag
+                    - cell [ref=e509]:
+                      - generic [ref=e510]:
+                        - link "Michael Braun" [ref=e511] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e512] [cursor=pointer]:
+                          - generic [ref=e513]: info
+                  - row [ref=e514]:
+                    - cell [ref=e515]:
+                      - checkbox "Als erledigt markieren" [ref=e516] [cursor=pointer]
+                    - 'cell "Art: Systemhinweis Neue Portal-Nachricht von Julia Hoffmann Neu Verlauf anzeigen Löschen" [ref=e517]':
+                      - generic [ref=e518]:
+                        - 'img "Art: Systemhinweis" [ref=e519]': notifications_active
+                        - generic "Klicken, um den Titel zu ändern" [ref=e520]: Neue Portal-Nachricht von Julia Hoffmann
+                        - generic [ref=e521]: Neu
+                        - generic [ref=e522]:
+                          - button "Verlauf anzeigen" [ref=e523] [cursor=pointer]:
+                            - generic [ref=e524]: history
+                          - button "Löschen" [ref=e525] [cursor=pointer]:
+                            - generic [ref=e526]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e527]:
+                      - generic [ref=e528]:
+                        - generic [ref=e529]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e531]:
+                          - generic [ref=e532]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e533] [cursor=pointer]: +1 Tag
+                    - cell "Julia Hoffmann , Tobias Hoffmann Kontaktdaten der Antragsteller anzeigen" [ref=e534]:
+                      - generic [ref=e535]:
+                        - link "Julia Hoffmann" [ref=e536] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e537]: ","
+                        - link "Tobias Hoffmann" [ref=e538] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e539] [cursor=pointer]:
+                          - generic [ref=e540]: info
+                  - row [ref=e541]:
+                    - cell [ref=e542]:
+                      - checkbox "Als erledigt markieren" [ref=e543] [cursor=pointer]
+                    - 'cell "Art: Aufgabe Zinsbindung Vogel prüfen Verlauf anzeigen Löschen" [ref=e544]':
+                      - generic [ref=e545]:
+                        - 'img "Art: Aufgabe" [ref=e546]': assignment
+                        - generic "Klicken, um den Titel zu ändern" [ref=e547]: Zinsbindung Vogel prüfen
+                        - generic [ref=e548]:
+                          - button "Verlauf anzeigen" [ref=e549] [cursor=pointer]:
+                            - generic [ref=e550]: history
+                          - button "Löschen" [ref=e551] [cursor=pointer]:
+                            - generic [ref=e552]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e553]:
+                      - generic [ref=e554]:
+                        - generic [ref=e555]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e557]:
+                          - generic [ref=e558]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e559] [cursor=pointer]: +1 Tag
+                    - cell [ref=e560]:
+                      - generic [ref=e561]:
+                        - link "Dr. Andreas Vogel" [ref=e562] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e563] [cursor=pointer]:
+                          - generic [ref=e564]: info
+                  - row [ref=e565]:
+                    - cell [ref=e566]:
+                      - checkbox "Als erledigt markieren" [ref=e567] [cursor=pointer]
+                    - 'cell "Art: Aufgabe KfW-Antrag Berger vorbereiten Verlauf anzeigen Löschen" [ref=e568]':
+                      - generic [ref=e569]:
+                        - 'img "Art: Aufgabe" [ref=e570]': assignment
+                        - generic "Klicken, um den Titel zu ändern" [ref=e571]: KfW-Antrag Berger vorbereiten
+                        - generic [ref=e572]:
+                          - button "Verlauf anzeigen" [ref=e573] [cursor=pointer]:
+                            - generic [ref=e574]: history
+                          - button "Löschen" [ref=e575] [cursor=pointer]:
+                            - generic [ref=e576]: delete
+                    - cell "Morgen schedule Sa, 25.07. Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e577]:
+                      - generic [ref=e578]:
+                        - generic [ref=e579]: Morgen
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e581]:
+                          - generic [ref=e582]: schedule
+                          - text: Sa, 25.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 26.07.2026" [ref=e583] [cursor=pointer]: +1 Tag
+                    - cell [ref=e584]:
+                      - generic [ref=e585]:
+                        - link "Thomas Berger" [ref=e586] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e587] [cursor=pointer]:
+                          - generic [ref=e588]: info
+                  - row [ref=e589]:
+                    - cell [ref=e590]:
+                      - checkbox "Als erledigt markieren" [ref=e591] [cursor=pointer]
+                    - 'cell "Art: Termin Beratungstermin Julia Hoffmann Verlauf anzeigen Löschen" [ref=e592]':
+                      - generic [ref=e593]:
+                        - 'img "Art: Termin" [ref=e594]': event
+                        - generic "Klicken, um den Titel zu ändern" [ref=e595]: Beratungstermin Julia Hoffmann
+                        - generic [ref=e596]:
+                          - button "Verlauf anzeigen" [ref=e597] [cursor=pointer]:
+                            - generic [ref=e598]: history
+                          - button "Löschen" [ref=e599] [cursor=pointer]:
+                            - generic [ref=e600]: delete
+                    - cell "schedule Di, 28.07. · 10:00 Fälligkeit um einen Tag verschieben, auf 29.07.2026" [ref=e601]:
+                      - generic [ref=e602]:
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e603]:
+                          - generic [ref=e604]: schedule
+                          - text: Di, 28.07. · 10:00
+                        - button "Fälligkeit um einen Tag verschieben, auf 29.07.2026" [ref=e605] [cursor=pointer]: +1 Tag
+                    - cell "Julia Hoffmann , Tobias Hoffmann Kontaktdaten der Antragsteller anzeigen" [ref=e606]:
+                      - generic [ref=e607]:
+                        - link "Julia Hoffmann" [ref=e608] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e609]: ","
+                        - link "Tobias Hoffmann" [ref=e610] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e611] [cursor=pointer]:
+                          - generic [ref=e612]: info
+                  - row [ref=e613]:
+                    - cell [ref=e614]:
+                      - checkbox "Als erledigt markieren" [ref=e615] [cursor=pointer]
+                    - 'cell "Art: Unterlagen Vertragsunterlagen an Notar übermitteln Verlauf anzeigen Löschen" [ref=e616]':
+                      - generic [ref=e617]:
+                        - 'img "Art: Unterlagen" [ref=e618]': description
+                        - generic "Klicken, um den Titel zu ändern" [ref=e619]: Vertragsunterlagen an Notar übermitteln
+                        - generic [ref=e620]:
+                          - button "Verlauf anzeigen" [ref=e621] [cursor=pointer]:
+                            - generic [ref=e622]: history
+                          - button "Löschen" [ref=e623] [cursor=pointer]:
+                            - generic [ref=e624]: delete
+                    - cell "schedule Do, 30.07. Fälligkeit um einen Tag verschieben, auf 31.07.2026" [ref=e625]:
+                      - generic [ref=e626]:
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e627]:
+                          - generic [ref=e628]: schedule
+                          - text: Do, 30.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 31.07.2026" [ref=e629] [cursor=pointer]: +1 Tag
+                    - cell "Mehmet Öztürk , Elif Öztürk Kontaktdaten der Antragsteller anzeigen" [ref=e630]:
+                      - generic [ref=e631]:
+                        - link "Mehmet Öztürk" [ref=e632] [cursor=pointer]:
+                          - /url: "#"
+                        - generic [ref=e633]: ","
+                        - link "Elif Öztürk" [ref=e634] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e635] [cursor=pointer]:
+                          - generic [ref=e636]: info
+                  - row [ref=e637]:
+                    - cell [ref=e638]:
+                      - checkbox "Als erledigt markieren" [ref=e639] [cursor=pointer]
+                    - 'cell "Art: Rückruf Nachfassen Lead: Petra Schulz Verlauf anzeigen Löschen" [ref=e640]':
+                      - generic [ref=e641]:
+                        - 'img "Art: Rückruf" [ref=e642]': phone_in_talk
+                        - generic "Klicken, um den Titel zu ändern" [ref=e643]: "Nachfassen Lead: Petra Schulz"
+                        - generic [ref=e644]:
+                          - button "Verlauf anzeigen" [ref=e645] [cursor=pointer]:
+                            - generic [ref=e646]: history
+                          - button "Löschen" [ref=e647] [cursor=pointer]:
+                            - generic [ref=e648]: delete
+                    - cell "schedule Fr, 31.07. Fälligkeit um einen Tag verschieben, auf 01.08.2026" [ref=e649]:
+                      - generic [ref=e650]:
+                        - generic "Klicken, um das Fälligkeitsdatum zu ändern" [ref=e651]:
+                          - generic [ref=e652]: schedule
+                          - text: Fr, 31.07.
+                        - button "Fälligkeit um einen Tag verschieben, auf 01.08.2026" [ref=e653] [cursor=pointer]: +1 Tag
+                    - cell [ref=e654]:
+                      - generic [ref=e655]:
+                        - link "Petra Schulz" [ref=e656] [cursor=pointer]:
+                          - /url: "#"
+                        - button "Kontaktdaten der Antragsteller anzeigen" [ref=e657] [cursor=pointer]:
+                          - generic [ref=e658]: info
+              - generic [ref=e659]:
+                - generic [ref=e660]:
+                  - generic [ref=e661]: Einträge pro Seite
+                  - combobox [ref=e662]:
+                    - option "10"
+                    - option "25" [selected]
+                    - option "50"
+                - generic [ref=e663]:
+                  - generic [ref=e664]: 1–21 von 21
+                  - button "chevron_left" [disabled] [ref=e665]
+                  - button "chevron_right" [disabled] [ref=e667]
+          - generic [ref=e669]:
+            - generic [ref=e670]:
+              - generic [ref=e671]:
+                - generic [ref=e672]: calendar_month
+                - text: Kalender
+              - generic [ref=e673]: Fr, 24. Juli 2026
+              - button "chevron_right" [ref=e675] [cursor=pointer]
+            - generic [ref=e677]:
+              - generic [ref=e678]:
+                - group "Zeitraum" [ref=e679]:
+                  - button "1 Tag" [pressed] [ref=e680] [cursor=pointer]
+                  - button "3 Tage" [ref=e681] [cursor=pointer]
+                  - button "Woche" [ref=e682] [cursor=pointer]
+                - generic [ref=e683]:
+                  - button "chevron_left" [ref=e684] [cursor=pointer]
+                  - button "Heute" [ref=e686] [cursor=pointer]
+                  - button "chevron_right" [ref=e687] [cursor=pointer]
+              - generic [ref=e690]:
+                - generic [ref=e691]:
+                  - generic [ref=e692]: Freitag
+                  - generic [ref=e693]: "24"
+                - generic [ref=e694]:
+                  - generic "08:00 Angebot finalisieren – Mehmet Öztürk" [ref=e695]:
+                    - generic [ref=e696]: 08:00
+                    - generic [ref=e697]: Angebot finalisieren · M. Öztürk
+                  - generic "11:30 Beratung – Michael Braun" [ref=e698]:
+                    - generic [ref=e699]: 11:30
+                    - generic [ref=e700]: Beratung · M. Braun
+                  - generic "14:00 Rückruf – Thomas Berger" [ref=e701]:
+                    - generic [ref=e702]: 14:00
+                    - generic [ref=e703]: Rückruf · T. Berger
+                  - generic "16:30 Wochenabschluss Team" [ref=e704]:
+                    - generic [ref=e705]: 16:30
+                    - generic [ref=e706]: Wochenabschluss Team
+  - dialog [ref=e707]:
+    - generic [ref=e708]:
+      - heading [level=2] [ref=e709]: To do hinzufügen
+      - button [ref=e710] [cursor=pointer]:
+        - generic [ref=e711]: close
+    - generic [ref=e712]:
+      - generic [ref=e713]:
+        - generic [ref=e714]: Titel *
+        - textbox [ref=e715]:
+          - /placeholder: Was ist zu tun?
+      - generic [ref=e716]:
+        - generic [ref=e717]: Fälligkeitsdatum
+        - textbox [ref=e718]
+      - generic [ref=e719]:
+        - generic [ref=e720]: Art
+        - combobox [ref=e721]
+      - generic [ref=e722]:
+        - generic [ref=e723]: Antragsteller *
+        - textbox [ref=e725]:
+          - /placeholder: Kundennummer oder Name …
+      - generic [ref=e726]:
+        - generic [ref=e727]: Notiz (optional)
+        - textbox [ref=e728]:
+          - /placeholder: Zusätzliche Details …
+    - generic [ref=e729]:
+      - button [ref=e730] [cursor=pointer]:
+        - generic [ref=e731]: check
+        - text: Speichern
+      - button [ref=e732] [cursor=pointer]: Speichern & neues
+      - button [ref=e733] [cursor=pointer]: Abbrechen
+  - dialog [ref=e734]:
+    - generic [ref=e735]:
+      - heading [level=2] [ref=e737]: Verlauf
+      - button [ref=e738] [cursor=pointer]:
+        - generic [ref=e739]: close
+    - generic [ref=e741]:
+      - button [ref=e742] [cursor=pointer]:
+        - generic [ref=e743]: edit
+        - text: Bearbeiten
+      - generic [ref=e744]: Mock-Daten · Prototyp
