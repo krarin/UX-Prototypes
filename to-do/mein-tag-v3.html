@@ -1,0 +1,2955 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mein Tag V3</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Design system (one folder deep → ../design-system/) -->
+  <link rel="stylesheet" href="../design-system/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body {
+      font-family: var(--font-family);
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-200);
+    }
+    button { font-family: var(--font-family); }
+
+    /* ---------- APP SHELL ---------- */
+    .app { display: flex; height: 100vh; width: 100vw; }
+
+    .rail {
+      width: 72px; min-width: 72px;
+      background: var(--color-neutral-dark-900);
+      display: flex; flex-direction: column;
+    }
+    .rail-logo {
+      height: 56px; display: flex; align-items: center; justify-content: center;
+      background: var(--color-neutral-light-000); flex-shrink: 0;
+    }
+    .rail-logo svg { width: 30px; height: 30px; }
+    .rail-nav { display: flex; flex-direction: column; padding-top: var(--space-s); overflow: hidden; }
+    .rail-item {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 2px; cursor: pointer;
+      color: var(--color-neutral-dark-200); text-decoration: none;
+      transition: color var(--transition-base), background var(--transition-base);
+    }
+    .rail-item:hover { color: var(--color-neutral-light-000); background: var(--color-neutral-dark-800); }
+    .rail-item.active { color: var(--color-primary-300); background: var(--color-neutral-dark-800); }
+    .rail-item.active::before {
+      content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px;
+      background: var(--color-primary-400); border-radius: 0 2px 2px 0;
+    }
+    .rail-item .material-symbols-outlined { font-size: 22px; }
+    .rail-label { font-size: 9px; letter-spacing: .2px; text-align: center; line-height: 1.15; }
+    .rail-badge {
+      position: absolute; top: 4px; right: 14px;
+      background: var(--color-error-500); color: #fff; font-size: 8px; font-weight: 700; line-height: 1;
+      padding: 2px 3px; border-radius: var(--radius-full); min-width: 15px; text-align: center;
+    }
+    .rail-warn { position: absolute; top: 6px; right: 16px; color: var(--color-warning-high); font-size: 12px; }
+
+    /* ---------- MAIN ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: 56px; flex-shrink: 0;
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: var(--space-s); padding: 0 var(--space-l);
+    }
+    .top-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: var(--radius-s);
+      border: none; background: none; cursor: pointer;
+      color: var(--color-neutral-dark-400); position: relative;
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .top-icon .material-symbols-outlined { font-size: 22px; }
+    .top-icon.sparkle { color: var(--color-primary-500); }
+    .top-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--color-error-500); color: #fff; font-size: 9px; font-weight: 700; line-height: 1;
+      padding: 2px 4px; border-radius: var(--radius-full);
+    }
+    .top-lang {
+      display: inline-flex; align-items: center; gap: 2px; cursor: pointer;
+      border: none; background: none; padding: var(--space-xs) var(--space-s);
+      border-radius: var(--radius-s); color: var(--color-neutral-dark-800);
+      font-size: 14px; font-weight: 500;
+    }
+    .top-lang:hover { background: var(--color-neutral-light-200); }
+    .top-divider { width: 1px; height: 28px; background: var(--color-neutral-light-500); margin: 0 var(--space-xs); }
+
+    /* FEATURE-SCHALTER (Prototyp) — blendet die Arbeitslast-Karten ein/aus.
+       flex-shrink:0 + letzte Position in der Topbar: läuft auch bei schmalen Fenstern nicht aus dem Bild. */
+    .feature-flip { display: inline-flex; align-items: center; gap: var(--space-s); cursor: pointer; flex-shrink: 0;
+      padding: 5px 10px 5px 8px; border: 1px solid var(--color-primary-400); border-radius: var(--radius-full);
+      background: var(--color-primary-100); user-select: none; }
+    .feature-flip:hover { border-color: var(--color-primary-500); }
+    .feature-flip input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .ff-switch { position: relative; flex-shrink: 0; width: 30px; height: 18px; border-radius: var(--radius-full);
+      background: var(--color-neutral-light-500); transition: background var(--transition-base); }
+    .ff-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+      border-radius: 50%; background: var(--color-neutral-light-000); box-shadow: var(--shadow-xs);
+      transition: transform var(--transition-base); }
+    .feature-flip input:checked + .ff-switch { background: var(--color-primary-500); }
+    .feature-flip input:checked + .ff-switch::after { transform: translateX(12px); }
+    .feature-flip input:focus-visible + .ff-switch { box-shadow: var(--focus-ring); }
+    .ff-switch { background: var(--color-neutral-light-500); }
+    .ff-label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500;
+      color: var(--color-primary-700); white-space: nowrap; }
+    .ff-label .material-symbols-outlined { font-size: 15px; }
+    .top-user { display: inline-flex; align-items: center; gap: var(--space-s); cursor: pointer;
+      padding: var(--space-xs) var(--space-s); border-radius: var(--radius-s); }
+    .top-user:hover { background: var(--color-neutral-light-200); }
+    .top-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--color-primary-200); }
+    .top-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .top-user-name { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .top-user-role { font-size: 11px; color: var(--color-neutral-dark-300); }
+
+    /* ---------- CONTENT ---------- */
+    .content { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: var(--space-s) var(--space-l) var(--space-l); overflow-y: auto; }
+
+    .page-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); margin-bottom: var(--space-m); }
+    /* Titelzeile: Icon + Titel links, Suche füllt den Rest der Zeile (siehe Figma) */
+    .page-titlebar { display: flex; align-items: center; gap: var(--space-m); flex: 1; min-width: 0; }
+    .page-title { font-size: 22px; font-weight: 500; margin: 0; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .page-title-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 32px; height: 32px; border-radius: var(--radius-s);
+      background: var(--color-neutral-dark-800); color: var(--color-neutral-light-000); }
+    .page-title-icon .material-symbols-outlined { font-size: 20px; }
+
+    /* ---------- TOOLBAR ---------- */
+    .toolbar { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; margin-bottom: var(--space-s); }
+    .toolbar .spacer { flex: 1; }
+
+    /* Suche sitzt jetzt in der Titelzeile und nimmt die verbleibende Breite ein */
+    .search-wrap { position: relative; display: flex; align-items: center; flex: 1; min-width: 220px; }
+    .search-wrap .material-symbols-outlined {
+      position: absolute; right: 12px; font-size: 20px; color: var(--color-neutral-dark-400); pointer-events: none;
+    }
+    .search-input {
+      width: 100%; padding: 9px 66px 9px 12px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); font-size: 14px; color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-000);
+    }
+    .search-input::placeholder { color: var(--color-neutral-dark-300); }
+    .search-input:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    .search-kbd {
+      position: absolute; right: 40px; font-size: 11px; color: var(--color-neutral-dark-300);
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs);
+      padding: 0 4px; line-height: 16px; background: var(--color-neutral-light-100); pointer-events: none;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--radius-s);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent; white-space: nowrap;
+      transition: background var(--transition-base), border-color var(--transition-base);
+    }
+    .btn .material-symbols-outlined { font-size: 18px; }
+    .btn-primary { background: var(--color-primary-500); color: #fff; border-color: var(--color-primary-500); }
+    .btn-primary:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); }
+    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800); border-color: var(--color-neutral-light-500); }
+    .btn-secondary:hover { background: var(--color-neutral-light-200); }
+    .btn-ghost { background: none; color: var(--color-neutral-dark-400); }
+    .btn-ghost:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .btn:focus-visible, .top-icon:focus-visible, .rail-item:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .btn.has-count::after {
+      content: attr(data-count); margin-left: 2px; background: var(--color-primary-100); color: var(--color-primary-700);
+      border-radius: var(--radius-full); font-size: 11px; font-weight: 700; padding: 0 6px; line-height: 16px;
+    }
+
+    /* dropdown menus (filter) */
+    .menu {
+      position: fixed; z-index: var(--z-overlay);
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-m); padding: var(--space-xs);
+      min-width: 220px; display: none;
+    }
+    .menu.open { display: block; }
+    .menu-search {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-xs); font-size: 13px; margin: 2px 0 6px;
+    }
+    .menu-search:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* filter-active button state + count badge */
+    .btn.filter-active { border-color: var(--color-primary-400); color: var(--color-primary-700); background: var(--color-primary-100); }
+    .btn-badge { background: var(--color-primary-500); color: #fff; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700; padding: 0 6px; line-height: 16px; min-width: 16px; text-align: center; }
+
+    /* Berater filter menu (screenshot-style) */
+    .berater-menu { padding: 0; min-width: 288px; max-width: 320px; max-height: 74vh; }
+    .berater-menu.open { display: flex; flex-direction: column; }
+    .bmenu-row { display: flex; align-items: center; justify-content: space-between; width: 100%;
+      border: none; background: none; cursor: pointer; padding: 10px 14px; font-size: 13px;
+      color: var(--color-neutral-dark-900); text-align: left; }
+    .bmenu-row:hover { background: var(--color-neutral-light-200); }
+    .bmenu-row.strong { font-weight: 500; }
+    .bmenu-row .check { color: var(--color-primary-600); font-size: 18px; visibility: hidden; }
+    .bmenu-row.active .check { visibility: visible; }
+    .bmenu-search-wrap { padding: 4px 14px 8px; border-bottom: 1px solid var(--color-neutral-light-200); }
+    .search-mini { position: relative; }
+    .search-mini .menu-search { margin: 0; padding-right: 30px; }
+    .search-mini .material-symbols-outlined { position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      color: var(--color-neutral-dark-300); font-size: 18px; pointer-events: none; }
+    .bmenu-selectall { border-bottom: 1px solid var(--color-neutral-light-200); background: var(--color-neutral-light-100);
+      color: var(--color-neutral-dark-400); border-radius: 0; margin: 0; }
+    .bmenu-list { overflow-y: auto; flex: 1; padding: 4px 6px; }
+    .bmenu-check { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: var(--radius-xs);
+      cursor: pointer; font-size: 13px; color: var(--color-neutral-dark-900); }
+    .bmenu-check:hover { background: var(--color-neutral-light-200); }
+    .bmenu-check input { accent-color: var(--color-primary-500); width: 16px; height: 16px; flex-shrink: 0; }
+    .bmenu-foot { display: flex; align-items: center; gap: var(--space-m); padding: 10px 14px;
+      border-top: 1px solid var(--color-neutral-light-200); }
+    .bmenu-foot .btn { flex: 1; justify-content: center; }
+    .bmenu-clear { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
+      font-size: 13px; white-space: nowrap; }
+    .bmenu-clear:hover { color: var(--color-neutral-dark-900); text-decoration: underline; }
+    /* Gruppen-Überschrift in den Filtermenüs (z. B. „Selbst angelegt" / „Vom System") */
+    .ssel-group { font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-400);
+      padding: 6px 8px 4px; }
+
+    /* segmented control */
+    .segmented { display: inline-flex; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); overflow: hidden; background: var(--color-neutral-light-000); }
+    .segmented button {
+      display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer;
+      padding: 7px 12px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-400);
+    }
+    .segmented button .material-symbols-outlined { font-size: 18px; }
+    .segmented button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .segmented button + button { border-left: 1px solid var(--color-neutral-light-500); }
+    /* Schnellfilter: aktiver Zustand in Markenfarbe hervorheben */
+    #quickSeg button.active { background: var(--color-primary-500); color: #fff; }
+    #quickSeg button.active:hover { background: var(--color-primary-600); }
+    .segmented button:focus-visible { outline: none; box-shadow: var(--focus-ring); z-index: 1; }
+
+    /* Schnellfilter-Segmente auf .btn-Höhe bringen: 8px Innenabstand + 18px
+       Inhaltszeile ergibt mit dem Rahmen des Containers exakt 36px wie .btn. */
+    .segmented--quick button { padding: 8px 14px; line-height: 18px; gap: 8px; }
+    .segmented--quick button:not(.active):hover { background: var(--color-neutral-light-100); }
+    /* farbiger Streifen links im Segment — im aktiven Zustand weiss, damit er
+       auf der Markenfarbe lesbar bleibt */
+    .qf-strip { width: 3px; height: 16px; border-radius: var(--radius-full);
+      background: var(--qf); flex-shrink: 0; margin-right: -2px; }
+    #quickSeg button.active .qf-strip { background: #fff; }
+    /* Zähler direkt vor dem Label */
+    .qf-count { font-size: 11px; font-weight: 700; line-height: 16px; min-width: 18px;
+      padding: 0 5px; border-radius: var(--radius-full); text-align: center;
+      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); }
+    #quickSeg button.active .qf-count { background: rgba(255,255,255,.24); color: #fff; }
+
+    .toggle-line { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-600); cursor: pointer; }
+    .toggle-line input { accent-color: var(--color-primary-500); width: 16px; height: 16px; }
+
+    /* active filter chips */
+    .chip-row { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; min-height: 0; margin-bottom: var(--space-s); }
+    .chip-row:empty { display: none; }
+    .fchip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 6px 3px 10px;
+      background: var(--color-primary-100); color: var(--color-primary-700);
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
+    }
+    .fchip button { border: none; background: none; cursor: pointer; color: var(--color-primary-700);
+      display: inline-flex; padding: 2px; border-radius: 50%; }
+    .fchip button:hover { background: var(--color-primary-200); }
+    .fchip button .material-symbols-outlined { font-size: 15px; }
+    .chip-reset { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
+      font-size: 12px; font-weight: 500; text-decoration: underline; }
+    .chip-reset:hover { color: var(--color-neutral-dark-900); }
+
+    /* Art beim Inline-Anlegen (die Art hat bewusst keine eigene Tabellenspalte) */
+    .add-typ { display: inline-flex; align-items: center; gap: 6px; }
+    .add-typ > span { font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); }
+    .add-typ select { width: auto; min-width: 130px; }
+
+    /* Art-Zeile im „Art"-Menü: Icon + Label + Anzahl offener To-dos */
+    .typ-opt { display: inline-flex; align-items: center; gap: 7px; flex: 1; }
+    .typ-opt .material-symbols-outlined { font-size: 17px; color: var(--color-neutral-dark-400); }
+    .typ-opt-count { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-400);
+      background: var(--color-neutral-light-200); border-radius: var(--radius-full); padding: 1px 6px; }
+
+    /* ---------- TAGES-INDIKATOREN (Zeile: Risk-Banner + Arbeitslast heute/morgen) ---------- */
+    .day-indicators { display: flex; align-items: stretch; gap: var(--space-s); flex-wrap: wrap;
+      margin-bottom: var(--space-s); flex-shrink: 0; }
+
+    /* RISK BANNER — aktive Anträge ohne To-do */
+    .risk { border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-left: 4px solid var(--color-error-500);
+      background: var(--color-neutral-light-000, #fff); border-radius: var(--radius-s);
+      flex-shrink: 0; max-width: 100%; box-shadow: var(--shadow-xs); }
+    .risk-head { display: flex; align-items: center; gap: var(--space-s); padding: 10px 14px; height: 100%;
+      cursor: pointer; user-select: none; }
+    .risk-icon { color: var(--color-error-500); font-size: 22px; flex-shrink: 0; }
+    .risk-text { font-size: 14px; color: var(--color-neutral-dark-900); }
+    .risk-text b { font-weight: 700; }
+    .risk-open { margin-left: 4px; flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center;
+      justify-content: center; border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-radius: var(--radius-full);
+      background: var(--color-neutral-light-000, #fff); cursor: pointer; color: var(--color-neutral-dark-900);
+      box-shadow: var(--shadow-xs); transition: background var(--transition-base), border-color var(--transition-base); }
+    .risk-open:hover { background: var(--color-primary-100); border-color: var(--color-primary-500); color: var(--color-primary-600); }
+    .risk-open .material-symbols-outlined { font-size: 18px; }
+
+    /* ARBEITSLAST-KARTE — Zahl links, Tacho-Grafik rechts daneben, rein informativ.
+       Kompakter als die Erfolgs-Karten: kein Balken am Fuß, die Zone liest man am Zeiger ab.
+       Standardmäßig aus; wird über den Feature-Schalter in der Topbar eingeblendet. */
+    .loadcard { display: none; }
+    body.show-load .loadcard { display: flex; }
+    .loadcard { flex: 0 1 230px; min-width: 200px; flex-direction: row; align-items: center;
+      justify-content: space-between; gap: var(--space-s);
+      padding: 8px 12px 8px 14px; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-left: 4px solid var(--lc-color);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-xs); }
+    .loadcard[data-level="ok"]   { --lc-color: var(--color-success);      --lc-tint: var(--color-success-light); }
+    .loadcard[data-level="mid"]  { --lc-color: var(--color-warning-high); --lc-tint: var(--color-warning-high-light); }
+    .loadcard[data-level="high"] { --lc-color: var(--color-error-500);    --lc-tint: var(--color-error-100); }
+
+    .lc-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .lc-label { font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); }
+    .lc-date { font-size: 11px; color: var(--color-neutral-dark-300); white-space: nowrap; }
+    .lc-value { display: flex; align-items: baseline; gap: 5px; }
+    .lc-num { font-size: 26px; font-weight: 600; line-height: 1.1; color: var(--color-neutral-dark-900); }
+    .lc-unit { font-size: 12px; color: var(--color-neutral-dark-400); }
+
+    /* Tacho: Zonen-Bogen (grün / gelb / rot) + Zeiger auf der Skala 0 … LOAD_MAX.
+       Die aktive Zone ist voll gesättigt, die übrigen liegen als Tint darunter. */
+    .lc-gauge { flex-shrink: 0; width: 68px; height: 40px; overflow: visible; }
+    .lc-arc.ok    { stroke: var(--color-success-light); }
+    .lc-arc.mid   { stroke: var(--color-warning-high-light); }
+    .lc-arc.high  { stroke: var(--color-error-100); }
+    .lc-arc.is-active.ok   { stroke: var(--color-success); }
+    .lc-arc.is-active.mid  { stroke: var(--color-warning-high); }
+    .lc-arc.is-active.high { stroke: var(--color-error-500); }
+    .lc-needle { stroke: var(--color-neutral-dark-900); transition: transform var(--transition-slow); }
+    .lc-hub { fill: var(--color-neutral-dark-900); }
+
+    /* ERFOLGS-KARTEN — gewonnene Leads + Provision. Bewusst ruhige Töne (Teal / Blau)
+       statt Ampelfarben: hier gibt es keinen Alarmzustand, nur einen Zwischenstand.
+       Gleiche Maße wie .loadcard, damit die vier Karten eine Reihe bilden. */
+    .wincard { display: none; }
+    body.show-load .wincard { display: flex; }
+    .wincard { flex: 0 1 250px; min-width: 210px; flex-direction: column; gap: 6px;
+      padding: 8px 14px 10px; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-left: 4px solid var(--wc-color);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-xs); }
+    .wincard[data-tone="leads"]      { --wc-color: var(--color-primary-500); --wc-tint: var(--color-primary-100); }
+    .wincard[data-tone="provision"]  { --wc-color: var(--color-info);        --wc-tint: var(--color-info-light); }
+
+    .wc-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-s); }
+    .wc-label { display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); }
+    .wc-label .material-symbols-outlined { font-size: 15px; color: var(--wc-color); }
+    .wc-period { font-size: 11px; color: var(--color-neutral-dark-300); white-space: nowrap; }
+    .wc-value { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-s); }
+    .wc-num { font-size: 26px; font-weight: 600; line-height: 1.1; color: var(--color-neutral-dark-900); }
+    .wc-unit { font-size: 12px; color: var(--color-neutral-dark-400); margin-left: 5px; }
+    .wc-delta { font-size: 11px; font-weight: 500; color: var(--wc-color);
+      background: var(--wc-tint); border-radius: var(--radius-full); padding: 2px 7px; white-space: nowrap; }
+    .wc-track { height: 8px; border-radius: var(--radius-full); background: var(--wc-tint); overflow: hidden; }
+    .wc-fill { display: block; height: 100%; border-radius: var(--radius-full);
+      background: var(--wc-color); transition: width var(--transition-slow); }
+
+
+    /* ---------- TABLE ---------- */
+    .table-wrap { flex-shrink: 0; overflow-x: auto; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); border-bottom: none;
+      box-shadow: var(--shadow-s); }
+    table.todos { width: 100%; border-collapse: collapse; }
+    table.todos thead th {
+      position: sticky; top: 0; z-index: 2; background: var(--color-neutral-light-000);
+      text-align: left; font-size: 11px; letter-spacing: .2px;
+      color: var(--color-neutral-dark-400); font-weight: 500;
+      padding: 10px 12px; border-bottom: 1px solid var(--color-neutral-light-500);
+      border-right: 1px solid var(--color-neutral-light-500); white-space: nowrap; user-select: none;
+    }
+    table.todos thead th:last-child { border-right: none; }
+    table.todos thead th.sortable { cursor: pointer; }
+    table.todos thead th.sortable:hover { color: var(--color-neutral-dark-900); }
+    .th-inner { display: inline-flex; align-items: center; gap: 3px; }
+    .th-inner .material-symbols-outlined { font-size: 15px; opacity: 0; transition: opacity var(--transition-fast); }
+    th.sorted .th-inner .material-symbols-outlined { opacity: 1; color: var(--color-primary-600); }
+    th.sortable:hover .th-inner .material-symbols-outlined { opacity: .5; }
+
+    /* density */
+    :root { --row-pad-y: 12px; }
+    body.compact { --row-pad-y: 6px; }
+
+    table.todos tbody td {
+      padding: var(--row-pad-y) 12px; border-bottom: 1px solid var(--color-neutral-light-200);
+      border-right: 1px solid var(--color-neutral-light-200);
+      font-size: var(--body-regular-size); vertical-align: middle;
+    }
+    table.todos tbody td:last-child { border-right: none; }
+    body.compact table.todos tbody td { font-size: 13px; }
+    table.todos tbody tr { position: relative; transition: background var(--transition-fast); }
+    table.todos tbody tr:hover { background: var(--color-neutral-light-100); }
+    table.todos tbody tr.row-focus { background: var(--color-primary-100); }
+    table.todos tbody tr.row-focus:hover { background: var(--color-primary-100); }
+    table.todos tbody tr.just-added { animation: flashNew 2.2s ease; }
+    @keyframes flashNew { 0%,40% { background: var(--color-info-light); } 100% { background: transparent; } }
+
+    /* status left-stripe */
+    td.cell-stripe { padding-left: 16px; position: relative; }
+    td.cell-stripe::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--stripe, transparent);
+    }
+    tr[data-status="erledigt"] { color: var(--color-neutral-dark-300); }
+    tr[data-status="erledigt"] .todo-title,
+    tr[data-status="erledigt"] .person-link,
+    tr[data-status="erledigt"] .berater-name { text-decoration: line-through; }
+
+    /* leading circular checkbox */
+    td.cell-check { width: 40px; text-align: center; padding-right: 0; }
+    .rcheck {
+      -webkit-appearance: none; appearance: none; margin: 0;
+      width: 20px; height: 20px; border: 2px solid var(--color-neutral-light-500);
+      border-radius: 50%; cursor: pointer; position: relative; background: var(--color-neutral-light-000);
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      display: inline-block; vertical-align: middle;
+    }
+    .rcheck:hover { border-color: var(--color-primary-400); }
+    .rcheck:checked { background: var(--color-success); border-color: var(--color-success); }
+    .rcheck:checked::after {
+      content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+      border: solid #fff; border-width: 0 1px 1px 0; transform: rotate(45deg);
+    }
+    .rcheck:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    /* to do cell */
+    .todo-main { display: flex; align-items: center; gap: var(--space-s); }
+    .todo-title { font-weight: 400; color: inherit; }
+    tr[data-status="erledigt"] .todo-title { font-weight: 400; }
+    .badge-new {
+      font-size: 10px; font-weight: 700; letter-spacing: .3px;
+      color: var(--color-info); background: var(--color-info-light); border-radius: var(--radius-xs);
+      padding: 1px 5px; line-height: 15px; flex-shrink: 0;
+    }
+
+    /* due cell — einzeilig, gut lesbar in Schwarz */
+    .due-line { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .due-line .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-400); }
+
+    /* status pill */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px;
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 500; white-space: nowrap;
+    }
+    .pill .status-dot { width: 7px; height: 7px; }
+
+    /* Fälligkeits-Label — reine Farbfläche mit Text, ohne Punkt */
+    .due-pill {
+      display: inline-flex; align-items: center; justify-content: center; padding: 3px 10px;
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 500; white-space: nowrap;
+    }
+    /* fester Slot: hält die Datumsspalte bündig, auch wenn kein Label gesetzt ist */
+    .due-slot { flex: 0 0 86px; display: inline-flex; align-items: center; }
+    /* „Später" im Filtermenü: kein Label in der Zeile → neutraler Text */
+    .due-opt-plain { font-size: 12px; color: var(--color-neutral-dark-400); }
+    /* Geburtstagszeilen sind nicht editierbar und haben daher nicht den
+       negativen Rand von .inline-edit (-4px) — hier ausgeglichen, sonst
+       stehen ihre Datumsangaben 4px versetzt zu allen anderen Zeilen. */
+    .due-cell > .due-line:not(.inline-edit) { margin-left: -4px; }
+    /* erledigte Zeilen: Datum tritt zurück (die .due-line setzt sonst eigene Farbe) */
+    tr[data-status="erledigt"] .due-line,
+    .tcard[data-status="erledigt"] .due-line { color: var(--color-neutral-dark-300); }
+
+    /* person cell */
+    .person { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; row-gap: 0; }
+    .person-link { color: var(--color-primary-600); font-weight: 500; text-decoration: none; cursor: pointer; }
+    .person-link:hover { text-decoration: underline; }
+    .person-sep { color: var(--color-neutral-dark-400); margin-left: -4px; }
+    .person-info { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
+      display: inline-flex; padding: 1px; border-radius: 50%; }
+    .person-info:hover { color: var(--color-primary-500); }
+    .person-info .material-symbols-outlined { font-size: 16px; }
+    .person-none { color: var(--color-neutral-dark-300); font-style: italic; font-size: 13px; }
+
+    /* berater avatar */
+    .berater { display: inline-flex; align-items: center; gap: var(--space-s); }
+    .avatar {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .2px;
+    }
+    .berater-name { font-size: 13px; color: var(--color-neutral-dark-800); white-space: nowrap; }
+
+    /* inline row actions (next to title) */
+    .row-actions { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; }
+    .row-act { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
+      width: 26px; height: 26px; border-radius: var(--radius-s); display: inline-flex; align-items: center; justify-content: center;
+      transition: background var(--transition-fast), color var(--transition-fast); }
+    .row-act .material-symbols-outlined { font-size: 18px; }
+    .row-act[data-act="delete"]:hover { background: var(--color-error-100); color: var(--color-error-600); }
+    .row-act[data-act="history"]:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .row-act[data-act="history"].has-changes::after {
+      content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--color-primary-500);
+    }
+    .row-act { position: relative; }
+    .row-act.mail { border: 1px solid var(--color-neutral-light-500); border-radius: 50%; color: var(--color-neutral-dark-400); }
+    .row-act.mail:hover { background: var(--color-primary-100); color: var(--color-primary-600); border-color: var(--color-primary-400); }
+    /* Art-Icon in der To-do-Zelle — ersetzt die frühere „Art"-Spalte.
+       Neutral gehalten, damit es die Zeile nicht dominiert; nur der Geburtstag
+       bleibt farbig, weil er die einzige Art mit eigener Aktion (Gruß senden) ist. */
+    .typ-icon { font-size: 18px; color: var(--color-neutral-dark-400); flex-shrink: 0; }
+    .typ-icon.is-bday { color: var(--color-primary-500); }
+    .row-act:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    /* ---------- INLINE EDIT (Titel + Fälligkeitsdatum direkt in der Zeile) ---------- */
+    .inline-edit { cursor: text; border-radius: var(--radius-xs); padding: 1px 4px; margin: -1px -4px;
+      border-bottom: 1px dashed transparent; min-width: 0;
+      transition: background var(--transition-fast), border-color var(--transition-fast); }
+    .inline-edit:hover { background: var(--color-primary-100); border-bottom-color: var(--color-primary-400); }
+    .inline-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .inline-edit.editing { flex: 1 1 auto; background: none; border-bottom-color: transparent; padding: 0; margin: 0; }
+    .inline-edit.editing .material-symbols-outlined { display: none; }
+    .inline-input {
+      width: 100%; min-width: 130px; font-family: var(--font-family); font-size: 13px; line-height: 18px;
+      color: var(--color-neutral-dark-900); padding: 3px 6px; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-primary-400); border-radius: var(--radius-s); box-shadow: var(--focus-ring);
+    }
+    .inline-input:focus { outline: none; }
+    td .inline-input { font-size: 14px; }
+    .due-line.inline-edit.editing { display: flex; width: 100%; white-space: normal; }
+    .tcard-title .todo-title { font-weight: 500; }
+
+    /* ---------- SCHNELLAKTION „+1 Tag" (Fälligkeit um einen Tag verschieben) ---------- */
+    /* Pille steht immer direkt neben dem Datum – nie in einer zweiten Zeile */
+    .due-cell { display: inline-flex; align-items: center; gap: var(--space-s); flex-wrap: nowrap; }
+    /* Datumstext darf nicht schrumpfen – sonst läuft er unter die „+1 Tag"-Pille */
+    .due-cell .due-line { flex: 0 0 auto; min-width: max-content; }
+    /* während der Inline-Bearbeitung darf das Eingabefeld wieder wachsen */
+    .due-cell .due-line.editing { flex: 1 1 auto; min-width: 0; }
+    .due-bump {
+      flex-shrink: 0; font-family: var(--font-family); font-size: 11px; font-weight: 500; line-height: 16px;
+      color: var(--color-neutral-dark-400); background: var(--color-neutral-light-100);
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-full);
+      padding: 1px 8px; cursor: pointer; opacity: .55;
+      transition: opacity var(--transition-fast), background var(--transition-fast),
+                  color var(--transition-fast), border-color var(--transition-fast);
+    }
+    tr:hover .due-bump, .tcard:hover .due-bump { opacity: 1; }
+    .due-bump:hover { opacity: 1; background: var(--color-primary-100);
+      border-color: var(--color-primary-400); color: var(--color-primary-600); }
+    .due-bump:focus-visible { opacity: 1; outline: none; box-shadow: var(--focus-ring); }
+    /* während der Inline-Bearbeitung weicht die Schnellaktion dem Eingabefeld */
+    .due-cell.editing .due-bump { display: none; }
+    .todo-title.is-empty { color: var(--color-neutral-dark-300); font-style: italic; }
+
+    /* ---------- INLINE ANLEGEN — „To do hinzufügen"-Zeile über der Tabelle ---------- */
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    table.todos tbody#addBody td { border-bottom: 1px solid var(--color-neutral-light-500); }
+    /* die eingeklappte Zeile liest sich wie eine leere Tabellenzeile: kein Hintergrund, kein Hover-Wechsel */
+    table.todos tbody tr.add-collapsed { cursor: pointer; background: transparent; }
+    table.todos tbody tr.add-collapsed:hover { background: transparent; }
+    tr.add-collapsed:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+    .add-label { display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500; color: var(--color-primary-600); }
+    .add-label .material-symbols-outlined { font-size: 18px; }
+    tr.add-collapsed:hover .add-label { color: var(--color-primary-700); }
+    /* aufgeklappte Zeile bleibt weiß — kein farbiger Hintergrund, auch nicht beim Hover */
+    table.todos tbody tr.add-fields, table.todos tbody tr.add-actions { background: var(--color-neutral-light-000); }
+    table.todos tbody tr.add-fields:hover, table.todos tbody tr.add-actions:hover { background: var(--color-neutral-light-000); }
+    table.todos tbody tr.add-fields td, table.todos tbody tr.add-actions td { border-bottom-color: var(--color-neutral-light-500); }
+    .add-input { width: 100%; font-family: var(--font-family); font-size: 13px; color: var(--color-neutral-dark-900);
+      padding: 6px 8px; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); }
+    .add-input:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    #addTitel { font-size: 14px; }
+    .add-hint { font-size: 11px; font-style: italic; color: var(--color-neutral-dark-300); }
+    .add-bar { display: flex; align-items: center; gap: var(--space-s); }
+    .add-kbd { font-size: 11px; color: var(--color-neutral-dark-400); }
+    .add-card-wrap { display: none; }
+    .add-card { width: 100%; align-items: center; justify-content: center; gap: 6px;
+      background: var(--color-neutral-light-000); border: 1px dashed var(--color-primary-400);
+      border-radius: var(--radius-s); padding: var(--space-m); cursor: pointer;
+      font-family: var(--font-family); font-size: 13px; font-weight: 500; color: var(--color-primary-600); }
+    .add-card:hover { background: var(--color-primary-100); }
+
+    /* ---------- VERLAUF (History-Drawer) ---------- */
+    .ph-titles { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .panel-sub { font-size: 12px; color: var(--color-neutral-dark-400);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 330px; }
+    .hist-list { list-style: none; margin: 0; padding: 0; }
+    .hist-item { position: relative; display: grid; grid-template-columns: 28px 1fr; gap: var(--space-m);
+      padding-bottom: var(--space-l); }
+    .hist-item:last-child { padding-bottom: 0; }
+    .hist-item::before { content: ""; position: absolute; left: 13px; top: 30px; bottom: 0; width: 1px;
+      background: var(--color-neutral-light-500); }
+    .hist-item:last-child::before { display: none; }
+    .hist-ico { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-400); position: relative; z-index: 1; }
+    .hist-ico .material-symbols-outlined { font-size: 16px; }
+    .hist-item[data-tone="success"] .hist-ico { background: var(--color-success-light); color: var(--color-success); }
+    .hist-item[data-tone="primary"] .hist-ico { background: var(--color-primary-100); color: var(--color-primary-600); }
+    .hist-item[data-tone="info"] .hist-ico { background: var(--color-info-light); color: var(--color-info); }
+    .hist-main { min-width: 0; padding-top: 4px; }
+    .hist-label { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .hist-meta { font-size: 12px; color: var(--color-neutral-dark-400); margin-top: 2px; }
+    .hist-meta .hist-actor { color: var(--color-neutral-dark-600); }
+    .hist-fresh { font-size: 10px; font-weight: 700; letter-spacing: .3px; color: var(--color-primary-600);
+      background: var(--color-primary-100); border-radius: var(--radius-xs); padding: 1px 5px; margin-left: 6px; }
+    .hist-diff { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .hist-val { font-size: 12px; padding: 5px 8px; border-radius: var(--radius-s); border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-100); color: var(--color-neutral-dark-800); word-break: break-word; }
+    .hist-val .vk { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .4px;
+      color: var(--color-neutral-dark-300); margin-bottom: 1px; }
+    .hist-val.old { color: var(--color-neutral-dark-400); }
+    .hist-val.old .vv { text-decoration: line-through; }
+    .hist-val.new { border-color: var(--color-primary-300); background: var(--color-primary-100); color: var(--color-neutral-dark-900); }
+    .hist-empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-s); text-align: center;
+      color: var(--color-neutral-dark-400); font-size: 13px; padding: var(--space-xl) 0; }
+    .hist-empty .material-symbols-outlined { font-size: 40px; color: var(--color-neutral-light-500); }
+    .hist-note { font-size: 11px; color: var(--color-neutral-dark-300); }
+
+    /* ---------- FOOTER ---------- */
+    .table-footer {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-m);
+      padding: 10px var(--space-m); background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500); border-radius: 0 0 var(--radius-s) var(--radius-s);
+      font-size: 13px; color: var(--color-neutral-dark-400);
+    }
+    .footer-left { display: inline-flex; align-items: center; gap: var(--space-s); }
+    .footer-left select { border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs);
+      padding: 3px 6px; font-size: 13px; font-family: var(--font-family); color: var(--color-neutral-dark-800); }
+    .footer-right { display: inline-flex; align-items: center; gap: var(--space-s); }
+    .pager-btn { border: 1px solid var(--color-neutral-light-500); background: var(--color-neutral-light-000);
+      width: 30px; height: 30px; border-radius: var(--radius-s); cursor: pointer; color: var(--color-neutral-dark-600);
+      display: inline-flex; align-items: center; justify-content: center; }
+    .pager-btn:hover:not(:disabled) { background: var(--color-neutral-light-200); }
+    .pager-btn:disabled { opacity: .4; cursor: default; }
+
+    /* empty state */
+    .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; color: var(--color-neutral-dark-400); gap: var(--space-s); padding: var(--space-xxl); }
+    .empty .material-symbols-outlined { font-size: 48px; color: var(--color-neutral-light-500); }
+    .empty h3 { margin: 0; font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-800); }
+    .empty p { margin: 0; font-size: 13px; max-width: 340px; }
+
+    /* ---------- SIDE PANEL ---------- */
+    .scrim { position: fixed; inset: 0; background: rgba(55,71,79,.35); z-index: var(--z-modal); opacity: 0;
+      pointer-events: none; transition: opacity var(--transition-base); }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .panel {
+      position: fixed; top: 0; right: 0; height: 100vh; width: 440px; max-width: 92vw;
+      background: var(--color-neutral-light-000); z-index: calc(var(--z-modal) + 1);
+      box-shadow: var(--shadow-l); transform: translateX(100%); transition: transform var(--transition-slow);
+      display: flex; flex-direction: column;
+    }
+    .panel.open { transform: translateX(0); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-m) var(--space-l); border-bottom: 1px solid var(--color-neutral-light-500); flex-shrink: 0; }
+    .panel-head h2 { margin: 0; font-size: 18px; font-weight: 500; }
+    .panel-body { flex: 1; overflow-y: auto; padding: var(--space-l); display: flex; flex-direction: column; gap: var(--space-m); }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-800); }
+    .field label .req { color: var(--color-error-500); }
+    .field .hint { font-size: 11px; color: var(--color-neutral-dark-300); }
+    .field input[type=text], .field input[type=date], .field select, .field textarea, .combo-input {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); font-size: 14px; font-family: var(--font-family); color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-000);
+    }
+    .field select:disabled { background: var(--color-neutral-light-100); color: var(--color-neutral-dark-400); }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .field input:focus, .field textarea:focus, .combo-input:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    .field.invalid input { border-color: var(--color-error-500); box-shadow: 0 0 0 3px var(--color-error-100); }
+    .field-err { display: none; align-items: center; gap: 4px; font-size: 12px; color: var(--color-error-600); }
+    .field.invalid .field-err { display: flex; }
+    .field-err .material-symbols-outlined { font-size: 15px; }
+
+    /* combobox (person) */
+    .combo { position: relative; }
+    .combo-menu { position: absolute; left: 0; right: 0; top: calc(100% + 2px); z-index: 5;
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-m); max-height: 220px; overflow-y: auto; display: none; }
+    .combo-menu.open { display: block; }
+    .combo-opt { padding: 8px 10px; cursor: pointer; font-size: 13px; display: flex; flex-direction: column; }
+    .combo-opt:hover, .combo-opt.active { background: var(--color-primary-100); }
+    .combo-opt .kn { font-size: 11px; color: var(--color-neutral-dark-300); }
+    .combo-opt.clear { color: var(--color-neutral-dark-400); font-style: italic; }
+
+    .panel-foot { flex-shrink: 0; display: flex; align-items: center; gap: var(--space-s);
+      padding: var(--space-m) var(--space-l); border-top: 1px solid var(--color-neutral-light-500); }
+    .panel-foot .spacer { flex: 1; }
+
+    /* ---------- POPOVER (Kontaktdaten der Antragsteller) ---------- */
+    .popover { position: absolute; z-index: var(--z-overlay); background: var(--color-neutral-light-000);
+      color: var(--color-neutral-dark-900); border: 1px solid var(--color-neutral-light-300, #E4E7EC);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-l); padding: var(--space-m) var(--space-l);
+      min-width: 300px; display: none; font-size: 13px; }
+    .popover.open { display: block; }
+    .pv-person + .pv-person { margin-top: var(--space-m); padding-top: var(--space-m);
+      border-top: 1px solid var(--color-neutral-light-200); }
+    .pv-head { display: flex; align-items: baseline; gap: var(--space-s); margin-bottom: var(--space-s); }
+    .pv-name { font-weight: 500; font-size: 13px; color: var(--color-neutral-dark-900); }
+    .pv-role { font-size: 11px; color: var(--color-neutral-dark-300); white-space: nowrap; }
+    .pv-grid { display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-s); row-gap: 6px; align-items: baseline; }
+    .pv-label { text-align: right; color: var(--color-neutral-dark-400); white-space: nowrap; }
+    .pv-val { color: var(--color-primary-600); font-weight: 500; text-decoration: none; word-break: break-word; }
+    .pv-val:hover { text-decoration: underline; }
+
+    /* ---------- TOAST ---------- */
+    .toast-stack { position: fixed; bottom: var(--space-l); left: 50%; transform: translateX(-50%);
+      z-index: var(--z-toast); display: flex; flex-direction: column; gap: var(--space-s); align-items: center; }
+    .toast {
+      display: flex; align-items: center; gap: var(--space-m); background: var(--color-neutral-dark-900); color: #fff;
+      padding: 10px 12px 10px 16px; border-radius: var(--radius-s); box-shadow: var(--shadow-l); font-size: 13px;
+      animation: toastIn var(--transition-base); max-width: 90vw;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .toast .material-symbols-outlined { font-size: 18px; }
+    .toast-undo { border: none; background: none; color: var(--color-primary-300); font-weight: 500; cursor: pointer;
+      font-size: 13px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: var(--radius-xs); }
+    .toast-undo:hover { background: rgba(255,255,255,.1); }
+
+    /* ---------- MOBILE CARDS ---------- */
+    .card-list { display: none; }
+    .mobile-only { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+    /* ===== WORKSPACE / PANES (calendar split) ===== */
+    /* default (calendar closed): panes are transparent so the table flows/scrolls exactly as before */
+    .workspace { display: block; }
+    .pane { display: contents; }
+    .pane-body { display: contents; }
+    .pane-head { display: none; }
+    .cal-pane { display: none; }
+
+    /* calendar OPEN → two-column split */
+    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-m); align-items: stretch; flex: 1; min-height: 0; }
+    body.cal-open .pane {
+      display: flex; flex-direction: column; min-height: 0; min-width: 0;
+      background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-s); overflow: hidden;
+    }
+    body.cal-open .pane-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    body.cal-open .cal-pane { flex: 0 0 46%; max-width: 46%; }
+    body.cal-open .todo-pane { flex: 1 1 auto; }
+    /* Kalender-Breite folgt dem gewählten Zeitraum */
+    /* Breite: mind. lesbar, max. so viel, dass die Tabelle den Rest bekommt */
+    body.cal-open .cal-pane.view-tag   { flex: 0 0 clamp(300px, 30%, 420px); max-width: 420px; }
+    body.cal-open .cal-pane.view-drei  { flex: 0 0 clamp(340px, 38%, 660px); max-width: 660px; }
+    body.cal-open .pane-head { display: flex; }
+    body.cal-open .todo-pane .table-wrap { border: none; box-shadow: none; border-radius: 0; overflow: auto; flex: 1; min-height: 0; }
+    body.cal-open .todo-pane .table-footer { border-radius: 0; }
+
+    .pane-head {
+      align-items: center; gap: var(--space-s); flex-shrink: 0;
+      padding: 7px var(--space-m); border-bottom: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-000);
+    }
+    .pane-title { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .pane-title .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
+    .pane-head-tools { display: flex; align-items: center; gap: var(--space-s); margin-left: auto; }
+    .pane-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-xs); background: var(--color-neutral-light-000);
+      color: var(--color-neutral-dark-400); cursor: pointer; flex-shrink: 0;
+    }
+    .pane-toggle:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .pane-toggle .material-symbols-outlined { font-size: 18px; }
+    .pane-collapsed-label { display: none; }
+    body.cal-open .pane.collapsed .pane-collapsed-label { display: flex; flex-direction: column; align-items: center; gap: var(--space-s); }
+    .pane-collapsed-label .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
+    .pcl-word { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); letter-spacing: .3px; }
+
+    /* collapsed pane → slim rail */
+    body.cal-open .pane.collapsed { flex: 0 0 42px !important; max-width: 42px !important; min-width: 42px; }
+    body.cal-open .pane.collapsed .pane-body { display: none; }
+    body.cal-open .pane.collapsed .pane-head { flex-direction: column; height: 100%; justify-content: flex-start; gap: var(--space-m); padding: var(--space-m) 0; border-bottom: none; }
+    body.cal-open .pane.collapsed .pane-title, body.cal-open .pane.collapsed .pane-head-tools { display: none; }
+    /* collapsed rail order: arrow → icon → word */
+    body.cal-open .pane.collapsed .pane-toggle { order: -1; }
+
+    /* reduced to-do columns when both panes share the width
+       Spalten: 1 Haken · 2 To do · 3 Fälligkeit · 4 Antragsteller · 5 Berater */
+    .table-wrap.cols-reduced th:nth-child(5), .table-wrap.cols-reduced td:nth-child(5) { display: none; }
+    .table-wrap.cols-reduced th:nth-child(2) { min-width: 0 !important; }
+    .table-wrap.cols-reduced th:nth-child(3) { min-width: 0 !important; }
+    /* im engen Splitscreen zählt Breite mehr als die bündige Datumskante */
+    .table-wrap.cols-reduced .due-slot { flex: 0 0 auto; }
+    .table-wrap.cols-reduced .due-slot:empty { display: none; }
+    /* Tagesansicht: Kalender ist schmaler → nur Berater weicht */
+    .table-wrap.cols-slim th:nth-child(5), .table-wrap.cols-slim td:nth-child(5) { display: none; }
+    .table-wrap.cols-slim th:nth-child(2) { min-width: 220px !important; }
+    /* schmalere Laptops: Fälligkeit darf enger werden, statt die Tabelle zu scrollen */
+    @media (max-width: 1400px) {
+      .table-wrap.cols-slim th:nth-child(3) { min-width: 0 !important; }
+      .table-wrap.cols-slim .due-slot { flex: 0 0 auto; }
+    }
+
+    /* toolbar toggle active state */
+    .btn-toggle.active { background: var(--color-primary-100); border-color: var(--color-primary-400); color: var(--color-primary-600); }
+    .btn-toggle.active .material-symbols-outlined { color: var(--color-primary-600); }
+
+    /* ===== CALENDAR (Tag / 3 Tage / Woche) ===== */
+    .cal-nav { display: inline-flex; align-items: center; gap: 2px; }
+    .cal-nav-btn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; color: var(--color-neutral-dark-400); cursor: pointer; }
+    .cal-nav-btn:hover { background: var(--color-neutral-light-200); }
+    .cal-nav-btn .material-symbols-outlined { font-size: 18px; }
+    .cal-today-btn { padding: 3px 8px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; font-size: 12px; color: var(--color-neutral-dark-700); cursor: pointer; }
+    .cal-today-btn:hover { background: var(--color-neutral-light-200); }
+    .cal-range-label { font-size: 12px; color: var(--color-neutral-dark-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    body.cal-open .cal-pane:not(.collapsed) .pane-toggle { margin-left: var(--space-s); }
+
+    /* Zeitraum-Schnellauswahl */
+    .cal-toolbar {
+      display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0;
+      padding: 6px var(--space-s);
+      background: var(--color-neutral-light-100);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .cal-toolbar .cal-nav { margin-left: auto; }
+    /* kompakte Variante der Segmented-Control für die Pane-Toolbar */
+    .segmented--sm button { padding: 3px 10px; font-size: 12px; font-weight: 400; white-space: nowrap; }
+    .segmented--sm button.active { background: var(--color-primary-100); color: var(--color-primary-600); font-weight: 500; }
+
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--color-neutral-light-400); flex: 1; min-height: 0; overflow-y: auto; }
+    .cal-pane.view-tag  .cal-grid { grid-template-columns: 1fr; }
+    .cal-pane.view-drei .cal-grid { grid-template-columns: repeat(3, 1fr); }
+    .cal-day { background: var(--color-neutral-light-000); display: flex; flex-direction: column; min-width: 0; }
+    .cal-day.weekend { background: var(--color-neutral-light-100); }
+    .cal-day-head { position: sticky; top: 0; z-index: 1; text-align: center; padding: 6px 2px 4px; background: inherit; border-bottom: 1px solid var(--color-neutral-light-400); }
+    .cal-wd { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--color-neutral-dark-300); }
+    .cal-dnum { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-700); line-height: 22px; }
+    .cal-day.today .cal-dnum { background: var(--color-primary-500); color: #fff; width: 22px; height: 22px; border-radius: var(--radius-full); display: inline-block; }
+    .cal-day.today .cal-wd { color: var(--color-primary-600); }
+    .cal-events { display: flex; flex-direction: column; gap: 3px; padding: 4px 3px; }
+    .cal-event { border-left: 3px solid var(--evc, var(--color-primary-500)); background: var(--evbg, var(--color-primary-100)); border-radius: var(--radius-xs); padding: 3px 4px; overflow: hidden; }
+    .cal-ev-time { display: block; font-size: 9px; font-weight: 500; color: var(--color-neutral-dark-400); line-height: 1.2; }
+    .cal-ev-title { font-size: 10px; line-height: 1.25; color: var(--color-neutral-dark-900); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .cal-empty { padding: var(--space-s) 4px; text-align: center; font-size: 11px; color: var(--color-neutral-dark-300); }
+    .cal-pane.view-woche .cal-empty { display: none; }   /* in der Wochenspalte zu eng */
+
+    /* 3-Tage-Ansicht: etwas mehr Luft als in der Woche */
+    .cal-pane.view-drei .cal-events { gap: 4px; padding: 5px 4px; }
+    .cal-pane.view-drei .cal-event { padding: 4px 6px; }
+    .cal-pane.view-drei .cal-ev-time { font-size: 10px; }
+    .cal-pane.view-drei .cal-ev-title { font-size: 11px; }
+
+    /* Tagesansicht: eine Spalte, volle Breite nutzen */
+    .cal-pane.view-tag .cal-day-head { display: flex; align-items: baseline; gap: var(--space-s); text-align: left; padding: 8px var(--space-m); }
+    .cal-pane.view-tag .cal-wd { font-size: 12px; letter-spacing: .2px; }
+    .cal-pane.view-tag .cal-dnum { font-size: 14px; }
+    .cal-pane.view-tag .cal-events { gap: 6px; padding: var(--space-s); }
+    .cal-pane.view-tag .cal-event { display: flex; align-items: baseline; gap: var(--space-s); padding: 7px var(--space-s); }
+    .cal-pane.view-tag .cal-ev-time { flex: 0 0 40px; font-size: 12px; color: var(--color-neutral-dark-700); }
+    .cal-pane.view-tag .cal-ev-title { font-size: 13px; line-height: 1.3; -webkit-line-clamp: 2; }
+    .cal-pane.view-tag .cal-empty { padding: var(--space-l) var(--space-m); font-size: 12px; }
+
+    @media (max-width: 860px) {
+      .content { padding: var(--space-m) var(--space-m) 0; }
+      .search-input { width: 100%; }
+      .search-wrap { flex: 1; min-width: 160px; }
+      .risk, .loadcard { flex: 1 1 100%; }
+      .desktop-only { display: none !important; }
+      .mobile-only { display: inline-flex; }
+      .add-card-wrap { display: block; padding-bottom: var(--space-s); }
+      .add-card { display: flex; }
+      .table-wrap, .table-footer { display: none; }
+      .card-list { display: flex; flex-direction: column; gap: var(--space-s); flex: 1; overflow-y: auto; padding-bottom: var(--space-m); }
+
+      .tcard { position: relative; background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+        border-radius: var(--radius-s); padding: var(--space-m); padding-left: 18px; display: flex; flex-direction: column; gap: var(--space-s); }
+      .tcard::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--stripe, transparent);
+        border-radius: var(--radius-s) 0 0 var(--radius-s); }
+      .tcard[data-status="erledigt"] .tcard-title,
+      .tcard[data-status="erledigt"] .person-link,
+      .tcard[data-status="erledigt"] .berater-name { text-decoration: line-through; color: var(--color-neutral-dark-300); }
+      .tcard-top { display: flex; align-items: flex-start; gap: var(--space-s); }
+      .tcard-top .rcheck { margin-top: 1px; }
+      .tcard-title { flex: 1; font-weight: 500; }
+      .tcard-meta { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; }
+      /* ohne Hover auf Touch: Schnellaktion dauerhaft sichtbar und mit Touch-Zielgröße */
+      .tcard .due-bump { opacity: 1; padding: 3px 10px; }
+      /* auf der Karte gibt es keine Spalte zum Ausrichten → Slot schrumpft auf Inhalt */
+      .tcard .due-slot { flex: 0 0 auto; }
+      .tcard .due-slot:empty { display: none; }
+    }
+    @media (max-width: 480px) {
+      .top-user-info, .top-lang { display: none; }
+      .ff-word { display: none; }   /* Schalter bleibt sichtbar, nur die Beschriftung weicht */
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- RAIL -->
+  <aside class="rail">
+    <div class="rail-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="7" fill="#009688"/>
+        <path d="M11 8h11v3.4h-7.2v3.3h6.4v3.4h-6.4V24H11V8Z" fill="#fff"/>
+      </svg>
+    </div>
+    <nav class="rail-nav">
+      <a class="rail-item active" href="#"><span class="material-symbols-outlined">assignment_turned_in</span><span class="rail-label">To do's</span><span class="rail-badge" id="railBadge">0</span></a>
+      <a class="rail-item" href="todo-sorting-v1.html"><span class="material-symbols-outlined">folder_shared</span><span class="rail-label">Anträge</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">person</span><span class="rail-label">Leads</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">hub</span><span class="rail-label">Quellen</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">apartment</span><span class="rail-label">Unternehmen</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">receipt_long</span><span class="rail-label">Buchhaltung</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">bar_chart</span><span class="rail-label">Reporting</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">storefront</span><span class="rail-label">Lead-Shop</span><span class="rail-warn material-symbols-outlined">warning</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">mail</span><span class="rail-label">E-Mail</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">settings</span><span class="rail-label">System</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="top-icon sparkle" title="Assistent"><span class="material-symbols-outlined">auto_awesome</span></button>
+      <button class="top-icon" title="Neu"><span class="material-symbols-outlined">add</span></button>
+      <button class="top-icon" title="Benachrichtigungen"><span class="material-symbols-outlined">notifications</span><span class="top-badge">29</span></button>
+      <button class="top-icon" title="Hilfe"><span class="material-symbols-outlined">help</span></button>
+      <button class="top-lang">DE <span class="material-symbols-outlined">expand_more</span></button>
+      <div class="top-divider"></div>
+      <div class="top-user">
+        <div class="top-avatar"></div>
+        <div class="top-user-info">
+          <span class="top-user-name">Gernot Schusser</span>
+          <span class="top-user-role">Finanzberater</span>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-neutral-dark-400)">expand_more</span>
+      </div>
+
+      <!-- Prototyp-Schalter (ganz rechts, damit er bei schmalen Fenstern nicht wegläuft):
+           blendet die Kennzahlen-Reihe (Arbeitslast heute/morgen + Monatserfolge) ein oder aus -->
+      <div class="top-divider"></div>
+      <label class="feature-flip" title="Prototyp-Schalter: Kennzahlen-Karten (Arbeitslast heute/morgen, Leads, Provision) ein-/ausblenden">
+        <input type="checkbox" id="flagLoadCards" />
+        <span class="ff-switch"></span>
+        <span class="ff-label"><span class="material-symbols-outlined">monitoring</span><span class="ff-word">Arbeitslast</span></span>
+      </label>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-titlebar">
+          <span class="page-title-icon"><span class="material-symbols-outlined">assignment_turned_in</span></span>
+          <h1 class="page-title">To do's</h1>
+
+          <!-- Suche: filtert die To-do-Tabelle (siehe matchesSearch) -->
+          <div class="search-wrap">
+            <input class="search-input" id="search" placeholder="Suchen nach Kundennummer, To do …" aria-label="Suche" />
+            <span class="search-kbd desktop-only">/</span>
+            <span class="material-symbols-outlined">search</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAGES-INDIKATOREN: Anträge ohne To-do + Arbeitslast heute / morgen -->
+      <div class="day-indicators">
+        <!-- RISK: aktive Anträge ohne To-do -->
+        <div class="risk" id="riskBanner">
+          <div class="risk-head" id="riskHead">
+            <span class="material-symbols-outlined risk-icon">warning</span>
+            <span class="risk-text"><b id="riskCount">0</b> aktive Anträge haben keine To-do's</span>
+            <button class="risk-open" id="riskToggle" title="Anträge in neuem Tab öffnen" aria-label="Anträge in neuem Tab öffnen">
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Arbeitslast (rein informativ, nicht klickbar) -->
+        <div class="loadcard" id="loadToday"></div>
+        <div class="loadcard" id="loadTomorrow"></div>
+
+        <!-- Erfolge des Monats (rein informativ, nicht klickbar) -->
+        <div class="wincard" id="winLeads" data-tone="leads"></div>
+        <div class="wincard" id="winProvision" data-tone="provision"></div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <!-- Schnellfilter: farbiger Streifen = Fälligkeits-Zustand (wie die Status-Punkte
+             in der Tabelle), Zähler = Anzahl der Treffer hinter diesem Filter. -->
+        <div class="segmented segmented--quick" id="quickSeg">
+          <button data-quick="ueberfaellig"><span class="qf-strip" style="--qf:var(--color-error-500)"></span><span class="qf-count">0</span>Überfällig</button>
+          <button data-quick="heute"><span class="qf-strip" style="--qf:var(--color-warning-high)"></span><span class="qf-count">0</span>Heute fällig</button>
+          <button data-quick="morgen"><span class="qf-strip" style="--qf:var(--color-info)"></span><span class="qf-count">0</span>Morgen fällig</button>
+          <button data-quick="alle" class="active"><span class="qf-count">0</span>Alle</button>
+          <button data-quick="erledigt"><span class="qf-strip" style="--qf:var(--color-success)"></span><span class="qf-count">0</span>Erledigte</button>
+        </div>
+
+        <div style="position:relative">
+          <button class="btn btn-secondary" id="btnDue" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">event</span> Fälligkeit <span class="btn-badge" id="dueCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
+          <div class="menu berater-menu" id="menuDue"></div>
+        </div>
+
+        <div style="position:relative">
+          <button class="btn btn-secondary" id="btnTyp" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">sell</span> Art <span class="btn-badge" id="typCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
+          <div class="menu berater-menu" id="menuTyp"></div>
+        </div>
+
+        <div style="position:relative">
+          <button class="btn btn-secondary" id="btnBerater"><span class="material-symbols-outlined">person</span> Berater <span class="btn-badge" id="beraterCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
+          <div class="menu berater-menu" id="menuBerater"></div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <button class="btn btn-secondary btn-toggle desktop-only" id="btnCal" aria-pressed="false" title="Kalender ein-/ausblenden"><span class="material-symbols-outlined">calendar_month</span> Kalender</button>
+
+        <div class="segmented desktop-only" id="densitySeg" title="Zeilendichte">
+          <button data-density="comfortable" class="active"><span class="material-symbols-outlined">density_medium</span></button>
+          <button data-density="compact"><span class="material-symbols-outlined">density_small</span></button>
+        </div>
+
+      </div>
+
+      <!-- ACTIVE FILTER CHIPS -->
+      <div class="chip-row" id="chipRow"></div>
+
+      <!-- WORKSPACE: To-dos (+ optional calendar) -->
+      <div class="workspace" id="workspace">
+
+      <!-- TO-DO PANE -->
+      <section class="pane todo-pane" id="todoPane">
+        <div class="pane-head">
+          <span class="pane-title"><span class="material-symbols-outlined">checklist</span> To-dos</span>
+          <span class="pane-collapsed-label"><span class="material-symbols-outlined">checklist</span><span class="pcl-word">To-dos</span></span>
+          <div class="pane-head-tools"></div>
+          <button class="pane-toggle" id="todoToggle" title="To-dos ein-/ausklappen"><span class="material-symbols-outlined">chevron_left</span></button>
+        </div>
+        <div class="pane-body">
+
+      <!-- TABLE (desktop) -->
+      <div class="table-wrap" id="tableWrap">
+        <table class="todos" id="todoTable">
+          <thead>
+            <tr>
+              <th class="cell-check"><span class="sr-only">Erledigt</span></th>
+              <th class="sortable" data-sort="titel" style="min-width:260px"><span class="th-inner">To do <span class="material-symbols-outlined">unfold_more</span></span></th>
+              <th class="sortable" data-sort="faelligkeit" style="min-width:300px"><span class="th-inner">Fälligkeit <span class="material-symbols-outlined">unfold_more</span></span></th>
+              <th class="sortable" data-sort="person" style="min-width:180px"><span class="th-inner">Antragsteller <span class="material-symbols-outlined">unfold_more</span></span></th>
+              <th class="sortable" data-sort="berater" style="min-width:160px"><span class="th-inner">Berater <span class="material-symbols-outlined">unfold_more</span></span></th>
+            </tr>
+          </thead>
+          <!-- INLINE-ANLEGEN: bleibt dauerhaft als erste Zeile über der Liste -->
+          <tbody id="addBody">
+            <tr class="add-row add-collapsed" id="addTrigger" tabindex="0" role="button" aria-label="To do hinzufügen">
+              <td class="cell-check"></td>
+              <td colspan="4"><span class="add-label"><span class="material-symbols-outlined">add</span> To do hinzufügen</span></td>
+            </tr>
+            <tr class="add-row add-fields" id="addFields" hidden>
+              <td class="cell-check"></td>
+              <td><input type="text" class="add-input" id="addTitel" autocomplete="off" placeholder="Was ist zu tun? (optional)" aria-label="Titel" /></td>
+              <td><input type="date" class="add-input" id="addDatum" aria-label="Fälligkeitsdatum" /></td>
+              <td><select class="add-input" id="addPerson" aria-label="Antragsteller"></select></td>
+              <td><select class="add-input" id="addBerater" aria-label="Berater"></select></td>
+            </tr>
+            <tr class="add-row add-actions" id="addActions" hidden>
+              <td colspan="5">
+                <div class="add-bar">
+                  <!-- Art hat keine eigene Spalte mehr, wird hier beim Anlegen gesetzt -->
+                  <label class="add-typ"><span>Art</span>
+                    <select class="add-input" id="addTyp" aria-label="Art"></select>
+                  </label>
+                  <button class="btn btn-ghost btn-sm" id="addCancel">Abbrechen</button>
+                  <span class="add-kbd">Enter speichert · Esc verwirft · beim Verlassen wird gespeichert, sobald etwas eingetragen ist</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none"></div>
+      </div>
+
+      <!-- CARD LIST (mobile) -->
+      <div class="add-card-wrap">
+        <button class="add-card" id="addCardBtn"><span class="material-symbols-outlined">add</span> To do hinzufügen</button>
+      </div>
+      <div class="card-list" id="cardList"></div>
+
+      <!-- FOOTER -->
+      <div class="table-footer">
+        <div class="footer-left">
+          <span>Einträge pro Seite</span>
+          <select id="perPage">
+            <option>10</option><option selected>25</option><option>50</option>
+          </select>
+        </div>
+        <div class="footer-right">
+          <span id="rangeLabel">0–0 von 0</span>
+          <button class="pager-btn" id="prevPage" title="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
+          <button class="pager-btn" id="nextPage" title="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+      </div>
+
+        </div><!-- /pane-body -->
+      </section><!-- /todo-pane -->
+
+      <!-- CALENDAR PANE -->
+      <section class="pane cal-pane" id="calPane">
+        <div class="pane-head">
+          <span class="pane-title"><span class="material-symbols-outlined">calendar_month</span> Kalender</span>
+          <span class="pane-collapsed-label"><span class="material-symbols-outlined">calendar_month</span><span class="pcl-word">Kalender</span></span>
+          <div class="pane-head-tools">
+            <span class="cal-range-label" id="calRangeLabel"></span>
+          </div>
+          <button class="pane-toggle" id="calToggle" title="Kalender ein-/ausklappen"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+        <div class="pane-body">
+          <div class="cal-toolbar">
+            <div class="segmented segmented--sm" id="calViewSeg" role="group" aria-label="Zeitraum">
+              <button data-view="tag"   class="active" aria-pressed="true">1 Tag</button>
+              <button data-view="drei"  aria-pressed="false">3 Tage</button>
+              <button data-view="woche" aria-pressed="false">Woche</button>
+            </div>
+            <div class="cal-nav">
+              <button class="cal-nav-btn" id="calPrev" title="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
+              <button class="cal-today-btn" id="calToday">Heute</button>
+              <button class="cal-nav-btn" id="calNext" title="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </section><!-- /cal-pane -->
+
+      </div><!-- /workspace -->
+    </div>
+  </div>
+</div>
+
+<!-- person info popover -->
+<div class="popover" id="personPop"></div>
+
+<!-- SIDE PANEL -->
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" aria-hidden="true" role="dialog" aria-label="To do bearbeiten">
+  <div class="panel-head">
+    <h2 id="panelTitle">To do hinzufügen</h2>
+    <button class="top-icon" id="panelClose" title="Schließen (Esc)"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <div class="panel-body">
+    <div class="field" id="fTitel">
+      <label for="inTitel">Titel <span class="req">*</span></label>
+      <input type="text" id="inTitel" autocomplete="off" placeholder="Was ist zu tun?" />
+      <span class="field-err"><span class="material-symbols-outlined">error</span> Bitte einen Titel eingeben.</span>
+    </div>
+
+    <div class="field">
+      <label for="inDatum">Fälligkeitsdatum</label>
+      <input type="date" id="inDatum" />
+    </div>
+
+    <div class="field" id="fTyp">
+      <label for="inTyp">Art</label>
+      <select id="inTyp"></select>
+      <span class="hint" id="typHint" hidden>Systemgenerierte Arten können nicht geändert werden.</span>
+    </div>
+
+    <div class="field" id="fPerson">
+      <label for="inPerson">Antragsteller <span class="req">*</span></label>
+      <div class="combo">
+        <input type="text" id="inPerson" class="combo-input" autocomplete="off" placeholder="Kundennummer oder Name …" />
+        <div class="combo-menu" id="personCombo"></div>
+      </div>
+      <span class="field-err"><span class="material-symbols-outlined">error</span> Bitte einen Antragsteller auswählen.</span>
+    </div>
+
+    <div class="field">
+      <label for="inNotiz">Notiz <span class="hint">(optional)</span></label>
+      <textarea id="inNotiz" placeholder="Zusätzliche Details …"></textarea>
+    </div>
+  </div>
+  <div class="panel-foot">
+    <button class="btn btn-primary" id="btnSave"><span class="material-symbols-outlined">check</span> Speichern</button>
+    <button class="btn btn-secondary" id="btnSaveNew" title="Speichern und Formular für nächstes To do offen lassen">Speichern &amp; neues</button>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="btnCancel">Abbrechen</button>
+  </div>
+</aside>
+
+<!-- VERLAUF-DRAWER (Änderungshistorie eines To dos) -->
+<div class="scrim" id="histScrim"></div>
+<aside class="panel" id="histPanel" aria-hidden="true" role="dialog" aria-label="Verlauf">
+  <div class="panel-head">
+    <div class="ph-titles">
+      <h2>Verlauf</h2>
+      <span class="panel-sub" id="histSub"></span>
+    </div>
+    <button class="top-icon" id="histClose" title="Schließen (Esc)"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <div class="panel-body" id="histBody"></div>
+  <div class="panel-foot">
+    <button class="btn btn-secondary" id="histEdit"><span class="material-symbols-outlined">edit</span> Bearbeiten</button>
+    <div class="spacer"></div>
+    <span class="hist-note">Mock-Daten · Prototyp</span>
+  </div>
+</aside>
+
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+/* =======================================================================
+   TO DO'S — To-do Arbeitsfläche
+   Standalone-Prototyp · Mock-Daten · kein Backend
+   ======================================================================= */
+
+// Prototyp-Referenzdatum (statt echtem "heute"): Fr, 24.07.2026
+const TODAY = new Date(2026, 6, 24);
+TODAY.setHours(0,0,0,0);
+
+// Antragsteller. `mit` = zweiter Antragsteller (optional) — bei Paaren/Gemeinschaftsanträgen.
+const CUSTOMERS = [
+  { name: 'Andreas Weber',     kundennummer: 'KD-100234', email: 'a.weber@example.de',       telefon: '+49 151 2231 4408',
+    mit: { name: 'Claudia Weber',  kundennummer: 'KD-100235', email: 'c.weber@example.de',   telefon: '+49 151 2231 4409' } },
+  { name: 'Thomas Berger',     kundennummer: 'KD-100871', email: 't.berger@example.de',      telefon: '+49 170 8845 1290' },
+  { name: 'Sandra Klein',      kundennummer: 'KD-102145', email: 's.klein@example.de',       telefon: '+49 160 3392 7754' },
+  { name: 'Mehmet Öztürk',     kundennummer: 'KD-103902', email: 'm.oeztuerk@example.de',    telefon: '+49 152 1230 8866',
+    mit: { name: 'Elif Öztürk',    kundennummer: 'KD-103903', email: 'e.oeztuerk@example.de', telefon: '+49 152 1230 8867' } },
+  { name: 'Michael Braun',     kundennummer: 'KD-104556', email: 'm.braun@example.de',       telefon: '+49 176 5541 9932' },
+  { name: 'Julia Hoffmann',    kundennummer: 'KD-105011', email: 'j.hoffmann@example.de',    telefon: '+49 157 7761 2045',
+    mit: { name: 'Tobias Hoffmann',kundennummer: 'KD-105012', email: 't.hoffmann@example.de', telefon: '+49 157 7761 2046' } },
+  { name: 'Dr. Andreas Vogel', kundennummer: 'KD-105877', email: 'a.vogel@example.de',       telefon: '+49 171 4408 3315' },
+  { name: 'Petra Schulz',      kundennummer: 'KD-106340', email: 'p.schulz@example.de',      telefon: '+49 163 9987 4471' },
+];
+
+const cust = (i) => CUSTOMERS[i];
+let _id = 0;
+const nid = () => 'todo-' + (++_id);
+
+// faelligkeit als ISO 'YYYY-MM-DD'
+function iso(y,m,d){ return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+
+/* ======================================================================
+   TYP-MODELL — die „Art" eines To-dos
+   Reihenfolge = Sortierrang: erst selbst angelegte, dann systemgenerierte.
+   `quelle` (berater | system) ist eine Eigenschaft der Art, kein zweites Feld:
+   ein Geburtstag ist immer systemgeneriert, ein Rückruf immer selbst angelegt.
+   ====================================================================== */
+const TODO_TYP = {
+  // „assignment" statt eines Häkchen-Icons: ein Check direkt neben der Erledigt-Checkbox
+  // liest sich sonst wie ein zweiter Status, nicht wie eine Art.
+  aufgabe:        { label:'Aufgabe',        icon:'assignment',           quelle:'berater' },
+  rueckruf:       { label:'Rückruf',        icon:'phone_in_talk',        quelle:'berater' },
+  unterlagen:     { label:'Unterlagen',     icon:'description',          quelle:'berater' },
+  termin:         { label:'Termin',         icon:'event',                quelle:'berater' },
+  geburtstag:     { label:'Geburtstag',     icon:'cake',                 quelle:'system'  },
+  kundendokument: { label:'Kundendokument', icon:'cloud_upload',         quelle:'system'  },
+  systemhinweis:  { label:'Systemhinweis',  icon:'notifications_active', quelle:'system'  },
+};
+const TYP_KEYS     = Object.keys(TODO_TYP);
+const TYP_BERATER  = TYP_KEYS.filter(k => TODO_TYP[k].quelle === 'berater');
+const TYP_SYSTEM   = TYP_KEYS.filter(k => TODO_TYP[k].quelle === 'system');
+const TYP_RANK     = (k) => TYP_KEYS.indexOf(k);
+const typMeta      = (t) => TODO_TYP[t.typ] || TODO_TYP.aufgabe;
+const typLabel     = (k) => (TODO_TYP[k] || TODO_TYP.aufgabe).label;
+const isSystemTyp  = (t) => typMeta(t).quelle === 'system';
+const isBday       = (t) => t.typ === 'geburtstag';
+// Herkunft immer aus der Art ableiten — einzige Stelle, an der `quelle` gesetzt wird
+function applyQuelle(t){ t.quelle = typMeta(t).quelle; }
+
+// `typ` ist die Art des To-dos (siehe TODO_TYP). `quelle` wird daraus abgeleitet
+// (applyQuelle) — nie separat pflegen, sonst laufen Art und Herkunft auseinander.
+let todos = [
+  // --- überfällig ---
+  { id:nid(), typ:'unterlagen', titel:'Selbstauskunft von Andreas Weber prüfen', faelligkeit:iso(2026,7,21), zeit:'09:00', erledigt:false, quittiert:true, person:cust(0), notiz:'Angaben zu Eigenkapital gegenprüfen.' },
+  { id:nid(), typ:'rueckruf', titel:'Rückruf: offene Fragen zur Finanzierung', faelligkeit:iso(2026,7,22), zeit:'14:00', erledigt:false, quittiert:true, person:cust(1), notiz:'' },
+  { id:nid(), typ:'unterlagen', titel:'Bonitätsunterlagen nachfordern', faelligkeit:iso(2026,7,23), zeit:'', erledigt:false, quittiert:true, person:cust(2), notiz:'Gehaltsnachweise letzte 3 Monate fehlen.' },
+  // --- heute fällig ---
+  { id:nid(), typ:'aufgabe', titel:'Angebot Lassestraße finalisieren', faelligkeit:iso(2026,7,24), zeit:'08:00', erledigt:false, quittiert:true, person:cust(3), notiz:'Konditionen mit Kunde final abstimmen.' },
+  { id:nid(), typ:'termin', titel:'Termin mit Michael Braun vorbereiten', faelligkeit:iso(2026,7,24), zeit:'11:30', erledigt:false, quittiert:true, person:cust(4), notiz:'' },
+  // --- von Kunde ausgelöst (system, unquittiert) ---
+  { id:nid(), typ:'kundendokument', titel:'Dokumente von Andreas Weber prüfen', faelligkeit:iso(2026,7,24), zeit:'', erledigt:false, quittiert:false, person:cust(0), notiz:'Kunde hat 3 Dokumente über das Portal hochgeladen.' },
+  { id:nid(), typ:'systemhinweis', titel:'Potentielle Antragsdubletten prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(6), notiz:'System hat einen möglichen Doppelantrag erkannt.' },
+  { id:nid(), typ:'kundendokument', titel:'Gehaltsnachweise von Sandra Klein prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(2), notiz:'Kunde hat 2 Dokumente über das Portal hochgeladen.' },
+  // --- zukünftig ---
+  { id:nid(), typ:'termin', titel:'Beratungstermin Julia Hoffmann', faelligkeit:iso(2026,7,28), zeit:'10:00', erledigt:false, quittiert:true, person:cust(5), notiz:'' },
+  { id:nid(), typ:'rueckruf', titel:'Nachfassen Lead: Petra Schulz', faelligkeit:iso(2026,7,31), zeit:'', erledigt:false, quittiert:true, person:cust(7), notiz:'' },
+  { id:nid(), typ:'unterlagen', titel:'Vertragsunterlagen an Notar übermitteln', faelligkeit:iso(2026,7,30), zeit:'', erledigt:false, quittiert:true, person:cust(3), notiz:'' },
+  // --- erledigt ---
+  { id:nid(), typ:'aufgabe', titel:'Widerrufsbelehrung verschickt', faelligkeit:iso(2026,7,23), zeit:'', erledigt:true, quittiert:true, person:cust(1), notiz:'' },
+  { id:nid(), typ:'aufgabe', titel:'Identitätsprüfung abgeschlossen', faelligkeit:iso(2026,7,22), zeit:'', erledigt:true, quittiert:true, person:cust(2), notiz:'' },
+  // --- Geburtstags-Erinnerungen (systemgeneriert) ---
+  { id:nid(), typ:'geburtstag', titel:'Michael Braun hat heute Geburtstag', faelligkeit:iso(2026,7,24), zeit:'', erledigt:false, quittiert:true, person:cust(4), notiz:'' },
+  { id:nid(), typ:'geburtstag', titel:'Julia Hoffmann hat heute Geburtstag', faelligkeit:iso(2026,7,24), zeit:'', erledigt:false, quittiert:true, person:cust(5), notiz:'' },
+  // --- morgen fällig: bewusst voller Tag, damit der Arbeitslast-Indikator den roten Bereich zeigt ---
+  { id:nid(), typ:'unterlagen', titel:'Einkommensnachweise Berger prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(1), notiz:'Letzte zwei Gehaltsabrechnungen gegenprüfen.' },
+  { id:nid(), typ:'unterlagen', titel:'Objektunterlagen Klein anfordern', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(2), notiz:'' },
+  { id:nid(), typ:'kundendokument', titel:'Dokumente von Petra Schulz prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(7), notiz:'Kunde hat 2 Dokumente über das Portal hochgeladen.' },
+  { id:nid(), typ:'aufgabe', titel:'Finanzierungsbestätigung Öztürk erstellen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(3), notiz:'' },
+  { id:nid(), typ:'unterlagen', titel:'Grundbuchauszug Braun anfordern', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(4), notiz:'' },
+  { id:nid(), typ:'systemhinweis', titel:'Neue Portal-Nachricht von Julia Hoffmann', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(5), notiz:'Rückfrage zur Sondertilgung.' },
+  { id:nid(), typ:'aufgabe', titel:'Zinsbindung Vogel prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(6), notiz:'' },
+  { id:nid(), typ:'aufgabe', titel:'KfW-Antrag Berger vorbereiten', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(1), notiz:'' },
+];
+
+// zuständiger Berater (Bearbeiter) je To do
+const ME = 'Gernot Schusser';
+const BERATER = [ME, 'Lena Bachmann', 'Bernd Krüger', 'Sandra Wolf'];
+// vollständige Berater-Liste des Teams (für den Berater-Filter) — auch ohne aktuelle To-dos
+const BERATER_ALL = [ME, 'Lena Bachmann', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld', 'Nina Roth', 'Oliver Kraus', 'Petra Sommer', 'Tobias Reich'];
+// je To do ein Bearbeiter — Reihenfolge entspricht dem todos-Array oben
+const beraterFor = ['Bernd Krüger','Lena Bachmann','Sandra Wolf', ME, ME, 'Bernd Krüger', ME, 'Sandra Wolf',
+                    'Lena Bachmann','Lena Bachmann','Sandra Wolf', 'Bernd Krüger','Sandra Wolf', ME, 'Lena Bachmann',
+                    // morgen fällig
+                    'Lena Bachmann', ME, 'Bernd Krüger', ME, 'Sandra Wolf', 'Lena Bachmann', ME, 'Bernd Krüger'];
+todos.forEach((t,i)=>{ t.berater = beraterFor[i] || ME; });
+todos.forEach(applyQuelle);
+
+/* ======================================================================
+   VERLAUF (Änderungshistorie) — Mock, kein Backend
+   Jeder Eintrag: { ts:'YYYY-MM-DDTHH:MM', actor, action, from, to }
+   ====================================================================== */
+const HIST_META = {
+  created:     { icon:'add_task',       label:'To do angelegt',            tone:'primary', field:'Titel' },
+  system:      { icon:'cloud_upload',   label:'Vom Kunden ausgelöst',      tone:'info',    field:'Auslöser' },
+  titel:       { icon:'edit',           label:'Titel geändert',            tone:'',        field:'Titel' },
+  faelligkeit: { icon:'event',          label:'Fälligkeitsdatum geändert', tone:'',        field:'Fälligkeitsdatum', date:true },
+  notiz:       { icon:'sticky_note_2',  label:'Notiz geändert',            tone:'',        field:'Notiz' },
+  typ:         { icon:'label',          label:'Art geändert',              tone:'',        field:'Art' },
+  person:      { icon:'person',         label:'Antragsteller geändert',    tone:'',        field:'Antragsteller' },
+  berater:     { icon:'switch_account', label:'Berater geändert',          tone:'',        field:'Berater' },
+  erledigt:    { icon:'task_alt',       label:'Als erledigt markiert',     tone:'success' },
+  reopened:    { icon:'undo',           label:'Wieder geöffnet',           tone:'' },
+  gesehen:     { icon:'visibility',     label:'Zur Kenntnis genommen',     tone:'info' },
+  mail:        { icon:'mail',           label:'Geburtstagsgruß gesendet',  tone:'primary', field:'Empfänger' },
+};
+
+// Zeitstempel relativ zum Prototyp-Referenztag
+function stamp(dayOffset, time){
+  const d = new Date(TODAY); d.setDate(d.getDate() + dayOffset);
+  return `${iso(d.getFullYear(), d.getMonth()+1, d.getDate())}T${time}`;
+}
+// Zeitstempel „jetzt" (Prototyp-Datum + echte Uhrzeit)
+function nowStamp(){
+  const n = new Date();
+  return `${iso(TODAY.getFullYear(), TODAY.getMonth()+1, TODAY.getDate())}T${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+// neuen Eintrag anhängen (fresh = in dieser Sitzung entstanden)
+function addHist(t, action, from, to, actor){
+  if(!t.verlauf) t.verlauf = [];
+  t.verlauf.push({ ts: nowStamp(), actor: actor || ME, action, from: from || '', to: to || '', fresh: true });
+}
+
+// [action, tagOffset, uhrzeit, actor, vorher, nachher]
+const MOCK_VERLAUF = {
+  0:  [['created', -9, '08:42', 'Bernd Krüger'],
+       ['faelligkeit', -5, '16:10', 'Bernd Krüger', iso(2026,7,17), iso(2026,7,21)],
+       ['notiz', -4, '11:25', 'Bernd Krüger', '', 'Angaben zu Eigenkapital gegenprüfen.']],
+  1:  [['created', -6, '10:05', 'Lena Bachmann', '', 'Rückruf Kunde'],
+       ['titel', -3, '09:14', 'Lena Bachmann', 'Rückruf Kunde', 'Rückruf: offene Fragen zur Finanzierung']],
+  2:  [['created', -7, '13:30', 'Sandra Wolf'],
+       ['notiz', -2, '08:55', 'Sandra Wolf', '', 'Gehaltsnachweise letzte 3 Monate fehlen.'],
+       ['faelligkeit', -1, '17:40', 'Sandra Wolf', iso(2026,7,22), iso(2026,7,23)]],
+  3:  [['created', -10, '09:00', ME],
+       ['faelligkeit', -2, '14:20', ME, iso(2026,7,22), iso(2026,7,24)],
+       ['notiz', -1, '10:10', ME, '', 'Konditionen mit Kunde final abstimmen.']],
+  4:  [['created', -3, '15:45', ME]],
+  5:  [['system', 0, '07:12', 'System', '', '3 Dokumente über das Kundenportal hochgeladen']],
+  6:  [['system', -1, '22:03', 'System', '', 'Möglicher Doppelantrag erkannt (KD-105877)']],
+  7:  [['system', 0, '08:30', 'System', '', '2 Dokumente über das Kundenportal hochgeladen']],
+  8:  [['created', -4, '11:00', 'Lena Bachmann'],
+       ['faelligkeit', -1, '09:30', 'Lena Bachmann', iso(2026,7,27), iso(2026,7,28)]],
+  9:  [['created', -2, '16:25', 'Lena Bachmann']],
+  10: [['created', -5, '08:15', 'Sandra Wolf', '', 'Unterlagen an Notar'],
+       ['titel', -2, '12:40', 'Sandra Wolf', 'Unterlagen an Notar', 'Vertragsunterlagen an Notar übermitteln']],
+  11: [['created', -6, '09:20', 'Bernd Krüger'],
+       ['erledigt', -1, '15:05', 'Bernd Krüger']],
+  12: [['created', -7, '10:40', 'Sandra Wolf'],
+       ['erledigt', -2, '11:15', 'Sandra Wolf']],
+  13: [['system', 0, '06:00', 'System', '', 'Geburtstag aus den Kundenstammdaten']],
+  14: [['system', 0, '06:00', 'System', '', 'Geburtstag aus den Kundenstammdaten']],
+};
+todos.forEach((t,i)=>{
+  const rows = MOCK_VERLAUF[i] || [['created', -5, '09:00', t.berater]];
+  t.verlauf = rows.map(([action, off, time, actor, from, to]) =>
+    ({ ts: stamp(off, time), actor, action, from: from || '', to: to || '' }));
+});
+
+/* ---------- Status-Modell (abgeleitet) ---------- */
+const STATUS = {
+  ueberfaellig:{ label:'Überfällig',          color:'var(--color-error-600)',      bg:'var(--color-error-100)',        dot:'var(--color-error-500)',   rank:0 },
+  heute:       { label:'Heute fällig',        color:'var(--color-warning-high)',   bg:'var(--color-warning-high-light)',dot:'var(--color-warning-high)', rank:1 },
+  system:      { label:'Von Kunde ausgelöst', color:'var(--color-info)',           bg:'var(--color-info-light)',       dot:'var(--color-info)',        rank:2 },
+  zukuenftig:  { label:'Zukünftig',           color:'var(--color-neutral-dark-400)',bg:'var(--color-neutral-light-200)',dot:'var(--color-neutral-dark-300)',rank:3 },
+  erledigt:    { label:'Erledigt',            color:'var(--color-success)',        bg:'var(--color-success-light)',    dot:'var(--color-success)',     rank:4 },
+};
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); const dt=new Date(y,m-1,d); dt.setHours(0,0,0,0); return dt; }
+function shiftISO(s, days){ const d = parseDate(s); d.setDate(d.getDate()+days); return toISOInput(d); }
+function statusOf(t){
+  if(t.erledigt) return 'erledigt';
+  if(t.quelle==='system' && !t.quittiert) return 'system';
+  const due = parseDate(t.faelligkeit);
+  if(due < TODAY) return 'ueberfaellig';
+  if(due.getTime() === TODAY.getTime()) return 'heute';
+  return 'zukuenftig';
+}
+
+/* ---------- Fälligkeits-Label (Pill in der Fälligkeits-Spalte) ----------
+   Bewusst getrennt von statusOf(): das Label beschreibt ausschließlich die
+   Fälligkeit, damit „von Kunde ausgelöst" die Datumsaussage nicht überschreibt
+   (das bleibt das „Neu"-Badge am Titel). „Später" trägt absichtlich kein Label —
+   markiert wird nur, was Aufmerksamkeit braucht.                            */
+const DUE = {
+  ueberfaellig: { label:'Überfällig', color:'var(--color-error-600)',        bg:'var(--color-error-100)',          rank:0 },
+  heute:        { label:'Heute',      color:'var(--color-warning-high)',     bg:'var(--color-warning-high-light)', rank:1 },
+  morgen:       { label:'Morgen',     color:'var(--color-info)',             bg:'var(--color-info-light)',         rank:2 },
+  spaeter:      { label:'Später',     color:'var(--color-neutral-dark-400)', bg:'var(--color-neutral-light-200)',  rank:3, noPill:true },
+  erledigt:     { label:'Erledigt',   color:'var(--color-success)',          bg:'var(--color-success-light)',      rank:4 },
+};
+const DUE_KEYS = ['ueberfaellig','heute','morgen','spaeter','erledigt'];
+function dueState(t){
+  if(t.erledigt) return 'erledigt';
+  const diff = Math.round((parseDate(t.faelligkeit) - TODAY) / 86400000);
+  if(diff < 0)   return 'ueberfaellig';
+  if(diff === 0) return 'heute';
+  if(diff === 1) return 'morgen';
+  return 'spaeter';
+}
+function duePill(t){
+  const k = dueState(t), d = DUE[k];
+  return d.noPill ? '' : `<span class="due-pill" style="color:${d.color};background:${d.bg}">${d.label}</span>`;
+}
+
+/* ---------- Datum-Anzeige ---------- */
+const WD = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+// nach getDay() indiziert (Sonntag = 0) — der Kalender unten nutzt eine eigene,
+// montagsbasierte Liste (WD_SHORT), daher hier ein eigener Name.
+const WD_ABBR = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+function fmtAbs(s){ const d=parseDate(s); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; }
+// Datum immer absolut: „Heute / Morgen / Überfällig" sagt jetzt das Label davor,
+// die Spalte bleibt dadurch vergleichbar und springt beim Sortieren nicht.
+function fmtRel(t){
+  const d = parseDate(t.faelligkeit);
+  let s = `${WD_ABBR[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.`;
+  if(t.zeit) s += ' · ' + t.zeit;
+  return s;
+}
+
+/* ---------- View-State ---------- */
+const state = {
+  search: '', quick: 'alle',
+  beraterFilter: new Set(),      // berater names (leer = alle)
+  typFilter: new Set(),          // typ keys (leer = alle Arten)
+  dueFilter: new Set(),          // Fälligkeits-Label (leer = alle)
+  sort: { key:'faelligkeit', dir:'asc' },      // eine Spalte, auf- oder absteigend
+  page: 0, perPage: 25,
+};
+
+/* ---------- DOM refs ---------- */
+const $ = (s) => document.querySelector(s);
+const tbody = $('#tbody');
+const cardList = $('#cardList');
+
+/* ---------- Filter + Sort pipeline ---------- */
+function matchesSearch(t){
+  if(!state.search) return true;
+  const q = state.search.toLowerCase();
+  // Art-Label mitsuchen: „Geburtstag" / „Rückruf" findet auch Zeilen ohne das Wort im Titel
+  const hay = [t.titel, t.person?.name, t.person?.kundennummer, t.person?.mit?.name, t.person?.mit?.kundennummer, typMeta(t).label]
+    .filter(Boolean).join(' ').toLowerCase();
+  return hay.includes(q);
+}
+// gerade abgehakte To-dos bleiben kurz sichtbar (durchgestrichen), statt sofort zu verschwinden (§7)
+const recentlyDone = new Set();
+// Gehört das To-do in den Topf eines Schnellfilters? Bewusst als eigene Funktion,
+// damit Tabelle und Zähler am Segment garantiert dieselbe Regel benutzen.
+function inQuickBucket(t, quick){
+  const st = statusOf(t);
+  if(quick === 'erledigt') return st === 'erledigt';
+  if(st === 'erledigt') return false;      // erledigte nur im Erledigte-Filter
+  const due = parseDate(t.faelligkeit).getTime();
+  if(quick === 'ueberfaellig') return due < TODAY.getTime();
+  // „Heute fällig" schließt Überfällige mit ein: was gestern liegen blieb,
+  // liegt heute auf dem Tisch. Die Status-Spalte trennt weiter Überfällig / Heute,
+  // und „Überfällig" grenzt bei Bedarf gezielt darauf ein.
+  if(quick === 'heute')  return due <= TODAY.getTime();
+  if(quick === 'morgen') return due === dayOffset(1).getTime();
+  return true;                             // 'alle' → alle offenen
+}
+// Filter neben dem Schnellfilter (Berater / Art / Suche) — gelten immer.
+function matchesSideFilters(t){
+  if(state.beraterFilter.size && !state.beraterFilter.has(t.berater)) return false;
+  if(state.typFilter.size && !state.typFilter.has(t.typ || 'aufgabe')) return false;
+  return matchesSearch(t);
+}
+function passesFilter(t){
+  // Der Fälligkeits-Filter ist maßgeblich, sobald er gesetzt ist — nur so lässt
+  // sich „Erledigt" gezielt einblenden, ohne den Schnellfilter zu wechseln.
+  if(state.dueFilter.size){
+    if(!state.dueFilter.has(dueState(t))) return false;
+  }
+  else if(!inQuickBucket(t, state.quick)) return false;
+  return matchesSideFilters(t);
+}
+function visibleTodos(){
+  return todos.filter(t => passesFilter(t) || recentlyDone.has(t.id));
+}
+
+/* ---------- Arbeitslast-Indikatoren (heute / morgen) ----------
+   Zonen-Balken: die Zahl allein sagt nicht, ob der Tag machbar ist —
+   die Zone (grün / gelb / rot) macht die Last auf einen Blick lesbar.       */
+const LOAD_MAX = 12;                       // Skalenende des Balkens
+const LOAD_ZONES = [                       // Reihenfolge = Reihenfolge im Balken
+  { level:'ok',   upTo:5,        span:5, label:'Gut machbar' },
+  { level:'mid',  upTo:9,        span:4, label:'Viel zu tun' },
+  { level:'high', upTo:Infinity, span:3, label:'Überlast' },
+];
+function dayOffset(days){ const d = new Date(TODAY); d.setDate(d.getDate()+days); d.setHours(0,0,0,0); return d; }
+// offene To-dos für diesen Tag — gleiche Logik wie die Schnellfilter
+// „Heute fällig" / „Morgen fällig", damit Karte und Tabelle übereinstimmen.
+// Heute (days = 0) zählt Überfällige mit, morgen ist ein exakter Tagesvergleich.
+function countDueOn(days){
+  const day = dayOffset(days).getTime();
+  return todos.filter(t => {
+    if(t.erledigt) return false;
+    const due = parseDate(t.faelligkeit).getTime();
+    return days === 0 ? due <= day : due === day;
+  }).length;
+}
+function loadZone(n){ return LOAD_ZONES.find(z => n <= z.upTo); }
+// Vergleich für eine einzelne Spalte (ohne Richtung)
+function cmpByKey(key, a, b){
+  if(key === 'titel')       return a.titel.localeCompare(b.titel, 'de');
+  if(key === 'faelligkeit') return parseDate(a.faelligkeit) - parseDate(b.faelligkeit);
+  // rankt nach dem Label, das in der Fälligkeits-Spalte sichtbar ist
+  if(key === 'status')      return DUE[dueState(a)].rank - DUE[dueState(b)].rank;
+  if(key === 'typ')         return TYP_RANK(a.typ) - TYP_RANK(b.typ);
+  if(key === 'person')      return (a.person?.name||'￿').localeCompare(b.person?.name||'￿','de');
+  if(key === 'berater')     return (a.berater||'￿').localeCompare(b.berater||'￿','de');
+  return 0;
+}
+function sortTodos(list){
+  const { key, dir } = state.sort;
+  const cmp = (a,b) => {
+    // Erledigte grundsätzlich ans Ende (unabhängig von Sortierrichtung)
+    const ae = a.erledigt?1:0, be = b.erledigt?1:0;
+    if(ae !== be) return ae - be;
+    if(key){
+      const r = cmpByKey(key, a, b) * (dir === 'asc' ? 1 : -1);
+      if(r !== 0) return r;
+    }
+    return parseDate(a.faelligkeit) - parseDate(b.faelligkeit);   // stabiler Tiebreak
+  };
+  return list.slice().sort(cmp);
+}
+
+/* ---------- Render ---------- */
+function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// STATUS trägt weiterhin den farbigen Streifen links in der Zeile (STATUS[..].dot);
+// die sichtbare Beschriftung übernimmt jetzt das Label in der Fälligkeits-Spalte.
+const AVATAR_COLORS = ['#009688','#4B7BEC','#FF9F1A','#E693F4','#3DC1D3','#607D8B'];
+function initials(name){ const p = name.trim().split(/\s+/); return ((p[0]||'')[0]||'') + ((p[p.length-1]||'')[0]||''); }
+function avatarColor(name){ let h=0; for(let i=0;i<name.length;i++) h=(h+name.charCodeAt(i))%AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
+function beraterHtml(name){
+  if(!name) return '<span class="person-none">–</span>';
+  return `<span class="berater"><span class="avatar" style="background:${avatarColor(name)}" title="${esc(name)}">${esc(initials(name).toUpperCase())}</span><span class="berater-name">${esc(name)}</span></span>`;
+}
+// alle Antragsteller eines To-dos (1. Antragsteller + optional 2.)
+function antragsteller(t){
+  if(!t.person) return [];
+  return t.person.mit ? [t.person, t.person.mit] : [t.person];
+}
+function personHtml(t){
+  if(!t.person) return '<span class="person-none">Ohne Antragsteller</span>';
+  // Namen komma-separiert; jeder Name verlinkt auf die (hier nicht simulierte) Kundenseite
+  const links = antragsteller(t)
+    .map(p => `<a class="person-link" href="#" data-kn="${esc(p.kundennummer)}" title="${esc(p.name)} öffnen">${esc(p.name)}</a>`)
+    .join('<span class="person-sep">,</span> ');
+  return `<span class="person">${links}
+    <button class="person-info" data-kn="${esc(t.person.kundennummer)}" aria-label="Kontaktdaten der Antragsteller anzeigen"><span class="material-symbols-outlined">info</span></button></span>`;
+}
+function dueHtml(t){
+  // Label sitzt in einem festen Slot, damit die Datumsangaben untereinander
+  // bündig bleiben — auch in Zeilen ohne Label („Später").
+  const slot = `<span class="due-slot">${duePill(t)}</span>`;
+  // Fälligkeitsdatum ist inline editierbar (außer bei Geburtstags-Erinnerungen)
+  if(isBday(t)){
+    return `<span class="due-cell">${slot}<span class="due-line"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}</span></span>`;
+  }
+  const next = shiftISO(t.faelligkeit, 1);
+  return `<span class="due-cell">${slot}<span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}</span>`
+    + `<button class="due-bump" title="Fälligkeit um 1 Tag verschieben – auf ${fmtAbs(next)}" aria-label="Fälligkeit um einen Tag verschieben, auf ${fmtAbs(next)}">+1 Tag</button></span>`;
+}
+// Verlauf-Button trägt einen Punkt, sobald in dieser Sitzung etwas geändert wurde
+const HIST_ACTION = (t) => {
+  const changed = (t.verlauf||[]).some(h => h.fresh);
+  return `<button class="row-act${changed?' has-changes':''}" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>`;
+};
+function rowActions(t){
+  return `<span class="row-actions">${HIST_ACTION(t)}
+  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button></span>`;
+}
+// Geburtstags-To-do: Kuchen-Icon + „Gruß senden"-Mail-Aktion
+function mailActions(t){
+  return `<span class="row-actions">${HIST_ACTION(t)}
+  <button class="row-act mail" data-act="mail" title="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button></span>`;
+}
+function actionsFor(t){ return isBday(t) ? mailActions(t) : rowActions(t); }
+// Art als Icon vor dem Titel — dieselbe Ikonografie wie im „Art"-Filtermenü,
+// damit Filter und Zeile visuell zusammenpassen. Label bleibt als Tooltip lesbar.
+function typIcon(t){
+  const m = typMeta(t);
+  return `<span class="material-symbols-outlined typ-icon${isBday(t)?' is-bday':''}" role="img" title="Art: ${esc(m.label)}" aria-label="Art: ${esc(m.label)}">${m.icon}</span>`;
+}
+function titleHtml(t){
+  if(isBday(t)){
+    return `<div class="todo-main">${typIcon(t)}<span class="todo-title">${esc(t.titel)}</span>${mailActions(t)}</div>`;
+  }
+  const isNew = t.quelle==='system' && !t.quittiert;
+  const badge = isNew ? '<span class="badge-new">Neu</span>' : '';
+  return `<div class="todo-main">${typIcon(t)}${titleSpan(t)}${badge}${rowActions(t)}</div>`;
+}
+// Titel darf leer sein (Inline-Anlegen ohne Pflichtfelder) → Platzhalter anzeigen
+function titleSpan(t){
+  const empty = !t.titel;
+  return `<span class="todo-title inline-edit${empty?' is-empty':''}" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">${empty?'Ohne Titel':esc(t.titel)}</span>`;
+}
+function todoLabel(t){ return t.titel || 'Ohne Titel'; }
+function cardTitleHtml(t){
+  const inner = isBday(t) ? `<span class="todo-title">${esc(t.titel)}</span>` : titleSpan(t);
+  return `${typIcon(t)} ${inner}${t.quelle==='system'&&!t.quittiert?' <span class="badge-new">Neu</span>':''}`;
+}
+
+let currentRows = [];   // gerenderte (gefilterte+sortierte+paginierte) Liste
+let addOpen = false;    // Anlege-Zeile am Tabellenkopf geöffnet?
+function render(){
+  const filtered = sortTodos(visibleTodos());
+  const total = filtered.length;
+  const per = state.perPage;
+  const pages = Math.max(1, Math.ceil(total/per));
+  if(state.page >= pages) state.page = pages-1;
+  const start = state.page*per;
+  const pageItems = filtered.slice(start, start+per);
+  currentRows = pageItems;
+
+  // --- desktop rows ---
+  tbody.innerHTML = pageItems.map(t => {
+    const st = statusOf(t);
+    const stripe = STATUS[st].dot;
+    return `<tr data-id="${t.id}" data-status="${st}" data-typ="${t.typ}" tabindex="-1">
+      <td class="cell-check cell-stripe" style="--stripe:${stripe}">
+        <input type="checkbox" class="rcheck" ${t.erledigt?'checked':''} aria-label="Als erledigt markieren" />
+      </td>
+      <td>${titleHtml(t)}</td>
+      <td>${dueHtml(t)}</td>
+      <td>${personHtml(t)}</td>
+      <td>${beraterHtml(t.berater)}</td>
+    </tr>`;
+  }).join('');
+
+  // --- mobile cards ---
+  cardList.innerHTML = pageItems.map(t => {
+    const st = statusOf(t);
+    const stripe = STATUS[st].dot;
+    return `<div class="tcard" data-id="${t.id}" data-status="${st}" data-typ="${t.typ}" style="--stripe:${stripe}">
+      <div class="tcard-top">
+        <input type="checkbox" class="rcheck" ${t.erledigt?'checked':''} aria-label="Als erledigt markieren" />
+        <span class="tcard-title">${cardTitleHtml(t)}</span>
+        ${actionsFor(t)}
+      </div>
+      <div class="tcard-meta">${dueHtml(t)}</div>
+      <div class="tcard-meta">${personHtml(t)} ${beraterHtml(t.berater)}</div>
+    </div>`;
+  }).join('');
+
+  // empty states
+  const emptyEl = $('#emptyState');
+  const isFiltered = state.search || state.beraterFilter.size || state.typFilter.size || state.dueFilter.size;
+  if(total === 0 && !addOpen){   // bei offener Anlege-Zeile bleibt die Tabelle sichtbar
+    $('#todoTable').style.display = 'none';
+    emptyEl.style.display = 'flex';
+    emptyEl.innerHTML = isFiltered
+      ? `<span class="material-symbols-outlined">search_off</span><h3>Keine To-dos für diese Filter</h3><p>Passe Suche oder Filter an, um mehr Einträge zu sehen.</p><button class="btn btn-secondary" onclick="resetFilters()">Filter zurücksetzen</button>`
+      : `<span class="material-symbols-outlined">task_alt</span><h3>Alles erledigt für heute</h3><p>Keine offenen To-dos. Lege ein neues an, um loszulegen.</p><button class="btn btn-primary" onclick="openComposer()"><span class="material-symbols-outlined">add</span> To do hinzufügen</button>`;
+  } else {
+    $('#todoTable').style.display = '';
+    emptyEl.style.display = 'none';
+  }
+
+  // footer
+  $('#rangeLabel').textContent = total ? `${start+1}–${Math.min(start+per,total)} von ${total}` : '0–0 von 0';
+  $('#prevPage').disabled = state.page === 0;
+  $('#nextPage').disabled = state.page >= pages-1;
+
+  // sort indicator: Pfeil in der aktiven Spalte, sonst neutrales Symbol
+  document.querySelectorAll('th.sortable').forEach(th => {
+    const active = state.sort.key === th.dataset.sort;
+    th.classList.toggle('sorted', active);
+    th.setAttribute('aria-sort', active ? (state.sort.dir==='asc'?'ascending':'descending') : 'none');
+    const ic = th.querySelector('.material-symbols-outlined');
+    ic.textContent = active ? (state.sort.dir==='asc'?'arrow_upward':'arrow_downward') : 'unfold_more';
+  });
+
+  renderChips();
+  renderQuickCounts();
+  renderLoadCards();
+  updateBadge();
+  focusIndex = -1;
+}
+
+/* ---------- Zähler an den Schnellfiltern ----------
+   Zeigt, was ein Klick brächte: Berater- / Art- / Suchfilter zählen mit,
+   der Schnellfilter selbst nicht.                                          */
+function renderQuickCounts(){
+  document.querySelectorAll('#quickSeg button').forEach(b => {
+    const n = todos.filter(t => matchesSideFilters(t) && inQuickBucket(t, b.dataset.quick)).length;
+    b.querySelector('.qf-count').textContent = n;
+  });
+}
+
+/* ---------- Arbeitslast-Karten rendern ---------- */
+/* Tacho-Geometrie: Halbkreis von 180° (links, 0 To-dos) bis 0° (rechts, LOAD_MAX). */
+const GAUGE = { cx: 34, cy: 34, r: 25, band: 8, gap: 0.15 };
+function gaugeAngle(v){ return 180 - Math.min(Math.max(v, 0), LOAD_MAX) / LOAD_MAX * 180; }
+function gaugePoint(r, deg){
+  const a = deg * Math.PI / 180;
+  return [GAUGE.cx + r * Math.cos(a), GAUGE.cy - r * Math.sin(a)];
+}
+// Bogensegment zwischen zwei Skalenwerten (im Uhrzeigersinn, daher sweep-flag 1)
+function gaugeArc(from, to){
+  const [x1, y1] = gaugePoint(GAUGE.r, gaugeAngle(from));
+  const [x2, y2] = gaugePoint(GAUGE.r, gaugeAngle(to));
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${GAUGE.r} ${GAUGE.r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+}
+function gaugeHtml(count, zone){
+  let from = 0;
+  const arcs = LOAD_ZONES.map((z, i) => {
+    const to = Math.min(z.upTo, LOAD_MAX);
+    const a = from + (i > 0 ? GAUGE.gap : 0);
+    const b = to - (i < LOAD_ZONES.length - 1 ? GAUGE.gap : 0);
+    from = to;
+    return `<path class="lc-arc ${z.level}${z === zone ? ' is-active' : ''}" d="${gaugeArc(a, b)}"
+      fill="none" stroke-width="${GAUGE.band}" stroke-linecap="butt" />`;
+  }).join('');
+  const [nx, ny] = gaugePoint(GAUGE.r - 6, gaugeAngle(count));
+  return `
+    <svg class="lc-gauge" viewBox="0 0 68 40" role="img"
+         aria-label="${count} von ${LOAD_MAX} To-dos – Bereich ${zone.label}">
+      <title>${zone.label}</title>
+      ${arcs}
+      <line class="lc-needle" x1="${GAUGE.cx}" y1="${GAUGE.cy}" x2="${nx.toFixed(2)}" y2="${ny.toFixed(2)}"
+            stroke-width="2.5" stroke-linecap="round" />
+      <circle class="lc-hub" cx="${GAUGE.cx}" cy="${GAUGE.cy}" r="3.5" />
+    </svg>`;
+}
+function loadCardHtml(label, days, count){
+  const zone = loadZone(count);
+  const d = dayOffset(days);
+  const unit = count === 1 ? 'To-do' : 'To-dos';
+  return `
+    <div class="lc-main">
+      <span class="lc-label">${label}</span>
+      <div class="lc-value"><span class="lc-num">${count}</span><span class="lc-unit">${unit}</span></div>
+      <span class="lc-date">${WD[d.getDay()].slice(0,2)}, ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.</span>
+    </div>
+    ${gaugeHtml(count, zone)}`;
+}
+/* Feature-Schalter: aus = Originalansicht ohne Arbeitslast-Karten (Standard beim Laden) */
+$('#flagLoadCards').addEventListener('change', e => {
+  document.body.classList.toggle('show-load', e.target.checked);
+});
+
+function renderLoadCards(){
+  const heute = countDueOn(0), morgen = countDueOn(1);
+  const heuteEl = $('#loadToday'), morgenEl = $('#loadTomorrow');
+  heuteEl.dataset.level  = loadZone(heute).level;
+  morgenEl.dataset.level = loadZone(morgen).level;
+  heuteEl.innerHTML  = loadCardHtml('Heute fällig',  0, heute);
+  morgenEl.innerHTML = loadCardHtml('Morgen fällig', 1, morgen);
+}
+
+/* ---------- Erfolgs-Karten (Leads / Provision) ----------
+   Prototyp-Werte: kommen später aus dem CRM bzw. der Provisionsabrechnung.
+   Der Balken zeigt den Stand zum Monatsziel — Fortschritt, kein Alarm.        */
+const MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni',
+                     'Juli','August','September','Oktober','November','Dezember'];
+const WINS = {
+  leads:     { value: 14,   goal: 20,     delta: '+3 diese Woche' },
+  provision: { value: 8450, goal: 12000,  delta: '+1.200 € diese Woche' },
+};
+const EUR = new Intl.NumberFormat('de-DE');
+
+function winCardHtml({ icon, label, num, unit, delta, value, goal, goalText }){
+  const pct = Math.min(value / goal, 1) * 100;
+  return `
+    <div class="wc-top">
+      <span class="wc-label"><span class="material-symbols-outlined">${icon}</span>${label}</span>
+      <span class="wc-period">${MONTH_NAMES[TODAY.getMonth()]}</span>
+    </div>
+    <div class="wc-value">
+      <span><span class="wc-num">${num}</span><span class="wc-unit">${unit}</span></span>
+      <span class="wc-delta">${delta}</span>
+    </div>
+    <div class="wc-track" role="img" aria-label="${goalText}">
+      <span class="wc-fill" style="width:${pct.toFixed(1)}%"></span>
+    </div>`;
+}
+
+function renderWinCards(){
+  const l = WINS.leads, p = WINS.provision;
+  $('#winLeads').innerHTML = winCardHtml({
+    icon: 'workspace_premium', label: 'Leads gewonnen',
+    num: l.value, unit: l.value === 1 ? 'Lead' : 'Leads', delta: l.delta,
+    value: l.value, goal: l.goal,
+    goalText: `${l.value} von ${l.goal} Leads im Monatsziel erreicht`,
+  });
+  $('#winProvision').innerHTML = winCardHtml({
+    icon: 'savings', label: 'Provision erreicht',
+    num: EUR.format(p.value), unit: '€', delta: p.delta,
+    value: p.value, goal: p.goal,
+    goalText: `${EUR.format(p.value)} € von ${EUR.format(p.goal)} € im Monatsziel erreicht`,
+  });
+}
+
+function updateBadge(){
+  const open = todos.filter(t => !t.erledigt && ['ueberfaellig','heute','system'].includes(statusOf(t))).length;
+  $('#railBadge').textContent = open > 99 ? '99+' : open;
+  const newCount = todos.filter(t => t.quelle==='system' && !t.quittiert).length;
+}
+
+/* ---------- Active filter chips ---------- */
+function renderChips(){
+  const row = $('#chipRow'); const chips = [];
+  if(state.beraterFilter.size){
+    const label = state.beraterFilter.size===1 ? [...state.beraterFilter][0] : `${state.beraterFilter.size} Berater`;
+    chips.push(`<span class="fchip">Berater: ${esc(label)} <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>`);
+  }
+  if(state.typFilter.size){
+    const label = state.typFilter.size===1 ? typLabel([...state.typFilter][0]) : `${state.typFilter.size} Arten`;
+    chips.push(`<span class="fchip">Art: ${esc(label)} <button data-clear="typ"><span class="material-symbols-outlined">close</span></button></span>`);
+  }
+  if(state.dueFilter.size){
+    const label = state.dueFilter.size===1 ? DUE[[...state.dueFilter][0]].label : `${state.dueFilter.size} Fälligkeiten`;
+    chips.push(`<span class="fchip">Fälligkeit: ${esc(label)} <button data-clear="due"><span class="material-symbols-outlined">close</span></button></span>`);
+  }
+  if(state.search){
+    chips.push(`<span class="fchip">Suche: „${esc(state.search)}" <button data-clear="search"><span class="material-symbols-outlined">close</span></button></span>`);
+  }
+  row.innerHTML = chips.length ? chips.join('') + `<button class="chip-reset" onclick="resetFilters()">Filter zurücksetzen</button>` : '';
+}
+// einzelne Filter-Chips entfernen
+$('#chipRow').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-clear]'); if(!btn) return;
+  const what = btn.dataset.clear;
+  if(what==='berater'){ state.beraterFilter.clear(); updateBeraterButton(); }
+  else if(what==='typ'){ state.typFilter.clear(); updateTypButton(); }
+  else if(what==='due'){ state.dueFilter.clear(); updateDueButton(); }
+  else if(what==='search'){ state.search=''; $('#search').value=''; }
+  state.page=0; render();
+});
+function resetFilters(){
+  state.search=''; $('#search').value='';
+  state.beraterFilter.clear();
+  state.typFilter.clear();
+  state.dueFilter.clear();
+  updateBeraterButton();
+  updateTypButton();
+  updateDueButton();
+  render();
+}
+window.resetFilters = resetFilters;
+
+/* ---------- Toolbar wiring ---------- */
+$('#search').addEventListener('input', e => { state.search = e.target.value.trim(); state.page=0; render(); });
+
+$('#quickSeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  state.quick = b.dataset.quick; state.page=0;
+  document.querySelectorAll('#quickSeg button').forEach(x=>x.classList.toggle('active', x===b));
+  render();
+});
+
+$('#densitySeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#densitySeg button').forEach(x=>x.classList.toggle('active', x===b));
+  document.body.classList.toggle('compact', b.dataset.density==='compact');
+});
+
+// Sortierung per Spaltenkopf: immer genau eine Spalte.
+// Klick auf die aktive Spalte dreht die Richtung, Klick auf eine andere
+// sortiert sie aufsteigend.
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    state.sort = (state.sort.key === key)
+      ? { key, dir: state.sort.dir === 'asc' ? 'desc' : 'asc' }
+      : { key, dir: 'asc' };
+    state.page = 0;
+    render();
+  });
+});
+
+// pagination
+$('#perPage').addEventListener('change', e => { state.perPage = +e.target.value; state.page=0; render(); });
+$('#prevPage').addEventListener('click', () => { if(state.page>0){ state.page--; render(); } });
+$('#nextPage').addEventListener('click', () => { state.page++; render(); });
+
+/* ---------- Filter menus ---------- */
+function toggleMenu(menu, anchor){
+  const open = menu.classList.contains('open');
+  closeAllMenus();
+  if(open) return;
+  // direkt unter dem Button ausrichten (position:fixed → Viewport-Koordinaten des Buttons)
+  menu.classList.add('open');
+  const r = anchor.getBoundingClientRect();
+  const w = menu.offsetWidth || 240;
+  menu.style.top = (r.bottom + 4) + 'px';
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+}
+function closeAllMenus(){
+  document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open'));
+  $('#btnTyp')?.setAttribute('aria-expanded','false');
+  $('#btnDue')?.setAttribute('aria-expanded','false');
+}
+
+/* ---------- Berater-Filter (Modal wie Screenshot) ---------- */
+let beraterPending = new Set();   // Arbeitsauswahl im offenen Menü (erst „Filter anwenden" übernimmt)
+function beraterMarks(){ return { mine: beraterPending.size===1 && beraterPending.has(ME), all: beraterPending.size===0 }; }
+function buildBeraterMenu(){
+  const m = $('#menuBerater');
+  const { mine, all } = beraterMarks();
+  m.innerHTML = `
+    <button class="bmenu-row strong ${mine?'active':''}" id="bMine">Meine ToDos <span class="material-symbols-outlined check">check</span></button>
+    <button class="bmenu-row ${all?'active':''}" id="bAll">Alle Berater <span class="material-symbols-outlined check">check</span></button>
+    <div class="bmenu-search-wrap"><div class="search-mini">
+      <input class="menu-search" id="beraterSearch" placeholder="Suchen" autocomplete="off" />
+      <span class="material-symbols-outlined">search</span>
+    </div></div>
+    <label class="bmenu-check bmenu-selectall"><input type="checkbox" id="bSelectAll" /> <span>Alle auswählen</span></label>
+    <div class="bmenu-list" id="beraterListEl">${BERATER_ALL.map(n=>`
+      <label class="bmenu-check" data-name="${esc(n)}"><input type="checkbox" ${beraterPending.has(n)?'checked':''} /> <span>${esc(n)}</span></label>`).join('')}</div>
+    <div class="bmenu-foot">
+      <button class="btn btn-primary" id="bApply">Filter anwenden (${beraterPending.size})</button>
+      <button class="bmenu-clear" id="bClear">Alle löschen</button>
+    </div>`;
+
+  $('#bMine').addEventListener('click', ()=>{ beraterPending = new Set([ME]); buildBeraterMenu(); });
+  $('#bAll').addEventListener('click', ()=>{ beraterPending = new Set(); buildBeraterMenu(); });
+
+  const search = $('#beraterSearch');
+  search.addEventListener('input', ()=>{
+    const q = search.value.toLowerCase();
+    m.querySelectorAll('#beraterListEl .bmenu-check').forEach(it=>{ it.style.display = it.dataset.name.toLowerCase().includes(q) ? '' : 'none'; });
+    syncBeraterSelectAll();
+  });
+
+  $('#bSelectAll').addEventListener('change', e=>{
+    m.querySelectorAll('#beraterListEl .bmenu-check').forEach(it=>{
+      if(it.style.display==='none') return;
+      const n = it.dataset.name, cb = it.querySelector('input');
+      cb.checked = e.target.checked; e.target.checked ? beraterPending.add(n) : beraterPending.delete(n);
+    });
+    updateBeraterMarks();
+  });
+
+  m.querySelectorAll('#beraterListEl .bmenu-check input').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const n = cb.closest('.bmenu-check').dataset.name;
+      cb.checked ? beraterPending.add(n) : beraterPending.delete(n);
+      updateBeraterMarks(); syncBeraterSelectAll();
+    });
+  });
+
+  $('#bApply').addEventListener('click', ()=>{
+    state.beraterFilter = new Set(beraterPending); state.page=0;
+    updateBeraterButton(); closeAllMenus(); render();
+  });
+  $('#bClear').addEventListener('click', ()=>{ beraterPending = new Set(); buildBeraterMenu(); });
+
+  syncBeraterSelectAll();
+}
+function updateBeraterMarks(){
+  const btn = $('#bApply'); if(btn) btn.textContent = `Filter anwenden (${beraterPending.size})`;
+  const { mine, all } = beraterMarks();
+  $('#bMine')?.classList.toggle('active', mine);
+  $('#bAll')?.classList.toggle('active', all);
+}
+function syncBeraterSelectAll(){
+  const sa = $('#bSelectAll'); if(!sa) return;
+  const visible = [...document.querySelectorAll('#beraterListEl .bmenu-check')].filter(it=>it.style.display!=='none');
+  const checked = visible.filter(it=>it.querySelector('input').checked);
+  sa.checked = visible.length>0 && checked.length===visible.length;
+  sa.indeterminate = checked.length>0 && checked.length<visible.length;
+}
+function updateBeraterButton(){
+  const n = state.beraterFilter.size, badge = $('#beraterCount');
+  if(badge){ badge.textContent = n; badge.style.display = n ? '' : 'none'; }
+  $('#btnBerater').classList.toggle('filter-active', n>0);
+}
+$('#btnBerater').addEventListener('click', e=>{
+  e.stopPropagation();
+  const m = $('#menuBerater');
+  const willOpen = !m.classList.contains('open');
+  if(willOpen){ beraterPending = new Set(state.beraterFilter); buildBeraterMenu(); }
+  toggleMenu(m, $('#btnBerater'));
+});
+
+/* ======================================================================
+   ART-FILTER — Mehrfachauswahl über die To-do-Typen
+   Gleiche Mechanik wie der Berater-Filter: die Auswahl im offenen Menü ist
+   „pending" und wird erst mit „Filter anwenden" übernommen.
+   ====================================================================== */
+let typPending = new Set();
+const setEq = (a, b) => a.size === b.size && [...a].every(x => b.has(x));
+// offene To-dos je Art — wird bei jedem Öffnen neu gezählt, damit die Zahlen mitlaufen
+function typCounts(){
+  return todos.reduce((acc,t)=>{ if(!t.erledigt){ const k = t.typ || 'aufgabe'; acc[k] = (acc[k]||0)+1; } return acc; }, {});
+}
+function typMarks(){
+  return {
+    all:  typPending.size === 0,
+    own:  setEq(typPending, new Set(TYP_BERATER)),
+    sys:  setEq(typPending, new Set(TYP_SYSTEM)),
+  };
+}
+function typGroupHtml(keys, counts){
+  return keys.map(k=>{
+    const m = TODO_TYP[k], n = counts[k] || 0;
+    return `<label class="bmenu-check" data-typ="${k}">
+      <input type="checkbox" ${typPending.has(k)?'checked':''} />
+      <span class="typ-opt"><span class="material-symbols-outlined">${m.icon}</span>${esc(m.label)}<span class="typ-opt-count">${n}</span></span>
+    </label>`;
+  }).join('');
+}
+function buildTypMenu(){
+  const m = $('#menuTyp');
+  const counts = typCounts();
+  const { all, own, sys } = typMarks();
+  m.innerHTML = `
+    <button class="bmenu-row strong ${all?'active':''}" id="tAll">Alle Arten <span class="material-symbols-outlined check">check</span></button>
+    <button class="bmenu-row ${own?'active':''}" id="tOwn">Nur selbst angelegte <span class="material-symbols-outlined check">check</span></button>
+    <button class="bmenu-row ${sys?'active':''}" id="tSys">Nur systemgenerierte <span class="material-symbols-outlined check">check</span></button>
+    <div class="bmenu-list" id="typListEl">
+      <div class="ssel-group">Selbst angelegt</div>
+      ${typGroupHtml(TYP_BERATER, counts)}
+      <div class="ssel-group">Vom System</div>
+      ${typGroupHtml(TYP_SYSTEM, counts)}
+    </div>
+    <div class="bmenu-foot">
+      <button class="btn btn-primary" id="tApply">Filter anwenden (${typPending.size})</button>
+      <button class="bmenu-clear" id="tClear">Alle löschen</button>
+    </div>`;
+
+  $('#tAll').addEventListener('click', ()=>{ typPending = new Set();              buildTypMenu(); });
+  $('#tOwn').addEventListener('click', ()=>{ typPending = new Set(TYP_BERATER);   buildTypMenu(); });
+  $('#tSys').addEventListener('click', ()=>{ typPending = new Set(TYP_SYSTEM);    buildTypMenu(); });
+
+  m.querySelectorAll('#typListEl .bmenu-check input').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const k = cb.closest('.bmenu-check').dataset.typ;
+      cb.checked ? typPending.add(k) : typPending.delete(k);
+      updateTypMarks();
+    });
+  });
+
+  $('#tApply').addEventListener('click', ()=>{
+    state.typFilter = new Set(typPending); state.page = 0;
+    updateTypButton(); closeAllMenus(); render();
+  });
+  $('#tClear').addEventListener('click', ()=>{ typPending = new Set(); buildTypMenu(); });
+}
+function updateTypMarks(){
+  const btn = $('#tApply'); if(btn) btn.textContent = `Filter anwenden (${typPending.size})`;
+  const { all, own, sys } = typMarks();
+  $('#tAll')?.classList.toggle('active', all);
+  $('#tOwn')?.classList.toggle('active', own);
+  $('#tSys')?.classList.toggle('active', sys);
+}
+function updateTypButton(){
+  const n = state.typFilter.size, badge = $('#typCount');
+  if(badge){ badge.textContent = n; badge.style.display = n ? '' : 'none'; }
+  $('#btnTyp').classList.toggle('filter-active', n>0);
+}
+$('#btnTyp').addEventListener('click', e=>{
+  e.stopPropagation();
+  const m = $('#menuTyp');
+  const willOpen = !m.classList.contains('open');
+  if(willOpen){ typPending = new Set(state.typFilter); buildTypMenu(); }
+  toggleMenu(m, $('#btnTyp'));
+});
+
+/* ======================================================================
+   FÄLLIGKEITS-FILTER — filtert genau nach den Labels, die in der
+   Fälligkeits-Spalte stehen. Aufbau bewusst identisch zum Art-Filter.
+   ====================================================================== */
+let duePending = new Set();
+// gezählt wird über alle To-dos, damit „Erledigt" eine echte Zahl zeigt
+function dueCounts(){
+  return todos.reduce((acc,t)=>{ const k = dueState(t); acc[k] = (acc[k]||0)+1; return acc; }, {});
+}
+function dueOptHtml(k, counts){
+  const d = DUE[k], n = counts[k] || 0;
+  // „Später" hat kein Label in der Zeile → im Menü als neutraler Text
+  const face = d.noPill
+    ? `<span class="due-opt-plain">${esc(d.label)}</span>`
+    : `<span class="due-pill" style="color:${d.color};background:${d.bg}">${esc(d.label)}</span>`;
+  return `<label class="bmenu-check" data-due="${k}">
+    <input type="checkbox" ${duePending.has(k)?'checked':''} />
+    <span class="typ-opt">${face}<span class="typ-opt-count">${n}</span></span>
+  </label>`;
+}
+function buildDueMenu(){
+  const m = $('#menuDue');
+  const counts = dueCounts();
+  const offen = new Set(['ueberfaellig','heute','morgen','spaeter']);
+  m.innerHTML = `
+    <button class="bmenu-row strong ${duePending.size===0?'active':''}" id="dAll">Alle Fälligkeiten <span class="material-symbols-outlined check">check</span></button>
+    <button class="bmenu-row ${setEq(duePending, offen)?'active':''}" id="dOpen">Nur offene <span class="material-symbols-outlined check">check</span></button>
+    <div class="bmenu-list" id="dueListEl">
+      ${DUE_KEYS.map(k => dueOptHtml(k, counts)).join('')}
+    </div>
+    <div class="bmenu-foot">
+      <button class="btn btn-primary" id="dApply">Filter anwenden (${duePending.size})</button>
+      <button class="bmenu-clear" id="dClear">Alle löschen</button>
+    </div>`;
+
+  $('#dAll').addEventListener('click', ()=>{ duePending = new Set();    buildDueMenu(); });
+  $('#dOpen').addEventListener('click', ()=>{ duePending = new Set(offen); buildDueMenu(); });
+
+  m.querySelectorAll('#dueListEl .bmenu-check input').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const k = cb.closest('.bmenu-check').dataset.due;
+      cb.checked ? duePending.add(k) : duePending.delete(k);
+      updateDueMarks();
+    });
+  });
+
+  $('#dApply').addEventListener('click', ()=>{
+    state.dueFilter = new Set(duePending); state.page = 0;
+    updateDueButton(); closeAllMenus(); render();
+  });
+  $('#dClear').addEventListener('click', ()=>{ duePending = new Set(); buildDueMenu(); });
+}
+function updateDueMarks(){
+  const btn = $('#dApply'); if(btn) btn.textContent = `Filter anwenden (${duePending.size})`;
+  const offen = new Set(['ueberfaellig','heute','morgen','spaeter']);
+  $('#dAll')?.classList.toggle('active', duePending.size === 0);
+  $('#dOpen')?.classList.toggle('active', setEq(duePending, offen));
+}
+function updateDueButton(){
+  const n = state.dueFilter.size, badge = $('#dueCount');
+  if(badge){ badge.textContent = n; badge.style.display = n ? '' : 'none'; }
+  $('#btnDue').classList.toggle('filter-active', n>0);
+}
+$('#btnDue').addEventListener('click', e=>{
+  e.stopPropagation();
+  const m = $('#menuDue');
+  const willOpen = !m.classList.contains('open');
+  if(willOpen){ duePending = new Set(state.dueFilter); buildDueMenu(); }
+  toggleMenu(m, $('#btnDue'));
+});
+
+/* ---------- Row interactions (event delegation) ---------- */
+function findTodo(id){ return todos.find(t=>t.id===id); }
+function rowIdFrom(el){ const r = el.closest('[data-id]'); return r ? r.dataset.id : null; }
+
+function handleRoot(e){
+  const id = rowIdFrom(e.target);
+  // checkbox
+  if(e.target.classList.contains('rcheck')){ toggleDone(id, e.target.checked); return; }
+  // inline actions (Verlauf / Löschen)
+  const act = e.target.closest('.row-act');
+  if(act){ e.stopPropagation(); const t = findTodo(id); if(!t) return;
+    if(act.dataset.act==='delete') deleteTodo(t);
+    else if(act.dataset.act==='mail') sendBirthday(t);
+    else if(act.dataset.act==='history') openHist(t);
+    return; }
+  // Schnellaktion „+1 Tag" in der Fälligkeitsspalte
+  const bump = e.target.closest('.due-bump');
+  if(bump){ e.stopPropagation(); const t = findTodo(id); if(t) bumpDue(t, 1); return; }
+  // Inline-Bearbeitung (Titel / Fälligkeitsdatum)
+  const ie = e.target.closest('.inline-edit');
+  if(ie){
+    e.stopPropagation();
+    // Zeile kann durch ein vorheriges blur-Commit neu gerendert worden sein → frisches Element holen
+    const el = ie.isConnected ? ie : document.querySelector(`[data-id="${id}"] .inline-edit[data-field="${ie.dataset.field}"]`);
+    if(el) startInline(el, id);
+    return;
+  }
+  // person info
+  const pinfo = e.target.closest('.person-info');
+  if(pinfo){ e.stopPropagation(); openPersonPop(pinfo); return; }
+  // person link → edit (context)
+  const plink = e.target.closest('.person-link');
+  if(plink){ e.preventDefault(); return; }
+}
+tbody.addEventListener('click', handleRoot);
+cardList.addEventListener('click', handleRoot);
+
+// Inline-Bearbeitung auch per Tastatur starten (Enter/Space auf dem Feld)
+function handleRootKey(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const ie = e.target.closest && e.target.closest('.inline-edit');
+  if(!ie || ie.classList.contains('editing')) return;
+  e.preventDefault(); e.stopPropagation();
+  startInline(ie, rowIdFrom(ie));
+}
+tbody.addEventListener('keydown', handleRootKey);
+cardList.addEventListener('keydown', handleRootKey);
+
+// Start per Maus schon auf mousedown: so funktioniert auch der direkte Sprung
+// von einem offenen Feld in ein anderes (das blur-Commit rendert die Tabelle neu).
+function handleInlineMouse(e){
+  if(e.button !== 0) return;
+  const ie = e.target.closest && e.target.closest('.inline-edit');
+  if(!ie || ie.classList.contains('editing')) return;
+  e.preventDefault();
+  const id = rowIdFrom(ie), field = ie.dataset.field;
+  if(inlineActive){
+    if(document.activeElement) document.activeElement.blur();   // committet & rendert neu
+    const el = document.querySelector(`[data-id="${id}"] .inline-edit[data-field="${field}"]`);
+    if(el) startInline(el, id);
+  } else {
+    startInline(ie, id);
+  }
+}
+tbody.addEventListener('mousedown', handleInlineMouse);
+cardList.addEventListener('mousedown', handleInlineMouse);
+
+/* ---------- Inline-Editor (Titel / Fälligkeitsdatum) ---------- */
+let inlineActive = null;
+function startInline(el, id){
+  if(inlineActive) return;                       // nur ein Feld gleichzeitig
+  const t = findTodo(id); if(!t) return;
+  const field = el.dataset.field;
+  const isDate = field === 'faelligkeit';
+  const original = t[field] || '';
+
+  const input = document.createElement('input');
+  input.type = isDate ? 'date' : 'text';
+  input.className = 'inline-input';
+  input.value = original;
+  input.setAttribute('aria-label', isDate ? 'Fälligkeitsdatum bearbeiten' : 'Titel bearbeiten');
+  if(!isDate) input.placeholder = 'Was ist zu tun?';
+
+  el.classList.add('editing');
+  const cell = el.closest('.due-cell');
+  if(cell) cell.classList.add('editing');       // „+1 Tag" macht dem Eingabefeld Platz
+  el.innerHTML = '';
+  el.appendChild(input);
+  inlineActive = { id, field };
+  input.focus();
+  if(!isDate){ input.select(); input.scrollLeft = 0; }   // Anfang des Titels bleibt sichtbar
+
+  let closed = false;
+  const finish = (commit) => {
+    if(closed) return;
+    closed = true; inlineActive = null;
+    const val = isDate ? input.value : input.value.trim();
+    if(commit && val && val !== original){
+      t[field] = val;
+      acknowledge(t);                            // Inline-Änderung quittiert System-To-do
+      addHist(t, field, original, val);
+      render();
+      flashRow(t.id);
+      showToast(isDate ? `Fälligkeitsdatum auf ${fmtAbs(val)} geändert` : `Titel geändert: „${val}"`, 'history');
+    } else {
+      render();                                  // unverändert / leer / abgebrochen
+    }
+  };
+  input.addEventListener('keydown', ev => {
+    ev.stopPropagation();
+    if(ev.key === 'Enter'){ ev.preventDefault(); finish(true); }
+    else if(ev.key === 'Escape'){ ev.preventDefault(); finish(false); }
+    else if(ev.key === 'Tab'){ finish(true); }
+  });
+  input.addEventListener('blur', () => finish(true));
+  input.addEventListener('click', ev => ev.stopPropagation());
+}
+
+// system-To-do gilt beim ersten Öffnen/Bearbeiten als quittiert (§4.4)
+function acknowledge(t){
+  if(t.quelle==='system' && !t.quittiert){ t.quittiert = true; addHist(t, 'gesehen'); }
+}
+
+/* ---------- Schnellaktion „+1 Tag" — Fälligkeit um einen Tag verschieben ---------- */
+function bumpDue(t, days){
+  const from = t.faelligkeit;
+  const to = shiftISO(from, days);
+  const histLen = (t.verlauf||[]).length;       // Merker für Undo
+  const wasQuittiert = t.quittiert;
+  t.faelligkeit = to;
+  acknowledge(t);                               // Schnellaktion quittiert System-To-do
+  addHist(t, 'faelligkeit', from, to);
+  render();
+  flashRow(t.id);
+  refocusBump(t.id);                            // mehrmals klicken bleibt möglich (+1, +2, …)
+  showToast(`Fällig am ${fmtAbs(to)} – um 1 Tag verschoben`, 'event_upcoming', ()=>{
+    t.faelligkeit = from;
+    t.verlauf.length = histLen;
+    t.quittiert = wasQuittiert;
+    render(); flashRow(t.id);
+  });
+}
+// Fokus nach dem Neu-Rendern zurück auf die Schnellaktion derselben Zeile
+function refocusBump(id){
+  requestAnimationFrame(()=>{
+    const b = document.querySelector(`[data-id="${id}"] .due-bump`);
+    if(b) b.focus({ preventScroll: true });
+  });
+}
+
+/* ---------- Abhaken + Undo ---------- */
+function toggleDone(id, checked){
+  const t = findTodo(id); if(!t) return;
+  const prev = t.erledigt;
+  t.erledigt = checked;
+  if(checked !== prev) addHist(t, checked ? 'erledigt' : 'reopened');
+  if(checked && !prev) recentlyDone.add(id); else recentlyDone.delete(id);
+  render();
+  if(checked && !prev){
+    showToast(`„${t.titel}" erledigt`, 'task_alt', ()=>{
+      t.erledigt = false; t.verlauf.pop();      // Undo nimmt auch den Verlaufseintrag zurück
+      recentlyDone.delete(id); render();
+    });
+  }
+}
+
+/* ---------- Delete + Undo ---------- */
+function deleteTodo(t){
+  const idx = todos.indexOf(t); if(idx<0) return;
+  todos.splice(idx,1); render();
+  showToast(`„${t.titel}" gelöscht`, 'delete', ()=>{ todos.splice(Math.min(idx,todos.length),0,t); render(); });
+}
+
+/* ---------- Geburtstagsgruß senden ---------- */
+function sendBirthday(t){
+  addHist(t, 'mail', '', t.person?.name || '');
+  render();
+  showToast(`Geburtstagsgruß an ${t.person?.name || 'Kunde'} gesendet`, 'mail');
+}
+
+/* ---------- Person popover (Kontaktdaten, Hover + Klick) ---------- */
+function openPersonPop(anchor){
+  const pop = $('#personPop');
+  const kn = anchor.dataset.kn;
+  if(pop.classList.contains('open') && pop.dataset.kn === kn) return;   // schon offen → nicht neu aufbauen
+  const p1 = CUSTOMERS.find(c => c.kundennummer === kn)
+          || todos.find(t => t.person?.kundennummer === kn)?.person;
+  if(!p1) return;
+  pop.dataset.kn = kn;
+  const people = p1.mit ? [p1, p1.mit] : [p1];
+  pop.innerHTML = people.map((p,i) => `
+    <div class="pv-person">
+      <div class="pv-head">
+        <span class="pv-name">${esc(p.name)}</span>
+        ${people.length>1 ? `<span class="pv-role">${i===0?'1. Antragsteller':'2. Antragsteller'}</span>` : ''}
+      </div>
+      <div class="pv-grid">
+        <span class="pv-label">E-Mail</span><a class="pv-val" href="mailto:${esc(p.email||'')}">${esc(p.email||'–')}</a>
+        <span class="pv-label">Telefonnummer</span><a class="pv-val" href="tel:${esc((p.telefon||'').replace(/\s/g,''))}">${esc(p.telefon||'–')}</a>
+      </div>
+    </div>`).join('');
+  // erst einblenden, dann messen (Höhe/Breite hängen von 1 oder 2 Antragstellern ab)
+  pop.classList.add('open');
+  popAnchor = anchor;
+  placePersonPop(anchor);
+}
+
+let popAnchor = null;
+function placePersonPop(anchor){
+  const pop = $('#personPop');
+  const r = anchor.getBoundingClientRect();
+  const w = pop.offsetWidth, h = pop.offsetHeight;
+  const flipUp = r.bottom + 6 + h > window.innerHeight - 8 && r.top - 6 - h > 8;
+  pop.style.top = (window.scrollY + (flipUp ? r.top - 6 - h : r.bottom + 6)) + 'px';
+  pop.style.left = (window.scrollX + Math.max(8, Math.min(r.left, window.innerWidth - w - 8))) + 'px';
+}
+
+// Hover-Steuerung: kurze Verzögerung, damit der Weg vom Icon in die Karte nicht abbricht
+let popHideTimer = null;
+function cancelPopHide(){ if(popHideTimer){ clearTimeout(popHideTimer); popHideTimer = null; } }
+function schedulePopHide(){ cancelPopHide(); popHideTimer = setTimeout(() => $('#personPop').classList.remove('open'), 180); }
+function personPopIn(e){ const b = e.target.closest('.person-info'); if(!b) return; cancelPopHide(); openPersonPop(b); }
+function personPopOut(e){ if(!e.target.closest('.person-info')) return; schedulePopHide(); }
+[tbody, cardList].forEach(el => {
+  el.addEventListener('mouseover', personPopIn);
+  el.addEventListener('mouseout', personPopOut);
+  el.addEventListener('focusin', personPopIn);    // Tastaturbedienung
+  el.addEventListener('focusout', personPopOut);
+});
+$('#personPop').addEventListener('mouseenter', cancelPopHide);
+$('#personPop').addEventListener('mouseleave', schedulePopHide);
+
+/* ---------- Global close handling ---------- */
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.menu') && !e.target.closest('#btnBerater')) closeAllMenus();
+  if(!e.target.closest('.popover') && !e.target.closest('.person-info')) $('#personPop').classList.remove('open');
+});
+window.addEventListener('scroll', ()=>{
+  closeAllMenus();
+  // Kontaktkarte bleibt beim Scrollen am Info-Icon kleben und schließt erst, wenn das Icon aus dem Blick scrollt
+  const pop = $('#personPop');
+  if(!pop.classList.contains('open')) return;
+  if(!popAnchor?.isConnected){ pop.classList.remove('open'); return; }
+  const r = popAnchor.getBoundingClientRect();
+  const gone = r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > window.innerWidth || (r.width === 0 && r.height === 0);
+  if(gone) pop.classList.remove('open'); else placePersonPop(popAnchor);
+}, true);
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function showToast(msg, icon, undoFn){
+  const stack = $('#toastStack');
+  stack.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="material-symbols-outlined">${icon}</span><span>${esc(msg)}</span>
+    ${undoFn?'<button class="toast-undo"><span class="material-symbols-outlined">undo</span> Rückgängig</button>':''}`;
+  if(undoFn) el.querySelector('.toast-undo').addEventListener('click', ()=>{ undoFn(); stack.innerHTML=''; clearTimeout(toastTimer); });
+  stack.appendChild(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ stack.innerHTML=''; if(recentlyDone.size){ recentlyDone.clear(); render(); } }, 6000);
+}
+
+/* ======================================================================
+   SIDE PANEL — anlegen & bearbeiten
+   ====================================================================== */
+let editing = null;         // aktuell bearbeitetes To do (null = neu)
+let selectedPerson = null;  // {name, kundennummer} | null
+
+// Art im Bearbeiten-Panel: bei systemgenerierten To-dos nur lesbar (die Art ergibt
+// sich aus dem Auslöser), sonst Auswahl unter den selbst angelegten Arten.
+function fillTypSelect(t){
+  const sel = $('#inTyp'), hint = $('#typHint');
+  const sys = t && isSystemTyp(t);
+  const keys = sys ? [t.typ] : TYP_BERATER;
+  sel.innerHTML = keys.map(k => `<option value="${k}">${esc(TODO_TYP[k].label)}</option>`).join('');
+  sel.value = t ? (t.typ || 'aufgabe') : 'aufgabe';
+  sel.disabled = !!sys;
+  hint.hidden = !sys;
+}
+function openPanel(t){
+  editing = t || null;
+  selectedPerson = t ? (t.person ? {...t.person} : null) : null;
+  if(t) acknowledge(t);   // Bearbeiten quittiert System-To-do
+
+  $('#panelTitle').textContent = t ? 'To do bearbeiten' : 'To do hinzufügen';
+  $('#inTitel').value = t ? t.titel : '';
+  $('#inDatum').value = t ? t.faelligkeit : toISOInput(TODAY);
+  fillTypSelect(t);
+  $('#inPerson').value = selectedPerson ? `${selectedPerson.name} (${selectedPerson.kundennummer})` : '';
+  $('#inNotiz').value = t ? t.notiz : '';
+  $('#btnSaveNew').style.display = t ? 'none' : '';
+  $('#fTitel').classList.remove('invalid');
+  $('#fPerson').classList.remove('invalid');
+
+  $('#scrim').classList.add('open');
+  $('#panel').classList.add('open');
+  $('#panel').setAttribute('aria-hidden','false');
+  setTimeout(()=>$('#inTitel').focus(), 60);
+}
+window.openPanel = openPanel;
+function closePanel(){
+  $('#scrim').classList.remove('open');
+  $('#panel').classList.remove('open');
+  $('#panel').setAttribute('aria-hidden','true');
+  $('#personCombo').classList.remove('open');
+  editing = null;
+}
+function toISOInput(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+$('#panelClose').addEventListener('click', closePanel);
+$('#btnCancel').addEventListener('click', closePanel);
+$('#scrim').addEventListener('click', closePanel);
+
+/* person combobox */
+const personInput = $('#inPerson');
+function openPersonCombo(filter){
+  const menu = $('#personCombo');
+  const q = (filter||'').toLowerCase();
+  const matches = CUSTOMERS.filter(c=>`${c.name} ${c.kundennummer}`.toLowerCase().includes(q));
+  menu.innerHTML = matches.length
+    ? matches.map(c=>`<div class="combo-opt" data-kn="${c.kundennummer}"><span>${esc(c.name)}</span><span class="kn">${c.kundennummer}</span></div>`).join('')
+    : `<div class="combo-opt" style="color:var(--color-neutral-dark-300);cursor:default">Kein Treffer</div>`;
+  menu.querySelectorAll('.combo-opt[data-kn]').forEach(opt=>{
+    opt.addEventListener('mousedown', e=>{ e.preventDefault();
+      const kn = opt.dataset.kn;
+      selectedPerson = CUSTOMERS.find(c=>c.kundennummer===kn);
+      personInput.value = `${selectedPerson.name} (${selectedPerson.kundennummer})`;
+      $('#fPerson').classList.remove('invalid');
+      menu.classList.remove('open');
+    });
+  });
+  menu.classList.add('open');
+}
+personInput.addEventListener('focus', ()=>openPersonCombo(''));
+personInput.addEventListener('input', ()=>{ selectedPerson=null; openPersonCombo(personInput.value); });
+personInput.addEventListener('blur', ()=>setTimeout(()=>$('#personCombo').classList.remove('open'),120));
+
+/* save */
+function collect(){
+  const titel = $('#inTitel').value.trim();
+  if(!titel){ $('#fTitel').classList.add('invalid'); $('#inTitel').focus(); return null; }
+  if(!selectedPerson){ $('#fPerson').classList.add('invalid'); $('#inPerson').focus(); return null; }
+  return {
+    titel,
+    faelligkeit: $('#inDatum').value || toISOInput(TODAY),
+    zeit: editing ? editing.zeit : '',
+    typ: $('#inTyp').value || 'aufgabe',
+    person: {...selectedPerson},
+    notiz: $('#inNotiz').value.trim(),
+  };
+}
+function save(keepOpen){
+  const data = collect(); if(!data) return;
+  if(editing){
+    const before = { titel: editing.titel, faelligkeit: editing.faelligkeit, typ: editing.typ,
+                     notiz: editing.notiz || '', person: editing.person };
+    Object.assign(editing, data);
+    applyQuelle(editing);                       // quelle folgt der Art
+    // jede geänderte Angabe wird einzeln im Verlauf festgehalten
+    if(before.titel !== data.titel)             addHist(editing, 'titel', before.titel, data.titel);
+    if(before.faelligkeit !== data.faelligkeit) addHist(editing, 'faelligkeit', before.faelligkeit, data.faelligkeit);
+    if(before.typ !== data.typ)                 addHist(editing, 'typ', typLabel(before.typ), typLabel(data.typ));
+    if(before.notiz !== (data.notiz || ''))     addHist(editing, 'notiz', before.notiz, data.notiz);
+    if(before.person?.kundennummer !== data.person?.kundennummer){
+      addHist(editing, 'person',
+        before.person ? `${before.person.name} (${before.person.kundennummer})` : '',
+        `${data.person.name} (${data.person.kundennummer})`);
+    }
+    showToast(`„${data.titel}" gespeichert`, 'check');
+    render(); closePanel();
+  } else {
+    const t = { id:nid(), erledigt:false, quittiert:true, berater:ME, verlauf:[], ...data };
+    applyQuelle(t);
+    addHist(t, 'created', '', data.titel);
+    todos.push(t); render();
+    flashRow(t.id);
+    showToast(`„${data.titel}" angelegt`, 'add_task');
+    if(keepOpen){
+      editing=null; selectedPerson=null;
+      $('#inTitel').value=''; $('#inPerson').value=''; $('#inNotiz').value='';
+      $('#inDatum').value = toISOInput(TODAY);
+      $('#inTitel').focus();
+    } else closePanel();
+  }
+}
+$('#btnSave').addEventListener('click', ()=>save(false));
+$('#btnSaveNew').addEventListener('click', ()=>save(true));
+$('#inTitel').addEventListener('input', ()=>$('#fTitel').classList.remove('invalid'));
+
+function flashRow(id){
+  requestAnimationFrame(()=>{ const r = tbody.querySelector(`tr[data-id="${id}"]`); if(r) r.classList.add('just-added'); });
+}
+
+/* ======================================================================
+   VERLAUF-DRAWER — Änderungshistorie eines To dos
+   ====================================================================== */
+let histTodo = null;
+
+function fmtStamp(ts){
+  const [datePart, timePart] = ts.split('T');
+  const d = parseDate(datePart);
+  const diff = Math.round((d - TODAY) / 86400000);
+  let day;
+  if(diff === 0) day = 'Heute';
+  else if(diff === -1) day = 'Gestern';
+  else if(diff > -7 && diff < 0) day = `${WD[d.getDay()]}, ${fmtAbs(datePart)}`;
+  else day = fmtAbs(datePart);
+  return `${day}, ${timePart} Uhr`;
+}
+function histVal(kind, key, val){
+  return `<div class="hist-val ${kind}"><span class="vk">${esc(key)}</span><span class="vv">${val ? esc(val) : '— leer —'}</span></div>`;
+}
+function histDiff(h){
+  const m = HIST_META[h.action];
+  if(!m || !m.field) return '';
+  const f = v => v ? (m.date ? fmtAbs(v) : v) : '';
+  const from = f(h.from), to = f(h.to);
+  if(!from && !to) return '';
+  if(!from) return `<div class="hist-diff">${histVal('new', m.field, to)}</div>`;
+  return `<div class="hist-diff">${histVal('old','Vorher',from)}${histVal('new','Nachher',to)}</div>`;
+}
+function histItemHtml(h){
+  const m = HIST_META[h.action] || { icon:'edit', label:'Geändert', tone:'' };
+  return `<li class="hist-item" data-tone="${m.tone||''}">
+    <span class="hist-ico"><span class="material-symbols-outlined">${m.icon}</span></span>
+    <div class="hist-main">
+      <div class="hist-label">${m.label}${h.fresh ? '<span class="hist-fresh">NEU</span>' : ''}</div>
+      <div class="hist-meta"><span class="hist-actor">${esc(h.actor)}</span> · ${fmtStamp(h.ts)}</div>
+      ${histDiff(h)}
+    </div>
+  </li>`;
+}
+function openHist(t){
+  histTodo = t;
+  const sub = $('#histSub');
+  sub.textContent = t.titel; sub.title = t.titel;
+  const rows = (t.verlauf || []).slice().reverse();   // neueste zuerst
+  $('#histBody').innerHTML = rows.length
+    ? `<ul class="hist-list">${rows.map(histItemHtml).join('')}</ul>`
+    : `<div class="hist-empty"><span class="material-symbols-outlined">history_toggle_off</span><span>Für dieses To do sind noch keine Änderungen erfasst.</span></div>`;
+  $('#histEdit').style.display = isBday(t) ? 'none' : '';
+  $('#histScrim').classList.add('open');
+  $('#histPanel').classList.add('open');
+  $('#histPanel').setAttribute('aria-hidden','false');
+  setTimeout(()=>$('#histClose').focus(), 60);
+}
+function closeHist(){
+  $('#histScrim').classList.remove('open');
+  $('#histPanel').classList.remove('open');
+  $('#histPanel').setAttribute('aria-hidden','true');
+  histTodo = null;
+}
+$('#histClose').addEventListener('click', closeHist);
+$('#histScrim').addEventListener('click', closeHist);
+$('#histEdit').addEventListener('click', ()=>{ const t = histTodo; closeHist(); if(t) openPanel(t); });
+
+/* ======================================================================
+   INLINE ANLEGEN — „To do hinzufügen" als erste Zeile der Tabelle
+   Keine Pflichtfelder: ohne Titel → „Ohne Titel", ohne Datum → heute,
+   ohne Antragsteller erlaubt. Nach dem Anlegen erscheint die Zeile wieder.
+   ====================================================================== */
+const addTrigger = $('#addTrigger'), addFieldsRow = $('#addFields'), addActionsRow = $('#addActions');
+
+function fillAddSelects(){
+  // erste Option bleibt leer — solange nichts gewählt ist, sieht das Feld leer aus
+  $('#addPerson').innerHTML = `<option value=""></option>` +
+    CUSTOMERS.map(c => `<option value="${c.kundennummer}">${esc(c.name)} · ${c.kundennummer}</option>`).join('');
+  $('#addBerater').innerHTML = BERATER_ALL.map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join('');
+  // nur selbst angelegte Arten — systemgenerierte entstehen ausschließlich durch Auslöser
+  $('#addTyp').innerHTML = TYP_BERATER.map(k => `<option value="${k}">${esc(TODO_TYP[k].label)}</option>`).join('');
+}
+function resetAddFields(){
+  $('#addTitel').value = '';
+  $('#addDatum').value = '';        // leer starten — beim Speichern fällt es auf heute zurück
+  $('#addTyp').value = 'aufgabe';
+  $('#addPerson').value = '';
+  $('#addBerater').value = ME;
+}
+function openComposer(){
+  addOpen = true;
+  addTrigger.hidden = true;
+  addFieldsRow.hidden = false; addActionsRow.hidden = false;
+  resetAddFields();
+  render();                        // Leerzustand ggf. ausblenden
+  $('#addTitel').focus();
+}
+window.openComposer = openComposer;
+// doRender=false, wenn der auslösende Klick woanders hin gehört (Tabelle nicht neu bauen)
+function closeComposer(focusTrigger, doRender = true){
+  addOpen = false;
+  addFieldsRow.hidden = true; addActionsRow.hidden = true;
+  addTrigger.hidden = false;
+  if(doRender) render();
+  if(focusTrigger) addTrigger.focus();
+}
+function commitComposer(){
+  const kn = $('#addPerson').value;
+  const t = {
+    id: nid(),
+    typ: $('#addTyp').value || 'aufgabe',
+    titel: $('#addTitel').value.trim(),                      // darf leer bleiben
+    faelligkeit: $('#addDatum').value || toISOInput(TODAY),   // leer → heute
+    zeit: '',
+    erledigt: false,
+    quittiert: true,
+    person: kn ? { ...CUSTOMERS.find(c => c.kundennummer === kn) } : null,
+    berater: $('#addBerater').value || ME,
+    notiz: '',
+    verlauf: [],
+  };
+  applyQuelle(t);                  // quelle folgt der Art, nicht umgekehrt
+  addHist(t, 'created', '', t.titel, t.berater);
+  todos.push(t);
+  closeComposer(true);             // Anlege-Zeile ist danach wieder oben zu sehen
+  flashRow(t.id);
+  const visible = currentRows.some(r => r.id === t.id);
+  showToast(
+    visible ? `„${todoLabel(t)}" angelegt` : `„${todoLabel(t)}" angelegt · durch die aktuellen Filter ausgeblendet`,
+    'add_task',
+    ()=>{ const i = todos.indexOf(t); if(i > -1) todos.splice(i,1); render(); }
+  );
+}
+
+addTrigger.addEventListener('click', openComposer);
+addTrigger.addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); e.stopPropagation(); openComposer(); }
+});
+$('#addCancel').addEventListener('click', ()=>closeComposer(true));
+$('#addCardBtn').addEventListener('click', ()=>openPanel());   // mobil: bewährtes Seiten-Panel
+// Wurde überhaupt etwas eingetragen? Berater ist vorbelegt und zählt nur, wenn geändert.
+function composerHasInput(){
+  return !!($('#addTitel').value.trim() || $('#addDatum').value || $('#addPerson').value
+    || ($('#addBerater').value && $('#addBerater').value !== ME));
+}
+// Verlassen der Zeile: mit Eingabe wird gespeichert, ohne Eingabe zurück in den Ausgangszustand
+function leaveComposer(){
+  if(!addOpen) return;
+  if(composerHasInput()) commitComposer();
+  else closeComposer(false, currentRows.length === 0);   // nur neu rendern, wenn der Leerzustand zurück muss
+}
+// Enter speichert, Esc verwirft — aus jedem Feld der Zeile
+[addFieldsRow, addActionsRow].forEach(row => row.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); commitComposer(); }
+  else if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); closeComposer(true); }
+}));
+// Klick außerhalb der Zeile
+document.addEventListener('mousedown', e => {
+  if(!addOpen || !e.target.closest) return;
+  if(e.target.closest('#addBody')) return;
+  leaveComposer();
+});
+// Tastatur: aus der Zeile heraus tabben zählt ebenfalls als Verlassen
+$('#addBody').addEventListener('focusout', ()=>{
+  setTimeout(()=>{
+    if(!addOpen) return;
+    if(!document.hasFocus()) return;                       // Tab-/Fensterwechsel ist kein Verlassen
+    if($('#addBody').contains(document.activeElement)) return;
+    leaveComposer();
+  }, 0);
+});
+fillAddSelects();
+resetAddFields();
+
+/* ======================================================================
+   TASTATUR-NAVIGATION
+   ====================================================================== */
+let focusIndex = -1;
+function setRowFocus(i){
+  const rows = tbody.querySelectorAll('tr');
+  if(!rows.length) return;
+  focusIndex = Math.max(0, Math.min(i, rows.length-1));
+  rows.forEach((r,idx)=>r.classList.toggle('row-focus', idx===focusIndex));
+  rows[focusIndex].scrollIntoView({block:'nearest'});
+  rows[focusIndex].focus({preventScroll:true});
+}
+document.addEventListener('keydown', e=>{
+  const inField = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName);
+  const panelOpen = $('#panel').classList.contains('open');
+
+  // Verlauf-Drawer: nur Esc
+  if($('#histPanel').classList.contains('open')){
+    if(e.key==='Escape'){ e.preventDefault(); closeHist(); }
+    return;
+  }
+
+  // panel shortcuts
+  if(panelOpen){
+    if(e.key==='Escape'){ e.preventDefault(); closePanel(); }
+    if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); save(false); }
+    return;
+  }
+
+  if(e.key==='Escape'){ closeAllMenus(); $('#personPop').classList.remove('open'); return; }
+
+  // '/' oder Cmd/Ctrl+K → Suche
+  if((e.key==='/' && !inField) || ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k')){
+    e.preventDefault(); $('#search').focus(); $('#search').select(); return;
+  }
+  if(inField) return;
+
+  const rows = tbody.querySelectorAll('tr'); if(!rows.length) return;
+  if(e.key==='ArrowDown'){ e.preventDefault(); setRowFocus(focusIndex+1); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); setRowFocus(focusIndex<0?0:focusIndex-1); }
+  else if(e.key==='Enter' && focusIndex>=0){ e.preventDefault(); const t=currentRows[focusIndex]; if(t) openPanel(t); }
+  else if(e.key===' ' && focusIndex>=0){ e.preventDefault(); const t=currentRows[focusIndex]; if(t) toggleDone(t.id, !t.erledigt); }
+});
+
+/* ======================================================================
+   RISK-BANNER — aktive Darlehensanträge ohne To-do
+   (eigener Datensatz; ein Antrag kann 1–2 Antragsteller haben)
+   ====================================================================== */
+const ANTRAEGE_OHNE_TODO = [
+  { name1:'Jörg Krause',     kn1:'KD-108820', name2:'Anna Krause',    kn2:'KD-108821', neu:true },
+  { name1:'Elena Fischer',   kn1:'KD-108455', name2:null,             kn2:null,        neu:true },
+  { name1:'Thomas Neumann',  kn1:'KD-109011', name2:'Sabine Neumann', kn2:'KD-109012', neu:false },
+];
+function renderRisk(){
+  const n = ANTRAEGE_OHNE_TODO.length;
+  const banner = $('#riskBanner');
+  if(!n){ banner.style.display = 'none'; return; }
+  banner.style.display = '';
+  $('#riskCount').textContent = n;
+}
+/* Mock: öffnet die Übersicht der Anträge ohne To-do in einem neuen Tab */
+$('#riskHead').addEventListener('click', () => {
+  window.open('?antraege-ohne-todo=1', '_blank', 'noopener');
+});
+
+/* ======================================================================
+   KALENDER — Wochenansicht (Termine des Beraters)
+   Eigener Mock-Datensatz. Aktuell nur die laufende Woche befüllt.
+   ====================================================================== */
+const TERMIN_TYP = {
+  beratung: { c:'var(--color-primary-500)',       bg:'var(--color-primary-100)' },
+  telefon:  { c:'var(--color-info)',              bg:'var(--color-info-light)' },
+  notar:    { c:'var(--color-warning-high)',      bg:'var(--color-warning-high-light)' },
+  extern:   { c:'#B457C9',                         bg:'#F7ECFB' },
+  intern:   { c:'var(--color-neutral-dark-300)',  bg:'var(--color-neutral-light-200)' },
+};
+// laufende Woche: Mo 20.07. – So 26.07.2026
+const TERMINE = [
+  // Montag 20.07.
+  { datum:iso(2026,7,20), zeit:'09:00', titel:'Erstberatung',          person:'Andreas Weber',  typ:'beratung' },
+  { datum:iso(2026,7,20), zeit:'11:00', titel:'Telefonat Bonität',     person:'Sandra Klein',   typ:'telefon' },
+  { datum:iso(2026,7,20), zeit:'14:30', titel:'Teammeeting',                                     typ:'intern' },
+  // Dienstag 21.07.
+  { datum:iso(2026,7,21), zeit:'10:00', titel:'Beratung Finanzierung', person:'Thomas Berger',  typ:'beratung' },
+  { datum:iso(2026,7,21), zeit:'13:00', titel:'Termin Partnerbank',                              typ:'intern' },
+  { datum:iso(2026,7,21), zeit:'16:00', titel:'Rückruf',               person:'Petra Schulz',   typ:'telefon' },
+  // Mittwoch 22.07.
+  { datum:iso(2026,7,22), zeit:'08:30', titel:'Notartermin',           person:'Mehmet Öztürk',  typ:'notar' },
+  { datum:iso(2026,7,22), zeit:'11:30', titel:'Videoberatung',         person:'Julia Hoffmann', typ:'beratung' },
+  // Donnerstag 23.07.
+  { datum:iso(2026,7,23), zeit:'09:30', titel:'Objektbesichtigung',                              typ:'extern' },
+  { datum:iso(2026,7,23), zeit:'15:00', titel:'Telefonat',            person:'Michael Braun',   typ:'telefon' },
+  // Freitag 24.07. (heute)
+  { datum:iso(2026,7,24), zeit:'08:00', titel:'Angebot finalisieren',  person:'Mehmet Öztürk',  typ:'intern' },
+  { datum:iso(2026,7,24), zeit:'11:30', titel:'Beratung',              person:'Michael Braun',  typ:'beratung' },
+  { datum:iso(2026,7,24), zeit:'14:00', titel:'Rückruf',              person:'Thomas Berger',   typ:'telefon' },
+  { datum:iso(2026,7,24), zeit:'16:30', titel:'Wochenabschluss Team',                           typ:'intern' },
+  // Samstag 25.07.
+  { datum:iso(2026,7,25), zeit:'10:00', titel:'Besichtigung (privat)',                          typ:'extern' },
+];
+
+const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const WD_SHORT = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+const WD_FULL  = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+function addDays(d,n){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n); x.setHours(0,0,0,0); return x; }
+function mondayOf(d){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); const wd=(x.getDay()+6)%7; return addDays(x,-wd); }
+
+/* Zeitraum: Tagesansicht ist Standard, 3 Tage / Woche per Schnellauswahl */
+const CAL_SPAN = { tag: 1, drei: 3, woche: 7 };
+let calView  = 'tag';
+let calStart = new Date(TODAY);
+
+function calAlign(anchor){ return calView==='woche' ? mondayOf(anchor) : addDays(anchor,0); }
+function calEnd(){ return addDays(calStart, CAL_SPAN[calView]-1); }
+function calAnchor(){
+  // Heute behalten, solange es im sichtbaren Zeitraum liegt – sonst den ersten sichtbaren Tag
+  return (TODAY >= calStart && TODAY <= calEnd()) ? TODAY : calStart;
+}
+function fmtRangeLabel(){
+  const start = calStart, end = calEnd();
+  if(calView==='tag')
+    return `${WD_SHORT[(start.getDay()+6)%7]}, ${start.getDate()}. ${MONTHS[start.getMonth()]} ${start.getFullYear()}`;
+  if(start.getMonth()===end.getMonth())
+    return `${start.getDate()}.–${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+  return `${start.getDate()}. ${MONTHS[start.getMonth()].slice(0,3)} – ${end.getDate()}. ${MONTHS[end.getMonth()].slice(0,3)} ${end.getFullYear()}`;
+}
+function shortPerson(n){ const p=n.trim().split(/\s+/); return p.length>1 ? p[0][0]+'. '+p[p.length-1] : n; }
+function evHtml(e){
+  const c = TERMIN_TYP[e.typ] || TERMIN_TYP.intern;
+  const who = e.person ? ' · '+shortPerson(e.person) : '';
+  const full = `${e.zeit} ${e.titel}${e.person?' – '+e.person:''}`;
+  return `<div class="cal-event" style="--evc:${c.c};--evbg:${c.bg}" title="${esc(full)}">
+    <span class="cal-ev-time">${esc(e.zeit)}</span>
+    <span class="cal-ev-title">${esc(e.titel)}${esc(who)}</span>
+  </div>`;
+}
+function renderCalendar(){
+  const span = CAL_SPAN[calView];
+  let html='';
+  for(let i=0;i<span;i++){
+    const day = addDays(calStart,i);
+    const dISO = iso(day.getFullYear(), day.getMonth()+1, day.getDate());
+    const wd = (day.getDay()+6)%7;                    // 0 = Montag
+    const isToday = day.getTime()===TODAY.getTime();
+    const weekend = wd>=5;
+    const label = calView==='tag' ? WD_FULL[wd] : WD_SHORT[wd];
+    const evs = TERMINE.filter(t=>t.datum===dISO).sort((a,b)=>a.zeit.localeCompare(b.zeit));
+    const body = evs.length ? evs.map(evHtml).join('') : '<div class="cal-empty">Keine Termine</div>';
+    html += `<div class="cal-day${isToday?' today':''}${weekend?' weekend':''}">
+      <div class="cal-day-head"><div class="cal-wd">${label}</div><div class="cal-dnum">${day.getDate()}</div></div>
+      <div class="cal-events">${body}</div>
+    </div>`;
+  }
+  $('#calGrid').innerHTML = html;
+  $('#calRangeLabel').textContent = fmtRangeLabel();
+  calPane.classList.toggle('view-tag',   calView==='tag');
+  calPane.classList.toggle('view-drei',  calView==='drei');
+  calPane.classList.toggle('view-woche', calView==='woche');
+  document.querySelectorAll('#calViewSeg button').forEach(b=>{
+    const on = b.dataset.view===calView;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+function setCalView(view){
+  if(!CAL_SPAN[view]) return;
+  const anchor = calAnchor();
+  calView = view;
+  calStart = calAlign(anchor);
+  renderCalendar();
+  updateLayout();
+}
+
+/* ---------- Split-Layout (To-dos ↔ Kalender) ---------- */
+const todoPane = $('#todoPane');
+const calPane  = $('#calPane');
+const tableWrapEl = $('#tableWrap');
+function updateLayout(){
+  const open = document.body.classList.contains('cal-open');
+  const calCollapsed  = calPane.classList.contains('collapsed');
+  const todoCollapsed = todoPane.classList.contains('collapsed');
+  // Spalten weichen nur, wenn beide Bereiche sichtbar sind – in der Tagesansicht
+  // ist der Kalender schmal genug, dass die Tabelle mehr Spalten behalten kann
+  const split = open && !calCollapsed && !todoCollapsed;
+  tableWrapEl.classList.toggle('cols-reduced', split && calView !== 'tag');
+  tableWrapEl.classList.toggle('cols-slim',    split && calView === 'tag');
+  $('#todoToggle .material-symbols-outlined').textContent = todoCollapsed ? 'chevron_right' : 'chevron_left';
+  $('#calToggle .material-symbols-outlined').textContent  = calCollapsed  ? 'chevron_left'  : 'chevron_right';
+}
+function setCalOpen(open){
+  document.body.classList.toggle('cal-open', open);
+  const b = $('#btnCal');
+  b.classList.toggle('active', open);
+  b.setAttribute('aria-pressed', open ? 'true' : 'false');
+  todoPane.classList.remove('collapsed');
+  calPane.classList.remove('collapsed');
+  if(open) renderCalendar();
+  updateLayout();
+}
+$('#btnCal').addEventListener('click', ()=> setCalOpen(!document.body.classList.contains('cal-open')));
+$('#todoToggle').addEventListener('click', ()=>{
+  const collapse = !todoPane.classList.contains('collapsed');
+  todoPane.classList.toggle('collapsed', collapse);
+  if(collapse) calPane.classList.remove('collapsed');   // nie beide gleichzeitig zu
+  updateLayout();
+});
+$('#calToggle').addEventListener('click', ()=>{
+  const collapse = !calPane.classList.contains('collapsed');
+  calPane.classList.toggle('collapsed', collapse);
+  if(collapse) todoPane.classList.remove('collapsed');
+  updateLayout();
+});
+$('#calPrev').addEventListener('click', ()=>{ calStart=addDays(calStart,-CAL_SPAN[calView]); renderCalendar(); });
+$('#calNext').addEventListener('click', ()=>{ calStart=addDays(calStart, CAL_SPAN[calView]); renderCalendar(); });
+$('#calToday').addEventListener('click', ()=>{ calStart=calAlign(TODAY); renderCalendar(); });
+$('#calViewSeg').addEventListener('click', e => {
+  const b = e.target.closest('button[data-view]');
+  if(b) setCalView(b.dataset.view);
+});
+
+/* ---------- init ---------- */
+updateBeraterButton();
+updateTypButton();
+renderRisk();
+renderWinCards();   // statische Monatswerte — einmal beim Laden genügt
+render();
+setCalOpen(true);   // Kalender standardmäßig geöffnet (per „Kalender"-Button ausblendbar)
+</script>
+</body>
+</html>

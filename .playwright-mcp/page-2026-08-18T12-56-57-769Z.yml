@@ -1,0 +1,58 @@
+- generic [ref=f26e2]:
+  - navigation [ref=f26e3]:
+    - link "Alle Teams" [ref=f26e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f26e5]: ›
+    - generic [ref=f26e6]: Advisors
+  - generic [ref=f26e7]:
+    - paragraph [ref=f26e8]: Team
+    - heading "Advisors" [level=1] [ref=f26e9]
+    - paragraph [ref=f26e10]: Arbeitsfläche des Beraters — Tagesplanung, To-do's und Termine.
+  - generic [ref=f26e11]: Prototypes
+  - generic [ref=f26e13]:
+    - 'link "Mein Tag Der Berater startet in seinen Tag: offene To-do''s sichten, priorisieren, abhaken und neue anlegen. 3 Versionen Aktuell: Mein Tag V3" [ref=f26e14] [cursor=pointer]':
+      - /url: project.html?project=mein-tag
+      - generic [ref=f26e15]: Mein Tag
+      - generic [ref=f26e16]: "Der Berater startet in seinen Tag: offene To-do's sichten, priorisieren, abhaken und neue anlegen."
+      - generic [ref=f26e17]:
+        - generic [ref=f26e18]: 3 Versionen
+        - generic [ref=f26e19]: "Aktuell: Mein Tag V3"
+    - 'link "ToDo-Sortierung Der Berater sortiert die Anträge-Liste nach Fälligkeit der zugehörigen To-do''s und wechselt bei Bedarf in die Pipeline-Ansicht. 1 Version Aktuell: ToDo-Sortierung V1" [ref=f26e20] [cursor=pointer]':
+      - /url: project.html?project=todo-sortierung
+      - generic [ref=f26e21]: ToDo-Sortierung
+      - generic [ref=f26e22]: Der Berater sortiert die Anträge-Liste nach Fälligkeit der zugehörigen To-do's und wechselt bei Bedarf in die Pipeline-Ansicht.
+      - generic [ref=f26e23]:
+        - generic [ref=f26e24]: 1 Version
+        - generic [ref=f26e25]: "Aktuell: ToDo-Sortierung V1"
+    - 'link "Termin-Scheduling Der Berater plant, bestätigt, verschiebt oder sagt einen Kundentermin ab — direkt aus dem Antrag heraus. 2 Versionen Aktuell: Termin-Scheduling V2" [ref=f26e26] [cursor=pointer]':
+      - /url: project.html?project=termin-scheduling
+      - generic [ref=f26e27]: Termin-Scheduling
+      - generic [ref=f26e28]: Der Berater plant, bestätigt, verschiebt oder sagt einen Kundentermin ab — direkt aus dem Antrag heraus.
+      - generic [ref=f26e29]:
+        - generic [ref=f26e30]: 2 Versionen
+        - generic [ref=f26e31]: "Aktuell: Termin-Scheduling V2"
+    - link "Important Fields Highlighting in Antrag Der Berater sieht im Antrag auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen — als Basisfassung und in bankspezifischen Varianten. 12 Versionen 3 Linien" [ref=f26e32] [cursor=pointer]:
+      - /url: project.html?project=important-fields-antrag
+      - generic [ref=f26e33]: Important Fields Highlighting in Antrag
+      - generic [ref=f26e34]: Der Berater sieht im Antrag auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen — als Basisfassung und in bankspezifischen Varianten.
+      - generic [ref=f26e35]:
+        - generic [ref=f26e36]: 12 Versionen
+        - generic [ref=f26e37]: 3 Linien
+  - generic [ref=f26e38]: For Development Handover
+  - generic [ref=f26e40]:
+    - paragraph [ref=f26e41]: Noch nichts an die Entwicklung übergeben.
+    - paragraph [ref=f26e42]:
+      - text: "Designer entscheiden bewusst, was hier landet:"
+      - code [ref=f26e43]: node freeze.js handover <prototyp-id>
+      - text: ausführen und den ausgegebenen Block in
+      - code [ref=f26e44]: data/prototypes.js
+      - text: einfügen.
+  - generic [ref=f26e45]: For Usability Testing
+  - generic [ref=f26e47]:
+    - paragraph [ref=f26e48]: Noch nichts für einen Test eingefroren.
+    - paragraph [ref=f26e49]:
+      - text: "Designer entscheiden bewusst, was hier landet:"
+      - code [ref=f26e50]: node freeze.js testing <prototyp-id>
+      - text: ausführen und den ausgegebenen Block in
+      - code [ref=f26e51]: data/prototypes.js
+      - text: einfügen.

@@ -1,0 +1,62 @@
+- generic [ref=f12e2]:
+  - generic [ref=f12e3]:
+    - paragraph [ref=f12e4]: FinLink Prototypes
+    - heading "Alle Teams" [level=1] [ref=f12e5]
+    - paragraph [ref=f12e6]: Prototypen nach Team geordnet. Jedes Team hat Projekte, jedes Projekt hat Versionen. Die aktuelle Version ist immer als erste markiert.
+  - generic [ref=f12e7]:
+    - link "Advisors Arbeitsfläche des Beraters — Tagesplanung, To-do's und Termine. 3 Projekte 6 Prototypen" [ref=f12e8] [cursor=pointer]:
+      - /url: team.html?team=advisors
+      - generic [ref=f12e9]: Advisors
+      - generic [ref=f12e10]: Arbeitsfläche des Beraters — Tagesplanung, To-do's und Termine.
+      - generic [ref=f12e11]:
+        - generic [ref=f12e12]: 3 Projekte
+        - generic [ref=f12e13]: 6 Prototypen
+    - link "Mavericks Antragsstrecke und Datenvalidierung — Application Form, wichtige Felder, Bankvarianten. 5 Projekte 22 Prototypen" [ref=f12e14] [cursor=pointer]:
+      - /url: team.html?team=mavericks
+      - generic [ref=f12e15]: Mavericks
+      - generic [ref=f12e16]: Antragsstrecke und Datenvalidierung — Application Form, wichtige Felder, Bankvarianten.
+      - generic [ref=f12e17]:
+        - generic [ref=f12e18]: 5 Projekte
+        - generic [ref=f12e19]: 22 Prototypen
+    - link "Document Center Dokumentenverwaltung und digitale Qualitätsprüfung. 3 Projekte 11 Prototypen" [ref=f12e20] [cursor=pointer]:
+      - /url: team.html?team=document-center
+      - generic [ref=f12e21]: Document Center
+      - generic [ref=f12e22]: Dokumentenverwaltung und digitale Qualitätsprüfung.
+      - generic [ref=f12e23]:
+        - generic [ref=f12e24]: 3 Projekte
+        - generic [ref=f12e25]: 11 Prototypen
+    - link "Customer Dashboard Kundenseitige Datenerfassung — Selbstauskunft. 1 Projekt 1 Prototyp" [ref=f12e26] [cursor=pointer]:
+      - /url: team.html?team=customer-dashboard
+      - generic [ref=f12e27]: Customer Dashboard
+      - generic [ref=f12e28]: Kundenseitige Datenerfassung — Selbstauskunft.
+      - generic [ref=f12e29]:
+        - generic [ref=f12e30]: 1 Projekt
+        - generic [ref=f12e31]: 1 Prototyp
+    - link "Mortgage Hub Angebotsstrecke und Kreditantrag — Angebotssuche und Einreichung. 1 Projekt 4 Prototypen" [ref=f12e32] [cursor=pointer]:
+      - /url: team.html?team=mortgage-hub
+      - generic [ref=f12e33]: Mortgage Hub
+      - generic [ref=f12e34]: Angebotsstrecke und Kreditantrag — Angebotssuche und Einreichung.
+      - generic [ref=f12e35]:
+        - generic [ref=f12e36]: 1 Projekt
+        - generic [ref=f12e37]: 4 Prototypen
+    - link "Lender Integration Anbindung der Kreditgeber — Schnittstellen und bankspezifische Flows. 0 Projekte 0 Prototypen" [ref=f12e38] [cursor=pointer]:
+      - /url: team.html?team=lender-integration
+      - generic [ref=f12e39]: Lender Integration
+      - generic [ref=f12e40]: Anbindung der Kreditgeber — Schnittstellen und bankspezifische Flows.
+      - generic [ref=f12e41]:
+        - generic [ref=f12e42]: 0 Projekte
+        - generic [ref=f12e43]: 0 Prototypen
+    - link "Product Design Research- und Discovery-Werkzeuge des Design-Teams. 1 Projekt 1 Prototyp" [ref=f12e44] [cursor=pointer]:
+      - /url: team.html?team=product-design
+      - generic [ref=f12e45]: Product Design
+      - generic [ref=f12e46]: Research- und Discovery-Werkzeuge des Design-Teams.
+      - generic [ref=f12e47]:
+        - generic [ref=f12e48]: 1 Projekt
+        - generic [ref=f12e49]: 1 Prototyp
+    - link "Design System Gemeinsame Komponenten, Tokens und Layout-Referenzen. 1 Projekt 1 Prototyp" [ref=f12e50] [cursor=pointer]:
+      - /url: team.html?team=design-system
+      - generic [ref=f12e51]: Design System
+      - generic [ref=f12e52]: Gemeinsame Komponenten, Tokens und Layout-Referenzen.
+      - generic [ref=f12e53]:
+        - generic [ref=f12e54]: 1 Projekt
+        - generic [ref=f12e55]: 1 Prototyp

@@ -1,0 +1,47 @@
+- generic [ref=f9e2]:
+  - navigation [ref=f9e3]:
+    - link "Alle Teams" [ref=f9e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f9e5]: ›
+    - generic [ref=f9e6]: Mavericks
+  - generic [ref=f9e7]:
+    - paragraph [ref=f9e8]: Team
+    - heading "Mavericks" [level=1] [ref=f9e9]
+    - paragraph [ref=f9e10]: Antragsstrecke und Datenvalidierung — Application Form, wichtige Felder, Bankvarianten.
+  - generic [ref=f9e11]:
+    - 'link "Application Form Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld. 8 Versionen Aktuell: Application Form V7" [ref=f9e12] [cursor=pointer]':
+      - /url: project.html?project=application-form
+      - generic [ref=f9e13]: Application Form
+      - generic [ref=f9e14]: Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld.
+      - generic [ref=f9e15]:
+        - generic [ref=f9e16]: 8 Versionen
+        - generic [ref=f9e17]: "Aktuell: Application Form V7"
+    - 'link "Data Validation Table (Dev Ready) Bereinigte Übergabeversion der Validierungstabelle für die Entwicklung — ohne experimentelle UI-Elemente. 2 Versionen Aktuell: Data Validation Table V2 Übergeben 14.05.2026" [ref=f9e18] [cursor=pointer]':
+      - /url: project.html?project=data-validation-table
+      - generic [ref=f9e19]: Data Validation Table (Dev Ready)
+      - generic [ref=f9e20]: Bereinigte Übergabeversion der Validierungstabelle für die Entwicklung — ohne experimentelle UI-Elemente.
+      - generic [ref=f9e21]:
+        - generic [ref=f9e22]: 2 Versionen
+        - generic [ref=f9e23]: "Aktuell: Data Validation Table V2"
+        - generic [ref=f9e24]: Übergeben 14.05.2026
+    - 'link "Important Fields Der Berater sieht auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen. 5 Versionen Aktuell: Important Fields V6" [ref=f9e25] [cursor=pointer]':
+      - /url: project.html?project=important-fields
+      - generic [ref=f9e26]: Important Fields
+      - generic [ref=f9e27]: Der Berater sieht auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen.
+      - generic [ref=f9e28]:
+        - generic [ref=f9e29]: 5 Versionen
+        - generic [ref=f9e30]: "Aktuell: Important Fields V6"
+    - 'link "Important Fields — FinLink Variante der Feldhervorhebung für den FinLink-Prozess mit vier Phasen von Basisdaten bis bestätigter Finanzierung. 4 Versionen Aktuell: Important Fields FinLink V4" [ref=f9e31] [cursor=pointer]':
+      - /url: project.html?project=important-fields-finlink
+      - generic [ref=f9e32]: Important Fields — FinLink
+      - generic [ref=f9e33]: Variante der Feldhervorhebung für den FinLink-Prozess mit vier Phasen von Basisdaten bis bestätigter Finanzierung.
+      - generic [ref=f9e34]:
+        - generic [ref=f9e35]: 4 Versionen
+        - generic [ref=f9e36]: "Aktuell: Important Fields FinLink V4"
+    - 'link "Coba Auf die Commerzbank zugeschnittene Variante von Validierung und Feldhervorhebung. 3 Versionen Aktuell: Coba Important Fields V3" [ref=f9e37] [cursor=pointer]':
+      - /url: project.html?project=coba
+      - generic [ref=f9e38]: Coba
+      - generic [ref=f9e39]: Auf die Commerzbank zugeschnittene Variante von Validierung und Feldhervorhebung.
+      - generic [ref=f9e40]:
+        - generic [ref=f9e41]: 3 Versionen
+        - generic [ref=f9e42]: "Aktuell: Coba Important Fields V3"

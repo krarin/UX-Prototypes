@@ -11,9 +11,13 @@ This workspace contains HTML/CSS prototypes for internal banking application flo
 All projects share one global design system so that colours, typography, spacing and components
 are always consistent. Changes to the design-system files propagate to every prototype instantly.
 
-**Projects:**
-- `mortgage-hub/` — Mortgage Hub & Offer Submission flows
-- `data-validation/` — Data Validation flows (Application Form, Important Fields)
+**The index mirrors the FinLink team hierarchy: Alle Teams → Team → Projekt → Version.**
+There are 8 teams: Advisors · Mavericks · Document Center · Customer Dashboard ·
+Mortgage Hub · Lender Integration · Product Design · Design System.
+
+Folders on disk do **not** map 1:1 to teams (Advisors = `to-do/` + `advisor-dashboard/`).
+The manifest `data/prototypes.js` connects the two. Never move prototypes between folders
+to "fix" this — change the manifest instead.
 
 ---
 
@@ -21,26 +25,31 @@ are always consistent. Changes to the design-system files propagate to every pro
 
 ```
 Prototypes/
-  CLAUDE.md                              ← this file
-  index.html                             ← master launcher
+  CLAUDE.md                    ← this file
+  NAMING-CONVENTION.md         ← rules for adding prototypes (give this to new team members)
+  CLAUDE-INDEX-PROMPT.md       ← ready-to-paste prompt for index work
+  RENAME-MAP.md                ← record of the 2026-08 rename pass
+  check-index.js               ← `node check-index.js` validates the whole index
+
+  index.html                   ← "Alle Teams"      ─┐
+  team.html                    ← team → projects    ├─ rendered from the manifest,
+  project.html                 ← project → versions ─┘  never hand-edit content
+
+  data/
+    prototypes.js              ← THE MANIFEST — single source of truth
+
   design-system/
-    tokens.css                           ← all design tokens (colours, type, spacing, radius, shadows)
-    styles.css                           ← base reset + typography utility classes
-    layout.css                           ← app shell (sidebar, topbar, page-header, tabs, buttons)
-    components.css                       ← reusable UI components (badges, status chips, etc.)
-    _template.html                       ← starting point for every new prototype
+    tokens.css                 ← all design tokens
+    styles.css                 ← base reset + typography
+    layout.css                 ← app shell (sidebar, topbar, tabs, buttons)
+    components.css             ← reusable UI components
+    launcher.css               ← styling for the three index pages
+    launcher.js                ← renders the three index pages
+    _template.html             ← starting point for every new prototype
 
-  mortgage-hub/
-    index.html
-    offer-submission/
-
-  data-validation/
-    index.html
-    application-form/
-      prototype1.html
-      prototype2.html
-    important-fields/
-      prototypeCv1.html
+  to-do/  advisor-dashboard/  data-validation/  doc-center/
+  mortgage-hub/  Customer Dashboard/            ← prototypes, grouped by folder
+  usability-reports/  test-briefs/  interactive-briefs/
 ```
 
 ---
@@ -54,7 +63,14 @@ Prototypes/
    - One folder deep (e.g. `mortgage-hub/offer-submission/`) → `../../design-system/`
 4. Update `<title>`, page header title, info bar fields, and tabs for this prototype
 5. Build your content inside `<!-- PROTOTYPE CONTENT STARTS HERE -->`
-6. Add a card for it in the project's `index.html`
+6. **Add an entry to `data/prototypes.js`** — this is the only index edit.
+   Never add cards to `index.html`, `team.html` or `project.html` by hand.
+7. Set the previous version to `status:"abgeloest"` — only one `"aktuell"` per project
+8. Run `node check-index.js` — it must report `✅`
+
+Handover and usability tests are **not** prototype fields — they are curated
+per-team collections of **frozen copies**, created with `node freeze.js handover|testing <id>`.
+Full rules: `NAMING-CONVENTION.md`
 
 ---
 
@@ -184,8 +200,15 @@ Microcopy:  .microcopy
 
 ## Naming conventions
 
-**Files:** `[project]-[description]-v[N].html` — all lowercase, kebab-case
-Examples: `offer-submission-drawer-v1.html`, `data-validation-table-v2.html`
+**Files:** `[projekt]-[variante]-v[N].html` — all lowercase, kebab-case, **always ending in `-v[N]`**
+Examples: `application-form-v8.html`, `important-fields-finlink-v5.html`
+Parallel variants of one version take a letter: `digital-qa-doc-center-v6-a.html`
+
+Forbidden in filenames: `final`, `neu`, `new`, `updated`, `copy`, `alt`, `test`,
+personal names, capitals, umlauts. Version numbers never restart inside a project.
+
+**`<title>` must match the manifest `title` exactly** — the old workspace had three
+competing version numbers per file (filename vs. card vs. title), which made search useless.
 
 **CSS classes:** BEM-lite — block + modifier with `--`, e.g. `.badge--large`, `.nav-item--step`
 

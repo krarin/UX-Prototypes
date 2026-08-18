@@ -1,0 +1,64 @@
+- generic [ref=f17e2]:
+  - navigation [ref=f17e3]:
+    - link "Alle Teams" [ref=f17e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f17e5]: ›
+    - generic [ref=f17e6]: Mavericks
+  - generic [ref=f17e7]:
+    - paragraph [ref=f17e8]: Team
+    - heading "Mavericks" [level=1] [ref=f17e9]
+    - paragraph [ref=f17e10]: Antragsstrecke und Datenvalidierung — Application Form, wichtige Felder, Bankvarianten.
+  - generic [ref=f17e11]: Prototypes
+  - generic [ref=f17e13]:
+    - 'link "Application Form Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld. 8 Versionen Aktuell: Application Form V7" [ref=f17e14] [cursor=pointer]':
+      - /url: project.html?project=application-form
+      - generic [ref=f17e15]: Application Form
+      - generic [ref=f17e16]: Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld.
+      - generic [ref=f17e17]:
+        - generic [ref=f17e18]: 8 Versionen
+        - generic [ref=f17e19]: "Aktuell: Application Form V7"
+    - 'link "Data Validation Table (Dev Ready) Bereinigte Übergabeversion der Validierungstabelle für die Entwicklung — ohne experimentelle UI-Elemente. 2 Versionen Aktuell: Data Validation Table V2" [ref=f17e20] [cursor=pointer]':
+      - /url: project.html?project=data-validation-table
+      - generic [ref=f17e21]: Data Validation Table (Dev Ready)
+      - generic [ref=f17e22]: Bereinigte Übergabeversion der Validierungstabelle für die Entwicklung — ohne experimentelle UI-Elemente.
+      - generic [ref=f17e23]:
+        - generic [ref=f17e24]: 2 Versionen
+        - generic [ref=f17e25]: "Aktuell: Data Validation Table V2"
+    - 'link "Important Fields Der Berater sieht auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen. 5 Versionen Aktuell: Important Fields V6" [ref=f17e26] [cursor=pointer]':
+      - /url: project.html?project=important-fields
+      - generic [ref=f17e27]: Important Fields
+      - generic [ref=f17e28]: Der Berater sieht auf einen Blick, welche Felder für die aktuelle Prozessphase relevant sind und noch fehlen.
+      - generic [ref=f17e29]:
+        - generic [ref=f17e30]: 5 Versionen
+        - generic [ref=f17e31]: "Aktuell: Important Fields V6"
+    - 'link "Important Fields — FinLink Variante der Feldhervorhebung für den FinLink-Prozess mit vier Phasen von Basisdaten bis bestätigter Finanzierung. 4 Versionen Aktuell: Important Fields FinLink V4" [ref=f17e32] [cursor=pointer]':
+      - /url: project.html?project=important-fields-finlink
+      - generic [ref=f17e33]: Important Fields — FinLink
+      - generic [ref=f17e34]: Variante der Feldhervorhebung für den FinLink-Prozess mit vier Phasen von Basisdaten bis bestätigter Finanzierung.
+      - generic [ref=f17e35]:
+        - generic [ref=f17e36]: 4 Versionen
+        - generic [ref=f17e37]: "Aktuell: Important Fields FinLink V4"
+    - 'link "Coba Auf die Commerzbank zugeschnittene Variante von Validierung und Feldhervorhebung. 3 Versionen Aktuell: Coba Important Fields V3" [ref=f17e38] [cursor=pointer]':
+      - /url: project.html?project=coba
+      - generic [ref=f17e39]: Coba
+      - generic [ref=f17e40]: Auf die Commerzbank zugeschnittene Variante von Validierung und Feldhervorhebung.
+      - generic [ref=f17e41]:
+        - generic [ref=f17e42]: 3 Versionen
+        - generic [ref=f17e43]: "Aktuell: Coba Important Fields V3"
+  - generic [ref=f17e44]: For Development Handover
+  - link "Application Form V7 An Entwicklung übergeben. 18.08.2026 eingefrorene Kopie" [ref=f17e47] [cursor=pointer]:
+    - /url: data-validation/application-form/application-form-v7-handover-2026-08-18.html
+    - generic [ref=f17e48]: Application Form V7
+    - generic [ref=f17e49]: An Entwicklung übergeben.
+    - generic [ref=f17e50]:
+      - generic [ref=f17e51]: 18.08.2026
+      - generic [ref=f17e52]: eingefrorene Kopie
+  - generic [ref=f17e53]: For Usability Testing
+  - generic [ref=f17e55]:
+    - paragraph [ref=f17e56]: Noch nichts für einen Test eingefroren.
+    - paragraph [ref=f17e57]:
+      - text: "Designer entscheiden bewusst, was hier landet:"
+      - code [ref=f17e58]: node freeze.js testing <prototyp-id>
+      - text: ausführen und den ausgegebenen Block in
+      - code [ref=f17e59]: data/prototypes.js
+      - text: einfügen.

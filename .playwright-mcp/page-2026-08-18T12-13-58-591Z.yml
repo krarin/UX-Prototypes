@@ -1,0 +1,45 @@
+- generic [ref=f10e2]:
+  - navigation [ref=f10e3]:
+    - link "Alle Teams" [ref=f10e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f10e5]: ›
+    - link "Mavericks" [ref=f10e6] [cursor=pointer]:
+      - /url: team.html?team=mavericks
+    - generic [ref=f10e7]: ›
+    - generic [ref=f10e8]: Data Validation Table (Dev Ready)
+  - generic [ref=f10e9]:
+    - paragraph [ref=f10e10]: Projekt
+    - heading "Data Validation Table (Dev Ready)" [level=1] [ref=f10e11]
+    - paragraph [ref=f10e12]: "Hauptflow: Bereinigte Übergabeversion der Validierungstabelle für die Entwicklung — ohne experimentelle UI-Elemente."
+  - generic [ref=f10e13]:
+    - article [ref=f10e14]:
+      - generic [ref=f10e15]:
+        - generic [ref=f10e16]: Data Validation Table V2
+        - generic [ref=f10e17]: Aktuell
+      - paragraph [ref=f10e18]: "Gegenüber V1: aufklappbare Unterzeilen für Felder mit mehreren Quellwerten; die Systemwert-Zelle zeigt Niedrigst- oder Durchschnittswert per Toggle."
+      - generic [ref=f10e19]:
+        - generic [ref=f10e20]:
+          - paragraph [ref=f10e21]: Development Handover
+          - paragraph [ref=f10e22]:
+            - generic [ref=f10e23]: 14.05.2026
+            - generic [ref=f10e24]: finale Version
+          - paragraph [ref=f10e25]: Dev-Ready-Stand an die Entwicklung übergeben.
+        - generic [ref=f10e26]:
+          - paragraph [ref=f10e27]: Usability Testing
+          - paragraph [ref=f10e28]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f10e29] [cursor=pointer]:
+        - /url: data-validation/application-form/data-validation-table-v2.html
+    - article [ref=f10e30]:
+      - generic [ref=f10e31]:
+        - generic [ref=f10e32]: Data Validation Table V1
+        - generic [ref=f10e33]: Abgelöst
+      - paragraph [ref=f10e34]: "Bereinigte Tabellenansicht zur Übergabe: Status-Badges, Bestätigungslogik, manueller Wert und Quellen — ohne experimentelle UI-Elemente."
+      - generic [ref=f10e35]:
+        - generic [ref=f10e36]:
+          - paragraph [ref=f10e37]: Development Handover
+          - paragraph [ref=f10e38]: Noch nicht übergeben
+        - generic [ref=f10e39]:
+          - paragraph [ref=f10e40]: Usability Testing
+          - paragraph [ref=f10e41]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f10e42] [cursor=pointer]:
+        - /url: data-validation/application-form/data-validation-table-v1.html

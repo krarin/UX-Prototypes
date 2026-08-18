@@ -1,0 +1,154 @@
+- generic [ref=f1e2]:
+  - navigation [ref=f1e3]:
+    - link "Alle Teams" [ref=f1e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f1e5]: ›
+    - link "Document Center" [ref=f1e6] [cursor=pointer]:
+      - /url: team.html?team=document-center
+    - generic [ref=f1e7]: ›
+    - generic [ref=f1e8]: DigitalQA Doc Center
+  - generic [ref=f1e9]:
+    - paragraph [ref=f1e10]: Projekt
+    - heading "DigitalQA Doc Center" [level=1] [ref=f1e11]
+    - paragraph [ref=f1e12]: "Hauptflow: Der Prüfer geht die Kundendokumente durch, markiert Probleme, sammelt Rückfragen und sendet sie gebündelt an den Kunden."
+  - generic [ref=f1e13]:
+    - article [ref=f1e14]:
+      - generic [ref=f1e15]:
+        - generic [ref=f1e16]: DigitalQA Doc Center V7
+        - generic [ref=f1e17]: Aktuell
+      - paragraph [ref=f1e18]: "Gegenüber V6: zwei UX-Muster für Ersatz-Uploads — versionierter Slot mit Zeitverlauf gegen Ersetzen mit explizitem Bestätigungsschritt."
+      - generic [ref=f1e19]:
+        - generic [ref=f1e20]:
+          - paragraph [ref=f1e21]: Development Handover
+          - paragraph [ref=f1e22]: Noch nicht übergeben
+        - generic [ref=f1e23]:
+          - paragraph [ref=f1e24]: Usability Testing
+          - paragraph [ref=f1e25]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e26] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v7.html
+    - article [ref=f1e27]:
+      - generic [ref=f1e28]:
+        - generic [ref=f1e29]: DigitalQA Doc Center V6-A
+        - generic [ref=f1e30]: Abgelöst
+      - paragraph [ref=f1e31]: "Variante A von V6: alle offenen Prüfungsfehler dokumentübergreifend als eine Liste — direkt bearbeitbar, mit Dokumentvorschau daneben."
+      - generic [ref=f1e32]:
+        - generic [ref=f1e33]:
+          - paragraph [ref=f1e34]: Development Handover
+          - paragraph [ref=f1e35]: Noch nicht übergeben
+        - generic [ref=f1e36]:
+          - paragraph [ref=f1e37]: Usability Testing
+          - paragraph [ref=f1e38]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e39] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v6-a.html
+    - article [ref=f1e40]:
+      - generic [ref=f1e41]:
+        - generic [ref=f1e42]: DigitalQA Doc Center V6-B
+        - generic [ref=f1e43]: Abgelöst
+      - paragraph [ref=f1e44]: "Variante B von V6: Aufgaben nach Kategorie und Dokument gruppiert — aufklappbare Zeilen, Vorschau im Splitscreen."
+      - generic [ref=f1e45]:
+        - generic [ref=f1e46]:
+          - paragraph [ref=f1e47]: Development Handover
+          - paragraph [ref=f1e48]: Noch nicht übergeben
+        - generic [ref=f1e49]:
+          - paragraph [ref=f1e50]: Usability Testing
+          - paragraph [ref=f1e51]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e52] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v6-b.html
+    - article [ref=f1e53]:
+      - generic [ref=f1e54]:
+        - generic [ref=f1e55]: DigitalQA Doc Center V6-D
+        - generic [ref=f1e56]: Abgelöst
+      - paragraph [ref=f1e57]: "Variante D von V6: Kanban-Board nach Schweregrad (Kritisch · Warnungen · Erledigt); Aktionen verschieben Karten Richtung „Erledigt“."
+      - generic [ref=f1e58]:
+        - generic [ref=f1e59]:
+          - paragraph [ref=f1e60]: Development Handover
+          - paragraph [ref=f1e61]: Noch nicht übergeben
+        - generic [ref=f1e62]:
+          - paragraph [ref=f1e63]: Usability Testing
+          - paragraph [ref=f1e64]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e65] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v6-d.html
+    - article [ref=f1e66]:
+      - generic [ref=f1e67]:
+        - generic [ref=f1e68]: DigitalQA Doc Center V5
+        - generic [ref=f1e69]: Abgelöst
+      - paragraph [ref=f1e70]: "Gegenüber V4: strukturierte Prüfungstabelle mit den Spalten Problem, Aktion, Status und Notiz."
+      - generic [ref=f1e71]:
+        - generic [ref=f1e72]:
+          - paragraph [ref=f1e73]: Development Handover
+          - paragraph [ref=f1e74]: Noch nicht übergeben
+        - generic [ref=f1e75]:
+          - paragraph [ref=f1e76]: Usability Testing
+          - paragraph [ref=f1e77]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e78] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v5.html
+    - article [ref=f1e79]:
+      - generic [ref=f1e80]:
+        - generic [ref=f1e81]: DigitalQA Doc Center V4
+        - generic [ref=f1e82]: Abgelöst
+      - paragraph [ref=f1e83]: "Gegenüber V3: Notizen werden als Entwürfe gesammelt und gebündelt an den Kunden gesendet."
+      - generic [ref=f1e84]:
+        - generic [ref=f1e85]:
+          - paragraph [ref=f1e86]: Development Handover
+          - paragraph [ref=f1e87]: Noch nicht übergeben
+        - generic [ref=f1e88]:
+          - paragraph [ref=f1e89]: Usability Testing
+          - paragraph [ref=f1e90]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e91] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v4.html
+    - article [ref=f1e92]:
+      - generic [ref=f1e93]:
+        - generic [ref=f1e94]: DigitalQA Doc Center V3
+        - generic [ref=f1e95]: Abgelöst
+      - paragraph [ref=f1e96]: "Gegenüber V2: Notiz-System und weitere Verbesserungen. Diese Fassung wurde mit beiden Personas getestet."
+      - generic [ref=f1e97]:
+        - generic [ref=f1e98]:
+          - paragraph [ref=f1e99]: Development Handover
+          - paragraph [ref=f1e100]: Noch nicht übergeben
+        - generic [ref=f1e101]:
+          - paragraph [ref=f1e102]: Usability Testing
+          - paragraph [ref=f1e103]:
+            - generic [ref=f1e104]: 15.06.2026
+            - generic [ref=f1e105]: Lena
+            - link "Bericht →" [ref=f1e106] [cursor=pointer]:
+              - /url: usability-reports/2026-06-15_lena_doc-center-v3.md
+          - paragraph [ref=f1e107]:
+            - generic [ref=f1e108]: 15.06.2026
+            - generic [ref=f1e109]: Bernd
+            - link "Bericht →" [ref=f1e110] [cursor=pointer]:
+              - /url: usability-reports/2026-06-15_bernd_doc-center-v3.md
+          - paragraph [ref=f1e111]:
+            - generic [ref=f1e112]: 15.06.2026
+            - generic [ref=f1e113]: Bernd (live)
+            - link "Bericht →" [ref=f1e114] [cursor=pointer]:
+              - /url: usability-reports/2026-06-15_bernd-live_doc-center-v3.md
+      - link "Prototyp öffnen →" [ref=f1e115] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v3.html
+    - article [ref=f1e116]:
+      - generic [ref=f1e117]:
+        - generic [ref=f1e118]: DigitalQA Doc Center V2
+        - generic [ref=f1e119]: Abgelöst
+      - paragraph [ref=f1e120]: "Gegenüber V1: überarbeitete Tabellenansicht der Dokumentenliste."
+      - generic [ref=f1e121]:
+        - generic [ref=f1e122]:
+          - paragraph [ref=f1e123]: Development Handover
+          - paragraph [ref=f1e124]: Noch nicht übergeben
+        - generic [ref=f1e125]:
+          - paragraph [ref=f1e126]: Usability Testing
+          - paragraph [ref=f1e127]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e128] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v2.html
+    - article [ref=f1e129]:
+      - generic [ref=f1e130]:
+        - generic [ref=f1e131]: DigitalQA Doc Center V1
+        - generic [ref=f1e132]: Abgelöst
+      - paragraph [ref=f1e133]: Erster Prototyp für die Usability-Tests des DigitalQA Doc Centers.
+      - generic [ref=f1e134]:
+        - generic [ref=f1e135]:
+          - paragraph [ref=f1e136]: Development Handover
+          - paragraph [ref=f1e137]: Noch nicht übergeben
+        - generic [ref=f1e138]:
+          - paragraph [ref=f1e139]: Usability Testing
+          - paragraph [ref=f1e140]: Noch nicht getestet
+      - link "Prototyp öffnen →" [ref=f1e141] [cursor=pointer]:
+        - /url: doc-center/doc-center-skeleton/digital-qa-doc-center-v1.html

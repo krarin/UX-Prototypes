@@ -1,0 +1,35 @@
+- generic [ref=f19e2]:
+  - navigation [ref=f19e3]:
+    - link "Alle Teams" [ref=f19e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f19e5]: ›
+    - generic [ref=f19e6]: Lender Integration
+  - generic [ref=f19e7]:
+    - paragraph [ref=f19e8]: Team
+    - heading "Lender Integration" [level=1] [ref=f19e9]
+    - paragraph [ref=f19e10]: Anbindung der Kreditgeber — Schnittstellen und bankspezifische Flows.
+  - generic [ref=f19e11]: Prototypes
+  - generic [ref=f19e13]:
+    - paragraph [ref=f19e14]: Noch keine Prototypen
+    - paragraph [ref=f19e15]:
+      - text: Für dieses Team ist noch nichts angelegt. Neue Prototypen werden in
+      - code [ref=f19e16]: data/prototypes.js
+      - text: eingetragen.
+  - generic [ref=f19e17]: For Development Handover
+  - generic [ref=f19e19]:
+    - paragraph [ref=f19e20]: Noch nichts an die Entwicklung übergeben.
+    - paragraph [ref=f19e21]:
+      - text: "Designer entscheiden bewusst, was hier landet:"
+      - code [ref=f19e22]: node freeze.js handover <prototyp-id>
+      - text: ausführen und den ausgegebenen Block in
+      - code [ref=f19e23]: data/prototypes.js
+      - text: einfügen.
+  - generic [ref=f19e24]: For Usability Testing
+  - generic [ref=f19e26]:
+    - paragraph [ref=f19e27]: Noch nichts für einen Test eingefroren.
+    - paragraph [ref=f19e28]:
+      - text: "Designer entscheiden bewusst, was hier landet:"
+      - code [ref=f19e29]: node freeze.js testing <prototyp-id>
+      - text: ausführen und den ausgegebenen Block in
+      - code [ref=f19e30]: data/prototypes.js
+      - text: einfügen.

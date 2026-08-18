@@ -1,0 +1,114 @@
+/* =====================================================================
+   LAUNCHER — shared styles for index.html, team.html, project.html
+   Replaces the five duplicated <style> blocks that used to live in each
+   launcher. Uses only tokens from tokens.css.
+   ===================================================================== */
+
+body {
+  background: var(--color-neutral-light-100);
+  min-height: 100vh;
+}
+
+/* ---------- page frame ---------- */
+.launcher { width: 100%; max-width: 1440px; margin: 0 auto; padding: var(--space-xl) var(--space-l) var(--space-xxl); }
+
+.launcher-eyebrow {
+  font-size: var(--h5-size); font-weight: var(--h5-weight); letter-spacing: var(--h5-spacing);
+  text-transform: uppercase; color: var(--color-neutral-dark-300); margin-bottom: var(--space-s);
+}
+.launcher-heading { font-size: var(--h1-size); font-weight: var(--h1-weight); color: var(--color-neutral-dark-900); }
+.launcher-sub {
+  font-size: var(--body-regular-size); line-height: var(--body-regular-line-height);
+  color: var(--color-neutral-dark-400); margin-top: var(--space-s); max-width: 640px;
+}
+.launcher-head { margin-bottom: var(--space-xl); }
+
+/* ---------- breadcrumb ---------- */
+.breadcrumb { display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;
+  font-size: var(--body-small-size); color: var(--color-neutral-dark-300); margin-bottom: var(--space-m); }
+.breadcrumb a { color: var(--color-neutral-dark-400); text-decoration: none; }
+.breadcrumb a:hover { color: var(--color-primary-600); text-decoration: underline; }
+.breadcrumb .sep { color: var(--color-neutral-light-500); }
+
+/* ---------- card grid ---------- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: var(--space-m); }
+
+.tile {
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--color-neutral-light-000);
+  border: 1px solid var(--color-neutral-light-500);
+  border-radius: var(--radius-s); padding: var(--space-m);
+  text-decoration: none; color: inherit;
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.tile:hover { box-shadow: var(--shadow-s); border-color: var(--color-primary-500); text-decoration: none; }
+.tile-title { font-size: var(--h4-size); font-weight: var(--h4-weight); color: var(--color-neutral-dark-900); margin-bottom: 2px; }
+.tile-desc { font-size: var(--body-small-size); line-height: var(--body-small-line-height);
+  color: var(--color-neutral-dark-400); flex: 1; }
+.tile-meta { display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;
+  margin-top: var(--space-s); font-size: var(--body-small-size); color: var(--color-neutral-dark-300); }
+
+/* count pill on team / project tiles */
+.pill-count { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: var(--radius-full);
+  background: var(--color-neutral-light-200); color: var(--color-neutral-dark-400);
+  font-size: 11px; font-weight: var(--font-weight-medium); }
+
+/* ---------- status chips ---------- */
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border-radius: var(--radius-full); font-size: 11px; font-weight: var(--font-weight-medium); white-space: nowrap; }
+.chip--aktuell   { background: var(--color-success-light);      color: var(--color-success); }
+.chip--abgeloest { background: var(--color-neutral-light-200);  color: var(--color-neutral-dark-400); }
+.chip--archiv    { background: var(--color-neutral-light-200);  color: var(--color-neutral-dark-300); }
+.chip--handover  { background: var(--color-info-light);         color: var(--color-info); }
+.chip--frozen    { background: var(--color-info-light);         color: var(--color-info); }
+
+/* ---------- prototype block (project page) ---------- */
+/* stretch (statt align-items:start), damit Karten einer Reihe gleich hoch sind
+   und die Buttons auf einer Linie liegen — .proto-changes nimmt den Überschuss auf */
+.proto-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-m); }
+.proto {
+  display: flex; flex-direction: column;
+  background: var(--color-neutral-light-000);
+  border: 1px solid var(--color-neutral-light-500);
+  border-left: 4px solid var(--color-neutral-light-500);
+  border-radius: var(--radius-s); padding: var(--space-m);
+}
+.proto[data-status="aktuell"] { border-left-color: var(--color-primary-500); }
+.proto[data-status="archiv"]  { opacity: .78; }
+
+.proto-head { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; margin-bottom: var(--space-xs); }
+.proto-name { font-size: var(--h4-size); font-weight: var(--h4-weight); color: var(--color-neutral-dark-900); }
+.proto-changes { font-size: var(--body-small-size); line-height: var(--body-small-line-height);
+  color: var(--color-neutral-dark-400); margin-bottom: var(--space-m); flex: 1; }
+.proto-changes b { color: var(--color-neutral-dark-900); font-weight: var(--font-weight-medium); }
+
+/* the two dated sections */
+.sect-label { font-size: 11px; font-weight: var(--font-weight-medium); letter-spacing: .4px;
+  text-transform: uppercase; color: var(--color-neutral-dark-300); margin-bottom: var(--space-xs); }
+.sect-row { font-size: var(--body-small-size); color: var(--color-neutral-dark-900);
+  display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+.sect-date { font-variant-numeric: tabular-nums; font-weight: var(--font-weight-medium); }
+.sect-empty { font-size: var(--body-small-size); color: var(--color-neutral-dark-300); font-style: italic; }
+.sect-row a { color: var(--color-primary-600); text-decoration: none; }
+.sect-row a:hover { text-decoration: underline; }
+
+/* ---------- buttons ---------- */
+.open-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px var(--space-m); margin-top: auto;
+  background: var(--color-primary-500); color: var(--color-neutral-light-000);
+  border-radius: var(--radius-s); font-size: var(--body-regular-size); font-weight: var(--font-weight-medium);
+  text-decoration: none; align-self: flex-start; transition: background var(--transition-base); }
+.open-btn:hover { background: var(--color-primary-600); text-decoration: none; color: var(--color-neutral-light-000); }
+
+/* ---------- section heading + empty state ---------- */
+.group-head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: var(--space-s);
+  padding: 0 0 var(--space-xs); border-bottom: 1px solid var(--color-neutral-light-500);
+  margin: var(--space-xl) 0 var(--space-m); }
+.group-head:first-of-type { margin-top: 0; }
+.group-title { text-transform: uppercase; letter-spacing: .6px; }
+.group-title { font-size: var(--body-small-size); font-weight: var(--font-weight-medium); color: var(--color-neutral-dark-300); }
+
+.empty { padding: var(--space-l); text-align: center; background: var(--color-neutral-light-000);
+  border: 1px dashed var(--color-neutral-light-500); border-radius: var(--radius-s); }
+.empty-title { font-size: var(--body-regular-size); font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-dark-400); margin-bottom: var(--space-xs); }
+.empty-desc { font-size: var(--body-small-size); color: var(--color-neutral-dark-300); }
