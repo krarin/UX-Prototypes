@@ -16,6 +16,13 @@ for (const p of D.prototypes) {
   const rel = decodeURIComponent(p.file);
   listed.add(rel);
   if (!fs.existsSync(rel)) problems.push(`FEHLENDE DATEI  ${p.id} → ${rel}`);
+  // mehrere Öffnen-Buttons an einer Card (z. B. Web + Mobile) — jede verlinkte Datei zählt mit
+  for (const l of (p.links || [])) {
+    if (!l.file) { problems.push(`LINK OHNE DATEI  ${p.id} → "${l.label || '?'}"`); continue; }
+    const lrel = decodeURIComponent(l.file);
+    listed.add(lrel);
+    if (!fs.existsSync(lrel)) problems.push(`FEHLENDE DATEI  ${p.id} (Link "${l.label}") → ${lrel}`);
+  }
 }
 // eingefrorene Kopien in den kuratierten Team-Sektionen
 const protoIds = new Set(D.prototypes.map(p => p.id));
@@ -108,7 +115,10 @@ function checkName(rel, label) {
     warnings.push(`Ordner "${dir}/" hat Grossbuchstaben und ein Leerzeichen — bewusste Altlast, nicht umbenennen ohne die Pfade im Manifest anzupassen.`);
   }
 }
-for (const p of D.prototypes) checkName(decodeURIComponent(p.file), p.id);
+for (const p of D.prototypes) {
+  checkName(decodeURIComponent(p.file), p.id);
+  for (const l of (p.links || [])) if (l.file) checkName(decodeURIComponent(l.file), `${p.id} (Link "${l.label}")`);
+}
 for (const t of D.teams) for (const key of ['handover', 'testing'])
   for (const e of (t[key] || [])) if (e.file) checkName(decodeURIComponent(e.file), `${t.name}/${key}`);
 

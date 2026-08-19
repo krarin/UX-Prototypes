@@ -116,7 +116,11 @@ window.PROTOTYPES = {
 
     { id:"mein-tag-v4", project:"mein-tag", version:4, title:"Mein Tag V4",
       file:"to-do/mein-tag-v4.html", status:"aktuell",
-      changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar." },
+      links: [
+        { label:"Web Prototyp öffnen", file:"to-do/mein-tag-v4.html" },
+        { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v4.html" }
+      ],
+      changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)." },
 
     /* ---- Advisors · ToDo-Sortierung ---- */
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",

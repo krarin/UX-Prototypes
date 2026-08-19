@@ -209,7 +209,11 @@
           '<span class="proto-name">' + esc(x.title) + '</span>' + statusChip(x.status) +
         '</div>' +
         '<p class="proto-changes">' + esc(x.changes) + '</p>' +
-        '<a class="open-btn" href="' + x.file + '">Prototyp öffnen →</a>' +
+        (x.links && x.links.length
+          ? '<div class="proto-actions">' + x.links.map(function (l) {
+              return '<a class="open-btn" href="' + l.file + '">' + esc(l.label) + ' →</a>';
+            }).join('') + '</div>'
+          : '<a class="open-btn" href="' + x.file + '">' + esc(x.openLabel || 'Prototyp öffnen') + ' →</a>') +
       '</article>';
     }).join('') + '</div>';
   }

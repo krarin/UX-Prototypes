@@ -98,6 +98,9 @@ body {
   border-radius: var(--radius-s); font-size: var(--body-regular-size); font-weight: var(--font-weight-medium);
   text-decoration: none; align-self: flex-start; transition: background var(--transition-base); }
 .open-btn:hover { background: var(--color-primary-600); text-decoration: none; color: var(--color-neutral-light-000); }
+/* mehrere Öffnen-Buttons an einer Card (z. B. Web + Mobile) — untereinander statt nebeneinander */
+.proto-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: auto; }
+.proto-actions .open-btn { margin-top: 0; }
 
 /* ---------- section heading + empty state ---------- */
 .group-head { grid-column: 1 / -1; display: flex; align-items: baseline; gap: var(--space-s);
