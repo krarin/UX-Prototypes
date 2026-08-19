@@ -30,6 +30,11 @@ Prototypes/
   CLAUDE-INDEX-PROMPT.md       ← ready-to-paste prompt for index work
   RENAME-MAP.md                ← record of the 2026-08 rename pass
   check-index.js               ← `node check-index.js` validates the whole index
+  freeze.js                    ← creates frozen handover / usability copies
+  SETUP-GUARDRAILS.md          ← the three automatic checks and how to set them up
+  hooks/prototype-guard.js     ← reminds about the convention when a prototype is written
+  .githooks/pre-commit         ← blocks a commit with a broken index
+  .github/workflows/           ← same check on GitHub for every push and PR
 
   index.html                   ← "Alle Teams"      ─┐
   team.html                    ← team → projects    ├─ rendered from the manifest,
@@ -48,7 +53,7 @@ Prototypes/
     _template.html             ← starting point for every new prototype
 
   to-do/  advisor-dashboard/  data-validation/  doc-center/
-  mortgage-hub/  Customer Dashboard/            ← prototypes, grouped by folder
+  mortgage-hub/  customer-dashboard/            ← prototypes, grouped by folder
   usability-reports/  test-briefs/  interactive-briefs/
 ```
 

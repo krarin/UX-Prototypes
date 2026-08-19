@@ -1,0 +1,32 @@
+# Prüft bei jedem Push und jedem Pull Request, ob der Prototypen-Index stimmt.
+# Läuft auf GitHub, nicht auf deinem Rechner — greift also auch dann,
+# wenn jemand den lokalen Hook überspringt oder gar nicht eingerichtet hat.
+name: Prototypen-Index
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository holen
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Index und Namenskonvention prüfen
+        run: node check-index.js
+
+      - name: Auf Merge-Konfliktmarker prüfen
+        run: |
+          if grep -rn '^<<<<<<< \|^>>>>>>> ' --include='*.html' --include='*.js' --include='*.css' .; then
+            echo "❌ Es stehen noch Merge-Konfliktmarker in Dateien."
+            exit 1
+          fi
+          echo "✅ Keine Konfliktmarker."

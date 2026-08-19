@@ -28,7 +28,7 @@ window.PROTOTYPES = {
       desc: "Dokumentenverwaltung und digitale Qualitätsprüfung.",
       handover: [], testing: [] },
     { id: "customer-dashboard",name: "Customer Dashboard",
-      desc: "Kundenseitige Datenerfassung — Selbstauskunft.",
+      desc: "Die Kundensicht — Dashboard mit Status, Aufgaben und Dokumenten sowie die Selbstauskunft.",
       handover: [], testing: [] },
     { id: "mortgage-hub",      name: "Mortgage Hub",
       desc: "Angebotsstrecke und Kreditantrag — Angebotssuche und Einreichung.",
@@ -77,6 +77,9 @@ window.PROTOTYPES = {
     { id: "selbstauskunft", team: "customer-dashboard", name: "Selbstauskunft",
       flow: "Erfassung von Objekt- und Finanzierungsdaten — dichte, power-user-optimierte Übernahme statt Kunden-Wizard." },
 
+    { id: "customer-dashboard", team: "customer-dashboard", name: "Customer Dashboard",
+      flow: "Das gesamte Kundendashboard in einem Prototyp: Finanzierungsstatus, offene Aufgaben, Dokumenten-Upload und die Navigation, die alles zusammenhält." },
+
     { id: "offer-submission", team: "mortgage-hub", name: "Offer Submission",
       flow: "Der Berater sucht Angebote, vergleicht Konditionen und reicht die Finanzierung beim Kreditgeber ein." },
 
@@ -108,8 +111,12 @@ window.PROTOTYPES = {
       file:"to-do/mein-tag-v2.html", status:"abgeloest",
       changes:"Gegenüber V1: Wochenkalender im Splitscreen, Panes einzeln ein-/ausklappbar, Wochennavigation. Arbeitslast-Karten mit Tacho-Grafik; „Heute fällig“ schließt jetzt Überfällige mit ein." },
     { id:"mein-tag-v3", project:"mein-tag", version:3, title:"Mein Tag V3",
-      file:"to-do/mein-tag-v3.html", status:"aktuell",
+      file:"to-do/mein-tag-v3.html", status:"abgeloest",
       changes:"Gegenüber V2: Status-Spalte entfallen — ihre Aussage steckt jetzt als Label (Überfällig / Heute / Morgen / Erledigt) direkt in der Spalte „Fälligkeit“. Neuer Filter „Fälligkeit“. Stand nach dem Usability-Test." },
+
+    { id:"mein-tag-v4", project:"mein-tag", version:4, title:"Mein Tag V4",
+      file:"to-do/mein-tag-v4.html", status:"aktuell",
+      changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar." },
 
     /* ---- Advisors · ToDo-Sortierung ---- */
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",
@@ -241,8 +248,13 @@ window.PROTOTYPES = {
 
     /* ---- Customer Dashboard · Selbstauskunft ---- */
     { id:"selbstauskunft-v1", project:"selbstauskunft", version:1, title:"Selbstauskunft V1",
-      file:"Customer%20Dashboard/selfdisclosure/selbstauskunft-v1.html", status:"aktuell",
+      file:"customer-dashboard/selfdisclosure/selbstauskunft-v1.html", status:"aktuell",
       changes:"Erste Fassung: berater-facing Selbstauskunft zu Objekt und Finanzierung — dichte, power-user-optimierte Datenübernahme statt Kunden-Wizard." },
+
+    /* ---- Customer Dashboard · Customer Dashboard ---- */
+    { id:"customer-dashboard-v1", project:"customer-dashboard", version:1, title:"Customer Dashboard V1",
+      file:"customer-dashboard/customer-dashboard-v1.html", status:"aktuell",
+      changes:"Erste Fassung: das gesamte Kundendashboard als ein Screen — Status, Aufgaben, Dokumente und Navigation zusammen, um den Gesamtzusammenhang zu prüfen." },
 
     /* ---- Mortgage Hub · Offer Submission ---- */
     { id:"offer-submission-v1", project:"offer-submission", version:1, title:"Angebotssuche V1",

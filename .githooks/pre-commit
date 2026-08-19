@@ -1,0 +1,19 @@
+#!/bin/sh
+# Läuft vor jedem Commit. Bricht ab, wenn der Index nicht stimmt.
+# Aktivieren (einmalig):  git config core.hooksPath .githooks
+# Einmal überspringen:    git commit --no-verify
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "⚠️  node nicht gefunden — Index-Prüfung übersprungen."
+  exit 0
+fi
+
+echo "→ Prototypen-Index prüfen…"
+if ! node check-index.js; then
+  echo ""
+  echo "❌ Commit abgebrochen: der Prototypen-Index ist nicht in Ordnung."
+  echo "   Behebe die Punkte oben (Regeln: NAMING-CONVENTION.md)."
+  echo "   Nur im Notfall überspringen: git commit --no-verify"
+  exit 1
+fi
+exit 0

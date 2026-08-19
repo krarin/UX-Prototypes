@@ -49,8 +49,11 @@ Jede Umbenennung per `git mv`, die Historie bleibt also erhalten.
   Beispiel: `highlighting-important-fields-v1.html` hieß im Index schon immer „V2"
   und heißt jetzt auch so — `important-fields-v2.html`.
 
-- **`Customer Dashboard/` behält Großbuchstaben und Leerzeichen.**
-  Ordner umzubenennen war ausgeschlossen; das Manifest trägt den Pfad `%20`-kodiert.
+- **`Customer Dashboard/` → `customer-dashboard/` (nachgezogen am 2026-08-18).**
+  Beim ersten Durchgang blieb der Ordner mit Großbuchstaben und Leerzeichen stehen und
+  das Manifest trug den Pfad `%20`-kodiert. Vor dem Anlegen des zweiten Projekts in
+  diesem Team wurde er umbenannt: ein `git mv`, eine Pfadzeile im Manifest,
+  `FOLDER_EXCEPTIONS` in `check-index.js` ist jetzt leer. Alle Ordner sind damit klein-kebab.
 
 - **Titel angeglichen.** Alle 46 `<title>`-Tags entsprechen jetzt dem Dateinamen
   und dem Index-Eintrag. Vorher hießen z. B. drei verschiedene Doc-Center-Dateien

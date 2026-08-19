@@ -90,8 +90,8 @@ const NAME_KEBAB  = /^[a-z0-9]+(?:-[a-z0-9]+)*\.html$/;      // nur klein, Binde
 const NAME_VER    = /-v\d+(?:-[a-z])?\.html$/;               // endet auf -v7 bzw. -v6-a
 const NAME_FROZEN = /-(?:handover|usability)-\d{4}-\d{2}-\d{2}\.html$/;
 const FORBIDDEN   = ['final','neu','new','updated','copy','kopie','alt','old','test','fertig'];
-// bewusste Altlast: der Ordner wurde nicht umbenannt (siehe RENAME-MAP.md)
-const FOLDER_EXCEPTIONS = ['Customer Dashboard/selfdisclosure'];
+// keine Altlasten mehr — alle Ordner sind klein-kebab (siehe RENAME-MAP.md)
+const FOLDER_EXCEPTIONS = [];
 const warnings = [];
 
 function checkName(rel, label) {
@@ -100,7 +100,7 @@ function checkName(rel, label) {
   if (!NAME_VER.test(file) && !NAME_FROZEN.test(file)) {
     problems.push(`NAME OHNE VERSION  ${label} → ${file} (muss auf -v[N] enden)`);
   }
-  const hit = file.replace(/\.html$/, '').split('-').filter(seg => FORBIDDEN.includes(seg));
+  const hit = file.replace(/\.html$/, '').toLowerCase().split('-').filter(seg => FORBIDDEN.includes(seg));
   if (hit.length) problems.push(`VERBOTENES WORT IM NAMEN  ${label} → ${file} ("${hit.join('", "')}")`);
   if (/[A-Z ]/.test(dir) && !FOLDER_EXCEPTIONS.includes(dir)) {
     problems.push(`ORDNER MIT GROSSBUCHSTABE/LEERZEICHEN  ${label} → ${dir}/`);

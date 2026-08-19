@@ -174,6 +174,21 @@ daran erinnert. Änderungen gehören ins Original; danach frierst du neu ein.
 
 ---
 
+## Regel 5b — Dateien, die kein Prototyp sind
+
+Bilder, PDFs und Notizen bekommen **keine** `-v[N]`-Nummer, aber dieselbe Schreibweise:
+nur Kleinbuchstaben, Bindestriche, keine Umlaute. Zwei Ordner, je nach Zweck:
+
+| Ordner | Wofür | Beispiel |
+|---|---|---|
+| `assets/` | Dateien, die **im** Prototyp angezeigt werden | `doc-center/doc-center-skeleton/assets/gehaltsabrechnung-august.png` |
+| `design-refs/` | Vorlagen und Screenshots, die **als Input** dienen und nie ausgeliefert werden | `customer-dashboard/design-refs/progress-indicators.png` |
+
+Beide liegen im Bereichsordner neben dem Prototyp. `check-index.js` prüft nur
+`.html`-Dateien — diese Dateien tauchen also nicht im Manifest auf.
+
+---
+
 ## Regel 6 — Testberichte
 
 Der Bericht zu einem Usability-Test gehört in den Ordner `usability-reports/` und heißt:
@@ -207,6 +222,10 @@ Führe im Terminal aus:
 ```bash
 node check-index.js
 ```
+
+Das läuft auch **automatisch**: Claude warnt beim Anlegen, Git blockiert einen
+falschen Commit, und GitHub prüft beim Push. Details: `SETUP-GUARDRAILS.md`.
+**Einmal nach dem `git clone` nötig:** `git config core.hooksPath .githooks`
 
 Das Skript prüft automatisch:
 - verweist jeder Eintrag auf eine Datei, die es wirklich gibt?
