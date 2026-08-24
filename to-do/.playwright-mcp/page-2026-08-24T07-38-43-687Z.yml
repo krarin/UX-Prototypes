@@ -1,0 +1,45 @@
+- generic [ref=f1e2]:
+  - navigation [ref=f1e3]:
+    - link "Alle Teams" [ref=f1e4] [cursor=pointer]:
+      - /url: index.html
+    - generic [ref=f1e5]: ›
+    - link "Advisors" [ref=f1e6] [cursor=pointer]:
+      - /url: team.html?team=advisors
+    - generic [ref=f1e7]: ›
+    - generic [ref=f1e8]: Mein Tag
+  - generic [ref=f1e9]:
+    - paragraph [ref=f1e10]: Projekt
+    - heading "Mein Tag" [level=1] [ref=f1e11]
+    - paragraph [ref=f1e12]: "Hauptflow: Der Berater startet in seinen Tag: offene To-do's sichten, priorisieren, abhaken und neue anlegen."
+  - generic [ref=f1e13]:
+    - article [ref=f1e14]:
+      - generic [ref=f1e15]:
+        - generic [ref=f1e16]: Mein Tag V4
+        - generic [ref=f1e17]: Aktuell
+      - paragraph [ref=f1e18]: "Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)."
+      - generic [ref=f1e19]:
+        - link "Web Prototyp öffnen →" [ref=f1e20] [cursor=pointer]:
+          - /url: to-do/mein-tag-v4.html
+        - link "Mobile Prototyp öffnen →" [ref=f1e21] [cursor=pointer]:
+          - /url: to-do/mein-tag-mobile-v4.html
+    - article [ref=f1e22]:
+      - generic [ref=f1e23]:
+        - generic [ref=f1e24]: Mein Tag V3
+        - generic [ref=f1e25]: Abgelöst
+      - paragraph [ref=f1e26]: "Gegenüber V2: Status-Spalte entfallen — ihre Aussage steckt jetzt als Label (Überfällig / Heute / Morgen / Erledigt) direkt in der Spalte „Fälligkeit“. Neuer Filter „Fälligkeit“. Stand nach dem Usability-Test."
+      - link "Prototyp öffnen →" [ref=f1e27] [cursor=pointer]:
+        - /url: to-do/mein-tag-v3.html
+    - article [ref=f1e28]:
+      - generic [ref=f1e29]:
+        - generic [ref=f1e30]: Mein Tag V2
+        - generic [ref=f1e31]: Abgelöst
+      - paragraph [ref=f1e32]: "Gegenüber V1: Wochenkalender im Splitscreen, Panes einzeln ein-/ausklappbar, Wochennavigation. Arbeitslast-Karten mit Tacho-Grafik; „Heute fällig“ schließt jetzt Überfällige mit ein."
+      - link "Prototyp öffnen →" [ref=f1e33] [cursor=pointer]:
+        - /url: to-do/mein-tag-v2.html
+    - article [ref=f1e34]:
+      - generic [ref=f1e35]:
+        - generic [ref=f1e36]: Mein Tag V1
+        - generic [ref=f1e37]: Abgelöst
+      - paragraph [ref=f1e38]: "Erste Fassung: dichte To-do-Tabelle mit Status-Stripe, Sortierung, Filtern, Suche, Abhaken mit Undo, Anlege-Panel und simuliertem System-Auslöser."
+      - link "Prototyp öffnen →" [ref=f1e39] [cursor=pointer]:
+        - /url: to-do/mein-tag-v1.html
