@@ -134,7 +134,10 @@
     .toolbar .spacer { flex: 1; }
 
     /* Suche sitzt jetzt in der Titelzeile und nimmt die verbleibende Breite ein */
-    .search-wrap { position: relative; display: flex; align-items: center; flex: 1; min-width: 220px; }
+    /* Suche nimmt rund ein Drittel der Fensterbreite ein — der Rest der Zeile
+       gehört dem Risiko-Banner. */
+    .search-wrap { position: relative; display: flex; align-items: center;
+      flex: 0 1 33vw; max-width: 33vw; min-width: 220px; }
     .search-wrap .material-symbols-outlined {
       position: absolute; right: 12px; font-size: 20px; color: var(--color-neutral-dark-400); pointer-events: none;
     }
@@ -293,13 +296,14 @@
 
     /* ---------- TAGES-INDIKATOREN (Zeile: Risk-Banner + Arbeitslast heute/morgen) ---------- */
     .day-indicators { display: flex; align-items: stretch; gap: var(--space-s); flex-wrap: wrap;
-      margin-bottom: var(--space-s); flex-shrink: 0; }
+      flex-shrink: 0; }
+    body.show-load .day-indicators { margin-bottom: var(--space-s); }
 
     /* RISK BANNER — aktive Anträge ohne To-do */
     .risk { border: 1px solid var(--color-neutral-light-300, #E4E7EC); border-left: 4px solid var(--color-error-500);
       background: var(--color-neutral-light-000, #fff); border-radius: var(--radius-s);
       flex-shrink: 0; max-width: 100%; box-shadow: var(--shadow-xs); }
-    .risk-head { display: flex; align-items: center; gap: var(--space-s); padding: 10px 14px; height: 100%;
+    .risk-head { display: flex; align-items: center; gap: var(--space-s); padding: 5px 12px; height: 100%;
       cursor: pointer; user-select: none; }
     .risk-icon { color: var(--color-error-500); font-size: 22px; flex-shrink: 0; }
     .risk-text { font-size: 14px; color: var(--color-neutral-dark-900); }
@@ -940,7 +944,9 @@
     @media (max-width: 860px) {
       .content { padding: var(--space-m) var(--space-m) 0; }
       .search-input { width: 100%; }
-      .search-wrap { flex: 1; min-width: 160px; }
+      .search-wrap { flex: 1 1 100%; max-width: none; min-width: 160px; }
+      .page-titlebar { flex-wrap: wrap; }
+      .risk { flex: 1 1 100%; }
       .risk, .loadcard { flex: 1 1 100%; }
       .desktop-only { display: none !important; }
       .mobile-only { display: inline-flex; }
@@ -1038,22 +1044,23 @@
             <span class="search-kbd desktop-only">/</span>
             <span class="material-symbols-outlined">search</span>
           </div>
+
+          <!-- RISK: aktive Anträge ohne To-do — steht in derselben Zeile wie die
+               Suche, damit die Warnung ohne eigene Zeile im Blick bleibt -->
+          <div class="risk" id="riskBanner">
+            <div class="risk-head" id="riskHead">
+              <span class="material-symbols-outlined risk-icon">warning</span>
+              <span class="risk-text"><b id="riskCount">0</b> aktive Anträge haben keine To-do's</span>
+              <button class="risk-open" id="riskToggle" title="Anträge in neuem Tab öffnen" aria-label="Anträge in neuem Tab öffnen">
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- TAGES-INDIKATOREN: Anträge ohne To-do + Arbeitslast heute / morgen -->
       <div class="day-indicators">
-        <!-- RISK: aktive Anträge ohne To-do -->
-        <div class="risk" id="riskBanner">
-          <div class="risk-head" id="riskHead">
-            <span class="material-symbols-outlined risk-icon">warning</span>
-            <span class="risk-text"><b id="riskCount">0</b> aktive Anträge haben keine To-do's</span>
-            <button class="risk-open" id="riskToggle" title="Anträge in neuem Tab öffnen" aria-label="Anträge in neuem Tab öffnen">
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-
         <!-- Arbeitslast (rein informativ, nicht klickbar) -->
         <div class="loadcard" id="loadToday"></div>
         <div class="loadcard" id="loadTomorrow"></div>
