@@ -125,13 +125,9 @@
     .content { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: var(--space-s) var(--space-l) var(--space-l); overflow-y: auto; }
 
     .page-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); margin-bottom: var(--space-m); }
-    /* Titelzeile: Icon + Titel links, Suche füllt den Rest der Zeile (siehe Figma) */
+    /* Titelzeile: Titel links, Suche füllt den Rest der Zeile (siehe Figma) */
     .page-titlebar { display: flex; align-items: center; gap: var(--space-m); flex: 1; min-width: 0; }
     .page-title { font-size: 22px; font-weight: 500; margin: 0; color: var(--color-neutral-dark-900); white-space: nowrap; }
-    .page-title-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-      width: 32px; height: 32px; border-radius: var(--radius-s);
-      background: var(--color-neutral-dark-800); color: var(--color-neutral-light-000); }
-    .page-title-icon .material-symbols-outlined { font-size: 20px; }
 
     /* ---------- TOOLBAR ---------- */
     .toolbar { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; margin-bottom: var(--space-s); }
@@ -237,25 +233,33 @@
     .segmented button .material-symbols-outlined { font-size: 18px; }
     .segmented button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
     .segmented button + button { border-left: 1px solid var(--color-neutral-light-500); }
-    /* Schnellfilter: aktiver Zustand in Markenfarbe hervorheben */
-    #quickSeg button.active { background: var(--color-primary-500); color: #fff; }
-    #quickSeg button.active:hover { background: var(--color-primary-600); }
     .segmented button:focus-visible { outline: none; box-shadow: var(--focus-ring); z-index: 1; }
 
-    /* Schnellfilter-Segmente auf .btn-Höhe bringen: 8px Innenabstand + 18px
-       Inhaltszeile ergibt mit dem Rahmen des Containers exakt 36px wie .btn. */
-    .segmented--quick button { padding: 8px 14px; line-height: 18px; gap: 8px; }
+    /* Schnellfilter: Zähler-Chip trägt die Feedback-Farbe des Filters, der aktive
+       Filter bekommt einen Streifen darunter und den Chip in der Markenfarbe.
+       8px Innenabstand + 18px Inhaltszeile ergibt mit dem Rahmen des Containers
+       exakt 36px wie .btn. */
+    .segmented--quick button { position: relative; padding: 8px 16px; line-height: 18px; gap: 8px;
+      font-weight: 400; color: var(--color-neutral-dark-600); }
     .segmented--quick button:not(.active):hover { background: var(--color-neutral-light-100); }
-    /* farbiger Streifen links im Segment — im aktiven Zustand weiss, damit er
-       auf der Markenfarbe lesbar bleibt */
-    .qf-strip { width: 3px; height: 16px; border-radius: var(--radius-full);
-      background: var(--qf); flex-shrink: 0; margin-right: -2px; }
-    #quickSeg button.active .qf-strip { background: #fff; }
-    /* Zähler direkt vor dem Label */
-    .qf-count { font-size: 11px; font-weight: 700; line-height: 16px; min-width: 18px;
-      padding: 0 5px; border-radius: var(--radius-full); text-align: center;
-      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); }
-    #quickSeg button.active .qf-count { background: rgba(255,255,255,.24); color: #fff; }
+    /* Streifen unter dem aktiven Segment */
+    .segmented--quick button::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+      background: var(--color-primary-500); transform: scaleX(0);
+      transition: transform var(--transition-base);
+    }
+    #quickSeg button.active { background: transparent; color: var(--color-neutral-dark-900); }
+    #quickSeg button.active:hover { background: transparent; }
+    #quickSeg button.active::after { transform: scaleX(1); }
+    /* Zähler-Chip: helle Tönung der Fälligkeits-Farbe, Text in derselben Farbe.
+       „Alle" hat keine eigene Fälligkeits-Farbe und fällt auf Neutral zurück. */
+    .qf-count { --qf-base: var(--qf, var(--color-neutral-dark-400));
+      font-size: 12px; font-weight: 700; line-height: 18px; min-width: 22px;
+      padding: 0 6px; border-radius: var(--radius-full); text-align: center;
+      background: color-mix(in srgb, var(--qf-base) 14%, var(--color-neutral-light-000));
+      color: color-mix(in srgb, var(--qf-base) 72%, var(--color-neutral-dark-900));
+    }
+    #quickSeg button.active .qf-count { background: var(--color-primary-500); color: #fff; }
 
     .toggle-line { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-600); cursor: pointer; }
     .toggle-line input { accent-color: var(--color-primary-500); width: 16px; height: 16px; }
@@ -453,13 +457,26 @@
     }
     .pill .status-dot { width: 7px; height: 7px; }
 
-    /* Fälligkeits-Label — reine Farbfläche mit Text, ohne Punkt */
+    /* Fälligkeits-Farben — vorgegebene Werte aus dem Design, keine abgeleiteten
+       Fills. Die Label tragen durchgehend weißen Text. */
+    :root {
+      --due-fill-ueberfaellig: #FF5656;
+      --due-fill-heute:        #FF9F1A;
+      --due-fill-morgen:       #4B7BEC;
+      --due-fill-system:       #E693F4;
+      --due-fill-erledigt:     #20BF6B;
+    }
+    /* Fälligkeits-Label — volle Farbfläche, füllt den Slot ganz aus */
     .due-pill {
-      display: inline-flex; align-items: center; justify-content: center; padding: 3px 10px;
-      border-radius: var(--radius-full); font-size: 12px; font-weight: 500; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+      /* feste Breite: alle Fälligkeits-Label sind gleich groß, auch wenn der
+         Slot im Splitscreen oder in der Karten-Ansicht mitwächst */
+      width: 86px; flex: 0 0 86px; padding: 5px 8px;
+      border-radius: var(--radius-s); font-size: 12px; font-weight: 600; letter-spacing: .2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     /* fester Slot: hält die Datumsspalte bündig, auch wenn kein Label gesetzt ist */
-    .due-slot { flex: 0 0 86px; display: inline-flex; align-items: center; }
+    .due-slot { flex: 0 0 86px; display: inline-flex; align-items: stretch; }
     /* „Später" im Filtermenü: kein Label in der Zeile → neutraler Text */
     .due-opt-plain { font-size: 12px; color: var(--color-neutral-dark-400); }
     /* Geburtstagszeilen sind nicht editierbar und haben daher nicht den
@@ -508,8 +525,6 @@
     /* Art-Icon in der To-do-Zelle — ersetzt die frühere „Art"-Spalte.
        Neutral gehalten, damit es die Zeile nicht dominiert; nur der Geburtstag
        bleibt farbig, weil er die einzige Art mit eigener Aktion (Gruß senden) ist. */
-    .typ-icon { font-size: 18px; color: var(--color-neutral-dark-400); flex-shrink: 0; }
-    .typ-icon.is-bday { color: var(--color-primary-500); }
     .row-act:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
     /* ---------- INLINE EDIT (Titel + Fälligkeitsdatum direkt in der Zeile) ---------- */
@@ -530,27 +545,19 @@
     .due-line.inline-edit.editing { display: flex; width: 100%; white-space: normal; }
     .tcard-title .todo-title { font-weight: 500; }
 
-    /* ---------- SCHNELLAKTION „+1 Tag" (Fälligkeit um einen Tag verschieben) ---------- */
-    /* Pille steht immer direkt neben dem Datum – nie in einer zweiten Zeile */
+    /* ---------- FÄLLIGKEITS-ZELLE (Datum = Auslöser für das Schnellaktions-Menü) ---------- */
+    /* Label und Datum stehen immer in einer Zeile – nie umbrechen */
     .due-cell { display: inline-flex; align-items: center; gap: var(--space-s); flex-wrap: nowrap; }
-    /* Datumstext darf nicht schrumpfen – sonst läuft er unter die „+1 Tag"-Pille */
+    /* Datumstext darf nicht schrumpfen */
     .due-cell .due-line { flex: 0 0 auto; min-width: max-content; }
     /* während der Inline-Bearbeitung darf das Eingabefeld wieder wachsen */
     .due-cell .due-line.editing { flex: 1 1 auto; min-width: 0; }
-    .due-bump {
-      flex-shrink: 0; font-family: var(--font-family); font-size: 11px; font-weight: 500; line-height: 16px;
-      color: var(--color-neutral-dark-400); background: var(--color-neutral-light-100);
-      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-full);
-      padding: 1px 8px; cursor: pointer; opacity: .55;
-      transition: opacity var(--transition-fast), background var(--transition-fast),
-                  color var(--transition-fast), border-color var(--transition-fast);
-    }
-    tr:hover .due-bump, .tcard:hover .due-bump { opacity: 1; }
-    .due-bump:hover { opacity: 1; background: var(--color-primary-100);
-      border-color: var(--color-primary-400); color: var(--color-primary-600); }
-    .due-bump:focus-visible { opacity: 1; outline: none; box-shadow: var(--focus-ring); }
-    /* während der Inline-Bearbeitung weicht die Schnellaktion dem Eingabefeld */
-    .due-cell.editing .due-bump { display: none; }
+    /* Chevron zeigt an, dass hinter dem Datum ein Menü liegt – erst bei Hover/Fokus sichtbar */
+    .due-caret { font-size: 16px; margin-left: var(--space-xs); opacity: 0;
+      transition: opacity var(--transition-fast); }
+    tr:hover .due-caret, .tcard:hover .due-caret,
+    .due-line:focus-visible .due-caret, .due-line[aria-expanded="true"] .due-caret { opacity: .7; }
+    .due-line.editing .due-caret { display: none; }
     .todo-title.is-empty { color: var(--color-neutral-dark-300); font-style: italic; }
 
     /* ---------- INLINE ANLEGEN — „To do hinzufügen"-Zeile über der Tabelle ---------- */
@@ -696,6 +703,27 @@
       border-radius: var(--radius-s); box-shadow: var(--shadow-l); padding: var(--space-m) var(--space-l);
       min-width: 300px; display: none; font-size: 13px; }
     .popover.open { display: block; }
+
+    /* ---------- SCHNELLAKTIONS-MENÜ auf dem Fälligkeitsdatum (+1 Tag / +1 Woche) ---------- */
+    /* engere Polsterung als die Kontaktkarte, damit der Hover-Balken die volle Breite füllt */
+    .due-pop { min-width: 220px; padding: var(--space-xs); font-size: 13px; }
+    .due-pop-item {
+      display: flex; align-items: center; gap: var(--space-m); width: 100%;
+      justify-content: space-between; font-family: var(--font-family); font-size: 13px;
+      font-weight: 500; text-align: left; color: var(--color-neutral-dark-900);
+      background: none; border: 0; border-radius: var(--radius-s);
+      padding: var(--space-s) var(--space-m); cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .due-pop-item:hover, .due-pop-item:focus {
+      background: var(--color-primary-100); color: var(--color-primary-600); outline: none; }
+    .due-pop-item:focus-visible { box-shadow: var(--focus-ring); }
+    /* Zieldatum als leiser Hinweis rechts – beim Hover mitgefärbt */
+    .due-pop-hint { font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-400); }
+    .due-pop-item:hover .due-pop-hint, .due-pop-item:focus .due-pop-hint { color: inherit; }
+    .due-pop-item .material-symbols-outlined { font-size: 18px; }
+    .due-pop-sep { height: 1px; margin: var(--space-xs) 0;
+      background: var(--color-neutral-light-200); }
     .pv-person + .pv-person { margin-top: var(--space-m); padding-top: var(--space-m);
       border-top: 1px solid var(--color-neutral-light-200); }
     .pv-head { display: flex; align-items: baseline; gap: var(--space-s); margin-bottom: var(--space-s); }
@@ -727,14 +755,53 @@
 
     /* ===== WORKSPACE / PANES (calendar split) ===== */
     /* default (calendar closed): panes are transparent so the table flows/scrolls exactly as before */
-    .workspace { display: block; }
+    .workspace { display: block; position: relative; }
     .pane { display: contents; }
     .pane-body { display: contents; }
     .pane-head { display: none; }
     .cal-pane { display: none; }
 
-    /* calendar OPEN → two-column split */
-    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-m); align-items: stretch; flex: 1; min-height: 0; }
+    /* RAND-HANDLE — das EINE Control für den Kalender-Zustand (der Header-Button
+       öffnet nur, siehe #btnCal). Weißer Hintergrund + Rahmen, damit er sich klar von
+       Panes und Trennlinie abhebt statt darin unterzugehen. Vertikal mittig und kurz,
+       nicht über die volle Höhe, sonst wirkt er wie eine zweite Scrollbar. */
+    .cal-edge-handle { display: none; }
+    @media (min-width: 861px) {
+      .cal-edge-handle {
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 16px; height: 56px; padding: 0;
+        border: 1px solid var(--color-neutral-light-500);
+        background: var(--color-neutral-light-000);
+        color: var(--color-primary-500); cursor: pointer; z-index: var(--z-raised);
+        transition: width var(--transition-fast), background var(--transition-fast),
+                    border-color var(--transition-fast), color var(--transition-fast);
+      }
+      .cal-edge-handle:hover, .cal-edge-handle:focus-visible {
+        width: 24px; background: var(--color-primary-100); border-color: var(--color-primary-400);
+        color: var(--color-primary-600);
+      }
+      .cal-edge-handle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+      .cal-edge-handle .material-symbols-outlined { font-size: 16px; }
+      /* geschlossen: als Griff am rechten Rand fixiert — position:fixed statt absolute,
+         damit er unabhängig von der (evtl. langen, scrollenden) Tabelle immer mittig im
+         sichtbaren Viewport bleibt und nicht irgendwo außerhalb des Bildschirms landet */
+      .cal-edge-handle {
+        position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+        border-radius: var(--radius-s) 0 0 var(--radius-s); border-right: none;
+        box-shadow: var(--shadow-s);
+      }
+      /* geöffnet: löst sich aus der fixierten Ecke und sitzt als schlanke Pille direkt
+         auf der Trennlinie zwischen Tabelle und Kalender — kein eigenständiges 3. Element */
+      body.cal-open .cal-edge-handle {
+        position: static; transform: none; align-self: center;
+        border-radius: var(--radius-full); border-right: 1px solid var(--color-neutral-light-500);
+        box-shadow: none;
+      }
+    }
+
+    /* calendar OPEN → two-column split — schmaler gap, weil der Rand-Handle selbst
+       schon den Zwischenraum bildet (siehe .cal-edge-handle) */
+    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-xs); align-items: stretch; flex: 1; min-height: 0; }
     body.cal-open .pane {
       display: flex; flex-direction: column; min-height: 0; min-width: 0;
       background: var(--color-neutral-light-000);
@@ -760,26 +827,6 @@
     .pane-title { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); white-space: nowrap; }
     .pane-title .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
     .pane-head-tools { display: flex; align-items: center; gap: var(--space-s); margin-left: auto; }
-    .pane-toggle {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 26px; height: 26px; border: 1px solid var(--color-neutral-light-500);
-      border-radius: var(--radius-xs); background: var(--color-neutral-light-000);
-      color: var(--color-neutral-dark-400); cursor: pointer; flex-shrink: 0;
-    }
-    .pane-toggle:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
-    .pane-toggle .material-symbols-outlined { font-size: 18px; }
-    .pane-collapsed-label { display: none; }
-    body.cal-open .pane.collapsed .pane-collapsed-label { display: flex; flex-direction: column; align-items: center; gap: var(--space-s); }
-    .pane-collapsed-label .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
-    .pcl-word { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); letter-spacing: .3px; }
-
-    /* collapsed pane → slim rail */
-    body.cal-open .pane.collapsed { flex: 0 0 42px !important; max-width: 42px !important; min-width: 42px; }
-    body.cal-open .pane.collapsed .pane-body { display: none; }
-    body.cal-open .pane.collapsed .pane-head { flex-direction: column; height: 100%; justify-content: flex-start; gap: var(--space-m); padding: var(--space-m) 0; border-bottom: none; }
-    body.cal-open .pane.collapsed .pane-title, body.cal-open .pane.collapsed .pane-head-tools { display: none; }
-    /* collapsed rail order: arrow → icon → word */
-    body.cal-open .pane.collapsed .pane-toggle { order: -1; }
 
     /* reduced to-do columns when both panes share the width
        Spalten: 1 Haken · 2 To do · 3 Fälligkeit · 4 Antragsteller · 5 Berater */
@@ -798,9 +845,12 @@
       .table-wrap.cols-slim .due-slot { flex: 0 0 auto; }
     }
 
-    /* toolbar toggle active state */
-    .btn-toggle.active { background: var(--color-primary-100); border-color: var(--color-primary-400); color: var(--color-primary-600); }
-    .btn-toggle.active .material-symbols-outlined { color: var(--color-primary-600); }
+    /* Der Header-Button ist nur sichtbar, solange der Kalender zu ist — offen übernimmt
+       der Rand-Handle das Umschalten, nie beide gleichzeitig (siehe .cal-edge-handle). */
+    body.cal-open #btnCal { display: none; }
+    /* „+ Termin“ spiegelt das: erscheint an derselben Stelle, sobald der Kalender offen ist */
+    #btnAddTermin { display: none; }
+    body.cal-open #btnAddTermin { display: inline-flex; }
 
     /* ===== CALENDAR (Tag / 3 Tage / Woche) ===== */
     .cal-nav { display: inline-flex; align-items: center; gap: 2px; }
@@ -810,7 +860,6 @@
     .cal-today-btn { padding: 3px 8px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; font-size: 12px; color: var(--color-neutral-dark-700); cursor: pointer; }
     .cal-today-btn:hover { background: var(--color-neutral-light-200); }
     .cal-range-label { font-size: 12px; color: var(--color-neutral-dark-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    body.cal-open .cal-pane:not(.collapsed) .pane-toggle { margin-left: var(--space-s); }
 
     /* Zeitraum-Schnellauswahl */
     .cal-toolbar {
@@ -880,8 +929,8 @@
       .tcard-top .rcheck { margin-top: 1px; }
       .tcard-title { flex: 1; font-weight: 500; }
       .tcard-meta { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; }
-      /* ohne Hover auf Touch: Schnellaktion dauerhaft sichtbar und mit Touch-Zielgröße */
-      .tcard .due-bump { opacity: 1; padding: 3px 10px; }
+      /* ohne Hover auf Touch: Menü-Hinweis dauerhaft sichtbar */
+      .tcard .due-caret { opacity: .7; }
       /* auf der Karte gibt es keine Spalte zum Ausrichten → Slot schrumpft auf Inhalt */
       .tcard .due-slot { flex: 0 0 auto; }
       .tcard .due-slot:empty { display: none; }
@@ -948,7 +997,6 @@
     <div class="content">
       <div class="page-head">
         <div class="page-titlebar">
-          <span class="page-title-icon"><span class="material-symbols-outlined">assignment_turned_in</span></span>
           <h1 class="page-title">To do's</h1>
 
           <!-- Suche: filtert die To-do-Tabelle (siehe matchesSearch) -->
@@ -984,24 +1032,14 @@
 
       <!-- TOOLBAR -->
       <div class="toolbar">
-        <!-- Schnellfilter: farbiger Streifen = Fälligkeits-Zustand (wie die Status-Punkte
-             in der Tabelle), Zähler = Anzahl der Treffer hinter diesem Filter. -->
+        <!-- Schnellfilter: Zähler-Chip = Anzahl der Treffer, eingefärbt im
+             Fälligkeits-Zustand (wie die Status-Punkte in der Tabelle). -->
         <div class="segmented segmented--quick" id="quickSeg">
-          <button data-quick="ueberfaellig"><span class="qf-strip" style="--qf:var(--color-error-500)"></span><span class="qf-count">0</span>Überfällig</button>
-          <button data-quick="heute"><span class="qf-strip" style="--qf:var(--color-warning-high)"></span><span class="qf-count">0</span>Heute fällig</button>
-          <button data-quick="morgen"><span class="qf-strip" style="--qf:var(--color-info)"></span><span class="qf-count">0</span>Morgen fällig</button>
           <button data-quick="alle" class="active"><span class="qf-count">0</span>Alle</button>
-          <button data-quick="erledigt"><span class="qf-strip" style="--qf:var(--color-success)"></span><span class="qf-count">0</span>Erledigte</button>
-        </div>
-
-        <div style="position:relative">
-          <button class="btn btn-secondary" id="btnDue" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">event</span> Fälligkeit <span class="btn-badge" id="dueCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
-          <div class="menu berater-menu" id="menuDue"></div>
-        </div>
-
-        <div style="position:relative">
-          <button class="btn btn-secondary" id="btnTyp" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">sell</span> Art <span class="btn-badge" id="typCount" style="display:none"></span> <span class="material-symbols-outlined">expand_more</span></button>
-          <div class="menu berater-menu" id="menuTyp"></div>
+          <button data-quick="ueberfaellig" style="--qf:var(--due-fill-ueberfaellig)"><span class="qf-count">0</span>Überfällig</button>
+          <button data-quick="heute" style="--qf:var(--due-fill-heute)"><span class="qf-count">0</span>Heute fällig</button>
+          <button data-quick="morgen" style="--qf:var(--due-fill-morgen)"><span class="qf-count">0</span>Morgen fällig</button>
+          <button data-quick="erledigt" style="--qf:var(--color-success)"><span class="qf-count">0</span>Erledigte</button>
         </div>
 
         <div style="position:relative">
@@ -1011,7 +1049,10 @@
 
         <div class="spacer"></div>
 
-        <button class="btn btn-secondary btn-toggle desktop-only" id="btnCal" aria-pressed="false" title="Kalender ein-/ausblenden"><span class="material-symbols-outlined">calendar_month</span> Kalender</button>
+        <!-- Erstzugang zum Kalender. Öffnet nur — das Wiederholungs-Toggle ist der
+             Rand-Handle (#calEdgeHandle), damit es nie zwei Controls für dieselbe Aktion gibt. -->
+        <button class="btn btn-secondary desktop-only" id="btnCal" title="Kalender anzeigen"><span class="material-symbols-outlined">calendar_month</span> Kalender anzeigen</button>
+        <button class="btn btn-secondary desktop-only" id="btnAddTermin" title="Termin anlegen"><span class="material-symbols-outlined">add</span> Termin</button>
 
         <div class="segmented desktop-only" id="densitySeg" title="Zeilendichte">
           <button data-density="comfortable" class="active"><span class="material-symbols-outlined">density_medium</span></button>
@@ -1028,12 +1069,6 @@
 
       <!-- TO-DO PANE -->
       <section class="pane todo-pane" id="todoPane">
-        <div class="pane-head">
-          <span class="pane-title"><span class="material-symbols-outlined">checklist</span> To-dos</span>
-          <span class="pane-collapsed-label"><span class="material-symbols-outlined">checklist</span><span class="pcl-word">To-dos</span></span>
-          <div class="pane-head-tools"></div>
-          <button class="pane-toggle" id="todoToggle" title="To-dos ein-/ausklappen"><span class="material-symbols-outlined">chevron_left</span></button>
-        </div>
         <div class="pane-body">
 
       <!-- TABLE (desktop) -->
@@ -1103,15 +1138,21 @@
         </div><!-- /pane-body -->
       </section><!-- /todo-pane -->
 
+      <!-- RAND-HANDLE: das eine Toggle für den Kalender, direkt an der Panel-Kante.
+           Steht im DOM zwischen den Panes und ist im offenen Zustand die Trennlinie. -->
+      <button class="cal-edge-handle desktop-only" id="calEdgeHandle"
+              title="Kalender anzeigen" aria-label="Kalender anzeigen"
+              aria-expanded="false" aria-controls="calPane">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
       <!-- CALENDAR PANE -->
       <section class="pane cal-pane" id="calPane">
         <div class="pane-head">
           <span class="pane-title"><span class="material-symbols-outlined">calendar_month</span> Kalender</span>
-          <span class="pane-collapsed-label"><span class="material-symbols-outlined">calendar_month</span><span class="pcl-word">Kalender</span></span>
           <div class="pane-head-tools">
             <span class="cal-range-label" id="calRangeLabel"></span>
           </div>
-          <button class="pane-toggle" id="calToggle" title="Kalender ein-/ausklappen"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
         <div class="pane-body">
           <div class="cal-toolbar">
@@ -1137,6 +1178,9 @@
 
 <!-- person info popover -->
 <div class="popover" id="personPop"></div>
+
+<!-- Schnellaktions-Menü auf dem Fälligkeitsdatum -->
+<div class="popover due-pop" id="duePop" role="menu" aria-label="Fälligkeit ändern"></div>
 
 <!-- SIDE PANEL -->
 <div class="scrim" id="scrim"></div>
@@ -1386,9 +1430,9 @@ todos.forEach((t,i)=>{
 
 /* ---------- Status-Modell (abgeleitet) ---------- */
 const STATUS = {
-  ueberfaellig:{ label:'Überfällig',          color:'var(--color-error-600)',      bg:'var(--color-error-100)',        dot:'var(--color-error-500)',   rank:0 },
-  heute:       { label:'Heute fällig',        color:'var(--color-warning-high)',   bg:'var(--color-warning-high-light)',dot:'var(--color-warning-high)', rank:1 },
-  system:      { label:'Von Kunde ausgelöst', color:'var(--color-info)',           bg:'var(--color-info-light)',       dot:'var(--color-info)',        rank:2 },
+  ueberfaellig:{ label:'Überfällig',          color:'var(--color-error-600)',      bg:'var(--color-error-100)',        dot:'var(--due-fill-ueberfaellig)', rank:0 },
+  heute:       { label:'Heute fällig',        color:'var(--color-warning-high)',   bg:'var(--color-warning-high-light)',dot:'var(--due-fill-heute)',    rank:1 },
+  system:      { label:'Von Kunde ausgelöst', color:'var(--color-info)',           bg:'var(--color-info-light)',       dot:'var(--due-fill-system)',   rank:2 },
   zukuenftig:  { label:'Zukünftig',           color:'var(--color-neutral-dark-400)',bg:'var(--color-neutral-light-200)',dot:'var(--color-neutral-dark-300)',rank:3 },
   erledigt:    { label:'Erledigt',            color:'var(--color-success)',        bg:'var(--color-success-light)',    dot:'var(--color-success)',     rank:4 },
 };
@@ -1404,20 +1448,23 @@ function statusOf(t){
 }
 
 /* ---------- Fälligkeits-Label (Pill in der Fälligkeits-Spalte) ----------
-   Bewusst getrennt von statusOf(): das Label beschreibt ausschließlich die
-   Fälligkeit, damit „von Kunde ausgelöst" die Datumsaussage nicht überschreibt
-   (das bleibt das „Neu"-Badge am Titel). „Später" trägt absichtlich kein Label —
-   markiert wird nur, was Aufmerksamkeit braucht.                            */
+   Das Label markiert, was Aufmerksamkeit braucht: die Fälligkeit — und, sobald
+   ein To-do vom Kunden ausgelöst und noch nicht quittiert ist, dessen Herkunft.
+   Das Datum bleibt daneben in der Zeile stehen, geht also nicht verloren.
+   „Später" trägt absichtlich kein Label.                                    */
 const DUE = {
-  ueberfaellig: { label:'Überfällig', color:'var(--color-error-600)',        bg:'var(--color-error-100)',          rank:0 },
-  heute:        { label:'Heute',      color:'var(--color-warning-high)',     bg:'var(--color-warning-high-light)', rank:1 },
-  morgen:       { label:'Morgen',     color:'var(--color-info)',             bg:'var(--color-info-light)',         rank:2 },
-  spaeter:      { label:'Später',     color:'var(--color-neutral-dark-400)', bg:'var(--color-neutral-light-200)',  rank:3, noPill:true },
-  erledigt:     { label:'Erledigt',   color:'var(--color-success)',          bg:'var(--color-success-light)',      rank:4 },
+  ueberfaellig: { label:'Überfällig', color:'var(--color-neutral-light-000)', bg:'var(--due-fill-ueberfaellig)', rank:0 },
+  heute:        { label:'Heute',      color:'var(--color-neutral-light-000)', bg:'var(--due-fill-heute)',        rank:1 },
+  system:       { label:'Von Kunde', color:'var(--color-neutral-light-000)', bg:'var(--due-fill-system)',       rank:2 },
+  morgen:       { label:'Morgen',     color:'var(--color-neutral-light-000)', bg:'var(--due-fill-morgen)',       rank:3 },
+  spaeter:      { label:'Später',     color:'var(--color-neutral-dark-400)',  bg:'var(--color-neutral-light-200)', rank:4, noPill:true },
+  erledigt:     { label:'Erledigt',   color:'var(--color-neutral-light-000)', bg:'var(--due-fill-erledigt)',     rank:5 },
 };
-const DUE_KEYS = ['ueberfaellig','heute','morgen','spaeter','erledigt'];
 function dueState(t){
   if(t.erledigt) return 'erledigt';
+  // vom Kunden ausgelöst geht dem Datums-Label vor, solange es nicht quittiert
+  // ist — das Datum selbst bleibt in der Zeile daneben sichtbar
+  if(t.quelle === 'system' && !t.quittiert) return 'system';
   const diff = Math.round((parseDate(t.faelligkeit) - TODAY) / 86400000);
   if(diff < 0)   return 'ueberfaellig';
   if(diff === 0) return 'heute';
@@ -1448,8 +1495,6 @@ function fmtRel(t){
 const state = {
   search: '', quick: 'alle',
   beraterFilter: new Set(),      // berater names (leer = alle)
-  typFilter: new Set(),          // typ keys (leer = alle Arten)
-  dueFilter: new Set(),          // Fälligkeits-Label (leer = alle)
   sort: { key:'faelligkeit', dir:'asc' },      // eine Spalte, auf- oder absteigend
   page: 0, perPage: 25,
 };
@@ -1485,19 +1530,13 @@ function inQuickBucket(t, quick){
   if(quick === 'morgen') return due === dayOffset(1).getTime();
   return true;                             // 'alle' → alle offenen
 }
-// Filter neben dem Schnellfilter (Berater / Art / Suche) — gelten immer.
+// Filter neben dem Schnellfilter (Berater / Suche) — gelten immer.
 function matchesSideFilters(t){
   if(state.beraterFilter.size && !state.beraterFilter.has(t.berater)) return false;
-  if(state.typFilter.size && !state.typFilter.has(t.typ || 'aufgabe')) return false;
   return matchesSearch(t);
 }
 function passesFilter(t){
-  // Der Fälligkeits-Filter ist maßgeblich, sobald er gesetzt ist — nur so lässt
-  // sich „Erledigt" gezielt einblenden, ohne den Schnellfilter zu wechseln.
-  if(state.dueFilter.size){
-    if(!state.dueFilter.has(dueState(t))) return false;
-  }
-  else if(!inQuickBucket(t, state.quick)) return false;
+  if(!inQuickBucket(t, state.quick)) return false;
   return matchesSideFilters(t);
 }
 function visibleTodos(){
@@ -1586,9 +1625,9 @@ function dueHtml(t){
   if(isBday(t)){
     return `<span class="due-cell">${slot}<span class="due-line"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}</span></span>`;
   }
-  const next = shiftISO(t.faelligkeit, 1);
-  return `<span class="due-cell">${slot}<span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}</span>`
-    + `<button class="due-bump" title="Fälligkeit um 1 Tag verschieben – auf ${fmtAbs(next)}" aria-label="Fälligkeit um einen Tag verschieben, auf ${fmtAbs(next)}">+1 Tag</button></span>`;
+  // Klick auf das Datum öffnet das Schnellaktions-Menü (+1 Tag / +1 Woche / Datum wählen)
+  return `<span class="due-cell">${slot}<span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken für Schnellaktionen und Datumsauswahl" aria-haspopup="menu"><span class="material-symbols-outlined">schedule</span>${fmtRel(t)}`
+    + `<span class="due-caret material-symbols-outlined" aria-hidden="true">expand_more</span></span></span>`;
 }
 // Verlauf-Button trägt einen Punkt, sobald in dieser Sitzung etwas geändert wurde
 const HIST_ACTION = (t) => {
@@ -1605,19 +1644,13 @@ function mailActions(t){
   <button class="row-act mail" data-act="mail" title="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button></span>`;
 }
 function actionsFor(t){ return isBday(t) ? mailActions(t) : rowActions(t); }
-// Art als Icon vor dem Titel — dieselbe Ikonografie wie im „Art"-Filtermenü,
-// damit Filter und Zeile visuell zusammenpassen. Label bleibt als Tooltip lesbar.
-function typIcon(t){
-  const m = typMeta(t);
-  return `<span class="material-symbols-outlined typ-icon${isBday(t)?' is-bday':''}" role="img" title="Art: ${esc(m.label)}" aria-label="Art: ${esc(m.label)}">${m.icon}</span>`;
-}
 function titleHtml(t){
   if(isBday(t)){
-    return `<div class="todo-main">${typIcon(t)}<span class="todo-title">${esc(t.titel)}</span>${mailActions(t)}</div>`;
+    return `<div class="todo-main"><span class="todo-title">${esc(t.titel)}</span>${mailActions(t)}</div>`;
   }
   const isNew = t.quelle==='system' && !t.quittiert;
   const badge = isNew ? '<span class="badge-new">Neu</span>' : '';
-  return `<div class="todo-main">${typIcon(t)}${titleSpan(t)}${badge}${rowActions(t)}</div>`;
+  return `<div class="todo-main">${titleSpan(t)}${badge}${rowActions(t)}</div>`;
 }
 // Titel darf leer sein (Inline-Anlegen ohne Pflichtfelder) → Platzhalter anzeigen
 function titleSpan(t){
@@ -1627,7 +1660,7 @@ function titleSpan(t){
 function todoLabel(t){ return t.titel || 'Ohne Titel'; }
 function cardTitleHtml(t){
   const inner = isBday(t) ? `<span class="todo-title">${esc(t.titel)}</span>` : titleSpan(t);
-  return `${typIcon(t)} ${inner}${t.quelle==='system'&&!t.quittiert?' <span class="badge-new">Neu</span>':''}`;
+  return `${inner}${t.quelle==='system'&&!t.quittiert?' <span class="badge-new">Neu</span>':''}`;
 }
 
 let currentRows = [];   // gerenderte (gefilterte+sortierte+paginierte) Liste
@@ -1674,7 +1707,7 @@ function render(){
 
   // empty states
   const emptyEl = $('#emptyState');
-  const isFiltered = state.search || state.beraterFilter.size || state.typFilter.size || state.dueFilter.size;
+  const isFiltered = state.search || state.beraterFilter.size;
   if(total === 0 && !addOpen){   // bei offener Anlege-Zeile bleibt die Tabelle sichtbar
     $('#todoTable').style.display = 'none';
     emptyEl.style.display = 'flex';
@@ -1834,14 +1867,6 @@ function renderChips(){
     const label = state.beraterFilter.size===1 ? [...state.beraterFilter][0] : `${state.beraterFilter.size} Berater`;
     chips.push(`<span class="fchip">Berater: ${esc(label)} <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>`);
   }
-  if(state.typFilter.size){
-    const label = state.typFilter.size===1 ? typLabel([...state.typFilter][0]) : `${state.typFilter.size} Arten`;
-    chips.push(`<span class="fchip">Art: ${esc(label)} <button data-clear="typ"><span class="material-symbols-outlined">close</span></button></span>`);
-  }
-  if(state.dueFilter.size){
-    const label = state.dueFilter.size===1 ? DUE[[...state.dueFilter][0]].label : `${state.dueFilter.size} Fälligkeiten`;
-    chips.push(`<span class="fchip">Fälligkeit: ${esc(label)} <button data-clear="due"><span class="material-symbols-outlined">close</span></button></span>`);
-  }
   if(state.search){
     chips.push(`<span class="fchip">Suche: „${esc(state.search)}" <button data-clear="search"><span class="material-symbols-outlined">close</span></button></span>`);
   }
@@ -1852,19 +1877,13 @@ $('#chipRow').addEventListener('click', e=>{
   const btn = e.target.closest('button[data-clear]'); if(!btn) return;
   const what = btn.dataset.clear;
   if(what==='berater'){ state.beraterFilter.clear(); updateBeraterButton(); }
-  else if(what==='typ'){ state.typFilter.clear(); updateTypButton(); }
-  else if(what==='due'){ state.dueFilter.clear(); updateDueButton(); }
   else if(what==='search'){ state.search=''; $('#search').value=''; }
   state.page=0; render();
 });
 function resetFilters(){
   state.search=''; $('#search').value='';
   state.beraterFilter.clear();
-  state.typFilter.clear();
-  state.dueFilter.clear();
   updateBeraterButton();
-  updateTypButton();
-  updateDueButton();
   render();
 }
 window.resetFilters = resetFilters;
@@ -1918,8 +1937,6 @@ function toggleMenu(menu, anchor){
 }
 function closeAllMenus(){
   document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open'));
-  $('#btnTyp')?.setAttribute('aria-expanded','false');
-  $('#btnDue')?.setAttribute('aria-expanded','false');
 }
 
 /* ---------- Berater-Filter (Modal wie Screenshot) ---------- */
@@ -2004,161 +2021,6 @@ $('#btnBerater').addEventListener('click', e=>{
   toggleMenu(m, $('#btnBerater'));
 });
 
-/* ======================================================================
-   ART-FILTER — Mehrfachauswahl über die To-do-Typen
-   Gleiche Mechanik wie der Berater-Filter: die Auswahl im offenen Menü ist
-   „pending" und wird erst mit „Filter anwenden" übernommen.
-   ====================================================================== */
-let typPending = new Set();
-const setEq = (a, b) => a.size === b.size && [...a].every(x => b.has(x));
-// offene To-dos je Art — wird bei jedem Öffnen neu gezählt, damit die Zahlen mitlaufen
-function typCounts(){
-  return todos.reduce((acc,t)=>{ if(!t.erledigt){ const k = t.typ || 'aufgabe'; acc[k] = (acc[k]||0)+1; } return acc; }, {});
-}
-function typMarks(){
-  return {
-    all:  typPending.size === 0,
-    own:  setEq(typPending, new Set(TYP_BERATER)),
-    sys:  setEq(typPending, new Set(TYP_SYSTEM)),
-  };
-}
-function typGroupHtml(keys, counts){
-  return keys.map(k=>{
-    const m = TODO_TYP[k], n = counts[k] || 0;
-    return `<label class="bmenu-check" data-typ="${k}">
-      <input type="checkbox" ${typPending.has(k)?'checked':''} />
-      <span class="typ-opt"><span class="material-symbols-outlined">${m.icon}</span>${esc(m.label)}<span class="typ-opt-count">${n}</span></span>
-    </label>`;
-  }).join('');
-}
-function buildTypMenu(){
-  const m = $('#menuTyp');
-  const counts = typCounts();
-  const { all, own, sys } = typMarks();
-  m.innerHTML = `
-    <button class="bmenu-row strong ${all?'active':''}" id="tAll">Alle Arten <span class="material-symbols-outlined check">check</span></button>
-    <button class="bmenu-row ${own?'active':''}" id="tOwn">Nur selbst angelegte <span class="material-symbols-outlined check">check</span></button>
-    <button class="bmenu-row ${sys?'active':''}" id="tSys">Nur systemgenerierte <span class="material-symbols-outlined check">check</span></button>
-    <div class="bmenu-list" id="typListEl">
-      <div class="ssel-group">Selbst angelegt</div>
-      ${typGroupHtml(TYP_BERATER, counts)}
-      <div class="ssel-group">Vom System</div>
-      ${typGroupHtml(TYP_SYSTEM, counts)}
-    </div>
-    <div class="bmenu-foot">
-      <button class="btn btn-primary" id="tApply">Filter anwenden (${typPending.size})</button>
-      <button class="bmenu-clear" id="tClear">Alle löschen</button>
-    </div>`;
-
-  $('#tAll').addEventListener('click', ()=>{ typPending = new Set();              buildTypMenu(); });
-  $('#tOwn').addEventListener('click', ()=>{ typPending = new Set(TYP_BERATER);   buildTypMenu(); });
-  $('#tSys').addEventListener('click', ()=>{ typPending = new Set(TYP_SYSTEM);    buildTypMenu(); });
-
-  m.querySelectorAll('#typListEl .bmenu-check input').forEach(cb=>{
-    cb.addEventListener('change', ()=>{
-      const k = cb.closest('.bmenu-check').dataset.typ;
-      cb.checked ? typPending.add(k) : typPending.delete(k);
-      updateTypMarks();
-    });
-  });
-
-  $('#tApply').addEventListener('click', ()=>{
-    state.typFilter = new Set(typPending); state.page = 0;
-    updateTypButton(); closeAllMenus(); render();
-  });
-  $('#tClear').addEventListener('click', ()=>{ typPending = new Set(); buildTypMenu(); });
-}
-function updateTypMarks(){
-  const btn = $('#tApply'); if(btn) btn.textContent = `Filter anwenden (${typPending.size})`;
-  const { all, own, sys } = typMarks();
-  $('#tAll')?.classList.toggle('active', all);
-  $('#tOwn')?.classList.toggle('active', own);
-  $('#tSys')?.classList.toggle('active', sys);
-}
-function updateTypButton(){
-  const n = state.typFilter.size, badge = $('#typCount');
-  if(badge){ badge.textContent = n; badge.style.display = n ? '' : 'none'; }
-  $('#btnTyp').classList.toggle('filter-active', n>0);
-}
-$('#btnTyp').addEventListener('click', e=>{
-  e.stopPropagation();
-  const m = $('#menuTyp');
-  const willOpen = !m.classList.contains('open');
-  if(willOpen){ typPending = new Set(state.typFilter); buildTypMenu(); }
-  toggleMenu(m, $('#btnTyp'));
-});
-
-/* ======================================================================
-   FÄLLIGKEITS-FILTER — filtert genau nach den Labels, die in der
-   Fälligkeits-Spalte stehen. Aufbau bewusst identisch zum Art-Filter.
-   ====================================================================== */
-let duePending = new Set();
-// gezählt wird über alle To-dos, damit „Erledigt" eine echte Zahl zeigt
-function dueCounts(){
-  return todos.reduce((acc,t)=>{ const k = dueState(t); acc[k] = (acc[k]||0)+1; return acc; }, {});
-}
-function dueOptHtml(k, counts){
-  const d = DUE[k], n = counts[k] || 0;
-  // „Später" hat kein Label in der Zeile → im Menü als neutraler Text
-  const face = d.noPill
-    ? `<span class="due-opt-plain">${esc(d.label)}</span>`
-    : `<span class="due-pill" style="color:${d.color};background:${d.bg}">${esc(d.label)}</span>`;
-  return `<label class="bmenu-check" data-due="${k}">
-    <input type="checkbox" ${duePending.has(k)?'checked':''} />
-    <span class="typ-opt">${face}<span class="typ-opt-count">${n}</span></span>
-  </label>`;
-}
-function buildDueMenu(){
-  const m = $('#menuDue');
-  const counts = dueCounts();
-  const offen = new Set(['ueberfaellig','heute','morgen','spaeter']);
-  m.innerHTML = `
-    <button class="bmenu-row strong ${duePending.size===0?'active':''}" id="dAll">Alle Fälligkeiten <span class="material-symbols-outlined check">check</span></button>
-    <button class="bmenu-row ${setEq(duePending, offen)?'active':''}" id="dOpen">Nur offene <span class="material-symbols-outlined check">check</span></button>
-    <div class="bmenu-list" id="dueListEl">
-      ${DUE_KEYS.map(k => dueOptHtml(k, counts)).join('')}
-    </div>
-    <div class="bmenu-foot">
-      <button class="btn btn-primary" id="dApply">Filter anwenden (${duePending.size})</button>
-      <button class="bmenu-clear" id="dClear">Alle löschen</button>
-    </div>`;
-
-  $('#dAll').addEventListener('click', ()=>{ duePending = new Set();    buildDueMenu(); });
-  $('#dOpen').addEventListener('click', ()=>{ duePending = new Set(offen); buildDueMenu(); });
-
-  m.querySelectorAll('#dueListEl .bmenu-check input').forEach(cb=>{
-    cb.addEventListener('change', ()=>{
-      const k = cb.closest('.bmenu-check').dataset.due;
-      cb.checked ? duePending.add(k) : duePending.delete(k);
-      updateDueMarks();
-    });
-  });
-
-  $('#dApply').addEventListener('click', ()=>{
-    state.dueFilter = new Set(duePending); state.page = 0;
-    updateDueButton(); closeAllMenus(); render();
-  });
-  $('#dClear').addEventListener('click', ()=>{ duePending = new Set(); buildDueMenu(); });
-}
-function updateDueMarks(){
-  const btn = $('#dApply'); if(btn) btn.textContent = `Filter anwenden (${duePending.size})`;
-  const offen = new Set(['ueberfaellig','heute','morgen','spaeter']);
-  $('#dAll')?.classList.toggle('active', duePending.size === 0);
-  $('#dOpen')?.classList.toggle('active', setEq(duePending, offen));
-}
-function updateDueButton(){
-  const n = state.dueFilter.size, badge = $('#dueCount');
-  if(badge){ badge.textContent = n; badge.style.display = n ? '' : 'none'; }
-  $('#btnDue').classList.toggle('filter-active', n>0);
-}
-$('#btnDue').addEventListener('click', e=>{
-  e.stopPropagation();
-  const m = $('#menuDue');
-  const willOpen = !m.classList.contains('open');
-  if(willOpen){ duePending = new Set(state.dueFilter); buildDueMenu(); }
-  toggleMenu(m, $('#btnDue'));
-});
-
 /* ---------- Row interactions (event delegation) ---------- */
 function findTodo(id){ return todos.find(t=>t.id===id); }
 function rowIdFrom(el){ const r = el.closest('[data-id]'); return r ? r.dataset.id : null; }
@@ -2174,16 +2036,16 @@ function handleRoot(e){
     else if(act.dataset.act==='mail') sendBirthday(t);
     else if(act.dataset.act==='history') openHist(t);
     return; }
-  // Schnellaktion „+1 Tag" in der Fälligkeitsspalte
-  const bump = e.target.closest('.due-bump');
-  if(bump){ e.stopPropagation(); const t = findTodo(id); if(t) bumpDue(t, 1); return; }
-  // Inline-Bearbeitung (Titel / Fälligkeitsdatum)
+  // Inline-Bearbeitung (Titel) bzw. Schnellaktions-Menü (Fälligkeitsdatum)
   const ie = e.target.closest('.inline-edit');
   if(ie){
     e.stopPropagation();
     // Zeile kann durch ein vorheriges blur-Commit neu gerendert worden sein → frisches Element holen
     const el = ie.isConnected ? ie : document.querySelector(`[data-id="${id}"] .inline-edit[data-field="${ie.dataset.field}"]`);
-    if(el) startInline(el, id);
+    if(!el) return;
+    // Das Datum öffnet erst das Menü (+1 Tag / +1 Woche / Datum wählen), nicht direkt das Eingabefeld
+    if(el.dataset.field === 'faelligkeit') openDuePop(el, id);
+    else startInline(el, id);
     return;
   }
   // person info
@@ -2202,7 +2064,9 @@ function handleRootKey(e){
   const ie = e.target.closest && e.target.closest('.inline-edit');
   if(!ie || ie.classList.contains('editing')) return;
   e.preventDefault(); e.stopPropagation();
-  startInline(ie, rowIdFrom(ie));
+  const id = rowIdFrom(ie);
+  if(ie.dataset.field === 'faelligkeit') openDuePop(ie, id);
+  else startInline(ie, id);
 }
 tbody.addEventListener('keydown', handleRootKey);
 cardList.addEventListener('keydown', handleRootKey);
@@ -2213,6 +2077,8 @@ function handleInlineMouse(e){
   if(e.button !== 0) return;
   const ie = e.target.closest && e.target.closest('.inline-edit');
   if(!ie || ie.classList.contains('editing')) return;
+  // Fälligkeitsdatum nicht auf mousedown öffnen – dort übernimmt das Schnellaktions-Menü im click
+  if(ie.dataset.field === 'faelligkeit') return;
   e.preventDefault();
   const id = rowIdFrom(ie), field = ie.dataset.field;
   if(inlineActive){
@@ -2228,7 +2094,7 @@ cardList.addEventListener('mousedown', handleInlineMouse);
 
 /* ---------- Inline-Editor (Titel / Fälligkeitsdatum) ---------- */
 let inlineActive = null;
-function startInline(el, id){
+function startInline(el, id, openPicker){
   if(inlineActive) return;                       // nur ein Feld gleichzeitig
   const t = findTodo(id); if(!t) return;
   const field = el.dataset.field;
@@ -2250,6 +2116,8 @@ function startInline(el, id){
   inlineActive = { id, field };
   input.focus();
   if(!isDate){ input.select(); input.scrollLeft = 0; }   // Anfang des Titels bleibt sichtbar
+  // Aus „Datum wählen …" heraus soll der Kalender direkt aufgehen
+  if(isDate && openPicker){ try { input.showPicker(); } catch(err) { /* nicht überall unterstützt */ } }
 
   let closed = false;
   const finish = (commit) => {
@@ -2282,7 +2150,13 @@ function acknowledge(t){
   if(t.quelle==='system' && !t.quittiert){ t.quittiert = true; addHist(t, 'gesehen'); }
 }
 
-/* ---------- Schnellaktion „+1 Tag" — Fälligkeit um einen Tag verschieben ---------- */
+/* ---------- Schnellaktion — Fälligkeit um n Tage verschieben ---------- */
+// Toast-Text an die Sprungweite anpassen: 1 → „1 Tag", 7 → „1 Woche", sonst „n Tage"
+function shiftLabel(days){
+  if(days === 1) return '1 Tag';
+  if(days === 7) return '1 Woche';
+  return `${days} Tage`;
+}
 function bumpDue(t, days){
   const from = t.faelligkeit;
   const to = shiftISO(from, days);
@@ -2293,21 +2167,93 @@ function bumpDue(t, days){
   addHist(t, 'faelligkeit', from, to);
   render();
   flashRow(t.id);
-  refocusBump(t.id);                            // mehrmals klicken bleibt möglich (+1, +2, …)
-  showToast(`Fällig am ${fmtAbs(to)} – um 1 Tag verschoben`, 'event_upcoming', ()=>{
+  refocusDue(t.id);                             // mehrmals verschieben bleibt möglich (+1, +2, …)
+  showToast(`Fällig am ${fmtAbs(to)} – um ${shiftLabel(days)} verschoben`, 'event_upcoming', ()=>{
     t.faelligkeit = from;
     t.verlauf.length = histLen;
     t.quittiert = wasQuittiert;
     render(); flashRow(t.id);
   });
 }
-// Fokus nach dem Neu-Rendern zurück auf die Schnellaktion derselben Zeile
-function refocusBump(id){
+// Fokus nach dem Neu-Rendern zurück auf das Datum derselben Zeile
+function refocusDue(id){
   requestAnimationFrame(()=>{
-    const b = document.querySelector(`[data-id="${id}"] .due-bump`);
+    const b = dueTrigger(id);
     if(b) b.focus({ preventScroll: true });
   });
 }
+
+/* ---------- Schnellaktions-Menü auf dem Fälligkeitsdatum ---------- */
+// Die Zeile wird bei jeder Änderung neu gerendert – der Auslöser muss darum
+// immer frisch aus dem DOM geholt werden.
+function dueTrigger(id){
+  return document.querySelector(`[data-id="${id}"] .inline-edit[data-field="faelligkeit"]`);
+}
+const DUE_SHIFTS = [
+  { days: 1, label: '+1 Tag' },
+  { days: 7, label: '+1 Woche' },
+];
+let duePopAnchor = null;
+function openDuePop(anchor, id){
+  const pop = $('#duePop');
+  const t = findTodo(id); if(!t) return;
+  if(pop.classList.contains('open') && pop.dataset.id === String(id)){ closeDuePop(); return; }  // zweiter Klick schließt
+  closeDuePop();
+  pop.dataset.id = id;
+  pop.innerHTML = DUE_SHIFTS.map(sh => {
+    const to = fmtAbs(shiftISO(t.faelligkeit, sh.days));
+    return `<button class="due-pop-item" role="menuitem" data-days="${sh.days}" title="Fälligkeit um ${shiftLabel(sh.days)} verschieben – auf ${to}">`
+      + `<span>${sh.label}</span><span class="due-pop-hint">${to}</span></button>`;
+  }).join('')
+    + `<div class="due-pop-sep"></div>`
+    + `<button class="due-pop-item" role="menuitem" data-act="pick" title="Fälligkeitsdatum frei wählen">`
+    + `<span>Datum wählen …</span><span class="material-symbols-outlined">calendar_month</span></button>`;
+  pop.classList.add('open');
+  duePopAnchor = anchor;
+  anchor.setAttribute('aria-expanded', 'true');
+  placePop(pop, anchor);
+  pop.querySelector('.due-pop-item')?.focus({ preventScroll: true });
+}
+function closeDuePop(){
+  const pop = $('#duePop');
+  if(!pop.classList.contains('open')) return;
+  pop.classList.remove('open');
+  duePopAnchor?.removeAttribute('aria-expanded');
+  duePopAnchor = null;
+}
+$('#duePop').addEventListener('click', e => {
+  const item = e.target.closest('.due-pop-item'); if(!item) return;
+  const id = $('#duePop').dataset.id;
+  const t = findTodo(id); if(!t) return;
+  if(item.dataset.act === 'pick'){
+    closeDuePop();
+    const el = dueTrigger(id);                  // Zeile kann zwischenzeitlich neu gerendert sein
+    if(el) startInline(el, id, true);           // Datumsfeld + Kalender direkt öffnen
+    return;
+  }
+  closeDuePop();
+  bumpDue(t, +item.dataset.days);
+});
+// Tastaturbedienung im Menü: Pfeile wandern, Escape schließt und gibt den Fokus zurück
+$('#duePop').addEventListener('keydown', e => {
+  if(e.key === 'Escape'){
+    e.stopPropagation();
+    const id = $('#duePop').dataset.id;
+    closeDuePop();
+    dueTrigger(id)?.focus({ preventScroll: true });
+    return;
+  }
+  // Enter/Leertaste lösen die Schaltfläche selbst aus – dürfen aber nicht zusätzlich
+  // die globalen Tastenkürzel der Tabelle treffen (Panel öffnen / abhaken)
+  if(e.key === 'Enter' || e.key === ' '){ e.stopPropagation(); return; }
+  if(e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  e.preventDefault();
+  e.stopPropagation();          // sonst wandert zusätzlich der Zeilenfokus in der Tabelle
+  const items = [...$('#duePop').querySelectorAll('.due-pop-item')];
+  const i = items.indexOf(document.activeElement);
+  const next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
+  items[next]?.focus({ preventScroll: true });
+});
 
 /* ---------- Abhaken + Undo ---------- */
 function toggleDone(id, checked){
@@ -2363,12 +2309,13 @@ function openPersonPop(anchor){
   // erst einblenden, dann messen (Höhe/Breite hängen von 1 oder 2 Antragstellern ab)
   pop.classList.add('open');
   popAnchor = anchor;
-  placePersonPop(anchor);
+  placePop(pop, anchor);
 }
 
 let popAnchor = null;
-function placePersonPop(anchor){
-  const pop = $('#personPop');
+// Positionierung für beide Popover: unter dem Anker, bei Platzmangel darüber,
+// horizontal auf den Viewport begrenzt
+function placePop(pop, anchor){
   const r = anchor.getBoundingClientRect();
   const w = pop.offsetWidth, h = pop.offsetHeight;
   const flipUp = r.bottom + 6 + h > window.innerHeight - 8 && r.top - 6 - h > 8;
@@ -2395,16 +2342,20 @@ $('#personPop').addEventListener('mouseleave', schedulePopHide);
 document.addEventListener('click', e=>{
   if(!e.target.closest('.menu') && !e.target.closest('#btnBerater')) closeAllMenus();
   if(!e.target.closest('.popover') && !e.target.closest('.person-info')) $('#personPop').classList.remove('open');
+  // Schnellaktions-Menü schließt bei jedem Klick außerhalb – auch auf einem anderen Datum
+  if(!e.target.closest('#duePop') && !e.target.closest('.inline-edit[data-field="faelligkeit"]')) closeDuePop();
 });
 window.addEventListener('scroll', ()=>{
   closeAllMenus();
+  closeDuePop();               // kurzlebiges Menü – beim Scrollen einfach zu
+
   // Kontaktkarte bleibt beim Scrollen am Info-Icon kleben und schließt erst, wenn das Icon aus dem Blick scrollt
   const pop = $('#personPop');
   if(!pop.classList.contains('open')) return;
   if(!popAnchor?.isConnected){ pop.classList.remove('open'); return; }
   const r = popAnchor.getBoundingClientRect();
   const gone = r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > window.innerWidth || (r.width === 0 && r.height === 0);
-  if(gone) pop.classList.remove('open'); else placePersonPop(popAnchor);
+  if(gone) pop.classList.remove('open'); else placePop(pop, popAnchor);
 }, true);
 
 /* ---------- Toast ---------- */
@@ -2752,7 +2703,7 @@ document.addEventListener('keydown', e=>{
     return;
   }
 
-  if(e.key==='Escape'){ closeAllMenus(); $('#personPop').classList.remove('open'); return; }
+  if(e.key==='Escape'){ closeAllMenus(); $('#personPop').classList.remove('open'); closeDuePop(); return; }
 
   // '/' oder Cmd/Ctrl+K → Suche
   if((e.key==='/' && !inField) || ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k')){
@@ -2897,44 +2848,33 @@ function setCalView(view){
 }
 
 /* ---------- Split-Layout (To-dos ↔ Kalender) ---------- */
-const todoPane = $('#todoPane');
-const calPane  = $('#calPane');
-const tableWrapEl = $('#tableWrap');
+const calPane      = $('#calPane');
+const tableWrapEl  = $('#tableWrap');
+const calHandle    = $('#calEdgeHandle');
 function updateLayout(){
   const open = document.body.classList.contains('cal-open');
-  const calCollapsed  = calPane.classList.contains('collapsed');
-  const todoCollapsed = todoPane.classList.contains('collapsed');
-  // Spalten weichen nur, wenn beide Bereiche sichtbar sind – in der Tagesansicht
-  // ist der Kalender schmal genug, dass die Tabelle mehr Spalten behalten kann
-  const split = open && !calCollapsed && !todoCollapsed;
-  tableWrapEl.classList.toggle('cols-reduced', split && calView !== 'tag');
-  tableWrapEl.classList.toggle('cols-slim',    split && calView === 'tag');
-  $('#todoToggle .material-symbols-outlined').textContent = todoCollapsed ? 'chevron_right' : 'chevron_left';
-  $('#calToggle .material-symbols-outlined').textContent  = calCollapsed  ? 'chevron_left'  : 'chevron_right';
+  // Spaltendichte folgt dem Pane: Spalten weichen nur, wenn der Kalender sichtbar ist –
+  // in der Tagesansicht ist er schmal genug, dass die Tabelle mehr Spalten behalten kann
+  tableWrapEl.classList.toggle('cols-reduced', open && calView !== 'tag');
+  tableWrapEl.classList.toggle('cols-slim',    open && calView === 'tag');
 }
 function setCalOpen(open){
   document.body.classList.toggle('cal-open', open);
-  const b = $('#btnCal');
-  b.classList.toggle('active', open);
-  b.setAttribute('aria-pressed', open ? 'true' : 'false');
-  todoPane.classList.remove('collapsed');
-  calPane.classList.remove('collapsed');
+  // Chevron zeigt immer dorthin, wo der Kalender hin will
+  calHandle.querySelector('.material-symbols-outlined').textContent = open ? 'chevron_left' : 'chevron_right';
+  const label = open ? 'Kalender ausblenden' : 'Kalender anzeigen';
+  calHandle.title = label;
+  calHandle.setAttribute('aria-label', label);
+  calHandle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  // calView/calStart bleiben unberührt → beim Wiederöffnen ist man da, wo man aufgehört hat
   if(open) renderCalendar();
   updateLayout();
 }
-$('#btnCal').addEventListener('click', ()=> setCalOpen(!document.body.classList.contains('cal-open')));
-$('#todoToggle').addEventListener('click', ()=>{
-  const collapse = !todoPane.classList.contains('collapsed');
-  todoPane.classList.toggle('collapsed', collapse);
-  if(collapse) calPane.classList.remove('collapsed');   // nie beide gleichzeitig zu
-  updateLayout();
-});
-$('#calToggle').addEventListener('click', ()=>{
-  const collapse = !calPane.classList.contains('collapsed');
-  calPane.classList.toggle('collapsed', collapse);
-  if(collapse) todoPane.classList.remove('collapsed');
-  updateLayout();
-});
+// Header-Button ist nur im geschlossenen Zustand sichtbar → immer „öffnen"
+$('#btnCal').addEventListener('click', ()=> setCalOpen(true));
+$('#calEdgeHandle').addEventListener('click', ()=> setCalOpen(!document.body.classList.contains('cal-open')));
+// Pendant zu „+ ToDo" — im Prototyp ohne echtes Anlege-Formular, daher nur eine Bestätigung
+$('#btnAddTermin').addEventListener('click', ()=> showToast('Termin anlegen (Prototyp)', 'event'));
 $('#calPrev').addEventListener('click', ()=>{ calStart=addDays(calStart,-CAL_SPAN[calView]); renderCalendar(); });
 $('#calNext').addEventListener('click', ()=>{ calStart=addDays(calStart, CAL_SPAN[calView]); renderCalendar(); });
 $('#calToday').addEventListener('click', ()=>{ calStart=calAlign(TODAY); renderCalendar(); });
@@ -2945,11 +2885,10 @@ $('#calViewSeg').addEventListener('click', e => {
 
 /* ---------- init ---------- */
 updateBeraterButton();
-updateTypButton();
 renderRisk();
 renderWinCards();   // statische Monatswerte — einmal beim Laden genügt
 render();
-setCalOpen(true);   // Kalender standardmäßig geöffnet (per „Kalender"-Button ausblendbar)
+setCalOpen(true);   // Kalender standardmäßig geöffnet (per Rand-Handle ausblendbar)
 </script>
 </body>
 </html>
