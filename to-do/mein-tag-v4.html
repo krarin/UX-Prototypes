@@ -519,7 +519,7 @@
     .group-pill {
       display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px 3px 8px;
       border-radius: var(--radius-full); color: #fff; font-size: 11px; font-weight: 700;
-      letter-spacing: .3px; text-transform: uppercase; white-space: nowrap;
+      letter-spacing: .3px; white-space: nowrap;
     }
     .group-pill .material-symbols-outlined { font-size: 14px; }
     .group-count { font-size: 12px; font-weight: 600; color: var(--color-neutral-dark-400); }
@@ -865,11 +865,14 @@
       .cal-edge-handle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
       .cal-edge-handle .material-symbols-outlined { font-size: 16px; }
       /* geschlossen: als Griff am rechten Rand fixiert — position:fixed statt absolute,
-         damit er unabhängig von der (evtl. langen, scrollenden) Tabelle immer mittig im
-         sichtbaren Viewport bleibt und nicht irgendwo außerhalb des Bildschirms landet */
+         damit er unabhängig von der (evtl. langen, scrollenden) Tabelle immer sichtbar
+         bleibt. Die vertikale Mitte (top) wird per JS gesetzt (siehe
+         positionCalEdgeHandle) — mittig im Workspace-Bereich (unter Topbar/Toolbar),
+         nicht mittig im gesamten Viewport, und bleibt bei Resize/Layout-Änderungen
+         konsistent mit der geöffneten Position. */
       .cal-edge-handle {
-        position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-        border-radius: var(--radius-s) 0 0 var(--radius-s); border-right: none;
+        position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+        border-radius: var(--radius-full); border-right: 1px solid var(--color-neutral-light-300, #E4E7EC);
         box-shadow: var(--shadow-s);
       }
       /* geöffnet: löst sich aus der fixierten Ecke und sitzt als schlanker Griff direkt
@@ -2931,13 +2934,31 @@ function updateLayout(){
 function setCalOpen(open){
   document.body.classList.toggle('cal-open', open);
   const handle = $('#calEdgeHandle');
-  handle.querySelector('.material-symbols-outlined').textContent = open ? 'chevron_left' : 'chevron_right';
+  handle.querySelector('.material-symbols-outlined').textContent = open ? 'chevron_right' : 'chevron_left';
   const handleLabel = open ? 'Kalender ausblenden' : 'Kalender anzeigen';
   handle.title = handleLabel;
   handle.setAttribute('aria-label', handleLabel);
   if(open) renderCalendar();
   updateLayout();
+  positionCalEdgeHandle();
 }
+// Vertikale Mitte des geschlossenen Rand-Handles: mittig im sichtbaren
+// Workspace-Bereich (unterhalb von Topbar/Toolbar/Chips bis zum Viewport-Ende),
+// nicht mittig im ganzen Fenster — sonst „springt" der Griff beim Öffnen/Schließen,
+// weil die geöffnete Position (align-self:center in .workspace) einen anderen
+// Bezugsrahmen hat als eine feste 50%-Marke des Viewports.
+function positionCalEdgeHandle(){
+  const handle = $('#calEdgeHandle');
+  if(document.body.classList.contains('cal-open') || window.innerWidth < 861){
+    handle.style.top = '';
+    return;
+  }
+  const top = $('#workspace').getBoundingClientRect().top;
+  handle.style.top = (top + (window.innerHeight - top) / 2) + 'px';
+}
+window.addEventListener('resize', positionCalEdgeHandle);
+new ResizeObserver(positionCalEdgeHandle).observe($('.content'));
+positionCalEdgeHandle();
 // Header-Button ist nur im geschlossenen Zustand sichtbar → immer „öffnen"
 $('#btnCal').addEventListener('click', ()=> setCalOpen(true));
 $('#calEdgeHandle').addEventListener('click', ()=> setCalOpen(!document.body.classList.contains('cal-open')));
