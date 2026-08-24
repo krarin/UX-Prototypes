@@ -437,14 +437,30 @@
     .rcheck:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
     /* to do cell */
-    .todo-main { display: flex; align-items: center; gap: var(--space-s); }
+    /* Wenn Titel + Herkunfts-Hinweis nebeneinander nicht mehr in die Spalte
+       passen, rutscht der Hinweis in eine zweite Zeile — abgeschnitten wird die
+       Nachricht nie. */
+    .todo-main { display: flex; align-items: center; flex-wrap: wrap; gap: 4px var(--space-s); }
     .todo-title { font-weight: 400; color: inherit; }
     tr[data-status="erledigt"] .todo-title { font-weight: 400; }
-    .badge-new {
-      font-size: 10px; font-weight: 700; letter-spacing: .3px;
-      color: var(--color-info); background: var(--color-info-light); border-radius: var(--radius-xs);
-      padding: 1px 5px; line-height: 15px; flex-shrink: 0;
+    /* Marken hinter dem Titel: „Neu" (ungesehen) und „Geburtstag" (Einordnung) */
+    .badge-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 10px; font-weight: 700; letter-spacing: .3px; border-radius: var(--radius-xs);
+      padding: 1px 5px; line-height: 15px; flex-shrink: 0; white-space: nowrap;
     }
+    .badge-tag .material-symbols-outlined { font-size: 13px; }
+    .badge-new { color: var(--color-info); background: var(--color-info-light); }
+    .badge-bday { color: var(--color-primary-700); background: var(--color-primary-100); }
+    /* Hinweis zur Herkunft („Der Kunde hat Dokumente zur Prüfung hochgeladen"):
+       steht in derselben Zeile hinter dem Titel, tritt farblich zurück und
+       kürzt sich als erstes, wenn die Spalte eng wird. */
+    /* In der Tabelle liegen Verlauf/Löschen fest an der rechten Kante der ersten
+       Zeile — so wandern sie nicht hinter den Hinweis in eine dritte Zeile. */
+    #todoTable .todo-main { position: relative; min-height: 26px; padding-right: 58px; }
+    #todoTable .todo-main .row-actions { position: absolute; top: 0; right: 0; margin-left: 0; }
+    #todoTable tr[data-typ="geburtstag"] .todo-main { padding-right: 32px; }
+    .todo-tags { display: inline-flex; align-items: center; gap: var(--space-s); flex: 0 0 auto; }
 
     /* due cell — einzeilig, gut lesbar in Schwarz */
     .due-line { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-900); white-space: nowrap; }
@@ -463,7 +479,6 @@
       --due-fill-ueberfaellig: #FF5656;
       --due-fill-heute:        #FF9F1A;
       --due-fill-morgen:       #4B7BEC;
-      --due-fill-system:       #E693F4;
       --due-fill-erledigt:     #20BF6B;
     }
     /* Fälligkeits-Label — volle Farbfläche, füllt den Slot ganz aus */
@@ -522,6 +537,10 @@
     .row-act { position: relative; }
     .row-act.mail { border: 1px solid var(--color-neutral-light-500); border-radius: 50%; color: var(--color-neutral-dark-400); }
     .row-act.mail:hover { background: var(--color-primary-100); color: var(--color-primary-600); border-color: var(--color-primary-400); }
+    /* Sprung ins Dokumentencenter — runder Pfeil-Button direkt hinter dem Hinweis */
+    .row-act.doc-open { border: 1px solid var(--color-neutral-light-500); border-radius: 50%;
+      color: var(--color-neutral-dark-600); flex-shrink: 0; }
+    .row-act.doc-open:hover { background: var(--color-primary-100); color: var(--color-primary-600); border-color: var(--color-primary-400); }
     /* Art-Icon in der To-do-Zelle — ersetzt die frühere „Art"-Spalte.
        Neutral gehalten, damit es die Zeile nicht dominiert; nur der Geburtstag
        bleibt farbig, weil er die einzige Art mit eigener Aktion (Gruß senden) ist. */
@@ -888,6 +907,15 @@
     .cal-ev-time { display: block; font-size: 9px; font-weight: 500; color: var(--color-neutral-dark-400); line-height: 1.2; }
     .cal-ev-title { font-size: 10px; line-height: 1.25; color: var(--color-neutral-dark-900); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .cal-empty { padding: var(--space-s) 4px; text-align: center; font-size: 11px; color: var(--color-neutral-dark-300); }
+    /* Geburtstage des Tages — eigener Abschnitt unter den Terminen, damit sie
+       im Kalender auftauchen, ohne wie ein Termin mit Uhrzeit auszusehen. */
+    .cal-bdays { display: flex; flex-direction: column; gap: 5px; min-width: 0;
+      margin: 4px 3px 0; padding: var(--space-s) 1px; border-top: 1px solid var(--color-neutral-light-400); }
+    .cal-bdays-label { font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-300); letter-spacing: .2px; }
+    .cal-bday { display: flex; align-items: center; gap: 6px; min-width: 0;
+      font-size: 12px; color: var(--color-neutral-dark-900); }
+    .cal-bday .material-symbols-outlined { font-size: 15px; color: var(--color-primary-500); flex-shrink: 0; }
+    .cal-bday-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cal-pane.view-woche .cal-empty { display: none; }   /* in der Wochenspalte zu eng */
 
     /* 3-Tage-Ansicht: etwas mehr Luft als in der Woche */
@@ -905,6 +933,9 @@
     .cal-pane.view-tag .cal-ev-time { flex: 0 0 40px; font-size: 12px; color: var(--color-neutral-dark-700); }
     .cal-pane.view-tag .cal-ev-title { font-size: 13px; line-height: 1.3; -webkit-line-clamp: 2; }
     .cal-pane.view-tag .cal-empty { padding: var(--space-l) var(--space-m); font-size: 12px; }
+    .cal-pane.view-tag .cal-bdays { margin: 0 var(--space-s); padding: var(--space-s) 0 var(--space-s); gap: 7px; }
+    .cal-pane.view-tag .cal-bday { font-size: 13px; }
+    .cal-pane.view-tag .cal-bday .material-symbols-outlined { font-size: 17px; }
 
     @media (max-width: 860px) {
       .content { padding: var(--space-m) var(--space-m) 0; }
@@ -928,6 +959,8 @@
       .tcard-top { display: flex; align-items: flex-start; gap: var(--space-s); }
       .tcard-top .rcheck { margin-top: 1px; }
       .tcard-title { flex: 1; font-weight: 500; }
+      /* auf der Karte bekommt der Herkunfts-Hinweis eine eigene Zeile */
+      .tcard-title .todo-tags { margin-top: 4px; }
       .tcard-meta { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; }
       /* ohne Hover auf Touch: Menü-Hinweis dauerhaft sichtbar */
       .tcard .due-caret { opacity: .7; }
@@ -1078,7 +1111,7 @@
             <tr>
               <th class="cell-check"><span class="sr-only">Erledigt</span></th>
               <th class="sortable" data-sort="titel" style="min-width:260px"><span class="th-inner">To do <span class="material-symbols-outlined">unfold_more</span></span></th>
-              <th class="sortable" data-sort="faelligkeit" style="min-width:300px"><span class="th-inner">Fälligkeit <span class="material-symbols-outlined">unfold_more</span></span></th>
+              <th class="sortable" data-sort="faelligkeit" style="min-width:260px"><span class="th-inner">Fälligkeit <span class="material-symbols-outlined">unfold_more</span></span></th>
               <th class="sortable" data-sort="person" style="min-width:180px"><span class="th-inner">Antragsteller <span class="material-symbols-outlined">unfold_more</span></span></th>
               <th class="sortable" data-sort="berater" style="min-width:160px"><span class="th-inner">Berater <span class="material-symbols-outlined">unfold_more</span></span></th>
             </tr>
@@ -1321,9 +1354,9 @@ let todos = [
   { id:nid(), typ:'aufgabe', titel:'Angebot Lassestraße finalisieren', faelligkeit:iso(2026,7,24), zeit:'08:00', erledigt:false, quittiert:true, person:cust(3), notiz:'Konditionen mit Kunde final abstimmen.' },
   { id:nid(), typ:'termin', titel:'Termin mit Michael Braun vorbereiten', faelligkeit:iso(2026,7,24), zeit:'11:30', erledigt:false, quittiert:true, person:cust(4), notiz:'' },
   // --- von Kunde ausgelöst (system, unquittiert) ---
-  { id:nid(), typ:'kundendokument', titel:'Dokumente von Andreas Weber prüfen', faelligkeit:iso(2026,7,24), zeit:'', erledigt:false, quittiert:false, person:cust(0), notiz:'Kunde hat 3 Dokumente über das Portal hochgeladen.' },
+  { id:nid(), typ:'kundendokument', titel:'Der Kunde hat Dokumente zur Prüfung hochgeladen', faelligkeit:iso(2026,7,24), zeit:'', erledigt:false, quittiert:false, person:cust(0), notiz:'3 Dokumente über das Kundenportal hochgeladen.' },
   { id:nid(), typ:'systemhinweis', titel:'Potentielle Antragsdubletten prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(6), notiz:'System hat einen möglichen Doppelantrag erkannt.' },
-  { id:nid(), typ:'kundendokument', titel:'Gehaltsnachweise von Sandra Klein prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(2), notiz:'Kunde hat 2 Dokumente über das Portal hochgeladen.' },
+  { id:nid(), typ:'kundendokument', titel:'Der Kunde hat Dokumente zur Prüfung hochgeladen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(2), notiz:'2 Dokumente über das Kundenportal hochgeladen.' },
   // --- zukünftig ---
   { id:nid(), typ:'termin', titel:'Beratungstermin Julia Hoffmann', faelligkeit:iso(2026,7,28), zeit:'10:00', erledigt:false, quittiert:true, person:cust(5), notiz:'' },
   { id:nid(), typ:'rueckruf', titel:'Nachfassen Lead: Petra Schulz', faelligkeit:iso(2026,7,31), zeit:'', erledigt:false, quittiert:true, person:cust(7), notiz:'' },
@@ -1337,7 +1370,7 @@ let todos = [
   // --- morgen fällig: bewusst voller Tag, damit der Arbeitslast-Indikator den roten Bereich zeigt ---
   { id:nid(), typ:'unterlagen', titel:'Einkommensnachweise Berger prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(1), notiz:'Letzte zwei Gehaltsabrechnungen gegenprüfen.' },
   { id:nid(), typ:'unterlagen', titel:'Objektunterlagen Klein anfordern', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(2), notiz:'' },
-  { id:nid(), typ:'kundendokument', titel:'Dokumente von Petra Schulz prüfen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(7), notiz:'Kunde hat 2 Dokumente über das Portal hochgeladen.' },
+  { id:nid(), typ:'kundendokument', titel:'Der Kunde hat Dokumente zur Prüfung hochgeladen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(7), notiz:'2 Dokumente über das Kundenportal hochgeladen.' },
   { id:nid(), typ:'aufgabe', titel:'Finanzierungsbestätigung Öztürk erstellen', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(3), notiz:'' },
   { id:nid(), typ:'unterlagen', titel:'Grundbuchauszug Braun anfordern', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:true, person:cust(4), notiz:'' },
   { id:nid(), typ:'systemhinweis', titel:'Neue Portal-Nachricht von Julia Hoffmann', faelligkeit:iso(2026,7,25), zeit:'', erledigt:false, quittiert:false, person:cust(5), notiz:'Rückfrage zur Sondertilgung.' },
@@ -1426,13 +1459,15 @@ todos.forEach((t,i)=>{
   const rows = MOCK_VERLAUF[i] || [['created', -5, '09:00', t.berater]];
   t.verlauf = rows.map(([action, off, time, actor, from, to]) =>
     ({ ts: stamp(off, time), actor, action, from: from || '', to: to || '' }));
+  // Wann wurde abgehakt? Steuert, wie lange ein erledigtes To-do stehen bleibt.
+  const done = t.verlauf.filter(h => h.action === 'erledigt').pop();
+  t.erledigtAm = t.erledigt && done ? done.ts.slice(0,10) : null;
 });
 
 /* ---------- Status-Modell (abgeleitet) ---------- */
 const STATUS = {
   ueberfaellig:{ label:'Überfällig',          color:'var(--color-error-600)',      bg:'var(--color-error-100)',        dot:'var(--due-fill-ueberfaellig)', rank:0 },
   heute:       { label:'Heute fällig',        color:'var(--color-warning-high)',   bg:'var(--color-warning-high-light)',dot:'var(--due-fill-heute)',    rank:1 },
-  system:      { label:'Von Kunde ausgelöst', color:'var(--color-info)',           bg:'var(--color-info-light)',       dot:'var(--due-fill-system)',   rank:2 },
   zukuenftig:  { label:'Zukünftig',           color:'var(--color-neutral-dark-400)',bg:'var(--color-neutral-light-200)',dot:'var(--color-neutral-dark-300)',rank:3 },
   erledigt:    { label:'Erledigt',            color:'var(--color-success)',        bg:'var(--color-success-light)',    dot:'var(--color-success)',     rank:4 },
 };
@@ -1440,7 +1475,6 @@ function parseDate(s){ const [y,m,d]=s.split('-').map(Number); const dt=new Date
 function shiftISO(s, days){ const d = parseDate(s); d.setDate(d.getDate()+days); return toISOInput(d); }
 function statusOf(t){
   if(t.erledigt) return 'erledigt';
-  if(t.quelle==='system' && !t.quittiert) return 'system';
   const due = parseDate(t.faelligkeit);
   if(due < TODAY) return 'ueberfaellig';
   if(due.getTime() === TODAY.getTime()) return 'heute';
@@ -1448,23 +1482,19 @@ function statusOf(t){
 }
 
 /* ---------- Fälligkeits-Label (Pill in der Fälligkeits-Spalte) ----------
-   Das Label markiert, was Aufmerksamkeit braucht: die Fälligkeit — und, sobald
-   ein To-do vom Kunden ausgelöst und noch nicht quittiert ist, dessen Herkunft.
-   Das Datum bleibt daneben in der Zeile stehen, geht also nicht verloren.
-   „Später" trägt absichtlich kein Label.                                    */
+   Das Label markiert allein die Fälligkeit — auch bei vom Kunden ausgelösten
+   To-dos: die stehen dann z. B. auf „Überfällig" oder „Morgen" wie jedes andere
+   To-do auch. Woher das To-do kommt, sagt jetzt die Hinweiszeile in der To-do-
+   Spalte (siehe titleTags). „Später" trägt absichtlich kein Label.         */
 const DUE = {
   ueberfaellig: { label:'Überfällig', color:'var(--color-neutral-light-000)', bg:'var(--due-fill-ueberfaellig)', rank:0 },
   heute:        { label:'Heute',      color:'var(--color-neutral-light-000)', bg:'var(--due-fill-heute)',        rank:1 },
-  system:       { label:'Von Kunde', color:'var(--color-neutral-light-000)', bg:'var(--due-fill-system)',       rank:2 },
   morgen:       { label:'Morgen',     color:'var(--color-neutral-light-000)', bg:'var(--due-fill-morgen)',       rank:3 },
   spaeter:      { label:'Später',     color:'var(--color-neutral-dark-400)',  bg:'var(--color-neutral-light-200)', rank:4, noPill:true },
   erledigt:     { label:'Erledigt',   color:'var(--color-neutral-light-000)', bg:'var(--due-fill-erledigt)',     rank:5 },
 };
 function dueState(t){
   if(t.erledigt) return 'erledigt';
-  // vom Kunden ausgelöst geht dem Datums-Label vor, solange es nicht quittiert
-  // ist — das Datum selbst bleibt in der Zeile daneben sichtbar
-  if(t.quelle === 'system' && !t.quittiert) return 'system';
   const diff = Math.round((parseDate(t.faelligkeit) - TODAY) / 86400000);
   if(diff < 0)   return 'ueberfaellig';
   if(diff === 0) return 'heute';
@@ -1513,14 +1543,19 @@ function matchesSearch(t){
     .filter(Boolean).join(' ').toLowerCase();
   return hay.includes(q);
 }
-// gerade abgehakte To-dos bleiben kurz sichtbar (durchgestrichen), statt sofort zu verschwinden (§7)
-const recentlyDone = new Set();
+// Heute abgehakte To-dos bleiben bis zum Tagesende in ihrer Liste stehen —
+// durchgestrichen, an derselben Stelle. Erst am Folgetag verschwinden sie und
+// sind nur noch über den Filter „Erledigte" zu finden (§7).
+const TODAY_ISO = toISOInput(TODAY);
+function doneToday(t){ return t.erledigt && t.erledigtAm === TODAY_ISO; }
 // Gehört das To-do in den Topf eines Schnellfilters? Bewusst als eigene Funktion,
 // damit Tabelle und Zähler am Segment garantiert dieselbe Regel benutzen.
 function inQuickBucket(t, quick){
   const st = statusOf(t);
   if(quick === 'erledigt') return st === 'erledigt';
-  if(st === 'erledigt') return false;      // erledigte nur im Erledigte-Filter
+  // heute abgehakt → bleibt bis morgen in seiner Liste; älter → nur noch im
+  // Erledigte-Filter
+  if(st === 'erledigt' && !doneToday(t)) return false;
   const due = parseDate(t.faelligkeit).getTime();
   if(quick === 'ueberfaellig') return due < TODAY.getTime();
   // „Heute fällig" schließt Überfällige mit ein: was gestern liegen blieb,
@@ -1540,7 +1575,7 @@ function passesFilter(t){
   return matchesSideFilters(t);
 }
 function visibleTodos(){
-  return todos.filter(t => passesFilter(t) || recentlyDone.has(t.id));
+  return todos.filter(passesFilter);
 }
 
 /* ---------- Arbeitslast-Indikatoren (heute / morgen) ----------
@@ -1579,9 +1614,8 @@ function cmpByKey(key, a, b){
 function sortTodos(list){
   const { key, dir } = state.sort;
   const cmp = (a,b) => {
-    // Erledigte grundsätzlich ans Ende (unabhängig von Sortierrichtung)
-    const ae = a.erledigt?1:0, be = b.erledigt?1:0;
-    if(ae !== be) return ae - be;
+    // Erledigte behalten ihren Platz in der Liste: heute abgehakt heißt
+    // durchgestrichen an derselben Stelle, nicht ans Ende geschoben.
     if(key){
       const r = cmpByKey(key, a, b) * (dir === 'asc' ? 1 : -1);
       if(r !== 0) return r;
@@ -1638,19 +1672,35 @@ function rowActions(t){
   return `<span class="row-actions">${HIST_ACTION(t)}
   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button></span>`;
 }
-// Geburtstags-To-do: Kuchen-Icon + „Gruß senden"-Mail-Aktion
-function mailActions(t){
-  return `<span class="row-actions">${HIST_ACTION(t)}
-  <button class="row-act mail" data-act="mail" title="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button></span>`;
+// Geburtstags-To-do: der Gruß-Button steht direkt hinter dem Titel (siehe
+// titleTags), rechts bleibt nur der Verlauf.
+function bdayActions(t){
+  return `<span class="row-actions">${HIST_ACTION(t)}</span>`;
 }
-function actionsFor(t){ return isBday(t) ? mailActions(t) : rowActions(t); }
+function actionsFor(t){ return isBday(t) ? bdayActions(t) : rowActions(t); }
+/* ---------- Marken und Sprünge direkt hinter dem Titel ----------
+   Vom Kunden bzw. vom System ausgelöste To-dos sagen im Titel selbst, was
+   passiert ist („Der Kunde hat Dokumente zur Prüfung hochgeladen") — es gibt
+   keine zweite Textzeile. Daneben steht nur, was zum Handeln nötig ist: der
+   Sprung ins Dokumentencenter bzw. der Geburtstagsgruß, dahinter die Marke
+   („Neu" für Ungesehenes, „Geburtstag" als Einordnung).                     */
+const DOC_CENTER_URL = 'about:blank';   // Platzhalter — später auf das Dokumentencenter zeigen
+function titleTags(t){
+  const out = [];
+  if(isBday(t)){
+    out.push(`<button class="row-act mail" data-act="mail" title="Geburtstagsgruß senden" aria-label="Geburtstagsgruß senden"><span class="material-symbols-outlined">mail</span></button>`);
+    out.push('<span class="badge-tag badge-bday"><span class="material-symbols-outlined">cake</span>Geburtstag</span>');
+  } else {
+    if(t.typ === 'kundendokument') out.push(`<button class="row-act doc-open" data-act="doccenter" title="Im Dokumentencenter öffnen (neuer Tab)" aria-label="Im Dokumentencenter öffnen (neuer Tab)"><span class="material-symbols-outlined">arrow_forward</span></button>`);
+    if(t.quelle === 'system' && !t.quittiert) out.push('<span class="badge-tag badge-new">Neu</span>');
+  }
+  return out.length ? `<span class="todo-tags">${out.join('')}</span>` : '';
+}
 function titleHtml(t){
   if(isBday(t)){
-    return `<div class="todo-main"><span class="todo-title">${esc(t.titel)}</span>${mailActions(t)}</div>`;
+    return `<div class="todo-main"><span class="todo-title">${esc(t.titel)}</span>${titleTags(t)}${bdayActions(t)}</div>`;
   }
-  const isNew = t.quelle==='system' && !t.quittiert;
-  const badge = isNew ? '<span class="badge-new">Neu</span>' : '';
-  return `<div class="todo-main">${titleSpan(t)}${badge}${rowActions(t)}</div>`;
+  return `<div class="todo-main">${titleSpan(t)}${titleTags(t)}${rowActions(t)}</div>`;
 }
 // Titel darf leer sein (Inline-Anlegen ohne Pflichtfelder) → Platzhalter anzeigen
 function titleSpan(t){
@@ -1660,7 +1710,7 @@ function titleSpan(t){
 function todoLabel(t){ return t.titel || 'Ohne Titel'; }
 function cardTitleHtml(t){
   const inner = isBday(t) ? `<span class="todo-title">${esc(t.titel)}</span>` : titleSpan(t);
-  return `${inner}${t.quelle==='system'&&!t.quittiert?' <span class="badge-new">Neu</span>':''}`;
+  return `${inner}${titleTags(t)}`;
 }
 
 let currentRows = [];   // gerenderte (gefilterte+sortierte+paginierte) Liste
@@ -1855,7 +1905,7 @@ function renderWinCards(){
 }
 
 function updateBadge(){
-  const open = todos.filter(t => !t.erledigt && ['ueberfaellig','heute','system'].includes(statusOf(t))).length;
+  const open = todos.filter(t => !t.erledigt && ['ueberfaellig','heute'].includes(statusOf(t))).length;
   $('#railBadge').textContent = open > 99 ? '99+' : open;
   const newCount = todos.filter(t => t.quelle==='system' && !t.quittiert).length;
 }
@@ -2035,6 +2085,7 @@ function handleRoot(e){
     if(act.dataset.act==='delete') deleteTodo(t);
     else if(act.dataset.act==='mail') sendBirthday(t);
     else if(act.dataset.act==='history') openHist(t);
+    else if(act.dataset.act==='doccenter') openDocCenter(t);
     return; }
   // Inline-Bearbeitung (Titel) bzw. Schnellaktions-Menü (Fälligkeitsdatum)
   const ie = e.target.closest('.inline-edit');
@@ -2143,6 +2194,15 @@ function startInline(el, id, openPicker){
   });
   input.addEventListener('blur', () => finish(true));
   input.addEventListener('click', ev => ev.stopPropagation());
+}
+
+// Sprung ins Dokumentencenter (neuer Tab). Das Öffnen zählt als gesehen, die
+// „Neu"-Marke verschwindet dadurch — der Hinweissatz bleibt stehen.
+function openDocCenter(t){
+  window.open(DOC_CENTER_URL, '_blank', 'noopener');
+  acknowledge(t);
+  render();
+  showToast('Dokumentencenter in neuem Tab geöffnet', 'open_in_new');
 }
 
 // system-To-do gilt beim ersten Öffnen/Bearbeiten als quittiert (§4.4)
@@ -2260,13 +2320,14 @@ function toggleDone(id, checked){
   const t = findTodo(id); if(!t) return;
   const prev = t.erledigt;
   t.erledigt = checked;
+  t.erledigtAm = checked ? TODAY_ISO : null;
   if(checked !== prev) addHist(t, checked ? 'erledigt' : 'reopened');
-  if(checked && !prev) recentlyDone.add(id); else recentlyDone.delete(id);
   render();
   if(checked && !prev){
     showToast(`„${t.titel}" erledigt`, 'task_alt', ()=>{
-      t.erledigt = false; t.verlauf.pop();      // Undo nimmt auch den Verlaufseintrag zurück
-      recentlyDone.delete(id); render();
+      t.erledigt = false; t.erledigtAm = null;
+      t.verlauf.pop();                          // Undo nimmt auch den Verlaufseintrag zurück
+      render();
     });
   }
 }
@@ -2370,7 +2431,7 @@ function showToast(msg, icon, undoFn){
   if(undoFn) el.querySelector('.toast-undo').addEventListener('click', ()=>{ undoFn(); stack.innerHTML=''; clearTimeout(toastTimer); });
   stack.appendChild(el);
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ stack.innerHTML=''; if(recentlyDone.size){ recentlyDone.clear(); render(); } }, 6000);
+  toastTimer = setTimeout(()=>{ stack.innerHTML=''; }, 6000);
 }
 
 /* ======================================================================
@@ -2810,6 +2871,15 @@ function evHtml(e){
     <span class="cal-ev-title">${esc(e.titel)}${esc(who)}</span>
   </div>`;
 }
+// Geburtstage des Tages: kommen aus den Geburtstags-To-dos, nicht aus TERMINE —
+// so steht im Kalender dasselbe wie in der Liste.
+function bdayHtml(dISO){
+  const namen = todos.filter(t => isBday(t) && t.faelligkeit === dISO)
+                     .map(t => t.person?.name || t.titel);
+  if(!namen.length) return '';
+  const rows = namen.map(n => `<div class="cal-bday" title="${esc(n)}"><span class="material-symbols-outlined">cake</span><span class="cal-bday-name">${esc(n)}</span></div>`).join('');
+  return `<div class="cal-bdays"><div class="cal-bdays-label">Geburtstage</div>${rows}</div>`;
+}
 function renderCalendar(){
   const span = CAL_SPAN[calView];
   let html='';
@@ -2825,6 +2895,7 @@ function renderCalendar(){
     html += `<div class="cal-day${isToday?' today':''}${weekend?' weekend':''}">
       <div class="cal-day-head"><div class="cal-wd">${label}</div><div class="cal-dnum">${day.getDate()}</div></div>
       <div class="cal-events">${body}</div>
+      ${bdayHtml(dISO)}
     </div>`;
   }
   $('#calGrid').innerHTML = html;
