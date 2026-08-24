@@ -55,6 +55,8 @@ window.PROTOTYPES = {
       flow: "Der Berater sortiert die Anträge-Liste nach Fälligkeit der zugehörigen To-do's und wechselt bei Bedarf in die Pipeline-Ansicht." },
     { id: "termin-scheduling", team: "advisors", name: "Termin-Scheduling",
       flow: "Der Berater plant, bestätigt, verschiebt oder sagt einen Kundentermin ab — direkt aus dem Antrag heraus." },
+    { id: "antrags-uebersicht", team: "advisors", name: "Antrags Übersicht",
+      flow: "Der Berater sieht innerhalb eines Antrags die zugehörigen To-do's auf einen Blick — inklusive Fälligkeit, Inline-Bearbeitung und Kontextmenü." },
 
     { id: "application-form", team: "mavericks", name: "Application Form",
       flow: "Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld." },
@@ -134,6 +136,14 @@ window.PROTOTYPES = {
     { id:"termin-scheduling-v2", project:"termin-scheduling", version:2, title:"Termin-Scheduling V2",
       file:"advisor-dashboard/loan-application/termin-scheduling-flow-v2.html", status:"aktuell",
       changes:"Gegenüber V1: kein iframe mehr — native Verfügbarkeit und Buchung über Nylas, RSVP auf eingehende Einladungen, Two-Way-Sync und „Technik einblenden“-Schalter." },
+
+    /* ---- Advisors · Antrags Übersicht ---- */
+    { id:"todo-v1", project:"antrags-uebersicht", version:1, title:"ToDo V1",
+      file:"application-overview/todo-v1.html", status:"aktuell",
+      changes:"Erste Fassung: To-do-Liste im Antrag mit farbigem Status-Streifen pro Zeile, Fälligkeit, Inline-Bearbeitung und Kontextmenü (Bearbeiten, Neu zuordnen, Löschen)." },
+    { id:"todo-v2", project:"antrags-uebersicht", version:2, title:"ToDo V2",
+      file:"application-overview/todo-v2.html", status:"abgeloest",
+      changes:"Gegenüber V1: Gruppierung nach Fälligkeit (Überfällig/Heute/Morgen/…) mit farbiger Pill im Gruppenkopf statt Status-Streifen pro Zeile — 1:1 aus mein-tag-v4 übernommen; Gruppen einzeln auf- und zuklappbar." },
 
     /* ---- Mavericks · Application Form ---- */
     { id:"application-form-v1", project:"application-form", version:1, title:"Application Form V1",

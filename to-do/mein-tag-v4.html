@@ -41,13 +41,14 @@
          anderen beiden waren schon vorher ungültige var()-Referenzen. */
 
       --color-neutral-light-500: #CFD8DC;
+      --color-neutral-light-400: #ECEFF1;
       --color-neutral-light-200: #F5F7F8;
-      --color-neutral-light-100: #F9FAFC;
+      --color-neutral-light-100: #FAFBFC;
       --color-neutral-light-000: #FFFFFF;
 
-      --color-error-600: #AB3645;
-      --color-error-500: #E64D4D;
-      --color-error-100: #FAEBED;
+      --color-error-600: #E64D4D;
+      --color-error-500: #FF5656;
+      --color-error-100: #FFEEEE;
 
       --color-success: #20BF6B;
       --color-success-light: #E9FCF2;
@@ -70,12 +71,14 @@
 
       --radius-xs:   2px;
       --radius-s:    4px;
+      --radius-m:    8px;
+      --radius-l:    12px;
       --radius-full: 9999px;
 
-      --shadow-xs: 0 2px 8px rgba(84, 110, 122, 0.10);
-      --shadow-s:  0 2px 8px rgba(84, 110, 122, 0.16);
-      --shadow-m:  0 2px 8px rgba(84, 110, 122, 0.24);
-      --shadow-l:  0 2px 8px rgba(84, 110, 122, 0.30);
+      --shadow-xs: 0 1px 4px rgba(84, 110, 122, 0.15);
+      --shadow-s:  0 2px 6px rgba(84, 110, 122, 0.18);
+      --shadow-m:  0 4px 12px rgba(84, 110, 122, 0.22);
+      --shadow-l:  0 8px 24px rgba(84, 110, 122, 0.26);
 
       --z-overlay: 100;
       --z-modal:   200;
@@ -129,7 +132,7 @@
       content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px;
       background: var(--color-primary-400); border-radius: 0 2px 2px 0;
     }
-    .rail-item .material-icons { font-size: 22px; }
+    .rail-item .material-icons { font-size: 20px; }
     .rail-label { font-size: 9px; letter-spacing: .2px; text-align: center; line-height: 1.15; }
     .rail-badge {
       position: absolute; top: 4px; right: 14px;
@@ -155,7 +158,7 @@
       transition: background var(--transition-base), color var(--transition-base);
     }
     .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
-    .top-icon .material-icons { font-size: 22px; }
+    .top-icon .material-icons { font-size: 20px; }
     .top-icon.sparkle { color: var(--color-primary-500); }
     .top-badge {
       position: absolute; top: 2px; right: 2px;
@@ -203,12 +206,11 @@
 
     .page-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); margin-bottom: var(--space-m); }
     /* Titelzeile: Icon + Titel links */
-    .page-titlebar { display: flex; align-items: center; gap: var(--space-m); flex: 1; min-width: 0; flex-wrap: wrap; }
-    .page-title { font-size: 22px; font-weight: 500; margin: 0; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .page-titlebar { display: flex; align-items: center; gap: var(--space-s); flex: 1; min-width: 0; flex-wrap: wrap; }
+    .page-title { font-size: 20px; line-height: 28px; font-weight: 500; margin: 0; color: var(--color-neutral-dark-900); white-space: nowrap; }
     .page-title-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-      width: 32px; height: 32px; border-radius: var(--radius-s);
-      background: var(--color-neutral-dark-800); color: var(--color-neutral-light-000); }
-    .page-title-icon .material-symbols-outlined { font-size: 20px; }
+      color: var(--color-neutral-dark-900); }
+    .page-title-icon .material-symbols-outlined { font-size: 24px; }
 
     /* ---------- TOOLBAR ---------- */
     .toolbar { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; margin-bottom: var(--space-s); }
@@ -240,7 +242,7 @@
     .btn .material-symbols-outlined { font-size: 18px; }
     .btn-primary { background: var(--color-primary-500); color: #fff; border-color: var(--color-primary-500); }
     .btn-primary:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); }
-    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800); border-color: var(--color-neutral-light-500); }
+    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800); border-color: var(--color-neutral-dark-200); }
     .btn-secondary:hover { background: var(--color-neutral-light-200); }
     .btn-ghost { background: none; color: var(--color-neutral-dark-400); }
     .btn-ghost:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
@@ -383,8 +385,7 @@
       margin-bottom: var(--space-s); flex-shrink: 0; }
 
     /* RISK BANNER — aktive Anträge ohne To-do */
-    .risk { border: 1px solid var(--color-neutral-light-300, #E4E7EC);
-      background: var(--color-error-100, #FFEEEE); border-radius: var(--radius-s);
+    .risk { background: var(--color-error-100, #FFEEEE); border-radius: var(--radius-s);
       flex-shrink: 0; max-width: 100%; box-shadow: var(--shadow-xs);
       margin-left: var(--space-m); /* zusätzlicher Abstand zur Überschrift, über das Titelzeilen-gap hinaus */ }
     .risk-head { display: flex; align-items: center; gap: var(--space-s); padding: 6px 14px; height: 100%;
@@ -461,13 +462,13 @@
 
     /* ---------- TABLE ---------- */
     .table-wrap { flex-shrink: 0; overflow-x: auto; background: var(--color-neutral-light-000);
-      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); border-bottom: none;
-      box-shadow: var(--shadow-s); }
+      border-radius: var(--radius-s);
+      box-shadow: var(--shadow-xs); }
     table.todos { width: 100%; border-collapse: collapse; }
     table.todos thead th {
       position: sticky; top: 0; z-index: 2; background: var(--color-neutral-light-000);
-      text-align: left; font-size: 11px; letter-spacing: .2px;
-      color: var(--color-neutral-dark-400); font-weight: 500;
+      text-align: left; font-size: 12px;
+      color: var(--color-neutral-dark-900); font-weight: 400;
       padding: 10px 12px; border-bottom: 1px solid var(--color-neutral-light-500);
       border-right: 1px solid var(--color-neutral-light-500); white-space: nowrap; user-select: none;
     }
@@ -486,7 +487,7 @@
     body.compact { --row-pad-y: 6px; }
 
     table.todos tbody td {
-      padding: var(--row-pad-y) 12px; border-bottom: 1px solid var(--color-neutral-light-200);
+      padding: var(--row-pad-y) 12px; border-bottom: 1px solid var(--color-neutral-light-400);
       border-right: 1px solid var(--color-neutral-light-200);
       font-size: var(--body-regular-size); vertical-align: middle;
     }
@@ -540,17 +541,19 @@
     table.todos thead th.cell-check, table.todos tbody td.cell-check { padding-left: var(--space-l, 24px); padding-right: var(--space-l, 24px); }
     .rcheck {
       -webkit-appearance: none; appearance: none; margin: 0;
-      width: 20px; height: 20px; border: 2px solid var(--color-neutral-light-500);
+      width: 20px; height: 20px; border: 1px solid var(--color-neutral-dark-300);
       border-radius: 50%; cursor: pointer; position: relative; background: var(--color-neutral-light-000);
       transition: border-color var(--transition-fast), background var(--transition-fast);
       display: inline-block; vertical-align: middle;
     }
+    .rcheck::after {
+      content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+      border: solid var(--color-neutral-dark-300); border-width: 0 1px 1px 0; transform: rotate(45deg);
+      transition: border-color var(--transition-fast);
+    }
     .rcheck:hover { border-color: var(--color-primary-400); }
     .rcheck:checked { background: var(--color-success); border-color: var(--color-success); }
-    .rcheck:checked::after {
-      content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
-      border: solid #fff; border-width: 0 1px 1px 0; transform: rotate(45deg);
-    }
+    .rcheck:checked::after { border-color: #fff; }
     .rcheck:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
     /* to do cell */
@@ -583,13 +586,13 @@
 
     /* person cell */
     .person { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; row-gap: 0; }
-    .person-link { color: var(--color-primary-600); font-weight: 500; text-decoration: none; cursor: pointer; }
+    .person-link { color: var(--color-primary-500); font-weight: 500; text-decoration: none; cursor: pointer; }
     .person-link:hover { text-decoration: underline; }
     .person-sep { color: var(--color-neutral-dark-400); margin-left: -4px; }
-    .person-info { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
-      display: inline-flex; padding: 1px; border-radius: 50%; }
-    .person-info:hover { color: var(--color-primary-500); }
-    .person-info .material-symbols-outlined { font-size: 16px; }
+    .person-info { border: none; background: var(--color-neutral-light-200); cursor: pointer; color: var(--color-neutral-dark-400);
+      display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border-radius: 50%; }
+    .person-info:hover { background: var(--color-primary-100); color: var(--color-primary-600); }
+    .person-info .material-symbols-outlined { font-size: 15px; }
     .person-none { color: var(--color-neutral-dark-300); font-style: italic; font-size: 13px; }
 
     /* berater avatar */
@@ -631,6 +634,8 @@
     .inline-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
     .inline-edit.editing { flex: 1 1 auto; background: none; border-bottom-color: transparent; padding: 0; margin: 0; }
     .inline-edit.editing .material-symbols-outlined { display: none; }
+    /* Berater wird per Dropdown statt Freitext geändert */
+    .inline-edit[data-field="berater"] { cursor: pointer; }
     .inline-input {
       width: 100%; min-width: 130px; font-family: var(--font-family); font-size: 13px; line-height: 18px;
       color: var(--color-neutral-dark-900); padding: 3px 6px; background: var(--color-neutral-light-000);
@@ -735,18 +740,20 @@
     .table-footer {
       flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-m);
       padding: 10px var(--space-m); background: var(--color-neutral-light-000);
-      border: 1px solid var(--color-neutral-light-500); border-radius: 0 0 var(--radius-s) var(--radius-s);
+      border-radius: 0 0 var(--radius-m) var(--radius-m);
       font-size: 13px; color: var(--color-neutral-dark-400);
+      box-shadow: -2px 0 4px #e5e5e5;
     }
     .footer-left { display: inline-flex; align-items: center; gap: var(--space-s); }
     .footer-left select { border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs);
       padding: 3px 6px; font-size: 13px; font-family: var(--font-family); color: var(--color-neutral-dark-800); }
     .footer-right { display: inline-flex; align-items: center; gap: var(--space-s); }
-    .pager-btn { border: 1px solid var(--color-neutral-light-500); background: var(--color-neutral-light-000);
-      width: 30px; height: 30px; border-radius: var(--radius-s); cursor: pointer; color: var(--color-neutral-dark-600);
+    .pager-btn { border: none; background: transparent;
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: var(--color-neutral-dark-800);
       display: inline-flex; align-items: center; justify-content: center; }
+    .pager-btn .material-symbols-outlined { font-size: 20px; }
     .pager-btn:hover:not(:disabled) { background: var(--color-neutral-light-200); }
-    .pager-btn:disabled { opacity: .4; cursor: default; }
+    .pager-btn:disabled { color: var(--color-neutral-dark-300); opacity: 1; cursor: default; }
 
     /* empty state */
     .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -933,12 +940,24 @@
     body.cal-open .pane.collapsed .pane-toggle { order: -1; }
 
     /* reduced to-do columns when both panes share the width
-       Spalten: 1 Haken · 2 To do · 3 Fälligkeit · 4 Antragsteller · 5 Berater */
-    .table-wrap.cols-reduced th:nth-child(5), .table-wrap.cols-reduced td:nth-child(5) { display: none; }
+       Spalten: 1 Haken · 2 To do · 3 Fälligkeit · 4 Antragsteller · 5 Berater
+       Berater bleibt sichtbar, statt ganz zu verschwinden: die Spalte wird auf das
+       Avatar-Kürzel geschrumpft (Name + Header-Label ausgeblendet) und rechts
+       "festgeklebt" (position: sticky), damit sie auch bei horizontalem Scrollen
+       der übrigen, breiteren Spalten immer sichtbar bleibt. */
+    .table-wrap.cols-reduced th:nth-child(5), .table-wrap.cols-reduced td:nth-child(5),
+    .table-wrap.cols-slim th:nth-child(5), .table-wrap.cols-slim td:nth-child(5) {
+      position: sticky; right: 0; z-index: 3; min-width: 0 !important; width: 1%;
+      background: var(--color-neutral-light-000); border-left: 1px solid var(--color-neutral-light-500);
+    }
+    /* Zeilen-Hover/-Fokus färbt nur die tr, nicht die sticky-Zelle mit eigenem Hintergrund — hier nachziehen */
+    .table-wrap.cols-reduced tr:hover td:nth-child(5), .table-wrap.cols-slim tr:hover td:nth-child(5) { background: var(--color-neutral-light-100); }
+    .table-wrap.cols-reduced tr.row-focus td:nth-child(5), .table-wrap.cols-slim tr.row-focus td:nth-child(5) { background: var(--color-primary-100); }
+    .table-wrap.cols-reduced .berater-name, .table-wrap.cols-reduced .th-label,
+    .table-wrap.cols-slim .berater-name, .table-wrap.cols-slim .th-label { display: none; }
     .table-wrap.cols-reduced th:nth-child(2) { min-width: 0 !important; }
     .table-wrap.cols-reduced th:nth-child(3) { min-width: 0 !important; }
     /* Tagesansicht: Kalender ist schmaler → nur Berater weicht */
-    .table-wrap.cols-slim th:nth-child(5), .table-wrap.cols-slim td:nth-child(5) { display: none; }
     .table-wrap.cols-slim th:nth-child(2) { min-width: 220px !important; }
     /* schmalere Laptops: Fälligkeit darf enger werden, statt die Tabelle zu scrollen */
     @media (max-width: 1400px) {
@@ -1200,7 +1219,7 @@
               <th class="sortable" data-sort="titel" style="min-width:260px"><span class="th-inner">To do <span class="material-symbols-outlined th-sort-icon">unfold_more</span></span></th>
               <th class="sortable" data-sort="faelligkeit" style="min-width:220px"><span class="th-inner"><span class="material-symbols-outlined due-head-icon">schedule</span>Fälligkeit <span class="material-symbols-outlined th-sort-icon">unfold_more</span></span></th>
               <th class="sortable" data-sort="person" style="min-width:180px"><span class="th-inner">Antragsteller <span class="material-symbols-outlined th-sort-icon">unfold_more</span></span></th>
-              <th class="sortable" data-sort="berater" style="min-width:160px"><span class="th-inner">Berater <span class="material-symbols-outlined th-sort-icon">unfold_more</span></span></th>
+              <th class="sortable" data-sort="berater" style="min-width:160px"><span class="th-inner"><span class="th-label">Berater</span> <span class="material-symbols-outlined th-sort-icon">unfold_more</span></span></th>
             </tr>
           </thead>
           <!-- INLINE-ANLEGEN: bleibt dauerhaft als erste Zeile über der Liste -->
@@ -1250,8 +1269,8 @@
         </div>
         <div class="footer-right">
           <span id="rangeLabel">0–0 von 0</span>
-          <button class="pager-btn" id="prevPage" title="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
-          <button class="pager-btn" id="nextPage" title="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+          <button class="pager-btn" id="prevPage" title="Zurück"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+          <button class="pager-btn" id="nextPage" title="Weiter"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
         </div>
       </div>
 
@@ -1712,7 +1731,7 @@ function initials(name){ const p = name.trim().split(/\s+/); return ((p[0]||'')[
 function avatarColor(name){ let h=0; for(let i=0;i<name.length;i++) h=(h+name.charCodeAt(i))%AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
 function beraterHtml(name){
   if(!name) return '<span class="person-none">–</span>';
-  return `<span class="berater"><span class="avatar" style="background:${avatarColor(name)}" title="${esc(name)}">${esc(initials(name).toUpperCase())}</span><span class="berater-name">${esc(name)}</span></span>`;
+  return `<span class="berater inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern"><span class="avatar" style="background:${avatarColor(name)}" title="${esc(name)}">${esc(initials(name).toUpperCase())}</span><span class="berater-name">${esc(name)}</span></span>`;
 }
 // alle Antragsteller eines To-dos (1. Antragsteller + optional 2.)
 function antragsteller(t){
@@ -1809,7 +1828,7 @@ function groupToggleHtml(k, count){
   const g = GROUP_META[k];
   const collapsed = collapsedGroups.has(k);
   return `<button class="group-toggle" data-group="${k}" aria-expanded="${collapsed?'false':'true'}">
-    <span class="material-symbols-outlined group-chevron">${collapsed?'chevron_right':'expand_more'}</span>
+    <span class="material-symbols-outlined group-chevron">${collapsed?'chevron_right':'expand_less'}</span>
     <span class="group-pill" style="background:${g.color}"><span class="material-symbols-outlined">${g.icon}</span>${esc(g.label)}</span>
     <span class="group-count">${count}</span>
   </button>`;
@@ -2250,14 +2269,20 @@ function startInline(el, id){
   const t = findTodo(id); if(!t) return;
   const field = el.dataset.field;
   const isDate = field === 'faelligkeit';
+  const isSelect = field === 'berater';
   const original = t[field] || '';
 
-  const input = document.createElement('input');
-  input.type = isDate ? 'date' : 'text';
+  const input = document.createElement(isSelect ? 'select' : 'input');
   input.className = 'inline-input';
-  input.value = original;
-  input.setAttribute('aria-label', isDate ? 'Fälligkeitsdatum bearbeiten' : 'Titel bearbeiten');
-  if(!isDate) input.placeholder = 'Was ist zu tun?';
+  if(isSelect){
+    input.innerHTML = BERATER_ALL.map(b => `<option value="${esc(b)}"${b===original?' selected':''}>${esc(b)}</option>`).join('');
+    input.setAttribute('aria-label', 'Berater ändern');
+  } else {
+    input.type = isDate ? 'date' : 'text';
+    input.value = original;
+    input.setAttribute('aria-label', isDate ? 'Fälligkeitsdatum bearbeiten' : 'Titel bearbeiten');
+    if(!isDate) input.placeholder = 'Was ist zu tun?';
+  }
 
   el.classList.add('editing');
   const cell = el.closest('.due-cell');
@@ -2286,24 +2311,29 @@ function startInline(el, id){
 
   inlineActive = { id, field };
   input.focus();
-  if(!isDate){ input.select(); input.scrollLeft = 0; }   // Anfang des Titels bleibt sichtbar
+  if(!isDate && !isSelect){ input.select(); input.scrollLeft = 0; }   // Anfang des Titels bleibt sichtbar
 
   let closed = false;
   const finish = (commit) => {
     if(closed) return;
     closed = true; inlineActive = null;
-    const val = isDate ? input.value : input.value.trim();
+    const val = (isDate || isSelect) ? input.value : input.value.trim();
     if(commit && val && val !== original){
       t[field] = val;
       acknowledge(t);                            // Inline-Änderung quittiert System-To-do
       addHist(t, field, original, val);
       render();
       flashRow(t.id);
-      showToast(isDate ? `Fälligkeitsdatum auf ${fmtAbs(val)} geändert` : `Titel geändert: „${val}"`, 'history');
+      const msg = isDate ? `Fälligkeitsdatum auf ${fmtAbs(val)} geändert`
+        : isSelect ? `Berater geändert: ${val}`
+        : `Titel geändert: „${val}"`;
+      showToast(msg, 'history');
     } else {
       render();                                  // unverändert / leer / abgebrochen
     }
   };
+  // Berater: Auswahl im Dropdown übernimmt sofort, kein zusätzliches Enter nötig
+  if(isSelect) input.addEventListener('change', () => finish(true));
   input.addEventListener('keydown', ev => {
     ev.stopPropagation();
     if(ev.key === 'Enter'){ ev.preventDefault(); finish(true); }
