@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mein Tag V4 (Mobile)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Design system (one folder deep → ../design-system/) -->
+  <link rel="stylesheet" href="../design-system/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: var(--font-family);
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-200);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden; /* Seite selbst scrollt nie — nur .m-content innerhalb des Rahmens */
+      display: flex; align-items: center; justify-content: center; /* Rahmen horizontal + vertikal zentriert */
+    }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; line-height: 1; }
+
+    /* ---------- Mobiler Rahmen ----------
+       Simuliert einen Phone-Viewport auf dem Desktop, damit man den Prototyp im
+       Browser beurteilen kann, ohne ein echtes Gerät zu brauchen. Die eigentliche
+       App-Fläche (.m-app) ist responsiv und würde auf einem echten Gerät den
+       gesamten Viewport einnehmen. Feste (nicht min-)Höhe, damit der Rahmen nie
+       größer als der Bildschirm wird — Überlänge scrollt stattdessen innerhalb
+       von .m-content. */
+    .m-frame {
+      position: relative; width: 100%; max-width: 390px; height: 100vh; flex-shrink: 0;
+      background: var(--color-neutral-light-000);
+      box-shadow: var(--shadow-m);
+      display: flex; flex-direction: column;
+    }
+    @media (min-width: 391px) {
+      body { background: var(--color-neutral-light-200); padding: 24px 0; }
+      .m-frame { height: min(780px, calc(100vh - 48px)); border-radius: var(--radius-l); overflow: hidden; }
+    }
+
+    .m-app { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+    /* ---------- Globale Navbar ---------- */
+    .m-navbar {
+      display: flex; align-items: center; gap: var(--space-s);
+      padding: var(--space-xs) var(--space-m);
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-200);
+    }
+    .m-navbar-logo {
+      width: 28px; height: 28px; border-radius: var(--radius-s); flex-shrink: 0;
+      background: var(--color-primary-500); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.2px;
+    }
+    .m-navbar-spacer { flex: 1; }
+    .m-navbar-lang {
+      display: inline-flex; align-items: center; gap: 2px; border: none; background: none; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-800);
+      padding: 6px 6px; border-radius: var(--radius-s);
+    }
+    .m-navbar-lang:hover { background: var(--color-neutral-light-200); }
+    .m-navbar-lang .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-400); }
+    .m-navbar-profile {
+      width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0;
+      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-400);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .m-navbar-profile .material-symbols-outlined { font-size: 20px; }
+
+    /* ---------- Header ---------- */
+    .m-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-m) var(--space-m) var(--space-s);
+      background: var(--color-neutral-light-000);
+    }
+    .m-title-group { display: flex; align-items: center; gap: var(--space-s); min-width: 0; }
+    /* identisches Icon wie .page-title-icon in der Desktop-Version */
+    .m-title-icon {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 32px; height: 32px; border-radius: var(--radius-s);
+      background: var(--color-neutral-dark-800); color: var(--color-neutral-light-000);
+    }
+    .m-title-icon .material-symbols-outlined { font-size: 20px; }
+    .m-title { font-size: 22px; font-weight: 700; color: var(--color-neutral-dark-900); margin: 0; }
+    .m-header-actions { display: flex; align-items: center; gap: var(--space-xs); }
+    .m-icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border: none; border-radius: var(--radius-full);
+      background: transparent; color: var(--color-neutral-dark-900); cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .m-icon-btn:hover { background: var(--color-neutral-light-200); }
+    .m-icon-btn:active { background: var(--color-neutral-light-500, #E4E7EC); }
+    .m-icon-btn .material-symbols-outlined { font-size: 22px; }
+
+    /* ---------- Segmented Control (To-dos / Kalender) ---------- */
+    .m-seg-wrap { padding: 0 var(--space-m) var(--space-m); background: var(--color-neutral-light-000); }
+    .m-seg {
+      display: flex; padding: 3px; gap: 2px;
+      background: var(--color-neutral-light-200); border-radius: var(--radius-m);
+    }
+    .m-seg button {
+      flex: 1 1 0; border: none; background: transparent; cursor: pointer;
+      padding: 8px 12px; border-radius: var(--radius-s); font-size: 14px; font-weight: 500;
+      color: var(--color-neutral-dark-400); font-family: inherit;
+      transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .m-seg button.active {
+      background: var(--color-neutral-light-000); color: var(--color-neutral-dark-900);
+      box-shadow: var(--shadow-s);
+    }
+
+    /* ---------- Fälligkeits-Filter-Chips (horizontal scrollbar) ----------
+       Farben je Chip analog zu den Schnellfiltern der Desktop-Version
+       (--color-error/-warning-high/-info/-success/-primary). */
+    .m-chips-wrap { background: var(--color-neutral-light-000); padding-bottom: var(--space-s); }
+    .m-chips {
+      display: flex; gap: var(--space-xs); overflow-x: auto;
+      padding: 0 var(--space-m); scrollbar-width: none;
+      cursor: grab;
+    }
+    .m-chips::-webkit-scrollbar { display: none; }
+    .m-chips.is-dragging { cursor: grabbing; user-select: none; }
+    .m-chip {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+      padding: 7px 8px 7px 14px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); background: var(--color-neutral-light-000);
+      color: var(--color-neutral-dark-900); font-size: 13px; font-weight: 500;
+      font-family: inherit; cursor: pointer; white-space: nowrap;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    /* farbige Linie unten im Chip — wie .qf-strip bei web: erst sichtbar, wenn
+       aktiv, der restliche Border bleibt immer neutral */
+    .m-chip::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+      background: var(--chip); opacity: 0; transition: opacity var(--transition-fast);
+    }
+    .m-chip.active::after { opacity: 1; }
+    /* Zahl + ihr Hintergrund tragen die Filterfarbe — wie bei web (inaktiv + aktiv) */
+    .m-chip-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700;
+      background: var(--chip-tint, var(--color-neutral-light-200)); color: var(--chip, var(--color-neutral-dark-600));
+    }
+    /* aktiv: grauer Hintergrund wie bei web, Border bleibt normal — nur die Linie unten ist farbig */
+    .m-chip.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .m-chip.active .m-chip-count { background: var(--chip); color: #fff; }
+
+    /* ---------- Aktive Filter (Berater) — 1:1 wie .fchip/.chip-reset bei web.
+       Ein Chip pro ausgewähltem Berater, horizontal scrollbar/swipebar wie
+       #dueChips (siehe makeSwipeableM), statt in mehreren Zeilen umzubrechen. */
+    .m-active-filters {
+      display: flex; align-items: center; gap: var(--space-s); flex-wrap: nowrap;
+      overflow-x: auto; scrollbar-width: none; cursor: grab;
+      padding: 0 var(--space-m) var(--space-s);
+    }
+    .m-active-filters::-webkit-scrollbar { display: none; }
+    .m-active-filters.is-dragging { cursor: grabbing; user-select: none; }
+    .m-active-filters:empty { display: none; }
+    .m-fchip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 6px 3px 10px;
+      background: var(--color-primary-100); color: var(--color-primary-700);
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .m-fchip button {
+      border: none; background: none; cursor: pointer; color: var(--color-primary-700);
+      display: inline-flex; padding: 2px; border-radius: 50%;
+    }
+    .m-fchip button:hover { background: var(--color-primary-200); }
+    .m-fchip button .material-symbols-outlined { font-size: 15px; }
+    .m-chip-reset {
+      border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
+      font-size: 12px; font-weight: 500; text-decoration: underline; font-family: inherit;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .m-chip-reset:hover { color: var(--color-neutral-dark-900); }
+
+    /* ---------- Inhalt ---------- */
+    /* grauer Seitenhintergrund wie bei web (body { background: var(--color-neutral-light-100) }),
+       damit sich die weißen Cards/Kalendertage davon abheben */
+    .m-content { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-m); scrollbar-width: none; background: var(--color-neutral-light-100); }
+    .m-content::-webkit-scrollbar { display: none; }
+    .m-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--space-s); text-align: center; color: var(--color-neutral-dark-400);
+      padding: var(--space-xl) var(--space-m);
+    }
+    .m-placeholder .material-symbols-outlined { font-size: 40px; color: var(--color-neutral-light-500, #CBD2D9); }
+    .m-placeholder p { margin: 0; font-size: 14px; }
+    .m-view { display: none; }
+    .m-view.active { display: block; }
+
+    /* ---------- Gruppierte To-do-Kartenliste (Filter „Alle") ----------
+       1:1 aus der Desktop-Version übernommen: Chevron zum Ein-/Ausklappen +
+       farbige Pill (Icon+Label) + Zähler (siehe .group-toggle/.group-pill). */
+    /* Gruppe als eigene Card — klare Abgrenzung, besonders sichtbar wenn eingeklappt */
+    /* Border wie .table-wrap bei web (--color-neutral-light-500) */
+    .m-group {
+      margin-bottom: var(--space-m); padding: var(--space-s);
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m); box-shadow: var(--shadow-s);
+    }
+    .m-group-toggle {
+      display: flex; align-items: center; gap: 8px; border: none; background: none;
+      cursor: pointer; padding: 4px 2px; width: 100%; text-align: left; border-radius: var(--radius-xs);
+      margin-bottom: var(--space-s); font-family: inherit;
+    }
+    .m-group-chevron { font-size: 20px; color: var(--color-neutral-dark-400); }
+    .m-group-pill {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px 3px 8px;
+      border-radius: var(--radius-full); color: #fff; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap;
+    }
+    .m-group-pill .material-symbols-outlined { font-size: 14px; }
+    .m-group-count { font-size: 12px; font-weight: 600; color: var(--color-neutral-dark-400); }
+    .m-group-cards { display: flex; flex-direction: column; gap: var(--space-s); }
+
+    /* Checkbox liegt als eigenes Flex-Item neben .m-card-body und wird über
+       align-items:center auf die gesamte Kartenhöhe (Titel+Datum+Name) zentriert.
+       .m-card-body ist eine eigene Spalte, damit Titel/Datum/Name garantiert
+       dieselbe linke Kante haben (vorher lag der Titel in einer Reihe mit der
+       Checkbox, Datum/Name aber ohne deren Einzug darunter — dadurch der Versatz). */
+    /* Border-Farbe wie table.todos thead th / .table-wrap bei web (--color-neutral-light-500) */
+    .m-card {
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-m); padding: var(--space-m); box-shadow: var(--shadow-xs);
+      display: flex; flex-direction: row; align-items: center; gap: var(--space-m);
+    }
+    .m-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    /* Checkbox 1:1 wie .rcheck in der Desktop-Version (kreisförmig, Häkchen bei :checked) */
+    .m-card-check {
+      -webkit-appearance: none; appearance: none; margin: 0; flex-shrink: 0;
+      width: 20px; height: 20px; border: 2px solid var(--color-neutral-light-500);
+      border-radius: 50%; cursor: pointer; position: relative; background: var(--color-neutral-light-000);
+    }
+    .m-card-check:checked { background: var(--color-success); border-color: var(--color-success); }
+    .m-card-check:checked::after {
+      content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+      border: solid #fff; border-width: 0 1px 1px 0; transform: rotate(45deg);
+    }
+    .m-card-title { font-size: 14px; font-weight: 700; color: var(--color-neutral-dark-900); }
+    .m-card-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+    /* etwas kleiner als ein Standard-Touch-Ziel gehalten, sonst bläht die Zeile die
+       Card unten sichtbar auf und das (eigentlich symmetrische) Padding wirkt ungleich */
+    .m-card-act {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border: none; border-radius: var(--radius-full);
+      background: none; color: var(--color-neutral-dark-400); cursor: pointer;
+    }
+    .m-card-act:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); }
+    .m-card-act .material-symbols-outlined { font-size: 16px; }
+    .m-card-due { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-600); }
+    /* Fälligkeitsdatum klickbar/editierbar — 1:1 wie .inline-edit/.due-bump bei web */
+    .m-inline-edit {
+      cursor: pointer; border-radius: var(--radius-xs); padding: 1px 4px; margin: -1px -4px;
+      border-bottom: 1px dashed transparent;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+    .m-inline-edit:hover { background: var(--color-primary-100); border-bottom-color: var(--color-primary-400); }
+    .m-inline-edit.editing { padding: 0; margin: 0; border-bottom-color: transparent; }
+    .m-inline-input {
+      font-family: inherit; font-size: 13px; color: var(--color-neutral-dark-900);
+      padding: 3px 6px; background: var(--color-neutral-light-000);
+      border: 1px solid var(--color-primary-400); border-radius: var(--radius-s); box-shadow: var(--focus-ring);
+    }
+    .m-inline-input:focus { outline: none; }
+    .m-due-bump {
+      flex-shrink: 0; font-family: inherit; font-size: 11px; font-weight: 500; line-height: 16px;
+      color: var(--color-primary-700); background: var(--color-primary-100);
+      border: 1px solid var(--color-primary-400); border-radius: var(--radius-full);
+      padding: 1px 8px; cursor: pointer;
+    }
+    .m-card-due .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-400); }
+    .m-card-person { font-size: 13px; font-weight: 500; color: var(--color-primary-600); }
+    /* erledigt: durchgestrichen + gedämpft, wie tr[data-status="erledigt"] bei web */
+    .m-card.is-done .m-card-title, .m-card.is-done .m-card-person { text-decoration: line-through; color: var(--color-neutral-dark-300); }
+    /* Name + Actions in einer Zeile, statt einer eigenen Reihe darunter — macht die Card nicht höher */
+    .m-card-bottom-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-s); margin-top: -2px; }
+    .m-card-person-wrap { display: flex; align-items: center; gap: 2px; min-width: 0; }
+    /* Info-Icon neben dem Namen — 1:1 wie .person-info bei web */
+    .m-person-info {
+      border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
+      display: inline-flex; padding: 1px; border-radius: 50%; flex-shrink: 0;
+    }
+    .m-person-info:hover { color: var(--color-primary-500); }
+    .m-person-info .material-symbols-outlined { font-size: 16px; }
+
+    /* ---------- Vollbild-Suche ---------- */
+    .m-search-overlay {
+      position: absolute; inset: 0; z-index: var(--z-modal);
+      display: flex; flex-direction: column;
+      background: var(--color-neutral-light-000);
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: opacity var(--transition-base), transform var(--transition-base), visibility 0s var(--transition-base);
+    }
+    .m-search-overlay.open {
+      opacity: 1; visibility: visible; transform: translateY(0);
+      transition: opacity var(--transition-base), transform var(--transition-base);
+    }
+    .m-search-bar {
+      display: flex; align-items: center; gap: var(--space-xs);
+      padding: var(--space-m) var(--space-m) var(--space-s);
+      border-bottom: 1px solid var(--color-neutral-light-200);
+    }
+    .m-search-input {
+      flex: 1; min-width: 0; border: none; outline: none; background: none;
+      font-family: inherit; font-size: 16px; color: var(--color-neutral-dark-900);
+    }
+    .m-search-input::placeholder { color: var(--color-neutral-dark-400); }
+
+    /* ---------- Filter-Bottom-Sheet ---------- */
+    .m-sheet-backdrop {
+      position: absolute; inset: 0; z-index: var(--z-overlay);
+      background: rgba(55, 71, 79, 0.4);
+      opacity: 0; visibility: hidden; transition: opacity var(--transition-base), visibility 0s var(--transition-base);
+    }
+    .m-sheet-backdrop.open { opacity: 1; visibility: visible; transition: opacity var(--transition-base); }
+    .m-sheet {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: var(--z-modal);
+      max-height: 75%; display: flex; flex-direction: column;
+      background: var(--color-neutral-light-000);
+      border-radius: var(--radius-l) var(--radius-l) 0 0; box-shadow: var(--shadow-l);
+      transform: translateY(100%); transition: transform var(--transition-base);
+    }
+    .m-sheet.open { transform: translateY(0); }
+    .m-sheet-handle { width: 36px; height: 4px; border-radius: var(--radius-full); background: var(--color-neutral-light-500); margin: var(--space-s) auto 0; flex-shrink: 0; }
+    .m-sheet-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-s) var(--space-m); flex-shrink: 0;
+    }
+    .m-sheet-header h2 { font-size: 16px; font-weight: 500; margin: 0; }
+    .m-sheet-body { flex: 1; overflow-y: auto; padding: 0 var(--space-m); scrollbar-width: none; }
+    .m-sheet-body::-webkit-scrollbar { display: none; }
+    .m-sheet-group { padding-bottom: var(--space-m); }
+    .m-sheet-group-title {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.2px; text-transform: uppercase;
+      color: var(--color-neutral-dark-400); padding: var(--space-s) 0;
+    }
+    .m-sheet-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-s) 0; font-size: 14px; color: var(--color-neutral-dark-900);
+      border-bottom: 1px solid var(--color-neutral-light-200); cursor: pointer;
+    }
+    .m-sheet-group .m-sheet-row:last-child { border-bottom: none; }
+    .m-sheet-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-primary-500); cursor: pointer; }
+    .m-sheet-footer { padding: var(--space-m); flex-shrink: 0; border-top: 1px solid var(--color-neutral-light-200); }
+    .m-btn-primary {
+      display: block; width: 100%; padding: 12px; border: none; border-radius: var(--radius-s);
+      background: var(--color-primary-500); color: #fff; font-family: inherit; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: background var(--transition-fast);
+    }
+    .m-btn-primary:hover { background: var(--color-primary-600); }
+
+    /* ---------- FAB ---------- */
+    /* Extended FAB mit Label — gleicher Stil wie .btn-add-todo ("+ ToDo") bei web,
+       nur größer/erhabener (Schatten statt Border) fürs FAB-Format */
+    .m-fab {
+      position: absolute; right: var(--space-m); bottom: var(--space-m); z-index: var(--z-raised, 10);
+      border: none; border-radius: var(--radius-s);
+      padding: 12px 18px; gap: 6px; font-family: inherit; font-size: 14px; font-weight: 500;
+      background: var(--color-primary-500); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-m); cursor: pointer; transition: background var(--transition-fast);
+    }
+    .m-fab:hover { background: var(--color-primary-600); }
+    .m-fab .material-symbols-outlined { font-size: 20px; }
+
+    /* ---------- Formularfelder ("To do hinzufügen") ---------- */
+    .m-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-m); }
+    .m-field label { font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-600); }
+    .m-req { color: var(--color-error-500); }
+    .m-field-hint { font-weight: 400; color: var(--color-neutral-dark-400); }
+    .m-field input, .m-field select, .m-field textarea {
+      font-family: inherit; font-size: 14px; padding: 10px 12px;
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      color: var(--color-neutral-dark-900); background: var(--color-neutral-light-000);
+    }
+    .m-field textarea { resize: vertical; min-height: 64px; }
+    .m-field.invalid input, .m-field.invalid select { border-color: var(--color-error-500); }
+    .m-field-err { display: none; align-items: center; gap: 4px; font-size: 12px; color: var(--color-error-600); }
+    .m-field-err .material-symbols-outlined { font-size: 14px; }
+    .m-field.invalid .m-field-err { display: flex; }
+
+    /* ---------- Kalender-Ansicht ----------
+       Mock-Daten/Struktur (TERMINE, BDAYS, TERMIN_TYP) 1:1 aus
+       mein-tag-prototype-trial.html übernommen; Layout an Mobile angepasst:
+       Tages-/Mehrtagesspalten liegen nebeneinander in einer horizontal
+       scrollbaren Reihe statt in einem festen Grid. */
+    .m-cal-nav { display: flex; align-items: center; gap: var(--space-xs); padding: 0 var(--space-m) var(--space-s); }
+    .m-cal-nav-btn {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 32px; height: 32px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      background: var(--color-neutral-light-000); color: var(--color-neutral-dark-600); cursor: pointer;
+    }
+    .m-cal-nav-btn .material-symbols-outlined { font-size: 20px; }
+    .m-cal-range {
+      flex: 1; min-width: 0; font-size: 14px; font-weight: 500; color: var(--color-neutral-dark-900);
+      text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .m-cal-chips-wrap { display: flex; justify-content: center; padding-bottom: var(--space-s); }
+    /* Zeitraum-Umschalter 1:1 wie .segmented/.segmented--sm in der Desktop-Version */
+    .m-cal-seg {
+      display: inline-flex; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); overflow: hidden; background: var(--color-neutral-light-000);
+    }
+    .m-cal-seg button {
+      display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer;
+      padding: 3px 10px; font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-400);
+      font-family: inherit; white-space: nowrap;
+    }
+    .m-cal-seg button + button { border-left: 1px solid var(--color-neutral-light-500); }
+    .m-cal-seg button.active { background: var(--color-primary-100); color: var(--color-primary-600); font-weight: 500; }
+
+    .m-cal-grid {
+      display: flex; gap: var(--space-s); overflow-x: auto; scroll-snap-type: x mandatory;
+      padding-bottom: var(--space-xs); scrollbar-width: none;
+    }
+    .m-cal-grid::-webkit-scrollbar { display: none; }
+    .m-cal-day {
+      flex: 0 0 100%; scroll-snap-align: start; min-width: 0;
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-200);
+      border-radius: var(--radius-m); padding: var(--space-s);
+    }
+    /* 3-Tage: ~1,2 Spalten sichtbar (Rest als Scroll-Hinweis angeschnitten) */
+    #viewKalender.view-drei .m-cal-day { flex-basis: 82%; }
+    /* Woche: etwas breiter als vorher, damit Zeit+Titel im Kompakt-Stil noch lesbar bleiben (~2 Spalten sichtbar) */
+    #viewKalender.view-woche .m-cal-day { flex-basis: 48%; }
+    /* „1 Tag"-Ansicht: der Wochentag steht schon oben im Bereichs-Label (.m-cal-range) */
+    #viewKalender.view-tag .m-cal-day-head { display: none; }
+    .m-cal-day-head {
+      display: flex; align-items: baseline; gap: 6px; padding-bottom: var(--space-s);
+      border-bottom: 1px solid var(--color-neutral-light-200); margin-bottom: var(--space-s);
+    }
+    .m-cal-wd { font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-400); text-transform: uppercase; }
+    .m-cal-dnum {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: var(--radius-full);
+      font-size: 15px; font-weight: 700; color: var(--color-neutral-dark-900);
+    }
+    .m-cal-day.today .m-cal-dnum { background: var(--color-primary-500); color: #fff; }
+
+    .m-cal-events { display: flex; flex-direction: column; gap: 4px; }
+    /* Kompaktes Basis-Format (3 Tage/Woche): Zeit über dem Titel, 2-zeilig abgeschnitten —
+       genug Fläche ist hier knapp, ein baseline-Zeile-Layout wie in „1 Tag" würde umbrechen. */
+    .m-cal-event {
+      border-left: 3px solid var(--evc); background: var(--evbg);
+      border-radius: var(--radius-xs); padding: 4px 6px; overflow: hidden; min-width: 0;
+    }
+    .m-cal-ev-time { display: block; font-size: 10px; font-weight: 500; color: var(--color-neutral-dark-400); line-height: 1.2; }
+    .m-cal-ev-title {
+      font-size: 11px; line-height: 1.25; color: var(--color-neutral-dark-900);
+      overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .m-cal-empty { padding: var(--space-s) 2px; font-size: 11px; color: var(--color-neutral-dark-400); text-align: center; }
+    /* in der Wochenspalte zu eng für den Leerzustand-Text */
+    #viewKalender.view-woche .m-cal-empty { display: none; }
+
+    /* „1 Tag": geräumiges Zeile-Layout (Zeit neben Titel), volle Breite verfügbar */
+    #viewKalender.view-tag .m-cal-events { gap: 6px; }
+    #viewKalender.view-tag .m-cal-event {
+      display: flex; align-items: baseline; gap: var(--space-s); padding: 7px var(--space-s);
+      border-radius: var(--radius-s);
+    }
+    #viewKalender.view-tag .m-cal-ev-time { display: inline; flex: 0 0 40px; font-size: 12px; color: var(--color-neutral-dark-600); }
+    #viewKalender.view-tag .m-cal-ev-title { font-size: 13px; line-height: 1.3; -webkit-line-clamp: 2; line-clamp: 2; }
+    #viewKalender.view-tag .m-cal-empty { padding: var(--space-l) var(--space-m); font-size: 13px; }
+
+    .m-cal-bdays { margin-top: var(--space-m); padding-top: var(--space-s); border-top: 1px solid var(--color-neutral-light-200); }
+    .m-cal-bdays-head {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
+      color: var(--color-neutral-dark-400); padding-bottom: 6px;
+    }
+    .m-cal-bday { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-neutral-dark-900); padding: 3px 0; }
+    .m-cal-bday .material-symbols-outlined { font-size: 16px; color: var(--color-primary-500); }
+    /* 3-Tage/Woche: kompakter, wie bei web */
+    #viewKalender.view-drei .m-cal-bday, #viewKalender.view-woche .m-cal-bday { font-size: 11px; gap: 4px; }
+    #viewKalender.view-drei .m-cal-bday .material-symbols-outlined, #viewKalender.view-woche .m-cal-bday .material-symbols-outlined { font-size: 14px; }
+    #viewKalender.view-woche .m-cal-bday-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="m-frame">
+    <div class="m-app">
+      <!-- Globale App-Navbar (Burger-Menü, Logo, Profil, Sprache) — bewusst
+           reduziert auf diese vier, "+"-Anlegen und Benachrichtigungen aus dem
+           Referenz-Screenshot sind hier nicht nötig -->
+      <div class="m-navbar">
+        <button class="m-icon-btn" aria-label="Menü"><span class="material-symbols-outlined">menu</span></button>
+        <div class="m-navbar-logo">FL</div>
+        <div class="m-navbar-spacer"></div>
+        <button class="m-navbar-lang">DE <span class="material-symbols-outlined">expand_more</span></button>
+        <button class="m-navbar-profile" aria-label="Profil"><span class="material-symbols-outlined">account_circle</span></button>
+      </div>
+
+      <header class="m-header">
+        <div class="m-title-group">
+          <span class="m-title-icon"><span class="material-symbols-outlined">assignment_turned_in</span></span>
+          <h1 class="m-title">To do's</h1>
+        </div>
+        <div class="m-header-actions">
+          <button class="m-icon-btn" id="btnSearch" aria-label="Suche"><span class="material-symbols-outlined">search</span></button>
+          <button class="m-icon-btn" id="btnFilter" aria-label="Filter"><span class="material-symbols-outlined">filter_list</span></button>
+        </div>
+      </header>
+
+      <div class="m-seg-wrap">
+        <div class="m-seg" id="mainSeg" role="tablist" aria-label="Ansicht">
+          <button data-view="todos" class="active" role="tab" aria-selected="true">To-dos</button>
+          <button data-view="kalender" role="tab" aria-selected="false">Kalender</button>
+        </div>
+      </div>
+
+      <div class="m-chips-wrap" id="dueChipsWrap">
+        <div class="m-chips" id="dueChips">
+          <button class="m-chip active" data-due="alle" style="--chip:var(--color-primary-500);--chip-tint:var(--color-primary-100)">Alle <span class="m-chip-count">12</span></button>
+          <button class="m-chip" data-due="ueberfaellig" style="--chip:var(--color-error-500);--chip-tint:var(--color-error-100)">Überfällig <span class="m-chip-count">3</span></button>
+          <button class="m-chip" data-due="heute" style="--chip:var(--color-warning-high);--chip-tint:var(--color-warning-high-light)">Heute <span class="m-chip-count">4</span></button>
+          <button class="m-chip" data-due="morgen" style="--chip:var(--color-info);--chip-tint:var(--color-info-light)">Morgen <span class="m-chip-count">2</span></button>
+          <button class="m-chip" data-due="erledigt" style="--chip:var(--color-success);--chip-tint:var(--color-success-light)">Erledigte <span class="m-chip-count">3</span></button>
+        </div>
+      </div>
+
+      <!-- aktive Filter — wie #chipRow/.fchip bei web: zeigt, was gerade ausgewählt ist -->
+      <div class="m-active-filters" id="activeFilters"></div>
+
+      <main class="m-content">
+        <div class="m-view active" id="viewTodos"></div>
+        <div class="m-view" id="viewKalender">
+          <div class="m-cal-nav">
+            <button class="m-cal-nav-btn" id="calPrevM" aria-label="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
+            <div class="m-cal-range" id="calRangeM"></div>
+            <button class="m-cal-nav-btn" id="calNextM" aria-label="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
+
+          <div class="m-cal-chips-wrap">
+            <div class="m-cal-seg" id="calViewChips">
+              <button class="active" data-view="tag">1 Tag</button>
+              <button data-view="drei">3 Tage</button>
+              <button data-view="woche">Woche</button>
+            </div>
+          </div>
+
+          <div class="m-cal-grid" id="calGridM"></div>
+        </div>
+      </main>
+
+      <!-- FAB bleibt beim Scrollen von .m-content fixiert, da er außerhalb von
+           .m-content liegt und relativ zu .m-frame positioniert ist -->
+      <button class="m-fab" id="btnFab"><span class="material-symbols-outlined">add</span> <span id="fabLabel">ToDo</span></button>
+
+      <!-- Vollbild-Suche: ersetzt den Header, solange sie offen ist -->
+      <div class="m-search-overlay" id="searchOverlay">
+        <div class="m-search-bar">
+          <button class="m-icon-btn" id="btnSearchBack" aria-label="Zurück"><span class="material-symbols-outlined">arrow_back</span></button>
+          <input type="text" class="m-search-input" id="searchInput" placeholder="Suchen nach To-do, Kundennummer …" />
+        </div>
+        <div class="m-placeholder">
+          <span class="material-symbols-outlined">search</span>
+          <p>Suchergebnisse erscheinen hier.</p>
+        </div>
+      </div>
+
+      <!-- Filter-Bottom-Sheet: Art / Berater -->
+      <div class="m-sheet-backdrop" id="filterBackdrop"></div>
+      <div class="m-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-label="Filter">
+        <div class="m-sheet-handle"></div>
+        <div class="m-sheet-header">
+          <h2>Filter</h2>
+          <button class="m-icon-btn" id="btnCloseFilter" aria-label="Schließen"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="m-sheet-body">
+          <div class="m-sheet-group">
+            <div class="m-sheet-group-title">Berater</div>
+            <label class="m-sheet-row"><span>Anna Berger</span><input type="checkbox" /></label>
+            <label class="m-sheet-row"><span>Jonas Keller</span><input type="checkbox" /></label>
+            <label class="m-sheet-row"><span>Sofia Marchetti</span><input type="checkbox" /></label>
+          </div>
+        </div>
+        <div class="m-sheet-footer">
+          <button class="m-btn-primary" id="btnApplyFilter">Anwenden</button>
+        </div>
+      </div>
+
+      <!-- "To do hinzufügen"-Sheet — Felder/Validierung 1:1 aus der Desktop-Version
+           (siehe #panel in mein-tag-prototype-trial.html), nur als Bottom Sheet statt
+           zentriertem Modal. -->
+      <div class="m-sheet-backdrop" id="addBackdrop"></div>
+      <div class="m-sheet" id="addSheet" role="dialog" aria-modal="true" aria-label="To do hinzufügen">
+        <div class="m-sheet-handle"></div>
+        <div class="m-sheet-header">
+          <h2>To do hinzufügen</h2>
+          <button class="m-icon-btn" id="btnCloseAdd" aria-label="Schließen"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="m-sheet-body">
+          <div class="m-field" id="fAddTitel">
+            <label for="addInTitel">Titel <span class="m-req">*</span></label>
+            <input type="text" id="addInTitel" autocomplete="off" placeholder="Was ist zu tun?" />
+            <span class="m-field-err"><span class="material-symbols-outlined">error</span> Bitte einen Titel eingeben.</span>
+          </div>
+
+          <div class="m-field">
+            <label for="addInDatum">Fälligkeitsdatum</label>
+            <input type="date" id="addInDatum" />
+          </div>
+
+          <div class="m-field">
+            <label for="addInTyp">Art</label>
+            <select id="addInTyp">
+              <option value="aufgabe">Aufgabe</option>
+              <option value="rueckruf">Rückruf</option>
+              <option value="unterlagen">Unterlagen</option>
+              <option value="termin">Termin</option>
+            </select>
+          </div>
+
+          <div class="m-field" id="fAddPerson">
+            <label for="addInPerson">Antragsteller <span class="m-req">*</span></label>
+            <input type="text" id="addInPerson" autocomplete="off" placeholder="Kundennummer oder Name …" list="addPersonList" />
+            <datalist id="addPersonList">
+              <option value="Andreas Weber"></option>
+              <option value="Petra Schulz"></option>
+              <option value="Sandra Klein"></option>
+              <option value="Michael Braun"></option>
+              <option value="Anna Berger"></option>
+              <option value="Sofia Marchetti"></option>
+            </datalist>
+            <span class="m-field-err"><span class="material-symbols-outlined">error</span> Bitte einen Antragsteller auswählen.</span>
+          </div>
+
+          <div class="m-field">
+            <label for="addInNotiz">Notiz <span class="m-field-hint">(optional)</span></label>
+            <textarea id="addInNotiz" placeholder="Zusätzliche Details …"></textarea>
+          </div>
+        </div>
+        <div class="m-sheet-footer">
+          <button class="m-btn-primary" id="btnSaveAdd"><span class="material-symbols-outlined">check</span> Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const seg = document.getElementById('mainSeg');
+    seg.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-view]');
+      if (!btn) return;
+      seg.querySelectorAll('button').forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      document.querySelectorAll('.m-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(btn.dataset.view === 'todos' ? 'viewTodos' : 'viewKalender').classList.add('active');
+      // Fälligkeits-Filter/aktive Filter gehören nur zur To-do-Liste, im Kalender sind sie ausgeblendet
+      document.getElementById('dueChipsWrap').style.display = btn.dataset.view === 'todos' ? '' : 'none';
+      document.getElementById('activeFilters').style.display = btn.dataset.view === 'todos' ? '' : 'none';
+      // FAB spiegelt "+ Termin" im Kalender, sonst "+ ToDo" (wie web)
+      document.getElementById('fabLabel').textContent = btn.dataset.view === 'todos' ? 'ToDo' : 'Termin';
+    });
+
+    /* ---------- Fälligkeits-Filter-Chips ---------- */
+    /* ---------- To-do-Kartenliste — Mock-Daten + echte Filterung/Gruppierung ----------
+       Gruppen-Farben/Icons/Aufbau 1:1 aus GROUP_META/groupToggleHtml in
+       mein-tag-prototype-trial.html übernommen. */
+    const GROUP_META = {
+      ueberfaellig: { label: 'Überfällig', icon: 'warning',   color: 'var(--color-error-500)' },
+      heute:        { label: 'Heute',      icon: 'today',     color: 'var(--color-warning-high)' },
+      morgen:       { label: 'Morgen',     icon: 'event',     color: 'var(--color-info)' },
+      erledigt:     { label: 'Erledigt',   icon: 'task_alt',  color: 'var(--color-success)' },
+    };
+    const GROUP_ORDER = ['ueberfaellig', 'heute', 'morgen', 'erledigt'];
+    const MOCK_TODOS = [
+      { titel: 'Bonitätsunterlagen nachfordern',            due: 'ueberfaellig', datum: '2026-08-17', zeit: '',      person: 'Sandra Klein' },
+      { titel: 'Rückruf: offene Fragen zur Finanzierung',   due: 'ueberfaellig', datum: '2026-08-17', zeit: '14:00', person: 'Petra Schulz' },
+      { titel: 'Grundbuchauszug Braun anfordern',           due: 'ueberfaellig', datum: '2026-08-16', zeit: '',      person: 'Michael Braun' },
+      { titel: 'Selbstauskunft von Andreas Weber prüfen',   due: 'heute',        datum: '2026-08-18', zeit: '09:00', person: 'Andreas Weber' },
+      { titel: 'Dokumente von Andreas Weber prüfen',        due: 'heute',        datum: '2026-08-18', zeit: '',      person: 'Andreas Weber' },
+      { titel: 'Termin mit Michael Braun vorbereiten',      due: 'heute',        datum: '2026-08-18', zeit: '11:30', person: 'Michael Braun' },
+      { titel: 'Einkommensnachweise Berger prüfen',         due: 'heute',        datum: '2026-08-18', zeit: '',      person: 'Anna Berger' },
+      { titel: 'Angebot Lassestraße finalisieren',          due: 'morgen',       datum: '2026-08-19', zeit: '08:00', person: 'Sofia Marchetti' },
+      { titel: 'Objektunterlagen Klein anfordern',          due: 'morgen',       datum: '2026-08-19', zeit: '',      person: 'Sandra Klein' },
+      { titel: 'Widerrufsbelehrung verschickt',             due: 'erledigt',     datum: '2026-08-16', zeit: '',      person: 'Jonas Keller',  erledigt: true },
+      { titel: 'Identitätsprüfung abgeschlossen',           due: 'erledigt',     datum: '2026-08-15', zeit: '',      person: 'Sandra Klein',  erledigt: true },
+      { titel: 'Zinsbindung Vogel prüfen',                  due: 'erledigt',     datum: '2026-08-14', zeit: '',      person: 'Lukas Vogel',   erledigt: true },
+    ];
+    MOCK_TODOS.forEach((t, i) => { t._idx = i; });
+    let dueFilter = 'alle';
+    const collapsedGroupsM = new Set();
+
+    /* ---------- Fälligkeitsdatum: Anzeige + Inline-Bearbeitung (1:1 aus web) ---------- */
+    const WD_ABBR_M = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    function parseDateM(s) { const [y, m, d] = s.split('-').map(Number); const dt = new Date(y, m - 1, d); dt.setHours(0, 0, 0, 0); return dt; }
+    function toISOInputM(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+    function shiftISOM(s, days) { const d = parseDateM(s); d.setDate(d.getDate() + days); return toISOInputM(d); }
+    function fmtDueLabelM(t) {
+      const d = parseDateM(t.datum);
+      let s = `${WD_ABBR_M[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`;
+      if (t.zeit) s += ' · ' + t.zeit;
+      return s;
+    }
+
+    function groupToggleHtmlM(k, count, collapsed) {
+      const g = GROUP_META[k];
+      return `<button class="m-group-toggle" data-group="${k}" aria-expanded="${collapsed ? 'false' : 'true'}">
+        <span class="material-symbols-outlined m-group-chevron">${collapsed ? 'chevron_right' : 'expand_more'}</span>
+        <span class="m-group-pill" style="background:${g.color}"><span class="material-symbols-outlined">${g.icon}</span>${g.label}</span>
+        <span class="m-group-count">${count}</span>
+      </button>`;
+    }
+    function cardHtmlM(t) {
+      return `<div class="m-card${t.erledigt ? ' is-done' : ''}">
+        <input type="checkbox" class="m-card-check" data-idx="${t._idx}" aria-label="Als erledigt markieren" ${t.erledigt ? 'checked' : ''} />
+        <div class="m-card-body">
+          <div class="m-card-title m-inline-edit" data-idx="${t._idx}" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">${t.titel}</div>
+          <div class="m-card-due m-inline-edit" data-idx="${t._idx}" data-field="datum" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern"><span class="material-symbols-outlined">schedule</span>${fmtDueLabelM(t)}</div>
+          <div class="m-card-bottom-row">
+            <div class="m-card-person-wrap">
+              <span class="m-card-person">${t.person}</span>
+              <button class="m-person-info" aria-label="Kontaktdaten der Antragsteller anzeigen"><span class="material-symbols-outlined">info</span></button>
+            </div>
+            <div class="m-card-actions">
+              <button class="m-card-act" aria-label="Verlauf" title="Verlauf"><span class="material-symbols-outlined">history</span></button>
+              <button class="m-card-act" aria-label="Löschen" title="Löschen"><span class="material-symbols-outlined">delete</span></button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    // erledigt-Häkchen gewinnt immer gegen den ursprünglichen Fälligkeits-Bucket —
+    // dadurch wandert ein abgehaktes To-do sofort nach „Erledigt" (und zurück beim Entmarkieren)
+    function effectiveDueM(t) { return t.erledigt ? 'erledigt' : t.due; }
+    function updateChipCountsM() {
+      document.querySelectorAll('#dueChips .m-chip').forEach(chip => {
+        const key = chip.dataset.due;
+        const n = key === 'alle' ? MOCK_TODOS.length : MOCK_TODOS.filter(t => effectiveDueM(t) === key).length;
+        chip.querySelector('.m-chip-count').textContent = n;
+      });
+    }
+    function renderTodosM() {
+      const view = document.getElementById('viewTodos');
+      if (dueFilter === 'alle') {
+        const groups = new Map();
+        MOCK_TODOS.forEach(t => {
+          const k = effectiveDueM(t);
+          if (!groups.has(k)) groups.set(k, []);
+          groups.get(k).push(t);
+        });
+        const keys = GROUP_ORDER.filter(k => groups.has(k));
+        view.innerHTML = keys.map(k => {
+          const items = groups.get(k);
+          const collapsed = collapsedGroupsM.has(k);
+          const cards = collapsed ? '' : `<div class="m-group-cards">${items.map(cardHtmlM).join('')}</div>`;
+          return `<div class="m-group">${groupToggleHtmlM(k, items.length, collapsed)}${cards}</div>`;
+        }).join('');
+      } else {
+        const items = MOCK_TODOS.filter(t => effectiveDueM(t) === dueFilter);
+        view.innerHTML = `<div class="m-group-cards">${items.map(cardHtmlM).join('')}</div>`;
+      }
+      updateChipCountsM();
+    }
+    document.getElementById('viewTodos').addEventListener('click', (e) => {
+      const toggle = e.target.closest('.m-group-toggle');
+      if (toggle) {
+        const k = toggle.dataset.group;
+        collapsedGroupsM.has(k) ? collapsedGroupsM.delete(k) : collapsedGroupsM.add(k);
+        renderTodosM();
+        return;
+      }
+      const editEl = e.target.closest('.m-inline-edit');
+      if (editEl && !editEl.classList.contains('editing')) {
+        editEl.dataset.field === 'titel' ? startTitleEditM(editEl) : startDueEditM(editEl);
+      }
+    });
+    document.getElementById('viewTodos').addEventListener('change', (e) => {
+      const cb = e.target.closest('.m-card-check');
+      if (!cb) return;
+      MOCK_TODOS[Number(cb.dataset.idx)].erledigt = cb.checked;
+      renderTodosM();
+    });
+
+    // Titel inline bearbeiten — 1:1 wie startInline() (Feld "titel") in mein-tag-prototype-trial.html
+    function startTitleEditM(el) {
+      if (inlineActiveM !== null) return;
+      const idx = Number(el.dataset.idx);
+      const t = MOCK_TODOS[idx];
+      const original = t.titel;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'm-inline-input';
+      input.value = original;
+      input.setAttribute('aria-label', 'Titel bearbeiten');
+
+      el.classList.add('editing');
+      el.innerHTML = '';
+      el.appendChild(input);
+
+      inlineActiveM = idx;
+      input.focus();
+      input.select();
+
+      let closed = false;
+      const finish = (commit) => {
+        if (closed) return;
+        closed = true;
+        inlineActiveM = null;
+        const val = input.value.trim();
+        if (commit && val && val !== original) t.titel = val;
+        renderTodosM();
+      };
+      input.addEventListener('keydown', (ev) => {
+        ev.stopPropagation();
+        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+        else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+      });
+      input.addEventListener('blur', () => finish(true));
+      input.addEventListener('click', (ev) => ev.stopPropagation());
+    }
+
+    // Fälligkeitsdatum inline bearbeiten oder per "+1 Tag" verschieben — 1:1 wie
+    // startInline()/.due-bump in mein-tag-prototype-trial.html
+    let inlineActiveM = null;
+    function startDueEditM(el) {
+      if (inlineActiveM !== null) return;
+      const idx = Number(el.dataset.idx);
+      const t = MOCK_TODOS[idx];
+      const original = t.datum;
+
+      const input = document.createElement('input');
+      input.type = 'date';
+      input.className = 'm-inline-input';
+      input.value = original;
+      input.setAttribute('aria-label', 'Fälligkeitsdatum bearbeiten');
+
+      el.classList.add('editing');
+      el.innerHTML = '';
+      el.appendChild(input);
+
+      const bumpBtn = document.createElement('button');
+      bumpBtn.type = 'button';
+      bumpBtn.className = 'm-due-bump';
+      bumpBtn.textContent = '+1 Tag';
+      bumpBtn.title = 'Datum im Feld um 1 Tag verschieben';
+      // mousedown abfangen, sonst verliert das Datumsfeld vor dem Klick den Fokus
+      // (blur committet sofort) und die Verschiebung würde nie ankommen.
+      bumpBtn.addEventListener('mousedown', (ev) => ev.preventDefault());
+      bumpBtn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        input.value = shiftISOM(input.value || original, 1);
+      });
+      el.appendChild(bumpBtn);
+
+      inlineActiveM = idx;
+      input.focus();
+
+      let closed = false;
+      const finish = (commit) => {
+        if (closed) return;
+        closed = true;
+        inlineActiveM = null;
+        if (commit && input.value && input.value !== original) t.datum = input.value;
+        renderTodosM();
+      };
+      input.addEventListener('keydown', (ev) => {
+        ev.stopPropagation();
+        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+        else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+      });
+      input.addEventListener('blur', () => finish(true));
+      input.addEventListener('click', (ev) => ev.stopPropagation());
+    }
+
+    // Chip-Reihe per Swipe/Drag scrollbar machen — auf echten Touch-Geräten scrollt
+    // .m-chips schon nativ per overflow-x:auto, aber in der Desktop-Vorschau (Maus statt
+    // Touch) gibt es sonst keine Möglichkeit, an "Erledigte" heranzukommen.
+    function makeSwipeableM(el) {
+      let dragging = false, moved = false, startX = 0, startScroll = 0;
+      el.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse') return; // Touch/Pen scrollen bereits nativ
+        dragging = true; moved = false;
+        startX = e.clientX; startScroll = el.scrollLeft;
+        el.setPointerCapture(e.pointerId);
+        el.classList.add('is-dragging');
+      });
+      el.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        el.scrollLeft = startScroll - dx;
+      });
+      const stop = () => { dragging = false; el.classList.remove('is-dragging'); };
+      el.addEventListener('pointerup', stop);
+      el.addEventListener('pointercancel', stop);
+      // ein tatsächlicher Drag darf danach keinen Chip-Klick auslösen
+      el.addEventListener('click', (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+    }
+    makeSwipeableM(document.getElementById('dueChips'));
+
+    const chips = document.getElementById('dueChips');
+    chips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.m-chip');
+      if (!chip) return;
+      chips.querySelectorAll('.m-chip').forEach(c => c.classList.toggle('active', c === chip));
+      dueFilter = chip.dataset.due;
+      renderTodosM();
+    });
+    renderTodosM();
+
+    /* ---------- Filter-Bottom-Sheet (Berater) ---------- */
+    const filterSheet = document.getElementById('filterSheet');
+    const filterBackdrop = document.getElementById('filterBackdrop');
+    function openFilterSheet() {
+      filterSheet.classList.add('open');
+      filterBackdrop.classList.add('open');
+    }
+    function closeFilterSheet() {
+      filterSheet.classList.remove('open');
+      filterBackdrop.classList.remove('open');
+    }
+    document.getElementById('btnFilter').addEventListener('click', openFilterSheet);
+    document.getElementById('btnCloseFilter').addEventListener('click', closeFilterSheet);
+    filterBackdrop.addEventListener('click', closeFilterSheet);
+
+    // aktive Filter anzeigen — 1:1 wie renderChips()/.fchip bei web, aber ein
+    // eigener Chip pro ausgewähltem Berater (statt "N Berater" zusammengefasst),
+    // horizontal swipebar wie #dueChips.
+    function beraterCheckboxes() { return [...document.querySelectorAll('#filterSheet .m-sheet-row input[type="checkbox"]')]; }
+    function updateActiveFilterChips() {
+      const checked = beraterCheckboxes().filter(cb => cb.checked);
+      const wrap = document.getElementById('activeFilters');
+      if (!checked.length) { wrap.innerHTML = ''; return; }
+      const chips = checked.map(cb => {
+        const label = cb.closest('.m-sheet-row').querySelector('span').textContent;
+        return `<span class="m-fchip" data-label="${label}">${label} <button class="m-fchip-close" aria-label="${label} entfernen"><span class="material-symbols-outlined">close</span></button></span>`;
+      }).join('');
+      wrap.innerHTML = chips + `<button class="m-chip-reset" id="btnResetFiltersM">Filter zurücksetzen</button>`;
+      wrap.querySelectorAll('.m-fchip-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const label = btn.closest('.m-fchip').dataset.label;
+          const cb = beraterCheckboxes().find(c => c.closest('.m-sheet-row').querySelector('span').textContent === label);
+          if (cb) cb.checked = false;
+          updateActiveFilterChips();
+        });
+      });
+      document.getElementById('btnResetFiltersM').addEventListener('click', () => {
+        beraterCheckboxes().forEach(cb => cb.checked = false);
+        updateActiveFilterChips();
+      });
+    }
+    makeSwipeableM(document.getElementById('activeFilters'));
+    document.getElementById('btnApplyFilter').addEventListener('click', () => {
+      updateActiveFilterChips();
+      closeFilterSheet();
+    });
+
+    /* ---------- Vollbild-Suche ---------- */
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchInput = document.getElementById('searchInput');
+    document.getElementById('btnSearch').addEventListener('click', () => {
+      searchOverlay.classList.add('open');
+      searchInput.focus();
+    });
+    document.getElementById('btnSearchBack').addEventListener('click', () => {
+      searchOverlay.classList.remove('open');
+      searchInput.value = '';
+    });
+
+    /* ---------- FAB + "To do hinzufügen"-Sheet ---------- */
+    const addSheet = document.getElementById('addSheet');
+    const addBackdrop = document.getElementById('addBackdrop');
+    const fTitel = document.getElementById('fAddTitel');
+    const fPerson = document.getElementById('fAddPerson');
+    const addInTitel = document.getElementById('addInTitel');
+    const addInPerson = document.getElementById('addInPerson');
+
+    function openAddSheet() {
+      addSheet.classList.add('open');
+      addBackdrop.classList.add('open');
+    }
+    function closeAddSheet() {
+      addSheet.classList.remove('open');
+      addBackdrop.classList.remove('open');
+    }
+    function resetAddForm() {
+      document.getElementById('addInTitel').value = '';
+      document.getElementById('addInDatum').value = '';
+      document.getElementById('addInTyp').value = 'aufgabe';
+      document.getElementById('addInPerson').value = '';
+      document.getElementById('addInNotiz').value = '';
+      fTitel.classList.remove('invalid');
+      fPerson.classList.remove('invalid');
+    }
+
+    document.getElementById('btnFab').addEventListener('click', () => { resetAddForm(); openAddSheet(); });
+    document.getElementById('btnCloseAdd').addEventListener('click', closeAddSheet);
+    addBackdrop.addEventListener('click', closeAddSheet);
+    addInTitel.addEventListener('input', () => fTitel.classList.remove('invalid'));
+    addInPerson.addEventListener('input', () => fPerson.classList.remove('invalid'));
+
+    // Pflichtfeld-Validierung 1:1 aus der Desktop-Version: Titel und Antragsteller
+    // müssen ausgefüllt sein, sonst rotes Feld + Fehlertext + Fokus aufs erste ungültige Feld.
+    document.getElementById('btnSaveAdd').addEventListener('click', () => {
+      fTitel.classList.remove('invalid');
+      fPerson.classList.remove('invalid');
+      const titel = addInTitel.value.trim();
+      const person = addInPerson.value.trim();
+      if (!titel) { fTitel.classList.add('invalid'); addInTitel.focus(); return; }
+      if (!person) { fPerson.classList.add('invalid'); addInPerson.focus(); return; }
+      closeAddSheet();
+    });
+
+    /* ======================================================================
+       KALENDER — Mock-Daten (TERMINE/BDAYS/TERMIN_TYP) 1:1 aus
+       mein-tag-prototype-trial.html übernommen.
+       ====================================================================== */
+    function esc(s) { return (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+    function iso(y, m, d) { return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+    const TODAY = new Date(2026, 6, 24);
+
+    const TERMIN_TYP = {
+      beratung: { c: 'var(--color-primary-500)',      bg: 'var(--color-primary-100)' },
+      telefon:  { c: 'var(--color-info)',              bg: 'var(--color-info-light)' },
+      notar:    { c: 'var(--color-warning-high)',      bg: 'var(--color-warning-high-light)' },
+      extern:   { c: '#B457C9',                        bg: '#F7ECFB' },
+      intern:   { c: 'var(--color-neutral-dark-300)',  bg: 'var(--color-neutral-light-200)' },
+    };
+    // laufende Woche: Mo 20.07. – So 26.07.2026
+    const TERMINE = [
+      { datum: iso(2026,7,20), zeit: '09:00', titel: 'Erstberatung',          person: 'Andreas Weber',  typ: 'beratung' },
+      { datum: iso(2026,7,20), zeit: '11:00', titel: 'Telefonat Bonität',     person: 'Sandra Klein',   typ: 'telefon' },
+      { datum: iso(2026,7,20), zeit: '14:30', titel: 'Teammeeting',                                     typ: 'intern' },
+      { datum: iso(2026,7,21), zeit: '10:00', titel: 'Beratung Finanzierung', person: 'Thomas Berger',  typ: 'beratung' },
+      { datum: iso(2026,7,21), zeit: '13:00', titel: 'Termin Partnerbank',                              typ: 'intern' },
+      { datum: iso(2026,7,21), zeit: '16:00', titel: 'Rückruf',               person: 'Petra Schulz',   typ: 'telefon' },
+      { datum: iso(2026,7,22), zeit: '08:30', titel: 'Notartermin',           person: 'Mehmet Öztürk',  typ: 'notar' },
+      { datum: iso(2026,7,22), zeit: '11:30', titel: 'Videoberatung',         person: 'Julia Hoffmann', typ: 'beratung' },
+      { datum: iso(2026,7,23), zeit: '09:30', titel: 'Objektbesichtigung',                              typ: 'extern' },
+      { datum: iso(2026,7,23), zeit: '15:00', titel: 'Telefonat',             person: 'Michael Braun',  typ: 'telefon' },
+      { datum: iso(2026,7,24), zeit: '08:00', titel: 'Angebot finalisieren',  person: 'Mehmet Öztürk',  typ: 'intern' },
+      { datum: iso(2026,7,24), zeit: '11:30', titel: 'Beratung',              person: 'Michael Braun',  typ: 'beratung' },
+      { datum: iso(2026,7,24), zeit: '14:00', titel: 'Rückruf',               person: 'Thomas Berger',  typ: 'telefon' },
+      { datum: iso(2026,7,24), zeit: '16:30', titel: 'Wochenabschluss Team',                            typ: 'intern' },
+      { datum: iso(2026,7,25), zeit: '10:00', titel: 'Besichtigung (privat)',                           typ: 'extern' },
+    ];
+    // Geburtstage stehen nicht in der To-do-Liste, sondern unter den Terminen des jeweiligen Tages
+    const BDAYS = [
+      { datum: iso(2026,7,24), name: 'Michael Braun' },
+      { datum: iso(2026,7,24), name: 'Julia Hoffmann' },
+    ];
+
+    const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+    const WD_SHORT = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    const WD_FULL  = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+    function addDays(d, n) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); x.setHours(0,0,0,0); return x; }
+    function mondayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const wd = (x.getDay()+6)%7; return addDays(x,-wd); }
+
+    const CAL_SPAN = { tag: 1, drei: 3, woche: 7 };
+    let calView = 'tag';
+    let calStart = new Date(TODAY);
+
+    function calAlign(anchor) { return calView === 'woche' ? mondayOf(anchor) : addDays(anchor, 0); }
+    function calEnd() { return addDays(calStart, CAL_SPAN[calView] - 1); }
+    function calAnchor() {
+      return (TODAY >= calStart && TODAY <= calEnd()) ? TODAY : calStart;
+    }
+    function fmtRangeLabel() {
+      const start = calStart, end = calEnd();
+      if (calView === 'tag') return `${WD_SHORT[(start.getDay()+6)%7]}, ${start.getDate()}. ${MONTHS[start.getMonth()]} ${start.getFullYear()}`;
+      if (start.getMonth() === end.getMonth()) return `${start.getDate()}.–${end.getDate()}. ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+      return `${start.getDate()}. ${MONTHS[start.getMonth()].slice(0,3)} – ${end.getDate()}. ${MONTHS[end.getMonth()].slice(0,3)} ${end.getFullYear()}`;
+    }
+    function shortPerson(n) { const p = n.trim().split(/\s+/); return p.length > 1 ? p[0][0]+'. '+p[p.length-1] : n; }
+    function evHtmlM(e) {
+      const c = TERMIN_TYP[e.typ] || TERMIN_TYP.intern;
+      const who = e.person ? ' · '+shortPerson(e.person) : '';
+      return `<div class="m-cal-event" style="--evc:${c.c};--evbg:${c.bg}">
+        <span class="m-cal-ev-time">${esc(e.zeit)}</span>
+        <span class="m-cal-ev-title">${esc(e.titel)}${esc(who)}</span>
+      </div>`;
+    }
+    function bdayHtmlM(b) {
+      return `<div class="m-cal-bday"><span class="material-symbols-outlined">cake</span><span>${esc(b.name)}</span></div>`;
+    }
+    function renderCalendarM() {
+      const span = CAL_SPAN[calView];
+      let html = '';
+      for (let i = 0; i < span; i++) {
+        const day = addDays(calStart, i);
+        const dISO = iso(day.getFullYear(), day.getMonth()+1, day.getDate());
+        const wd = (day.getDay()+6)%7;
+        const isToday = day.getTime() === TODAY.getTime();
+        const label = span === 1 ? WD_FULL[wd] : WD_SHORT[wd];
+        const evs = TERMINE.filter(t => t.datum === dISO).sort((a,b) => a.zeit.localeCompare(b.zeit));
+        const body = evs.length ? evs.map(evHtmlM).join('') : '<div class="m-cal-empty">Keine Termine</div>';
+        const bdays = BDAYS.filter(b => b.datum === dISO);
+        const bdaySection = bdays.length
+          ? `<div class="m-cal-bdays"><div class="m-cal-bdays-head">Geburtstage</div>${bdays.map(bdayHtmlM).join('')}</div>`
+          : '';
+        html += `<div class="m-cal-day${isToday ? ' today' : ''}">
+          <div class="m-cal-day-head"><span class="m-cal-wd">${label}</span><span class="m-cal-dnum">${day.getDate()}</span></div>
+          <div class="m-cal-events">${body}</div>
+          ${bdaySection}
+        </div>`;
+      }
+      document.getElementById('calGridM').innerHTML = html;
+      document.getElementById('calRangeM').textContent = fmtRangeLabel();
+      const viewKalender = document.getElementById('viewKalender');
+      viewKalender.classList.toggle('view-tag', calView === 'tag');
+      viewKalender.classList.toggle('view-drei', calView === 'drei');
+      viewKalender.classList.toggle('view-woche', calView === 'woche');
+    }
+    function setCalViewM(view) {
+      if (!CAL_SPAN[view]) return;
+      const anchor = calAnchor();
+      calView = view;
+      calStart = calAlign(anchor);
+      renderCalendarM();
+    }
+    document.getElementById('calPrevM').addEventListener('click', () => { calStart = addDays(calStart, -CAL_SPAN[calView]); renderCalendarM(); });
+    document.getElementById('calNextM').addEventListener('click', () => { calStart = addDays(calStart, CAL_SPAN[calView]); renderCalendarM(); });
+    const calViewChips = document.getElementById('calViewChips');
+    calViewChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('button');
+      if (!chip) return;
+      calViewChips.querySelectorAll('button').forEach(c => c.classList.toggle('active', c === chip));
+      setCalViewM(chip.dataset.view);
+    });
+    renderCalendarM();
+  </script>
+</body>
+</html>
