@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mein Tag V5-A</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- Material Icons (klassische Ligatur-Schrift) für Sidebar/Topbar-Chrome, Material Symbols Outlined
+       für den Content-Bereich — gleiche Konvention wie mein-tag-v4.html. -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    /* ---------- Design-Tokens (inline, kein externes tokens.css nötig, wie in V4) ----------
+       Farben 1:1 aus design-system/tokens.css. Sidebar-Breite (120px), Sidebar-Farben
+       (#37474F / #4B5961 / #CFD8DC), "+ ToDo"-Button-Maße und Card-/Zeilen-Schatten sind
+       zusätzlich am 24.08.2026 gegen die Figma-Datei "My Day" (Node 4115:13011) abgeglichen —
+       Details siehe design-references/design-tokens.md → Abschnitt "Figma-Ergänzungen". */
+    :root {
+      --color-primary-600: #00877A;
+      --color-primary-500: #009688;
+      --color-primary-200: #CCEAE7;
+      --color-primary-100: #E6F5F3;
+
+      --color-neutral-dark-900: #37474F;
+      --color-neutral-dark-800: #4B5961;
+      --color-neutral-dark-600: #546E7A;
+      --color-neutral-dark-400: #78909C;
+      --color-neutral-dark-200: #B0BEC5;
+
+      --color-neutral-light-500: #CFD8DC;
+      --color-neutral-light-400: #ECEFF1;
+      --color-neutral-light-200: #F5F7F8;
+      --color-neutral-light-100: #FAFBFC;
+      --color-neutral-light-000: #FFFFFF;
+
+      --color-error-600: #E64D4D;
+      --color-error-500: #FF5656;
+      --color-error-100: #FFEEEE;
+      --color-warning-high: #FF9F1A;
+      --color-warning-high-light: #FFF5E8;
+      --color-notification: #3DC1D3;
+      --color-brand-blue: #0857C3;
+
+      --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      --space-xs: 4px;
+      --space-s:  8px;
+      --space-m:  16px;
+      --space-l:  24px;
+
+      --radius-xs: 2px;
+      --radius-s: 4px;
+      --radius-full: 9999px;
+
+      --shadow-topbar: 0 1px 4px rgba(84, 110, 122, 0.15);
+      --shadow-card:   0 1px 2px rgba(84, 110, 122, 0.15);
+      --shadow-pagination: -2px 0 4px #E5E5E5;
+
+      --focus-ring: 0 0 0 3px rgba(0, 150, 136, 0.30);
+      --z-overlay: 100;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-family);
+      font-size: 14px; line-height: 20px; letter-spacing: 0.25px;
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-100);
+    }
+    button, input { font-family: var(--font-family); }
+    button { cursor: pointer; }
+
+    /* ---------- APP SHELL ---------- */
+    .app { display: flex; height: 100vh; width: 100vw; }
+
+    /* ---------- SIDEBAR (Figma: 120px, #37474F, Icon über Label, 72px-Raster) ---------- */
+    .sidenav { width: 120px; min-width: 120px; background: var(--color-neutral-dark-900); display: flex; flex-direction: column; }
+    .sidenav-item {
+      height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; color: var(--color-neutral-light-500); text-decoration: none; border: none; background: none;
+      width: 100%;
+    }
+    .sidenav-item .material-icons { font-size: 20px; }
+    .sidenav-item .sidenav-label { font-size: 12px; line-height: 16px; text-align: center; }
+    .sidenav-item.active { background: var(--color-neutral-dark-800); }
+    .sidenav-item:not(.active):hover { background: rgba(255,255,255,0.06); }
+    .sidenav-item:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+
+    /* ---------- MAIN / TOPBAR ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: 56px; min-height: 56px; display: flex; align-items: center; gap: var(--space-s);
+      padding: 0 24px; background: var(--color-neutral-light-000); box-shadow: var(--shadow-topbar);
+      position: relative; z-index: 2;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--color-neutral-dark-900); }
+    .topbar-logo-mark {
+      width: 22px; height: 22px; border-radius: 5px; background: var(--color-brand-blue);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+    }
+    .topbar .spacer { flex: 1; }
+    .top-icon {
+      width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
+      display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600);
+    }
+    .top-icon .material-icons { font-size: 20px; }
+    .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .top-icon:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .top-divider { width: 1px; height: 28px; background: var(--color-neutral-light-500); }
+    .top-lang, .top-user {
+      display: flex; align-items: center; gap: 4px; border: none; background: none; padding: 4px 6px; border-radius: var(--radius-s);
+      color: var(--color-neutral-dark-600); font-size: 14px;
+    }
+    .top-lang:hover, .top-user:hover { background: var(--color-neutral-light-200); }
+    .top-lang .material-icons, .top-user > .material-icons { font-size: 20px; }
+    .top-avatar {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-200);
+      display: flex; align-items: center; justify-content: center; color: var(--color-primary-600); flex-shrink: 0;
+    }
+    .top-avatar .material-icons { font-size: 18px; }
+    .top-user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+    .top-user-name { font-size: 14px; color: var(--color-neutral-dark-900); }
+    .top-user-role { font-size: 12px; color: var(--color-neutral-dark-400); }
+
+    /* ---------- CONTENT ---------- */
+    .content { flex: 1; overflow-y: auto; padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* Figma-Literal wäre 24px/40/400 ("Heading 1"), hier bewusst auf die in design-tokens.md
+       empfohlene Page-Title-Stufe (28px/40/500 "Seiten-/Ergebnistitel") angehoben. */
+    .page-title { font-size: 28px; line-height: 40px; font-weight: 500; color: var(--color-neutral-dark-900); }
+
+    /* ---------- TODOS-TOOLBAR (Headline + Search links, Filter/Toggle/Buttons rechts) ---------- */
+    .todos-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); flex-wrap: wrap; }
+    .todos-toolbar-left { display: flex; align-items: center; gap: var(--space-m); }
+    .todos-heading { display: flex; align-items: center; gap: var(--space-s); }
+    .todos-heading .material-symbols-outlined { font-size: 24px; color: var(--color-neutral-dark-900); }
+    .todos-heading h2 { font-size: 20px; line-height: 28px; font-weight: 500; color: var(--color-neutral-dark-900); }
+
+    /* Erweiterbares Suchfeld: standardmäßig nur das Icon, Klick blendet das Eingabefeld ein
+       (gängiges Muster, z. B. GitHub/Google) — bleibt offen, solange Text drinsteht, kollabiert
+       sonst wieder beim Verlassen (Blur) bzw. per Escape. */
+    .search-wrap { position: relative; width: 36px; height: 36px; flex-shrink: 0; transition: width .18s ease; }
+    .search-wrap.open { width: 220px; }
+    .search-icon-btn {
+      position: absolute; left: 0; top: 0; width: 36px; height: 36px; padding: 0; z-index: 1;
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); background: #fff;
+      display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600); cursor: pointer;
+    }
+    .search-icon-btn .material-symbols-outlined { font-size: 18px; }
+    .search-icon-btn:hover { background: var(--color-neutral-light-200); }
+    /* offen: Icon bleibt sichtbar links im Feld (z-index über dem Input), Klick geht durch
+       auf den Input darunter — daher kein eigener Hintergrund/Rahmen mehr auf dem Icon selbst. */
+    .search-wrap.open .search-icon-btn { background: none; border-color: transparent; color: var(--color-neutral-dark-200); cursor: text; pointer-events: none; }
+    .search-input {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); padding: 0 8px 0 34px; font-size: 14px; letter-spacing: 0.25px;
+      color: var(--color-neutral-dark-900); background: #fff; opacity: 0; pointer-events: none; transition: opacity .12s ease;
+    }
+    .search-wrap.open .search-input { opacity: 1; pointer-events: auto; }
+    .search-input::placeholder { color: var(--color-neutral-dark-200); }
+    .search-input:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+
+    .todos-toolbar-right { display: flex; align-items: center; gap: 20px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: var(--space-xs); border-radius: var(--radius-s);
+      font-size: 14px; font-weight: 500; border: 1px solid transparent; white-space: nowrap;
+    }
+    .btn .material-symbols-outlined { font-size: 20px; }
+    .btn-secondary {
+      padding: 8px 16px 8px 8px; background: #fff; color: var(--color-neutral-dark-800); border-color: var(--color-neutral-dark-200);
+    }
+    .btn-secondary:hover { background: var(--color-neutral-light-200); }
+    .btn-primary {
+      padding: 8px 16px 8px 8px; background: var(--color-primary-500); color: #fff;
+    }
+    .btn-primary:hover { background: var(--color-primary-600); }
+    .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    /* ---------- "Keine ToDos"-Banner ---------- */
+    /* align-self:flex-start statt volle Breite von .pane-body (dessen flex-column stretcht
+       Kinder standardmäßig) — die Meldung soll nur so breit sein wie Icon+Text+Pfeil
+       tatsächlich brauchen, nicht die ganze Zeile ausfüllen. Kein rot er Rand-Balken mehr
+       (::before entfernt), stattdessen komplett roter Hintergrund — derselbe Ton wie die
+       Zähler-Pille im Schnellfilter "Überfällig" (--color-error-100). */
+    .no-todos-banner {
+      align-self: flex-start; background: var(--color-error-100); box-shadow: var(--shadow-card); border-radius: var(--radius-s);
+      display: flex; align-items: center; gap: 9px; padding: 8px 16px; min-height: 48px; overflow: hidden;
+    }
+    /* Figma-verifiziert (Node 1033-1075): Icon-Fill ist Error/600 (#E64D4D), keine eigene
+       Kreisfläche dahinter — das "assignment_turned_in"-Glyph selbst hat bereits die Plaketten-
+       mit-Haken-Form, wirkt dadurch bereits wie ein eigenes rotes Badge. */
+    /* Nur das direkte Kind-Icon (assignment_turned_in), NICHT der verschachtelte Pfeil in
+       .no-todos-open — sonst würde dieselbe Regel auch den Pfeil rot einfärben. */
+    .no-todos-banner > .material-symbols-outlined { font-size: 20px; color: var(--color-error-600); flex-shrink: 0; }
+    .no-todos-banner p { font-size: 14px; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .no-todos-banner p b { font-weight: 500; }
+    /* Dieselbe "Icon button + background - 32px"-Komponente wie .todo-info-btn/.todo-typ-icon
+       (Kreis statt der bisherigen abgerundeten Ecke, plus den Border, der vorher fehlte). */
+    .no-todos-open {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-200); display: flex; align-items: center; justify-content: center;
+      color: var(--color-neutral-dark-800); flex-shrink: 0;
+    }
+    .no-todos-open:hover { background: var(--color-primary-100); color: var(--color-primary-600); }
+    .no-todos-open .material-symbols-outlined { font-size: 18px; }
+
+    /* ---------- ToDo-Gruppen ---------- */
+    .todo-group.collapsed .todo-table-wrap { display: none; }
+
+    /* Eine einzige Spalten-Definition für Header-Labels UND Datenzeilen, damit "Antragsteller"
+       garantiert über dem jeweiligen Antragsteller-Namen steht usw. — Figma positioniert die
+       Labels über feste Pixel-Offsets, die je nach Textlänge der Gruppen-Überschrift leicht
+       verrutschen; ein gemeinsames CSS-Grid ist robuster und immer exakt ausgerichtet. */
+    .todo-group { --cols: minmax(240px, 1fr) 180px 180px 140px 24px; }
+
+    .group-title-row { display: grid; grid-template-columns: var(--cols); column-gap: 16px; align-items: center; margin-bottom: 12px; }
+    /* Bei aktivem Schnellfilter (außer "Alle") ist die Gruppen-Überschrift redundant — der
+       Tab selbst sagt schon, welche Kategorie gerade sichtbar ist. */
+    body.quick-filtered .group-title-row { display: none; }
+    .group-headline { display: flex; align-items: center; gap: 8px; border: none; background: none; min-width: 0; }
+    .group-headline .group-name { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .group-headline .group-count { font-size: 16px; color: var(--color-neutral-dark-400); }
+    .group-headline .material-symbols-outlined { font-size: 24px; color: var(--color-neutral-dark-900); transition: transform .15s ease; }
+    .todo-group.collapsed .group-headline .material-symbols-outlined { transform: rotate(180deg); }
+
+    /* display:contents löst den Wrapper optisch auf — die drei Labels darin werden direkt zu
+       Grid-Items in Spalte 2/3/4 des .group-title-row-Grids, genau wie ihre Pendants in .todo-row. */
+    .group-labels { display: contents; font-size: 12px; color: var(--color-neutral-dark-900); }
+
+    .todo-table-wrap { background: #fff; border-radius: var(--radius-s) var(--radius-s) 0 0; box-shadow: var(--shadow-card); display: flex; }
+    .todo-table-accent { width: 5px; flex-shrink: 0; border-radius: var(--radius-s) 0 0 0; }
+    .todo-group[data-tone="today"]   .todo-table-accent { background: var(--color-warning-high); }
+    .todo-group[data-tone="overdue"] .todo-table-accent { background: var(--color-error-500); }
+    /* Farbe deckungsgleich mit dem Schnellfilter-Tab "Morgen fällig" (--color-brand-blue). */
+    .todo-group[data-tone="morgen"]  .todo-table-accent { background: var(--color-brand-blue); }
+    /* Neutral statt Dringlichkeits-Farbe — für "Später fällig" gibt es (wie in V4) keinen
+       eigenen Schnellfilter-Tab, die Gruppe soll optisch bewusst zurückhaltender wirken. */
+    .todo-group[data-tone="spaeter"] .todo-table-accent { background: var(--color-neutral-dark-400); }
+    /* Figma: "Content" (Zeilen-Container) hat pt-12 und gap-10 ZWISCHEN den Row-Komponenten;
+       jede Row selbst hat gap-12 zwischen ihrem Inhalt und ihrer eigenen Trennlinie — auch die
+       letzte Row. Row-Höhe wird nicht per Padding fest­gelegt, sondern ergibt sich aus dem
+       höchsten Kind (32px Info-Icon-Button), über items-center zentriert. */
+    .todo-table-body { flex: 1; min-width: 0; padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+
+    .todo-row { display: grid; grid-template-columns: var(--cols); column-gap: 16px; align-items: center; padding: 0 12px 12px; border-bottom: 1px solid var(--color-neutral-light-400); }
+    .todo-row.done .todo-text { color: var(--color-neutral-dark-400); text-decoration: line-through; }
+
+    /* Checkbox + Text bilden zusammen EIN Grid-Item (Spalte 1) — Figmas "Check + text"-Block. */
+    .todo-title { display: flex; align-items: center; gap: 16px; min-width: 0; }
+
+    /* Figma-Default (ToDoCheckmark-Komponente) zeigt den Haken IMMER, nicht erst nach dem
+       Abhaken — weißer Kreis, Border Dark neutral/400 (#78909C), Haken-Icon Dark neutral/300
+       (#B0BEC5). Wird ein ToDo tatsächlich abgehakt, wechseln wir zusätzlich (über die
+       reine Figma-Fidelity hinaus) auf einen teal-gefüllten Kreis mit weißem Haken, damit der
+       Unterschied zwischen "Default" und "erledigt" im interaktiven Prototyp sichtbar bleibt. */
+    .todo-check {
+      width: 20px; height: 20px; border-radius: var(--radius-full); border: 1px solid var(--color-neutral-dark-400);
+      background: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    .todo-check .material-symbols-outlined { font-size: 14px; color: var(--color-neutral-dark-200); }
+    .todo-row.done .todo-check { background: var(--color-primary-500); border-color: var(--color-primary-500); }
+    .todo-row.done .todo-check .material-symbols-outlined { color: #fff; }
+    .todo-check:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+    .todo-text { min-width: 0; font-size: 14px; color: var(--color-neutral-dark-900); }
+    /* Umschließt Titel-Text + optionales Art-Icon (Email/Anruf/Link) als enge Einheit —
+       OHNE eigenes flex:1, damit das Icon direkt hinter dem Text sitzt statt an den rechten
+       Rand der (oft viel breiteren) Grid-Spalte gedrückt zu werden. */
+    .todo-text-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+    .todo-applicant { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .todo-applicant-name { font-size: 12px; font-weight: 500; color: var(--color-primary-500); background: none; border: none; padding: 0; }
+    .todo-applicant-name:hover { text-decoration: underline; }
+    /* Figma-Node "Icon button + background - 32px": tatsächlich 32×32px (nicht 20px!) —
+       dunkel gefüllter Kreis (Dark neutral/800, #4B5961) mit weißem Info-Icon. Das ist zugleich
+       das höchste Element der ganzen Zeile und bestimmt über items-center die Row-Höhe. */
+    /* Per SVG-Export verifiziert (nicht nur Variablen-Name): Kreis-Fill "#F5F7F8" (Light
+       neutral/200) mit Stroke "#CFD8DC" (Light neutral/500), Icon-Fill "#4B5961" (Dark
+       neutral/800) — hell befüllter Kreis mit dunklem Icon, nicht umgekehrt. */
+    .todo-info-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .todo-info-btn .material-symbols-outlined { font-size: 14px; font-variation-settings: 'FILL' 1; }
+    .todo-info-btn:hover { background: var(--color-neutral-light-400); }
+
+    /* Art-Icon neben dem Titel (Email/Anruf/Link) — dieselbe Figma-Komponente "Icon button +
+       background - 32px" wie .todo-info-btn (Node 4068-9553), hier aber rein anzeigend
+       (kein Button/Hover), da sie nur die beim Anlegen per Pill gewählte Art markiert. */
+    .todo-typ-icon {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .todo-typ-icon .material-symbols-outlined { font-size: 14px; font-variation-settings: 'FILL' 1; }
+
+    .todo-due { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .todo-due .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-600); }
+    .todo-due span.due-text { font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-600); }
+
+    .todo-activity { font-size: 12px; color: var(--color-neutral-dark-600); }
+
+    .todo-more {
+      width: 24px; height: 24px; border-radius: 50%; border: none; background: none; color: var(--color-neutral-dark-600);
+      display: flex; align-items: center; justify-content: center; justify-self: center;
+    }
+    .todo-more:hover { background: var(--color-neutral-light-200); }
+    .todo-more .material-symbols-outlined { font-size: 20px; }
+
+    .todo-pagination {
+      background: #fff; box-shadow: var(--shadow-pagination); border-radius: 0 0 var(--radius-s) var(--radius-s);
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 10px 12px;
+    }
+    .pg-text { font-size: 12px; color: var(--color-neutral-dark-400); }
+    /* Figma exportierte auf dem "Zurück"-Button einen hellgrauen Kreis, auf "Weiter" keinen —
+       ein Inkonsistenz-Artefakt der Figma-Datei (Zufallsbefund beim Abgleich), keine bewusste
+       Design-Aussage. Beide Pfeile daher einheitlich als schlichte Chevrons ohne Kreis-Hintergrund. */
+    .pg-nav { display: flex; gap: 4px; }
+    .pg-nav button {
+      width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
+      color: var(--color-neutral-dark-400); display: flex; align-items: center; justify-content: center;
+    }
+    .pg-nav button[disabled] { opacity: 0.5; cursor: not-allowed; }
+    .pg-nav button:not([disabled]):hover { background: var(--color-neutral-light-200); }
+    .pg-nav .material-symbols-outlined { font-size: 16px; }
+
+    /* ---------- Inline-Anlege-Zeile ("+ ToDo") — liegt über den Gruppen, nicht mehr in
+       "Heute fällig" verschachtelt; Eingabefelder und Bestätigen/Abbrechen stehen dafür in
+       zwei eigenen Zeilen statt einer einzigen breiten Reihe. ---------- */
+    .add-row { display: none; flex-direction: column; gap: 10px; padding: 12px; background: var(--color-primary-100); border-radius: var(--radius-s); }
+    .add-row.open { display: flex; }
+    .add-row-fields { display: flex; align-items: center; gap: 12px; }
+    .add-row-actions { display: flex; align-items: center; gap: 8px; }
+    .add-row input, .add-row select {
+      height: 36px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); padding: 0 10px;
+      font-size: 14px; background: #fff; color: var(--color-neutral-dark-900);
+    }
+    .add-row input:focus, .add-row select:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    .add-row .add-title { width: 320px; }
+    .add-row .add-due { width: 150px; }
+    .add-row .add-person { width: 200px; }
+    .add-row .btn-primary { padding: 8px 16px; }
+    .add-row .add-cancel { border: none; background: none; color: var(--color-neutral-dark-600); font-size: 14px; padding: 8px; }
+    .add-row-typ { display: flex; align-items: center; gap: 6px; }
+    .add-typ-pill {
+      display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px;
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-full);
+      background: #fff; color: var(--color-neutral-dark-800); font-size: 13px; cursor: pointer;
+    }
+    .add-typ-pill .material-symbols-outlined { font-size: 16px; }
+    .add-typ-pill:hover { background: var(--color-neutral-light-200); }
+    .add-typ-pill.active { background: #fff; border-color: var(--color-primary-500); }
+
+    /* ---------- Inline-Editing bestehender ToDos (Titel/Fälligkeit) — 1:1 aus
+       mein-tag-v4.html (.inline-edit/.inline-input/.due-bump), Farben auf V5-Tokens. Der
+       Antragsteller bleibt bewusst NICHT inline editierbar, genau wie in V4 — dort ist er
+       nur beim Anlegen per Dropdown wählbar, nicht nachträglich in der Zeile. ---------- */
+    .inline-edit { cursor: text; border-radius: var(--radius-xs); padding: 1px 4px; margin: -1px -4px;
+      border-bottom: 1px dashed transparent; min-width: 0; }
+    .inline-edit:hover { background: var(--color-primary-100); border-bottom-color: var(--color-primary-500); }
+    .inline-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .inline-edit.editing { background: none; border-bottom-color: transparent; padding: 0; margin: 0; }
+    .inline-input {
+      width: 100%; min-width: 90px; font-family: var(--font-family); font-size: 13px;
+      color: var(--color-neutral-dark-900); padding: 3px 6px; background: #fff;
+      border: 1px solid var(--color-primary-500); border-radius: var(--radius-xs); box-shadow: var(--focus-ring);
+    }
+    .inline-input:focus { outline: none; }
+    .due-bump {
+      flex-shrink: 0; font-size: 11px; font-weight: 500; color: var(--color-primary-600);
+      background: var(--color-primary-100); border: 1px solid var(--color-primary-500);
+      border-radius: var(--radius-full); padding: 1px 8px; margin-left: 6px; cursor: pointer;
+    }
+    .due-bump:hover { background: var(--color-primary-200); }
+
+    @media (max-width: 992px) {
+      .todo-group { --cols: minmax(200px, 1fr) 150px 150px; }
+      .group-labels .col-activity, .todo-activity, .todo-more { display: none; }
+    }
+
+    /* =======================================================================
+       KALENDER-SPLIT — 1:1-Übernahme aus mein-tag-v4.html (Struktur/Klassen/
+       Verhalten identisch), nur an die V5-Tokens angepasst. Trial-Fassung für
+       "Kalender rechts wie in V4" — siehe prototyping-workflow.md.
+       ======================================================================= */
+    .workspace { display: block; position: relative; }
+    .pane { display: contents; }
+    .pane-body { display: contents; }
+    .pane-head { display: none; }
+    .cal-pane { display: none; }
+    /* Der 24px-Abstand zwischen Banner/Gruppen der ToDo-Pane galt bisher nur unter
+       body.cal-open (dort weiter unten per flex+gap gesetzt) — bei eingeklapptem Kalender
+       blieb .pane-body auf "display:contents", wodurch Banner/Gruppen ohne eigene Margen
+       direkt aneinanderstießen (kein Gap). Diese Regel gilt jetzt unabhängig vom
+       Kalender-Status, damit der Abstand in beiden Zuständen gleich aussieht. */
+    .todo-pane .pane-body { display: flex; flex-direction: column; gap: 24px; }
+
+    .cal-edge-handle { display: none; }
+    @media (min-width: 861px) {
+      .cal-edge-handle {
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 16px; height: 56px; padding: 0; border: 1px solid var(--color-neutral-light-500);
+        border-radius: var(--radius-full); background: #fff;
+        color: var(--color-primary-500); cursor: pointer; z-index: 3; box-shadow: var(--shadow-card);
+        transition: width .1s ease, background .1s ease, color .1s ease;
+      }
+      .cal-edge-handle:hover, .cal-edge-handle:focus-visible {
+        width: 24px; background: var(--color-primary-100); border-color: var(--color-primary-500); color: var(--color-primary-600);
+      }
+      .cal-edge-handle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+      .cal-edge-handle .material-symbols-outlined { font-size: 16px; }
+      .cal-edge-handle {
+        position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+        border-radius: var(--radius-full); box-shadow: var(--shadow-card);
+      }
+      body.cal-open .cal-edge-handle {
+        position: static; transform: none; align-self: center; border-radius: var(--radius-full);
+        border-right: 1px solid var(--color-neutral-light-500); box-shadow: none;
+      }
+    }
+
+    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-xs); align-items: stretch; }
+    /* Nur die Kalender-Pane bekommt die Karten-Optik (weiß/Border/Schatten) — die ToDo-Pane
+       bleibt unverändert wie ohne Kalender: jede Gruppe hat bereits ihre eigene Karte, ein
+       zusätzlicher äußerer Rahmen würde nur eine Karte-in-der-Karte erzeugen. */
+    body.cal-open .todo-pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; flex: 1 1 auto; }
+    body.cal-open .todo-pane .pane-body { display: flex; flex-direction: column; gap: 24px; min-height: 0; overflow-y: auto; }
+    /* .cal-pane selbst ist nur noch die Spalte (Breite/Flex-Basis) — keine eigene Karten-Optik
+       mehr, die trägt jetzt .cal-card weiter unten. Genau wie .todo-pane. */
+    body.cal-open .cal-pane {
+      display: flex; flex-direction: column; min-height: 0; min-width: 0;
+      flex: 0 0 46%; max-width: 46%;
+    }
+    body.cal-open .cal-pane.view-tag  { flex: 0 0 clamp(300px, 30%, 420px); max-width: 420px; }
+    body.cal-open .cal-pane.view-drei { flex: 0 0 clamp(340px, 38%, 660px); max-width: 660px; }
+    /* Die eigentliche Karte: Hintergrund/Rahmen/Schatten, beginnt erst unter der
+       "+ Termin"-Zeile (.cal-pane-head), damit der Button wirklich darüber und nicht darin sitzt. */
+    body.cal-open .cal-card {
+      display: flex; flex-direction: column; min-height: 0; flex: 1;
+      background: #fff; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); box-shadow: var(--shadow-card); overflow: hidden;
+    }
+    body.cal-open .pane-head { display: flex; }
+    body.cal-open .cal-pane .pane-body { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; padding: 0; gap: 0; }
+
+    /* height:40px + kein vertikales Padding, box-sizing:border-box: dieselbe Höhe wie
+       .todo-pane-head, und ohne Padding-Versatz landet der Button exakt auf gleicher Höhe
+       wie "+ ToDo" — mit vertikalem Padding hätte die Zentrierung sonst einen Offset erzeugt,
+       selbst wenn beide Boxen an derselben y-Position starten. */
+    .pane-head {
+      align-items: center; gap: var(--space-s); flex-shrink: 0; height: 40px; box-sizing: border-box;
+      padding: 0 var(--space-m); border-bottom: 1px solid var(--color-neutral-light-500); background: #fff;
+    }
+    /* Eigene Zeile über dem Kalender-Header, nur für "+ Termin" — gleiche Höhe/Abstand wie
+       .todo-pane-head, damit beide "+"-Buttons exakt auf einer Höhe stehen. */
+    .cal-pane-head { display: flex; justify-content: flex-end; flex-shrink: 0; margin-bottom: 24px; }
+    .cal-pane-head .btn { height: 40px; box-sizing: border-box; }
+    .pane-title { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    .pane-title .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
+    .pane-head-tools { display: flex; align-items: center; gap: var(--space-s); margin-left: auto; }
+
+    /* Verkleinertes Grid für die ToDo-Spalten, solange der Kalender offen ist —
+       Pendant zu V4s .cols-reduced/.cols-slim (dort auf einer <table>, hier aufs Grid). */
+    /* Antragsteller/Fälligkeit waren hier zusätzlich zur ausgeblendeten "Letzte Aktivität"-
+       Spalte auf 140px verengt (statt 180px wie ohne Kalender) — obwohl die ToDo-Pane bei
+       offenem Kalender real genug Breite hat (Titel ist ohnehin 1fr und wächst mit), wirkten
+       beide Spalten dadurch unnötig gequetscht. Jetzt dieselbe Breite wie im Grundzustand,
+       nur die "Letzte Aktivität"-Spalte fällt weiterhin weg. */
+    body.cal-open .todo-group { --cols: minmax(180px, 1fr) 180px 180px 0px 24px; }
+    body.cal-open .todo-activity, body.cal-open .group-labels .col-activity { display: none; }
+
+    #btnCal { }
+    body.cal-open #btnCal { display: none; }
+
+    .cal-nav { display: inline-flex; align-items: center; gap: 2px; }
+    .cal-nav-btn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; color: var(--color-neutral-dark-400); cursor: pointer; }
+    .cal-nav-btn:hover { background: var(--color-neutral-light-200); }
+    .cal-nav-btn .material-symbols-outlined { font-size: 18px; }
+    .cal-today-btn { padding: 3px 8px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; font-size: 12px; color: var(--color-neutral-dark-600); cursor: pointer; }
+    .cal-today-btn:hover { background: var(--color-neutral-light-200); }
+    .cal-range-label { font-size: 12px; color: var(--color-neutral-dark-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .cal-toolbar { display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0; padding: 6px var(--space-s); background: var(--color-neutral-light-100); border-bottom: 1px solid var(--color-neutral-light-400); }
+    .cal-toolbar .cal-nav { margin-left: auto; }
+
+    /* Legende für die 3-Farben-Kodierung (online/vor Ort/privat) — ohne Beschriftung
+       wäre reine Farbkodierung nicht selbsterklärend. */
+    .cal-legend { display: flex; align-items: center; gap: var(--space-m); padding: 6px var(--space-s); font-size: 11px; color: var(--color-neutral-dark-600); border-bottom: 1px solid var(--color-neutral-light-400); flex-shrink: 0; }
+    .cal-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+    .cal-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--lc, var(--color-primary-500)); }
+
+    .segmented { display: inline-flex; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); overflow: hidden; }
+    .segmented button { border: none; background: #fff; padding: 6px 14px; font-size: 13px; color: var(--color-neutral-dark-600); cursor: pointer; }
+    .segmented button + button { border-left: 1px solid var(--color-neutral-light-500); }
+    .segmented button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .segmented button:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .segmented--sm button { padding: 3px 10px; font-size: 12px; font-weight: 400; white-space: nowrap; }
+    .segmented--sm button.active { background: var(--color-primary-100); color: var(--color-primary-600); font-weight: 500; }
+
+    /* Schnellfilter (Alle/Überfällig/…) — 1:1 aus mein-tag-v4.html übernommenes Verhalten,
+       hier nur die Basis-.segmented-Optik von V5 erweitert statt V4s eigener Werte. */
+    /* flex-shrink:0 ist Pflicht: .segmented hat overflow:hidden (wegen der runden Ecken),
+       wodurch sein automatisches Flex-Minimum in der Spalte .content auf 0 fällt — ohne
+       diese Zeile wird die gesamte Schrumpfung des Contents auf dieses eine Element
+       abgeladen und die Leiste kollabiert auf wenige Pixel Höhe. */
+    /* align-self:flex-start entfernt: war nötig, solange dieses Element noch direkter Child
+       einer Flex-SPALTE (.content) war, um volle Breite zu verhindern. Seit es in der
+       Flex-ZEILE .todo-pane-head liegt, bedeutet align-self dort die VERTIKALE statt der
+       horizontalen Ausrichtung — dadurch saß die Leiste 2px höher als Berater/Suche. In einer
+       Zeile stretcht die Breite ohnehin nicht, also war die Regel unnötig geworden. */
+    /* Kein margin-bottom mehr: das war ein Überbleibsel aus der Zeit, als dieses Element
+       allein in einer Spalte stand. Als einzige Marge im Flex-Item wird die Zentrierung
+       innerhalb .todo-pane-head anhand der Margin-Box berechnet — das drückte die Leiste
+       2px höher als Berater-Button/Suche/+ToDo, die keine eigene Marge haben. Der Abstand
+       zur nächsten Zeile kommt ohnehin schon vom gap der äußeren .content-Spalte. */
+    /* Jetzt bewusst flex-shrink:1 + eigenes overflow-x:auto: mit 6 Elementen in der Zeile
+       (Tabs, Berater, Zeitraum, Suche, "+ ToDo") reicht die Breite der ToDo-Pane bei offenem
+       Kalender nicht mehr für alle in voller Größe. Die Tabs sind am ehesten verzichtbar, alle
+       auf einen Blick zu sehen — sie bekommen daher als einziges Element ihr eigenes
+       horizontales Scrollen (min-width als Untergrenze), während Berater/Zeitraum/Suche/
+       "+ ToDo" fest bleiben und garantiert nie wegscrollen. */
+    .segmented--quick { flex-shrink: 1; min-width: 160px; overflow-x: auto; }
+    /* Verlaufs-Kante am rechten Rand, NUR wenn tatsächlich mehr Tabs folgen als sichtbar sind
+       (.has-overflow wird per JS gesetzt) — macht sichtbar, dass gescrollt werden kann, statt
+       hart abgeschnitten zu wirken. */
+    .segmented--quick.has-overflow {
+      mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+    }
+    /* Horizontales Padding etwas knapper (16px → 12px) als V4, nur damit die Zeile inklusive
+       Berater/Suche/"+ ToDo" bei offenem Kalender (schmalere ToDo-Pane) ohne Scroll passt.
+       Vertikales Padding unverändert (10px), sonst stimmt die 40px-Höhe nicht mehr mit den
+       anderen Buttons in dieser Zeile überein. */
+    .segmented--quick button { padding: 10px 10px; font-size: 14px; font-weight: 500; color: var(--color-neutral-dark-400); position: relative; white-space: nowrap; }
+    .segmented--quick button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .segmented--quick button:not(.active):hover { background: var(--color-neutral-light-100); }
+    .qf-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--qf); opacity: 0; transition: opacity .1s ease; }
+    #quickSeg button.active .qf-strip { opacity: 1; }
+    /* margin statt gap: der Button ist kein Flex-Container (nur qf-strip/qf-count + reiner
+       Text als Inhalt), "gap" auf .segmented--quick button hätte hier keine Wirkung. */
+    .qf-count { font-size: 11px; font-weight: 700; line-height: 16px; min-width: 18px; padding: 0 5px; margin-right: 8px; border-radius: var(--radius-full); text-align: center; background: var(--qf-tint, var(--color-neutral-light-200)); color: var(--qf, var(--color-neutral-dark-600)); }
+    #quickSeg button.active .qf-count { background: var(--qf, var(--color-primary-500)); color: #fff; }
+
+    .todo-row.quick-hidden { display: none; }
+    .todo-row.berater-hidden { display: none; }
+    .todo-group.quick-empty { display: none; }
+
+    /* Kopfzeile der ToDo-Pane: Schnellfilter + Berater + Suche + "+ ToDo", alle in EINER Zeile
+       auf gleicher Höhe. Liegt bewusst INNERHALB der ToDo-Pane (nicht darüber, über die ganze
+       Seite), damit "+ ToDo" per margin-left:auto immer am rechten Rand dessen sitzt, was die
+       ToDo-Pane gerade tatsächlich an Breite hat — bei offenem Kalender direkt vor dessen
+       Spalte, bei geschlossenem Kalender ganz rechts auf voller Breite. Funktioniert in beiden
+       Zuständen, weil dies ein normaler Flex-Row-Container ist, unabhängig davon, ob .todo-pane
+       selbst gerade display:contents oder display:flex ist. */
+    /* flex-wrap:nowrap + overflow-x:auto statt wrap: bei offenem Kalender ist die ToDo-Pane
+       schmaler als die Summe aus Schnellfiltern+Berater+Suche+Button — mit "wrap" fiel der
+       "+ ToDo"-Button dann in eine zweite Zeile und stand nicht mehr auf gleicher Höhe wie
+       der Rest. So bleibt immer alles auf einer Zeile, notfalls mit horizontalem Scroll
+       innerhalb der Kopfzeile statt einem Zeilenumbruch. */
+    .todo-pane-head { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; flex-shrink: 0; margin-bottom: var(--space-s); }
+    #addTodoBtn { margin-left: auto; flex-shrink: 0; }
+    #btnCal { flex-shrink: 0; }
+
+    /* ===== Berater-Filter (Dropdown) — 1:1 aus mein-tag-v4.html übernommen, Werte/Radius/
+       Spacing sind die bereits in V5 etablierten Tokens statt V4s eigener Werte. ===== */
+    .btn-badge { background: var(--color-primary-500); color: #fff; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700; padding: 0 6px; line-height: 16px; min-width: 16px; text-align: center; }
+    .btn.filter-active { border-color: var(--color-primary-500); color: var(--color-primary-600); background: var(--color-primary-100); }
+
+    .berater-filter { position: relative; flex-shrink: 0; }
+    /* .btn-secondary ist für Buttons mit NUR einem führenden Icon gebaut (mehr Luft rechts
+       vom Text als links vom Icon) — bei Berater/Zeitraum folgt aber noch ein Chevron, der
+       diese Asymmetrie unnötig verdoppelt. Rechtes Padding daher auf denselben Wert wie
+       links vom führenden Icon (8px) reduziert, symmetrisch um Icon+Text+Chevron. */
+    .berater-filter .btn, .range-filter .btn { padding-right: 8px; }
+    /* Gleiche Höhe wie die Schnellfilter-Tabs (40px) und derselbe Border-Ton (Light neutral/500,
+       wie Tabs + Suchfeld in dieser Zeile) statt des dunkleren --color-neutral-dark-200 von
+       .btn-secondary — eine einheitliche Border-Farbe für die ganze Filter-Zeile. */
+    /* Gleiche Höhe (40px) für alle Buttons in dieser Zeile, plus einheitlicher, hellerer
+       Border-Ton für den Berater-Button statt --color-neutral-dark-200 von .btn-secondary. */
+    .todo-pane-head .btn, #btnAddTermin { height: 40px; box-sizing: border-box; }
+    #btnBerater { border-color: var(--color-neutral-light-500); }
+    .menu {
+      position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-overlay, 100);
+      background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      box-shadow: 0 2px 8px rgba(84,110,122,0.28); padding: var(--space-xs); min-width: 220px; display: none;
+    }
+    .menu.open { display: block; }
+    .menu-search {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-xs, 2px); font-size: 13px; margin: 2px 0 6px; box-sizing: border-box;
+    }
+    .menu-search:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+
+    .berater-menu { padding: 0; min-width: 288px; max-width: 320px; max-height: 74vh; }
+    .berater-menu.open { display: flex; flex-direction: column; }
+    .bmenu-row { display: flex; align-items: center; justify-content: space-between; width: 100%;
+      border: none; background: none; cursor: pointer; padding: 10px 14px; font-size: 13px;
+      color: var(--color-neutral-dark-900); text-align: left; }
+    .bmenu-row:hover { background: var(--color-neutral-light-200); }
+    .bmenu-row.strong { font-weight: 500; }
+    .bmenu-row .check { color: var(--color-primary-600); font-size: 18px; visibility: hidden; }
+    .bmenu-row.active .check { visibility: visible; }
+    .bmenu-search-wrap { padding: 4px 14px 8px; border-bottom: 1px solid var(--color-neutral-light-400); }
+    .search-mini { position: relative; }
+    .search-mini .menu-search { margin: 0; padding-right: 30px; }
+    .search-mini .material-symbols-outlined { position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      color: var(--color-neutral-dark-200); font-size: 18px; pointer-events: none; }
+    .bmenu-selectall { border-bottom: 1px solid var(--color-neutral-light-400); background: var(--color-neutral-light-100);
+      color: var(--color-neutral-dark-400); border-radius: 0; margin: 0; }
+    .bmenu-list { overflow-y: auto; flex: 1; padding: 4px 6px; }
+    .bmenu-check { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: var(--radius-xs, 2px);
+      cursor: pointer; font-size: 13px; color: var(--color-neutral-dark-900); }
+    .bmenu-check:hover { background: var(--color-neutral-light-200); }
+    .bmenu-check input { accent-color: var(--color-primary-500); width: 16px; height: 16px; flex-shrink: 0; }
+    .bmenu-foot { display: flex; align-items: center; gap: var(--space-m); padding: 10px 14px;
+      border-top: 1px solid var(--color-neutral-light-400); }
+    .bmenu-foot .btn { flex: 1; justify-content: center; }
+    .bmenu-clear { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
+      font-size: 13px; white-space: nowrap; }
+    .bmenu-clear:hover { color: var(--color-neutral-dark-900); text-decoration: underline; }
+
+    /* ===== Aktive-Filter-Chips — Grundmuster aus mein-tag-v4.html: eine Sammel-Pille pro
+       Filter-Kategorie mit den Namen der Auswahl (z. B. "Berater: Bernd Krüger, Sandra
+       Wolf"), nicht eine Pille pro einzelnem Namen. Anders als in V4 blendet sich die Zeile
+       NICHT über :empty komplett aus — min-height reserviert von Anfang an denselben Platz,
+       damit die ToDo-Liste beim Auswählen/Zurücksetzen eines Filters nicht nach unten springt. */
+    .chip-row { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; min-height: 26px; margin-bottom: var(--space-s); }
+    .fchip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 6px 3px 10px;
+      background: var(--color-primary-100); color: var(--color-primary-600);
+      border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
+    }
+    .fchip button {
+      border: none; background: none; cursor: pointer; color: var(--color-primary-600);
+      display: inline-flex; padding: 2px; border-radius: 50%;
+    }
+    .fchip button:hover { background: var(--color-primary-200); }
+    .fchip button .material-symbols-outlined { font-size: 15px; }
+    .chip-reset {
+      border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
+      font-size: 12px; font-weight: 500; text-decoration: underline;
+    }
+    .chip-reset:hover { color: var(--color-neutral-dark-900); }
+
+    /* ===== Zeitraum-Filter — dasselbe Dropdown-Pattern wie der Berater-Filter (.menu/.bmenu-foot). ===== */
+    .range-filter { position: relative; flex-shrink: 0; }
+    .range-menu { min-width: 260px; padding: var(--space-s); }
+    /* Runde Pills statt kleiner Rechtecke; white-space:nowrap, damit "Diese Woche" nicht
+       zweizeilig umbricht und dadurch höher als "Dieser Monat" wird. */
+    .rmenu-presets { display: flex; gap: 6px; margin-bottom: var(--space-m); }
+    .rmenu-presets button {
+      flex: 1; border: 1px solid var(--color-neutral-light-500); background: #fff; border-radius: var(--radius-full);
+      padding: 6px 10px; font-size: 12px; color: var(--color-neutral-dark-800); cursor: pointer; white-space: nowrap;
+    }
+    .rmenu-presets button:hover { background: var(--color-neutral-light-200); }
+    .rmenu-fields { display: flex; flex-direction: column; gap: var(--space-s); margin-bottom: var(--space-s); }
+    .rmenu-fields label { display: flex; align-items: center; gap: var(--space-s); font-size: 13px; color: var(--color-neutral-dark-600); }
+    /* Feste Breite für "Von"/"Bis" statt natürlicher Textbreite — garantiert exakt gleich
+       lange Label-Spalte in beiden Zeilen, unabhängig von Buchstabenbreiten im Font. */
+    .rmenu-fields label span { width: 24px; flex-shrink: 0; }
+    .rmenu-fields input[type="date"] {
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); padding: 6px 8px;
+      font-size: 13px; color: var(--color-neutral-dark-900); flex: 1; min-width: 0;
+    }
+    .rmenu-fields input[type="date"]:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    /* Anwenden-Button in normaler Button-Größe (wie "+ ToDo"/"+ Termin"), nicht über die
+       ganze Breite gestreckt — war vorher per .bmenu-foot .btn{flex:1} viel zu groß. */
+    /* Kein negativer Rand mehr: der fraß sich 4px in .range-menus eigenes Padding und ließ
+       Anwenden/Zurücksetzen näher am Rand kleben als der restliche Menü-Inhalt (Von/Bis). */
+    /* justify-content:center statt space-between: Anwenden/Zurücksetzen sitzen als Paar
+       mittig im Footer statt an die beiden Ränder gepinnt. */
+    .range-menu .bmenu-foot { border-top: 1px solid var(--color-neutral-light-400); padding: var(--space-m) var(--space-s) 0; justify-content: center; gap: var(--space-l); align-items: center; }
+    /* Wirklich kompakt für den Menü-Footer — die 8px/16px-Polsterung der großen
+       Canvas-Buttons ("+ ToDo"/"+ Termin") ist in einem 260px-Dropdown deutlich zu groß. */
+    .range-menu .bmenu-foot .btn { flex: 0 0 auto; padding: 6px 12px; font-size: 12px; height: auto; }
+
+    .todo-row.range-hidden { display: none; }
+
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--color-neutral-light-400); flex: 1; min-height: 0; overflow-y: auto; }
+    .cal-pane.view-tag  .cal-grid { grid-template-columns: 1fr; }
+    .cal-pane.view-drei .cal-grid { grid-template-columns: repeat(3, 1fr); }
+    .cal-day { background: #fff; display: flex; flex-direction: column; min-width: 0; }
+    .cal-day.weekend { background: var(--color-neutral-light-100); }
+    .cal-day-head { position: sticky; top: 0; z-index: 1; text-align: center; padding: 6px 2px 4px; background: inherit; border-bottom: 1px solid var(--color-neutral-light-400); }
+    .cal-wd { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--color-neutral-dark-400); }
+    .cal-dnum { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-600); line-height: 22px; }
+    .cal-day.today .cal-dnum { background: var(--color-primary-500); color: #fff; width: 22px; height: 22px; border-radius: var(--radius-full); display: inline-block; }
+    .cal-day.today .cal-wd { color: var(--color-primary-600); }
+    .cal-events { display: flex; flex-direction: column; gap: 3px; padding: 4px 3px; }
+    .cal-event { border-left: 3px solid var(--evc, var(--color-primary-500)); background: var(--evbg, var(--color-primary-100)); border-radius: var(--radius-xs); padding: 3px 4px; overflow: hidden; }
+
+    .cal-bdays { padding: 10px 3px 4px; border-top: 1px solid var(--color-neutral-light-200); margin: 12px 3px 0; }
+    .cal-bdays-head { font-size: 10px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--color-neutral-dark-400); padding: 4px 1px 3px; }
+    .cal-bday { display: flex; align-items: center; gap: 4px; padding: 2px 1px; font-size: 10px; color: var(--color-neutral-dark-800); overflow: hidden; }
+    .cal-bday-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cal-bday .material-symbols-outlined { font-size: 13px; color: var(--color-primary-500); flex-shrink: 0; }
+    .cal-ev-time { display: block; font-size: 9px; font-weight: 500; color: var(--color-neutral-dark-400); line-height: 1.2; }
+    .cal-ev-title { font-size: 10px; line-height: 1.25; color: var(--color-neutral-dark-900); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .cal-empty { padding: var(--space-s) 4px; text-align: center; font-size: 11px; color: var(--color-neutral-dark-400); }
+    .cal-pane.view-woche .cal-empty { display: none; }
+
+    .cal-pane.view-drei .cal-events { gap: 4px; padding: 5px 4px; }
+    .cal-pane.view-drei .cal-event { padding: 4px 6px; }
+    .cal-pane.view-drei .cal-ev-time { font-size: 10px; }
+    .cal-pane.view-drei .cal-ev-title { font-size: 11px; }
+    .cal-pane.view-drei .cal-bday { font-size: 11px; }
+    .cal-pane.view-drei .cal-bday .material-symbols-outlined { font-size: 14px; }
+
+    .cal-pane.view-tag .cal-day-head { display: none; }
+    .cal-pane.view-tag .cal-events { gap: 6px; padding: var(--space-m) var(--space-s) var(--space-s); }
+    .cal-pane.view-tag .cal-event { display: flex; align-items: baseline; gap: var(--space-s); padding: 7px var(--space-s); }
+    .cal-pane.view-tag .cal-ev-time { flex: 0 0 40px; font-size: 12px; color: var(--color-neutral-dark-600); }
+    .cal-pane.view-tag .cal-ev-title { font-size: 13px; line-height: 1.3; -webkit-line-clamp: 2; }
+    .cal-pane.view-tag .cal-empty { padding: var(--space-l) var(--space-m); font-size: 12px; }
+    .cal-pane.view-tag .cal-bdays { padding: var(--space-m) var(--space-m) var(--space-s); margin: 8px 0 0; }
+    .cal-pane.view-tag .cal-bdays-head { font-size: 11px; padding: 0 0 6px; }
+    .cal-pane.view-tag .cal-bday { font-size: 13px; gap: 6px; padding: 3px 0; }
+    .cal-pane.view-tag .cal-bday .material-symbols-outlined { font-size: 17px; }
+
+    @media (max-width: 860px) {
+      .cal-edge-handle { display: none !important; }
+      body.cal-open .workspace { display: block; }
+      .cal-pane { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidenav" aria-label="Hauptnavigation">
+      <button class="sidenav-item active" aria-current="page">
+        <span class="material-icons">dashboard</span>
+        <span class="sidenav-label">My Day</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">people</span>
+        <span class="sidenav-label">Anträge</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">person</span>
+        <span class="sidenav-label">Leads</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">contact_mail</span>
+        <span class="sidenav-label">Quellen</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">mail</span>
+        <span class="sidenav-label">Email</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">assessment</span>
+        <span class="sidenav-label">Reporting</span>
+      </button>
+      <button class="sidenav-item">
+        <span class="material-icons">credit_card</span>
+        <span class="sidenav-label">Buchhaltung</span>
+      </button>
+    </aside>
+
+    <div class="main">
+      <!-- ================= TOPBAR ================= -->
+      <header class="topbar">
+        <div class="topbar-logo">
+          <span class="topbar-logo-mark">F</span>
+          FinLink
+        </div>
+        <div class="spacer"></div>
+        <button class="top-icon" title="Neuer Eintrag"><span class="material-icons">add_box</span></button>
+        <button class="top-icon" title="Vollbild"><span class="material-icons">fullscreen</span></button>
+        <button class="top-icon" title="Hilfe"><span class="material-icons">help_outline</span></button>
+        <button class="top-icon" title="Benachrichtigungen"><span class="material-icons">notifications</span></button>
+        <div class="top-divider"></div>
+        <button class="top-lang">DE <span class="material-icons">expand_more</span></button>
+        <div class="top-divider"></div>
+        <button class="top-user">
+          <span class="top-avatar"><span class="material-icons">person</span></span>
+          <span class="top-user-info">
+            <span class="top-user-name">Jan Joisten</span>
+            <span class="top-user-role">Berater</span>
+          </span>
+          <span class="material-icons">expand_more</span>
+        </button>
+      </header>
+
+      <!-- ================= CONTENT ================= -->
+      <div class="content">
+        <h1 class="page-title">Willkommen, Jan</h1>
+
+        <div class="todos-toolbar">
+          <div class="todos-toolbar-left">
+            <div class="todos-heading">
+              <span class="material-symbols-outlined">assignment_turned_in</span>
+              <h2>Mein Tag</h2>
+            </div>
+
+            <div class="search-wrap" id="searchWrap">
+              <button class="search-icon-btn" id="searchToggle" aria-label="Suche öffnen" title="Suche öffnen">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+              <input type="text" class="search-input" id="search" placeholder="Suchen" aria-label="ToDos durchsuchen" />
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace" id="workspace">
+        <section class="pane todo-pane" id="todoPane">
+        <!-- SCHNELLFILTER + BERATER-FILTER + SUCHE + "+ ToDo" — alle in EINER Zeile, direkt
+             in der ToDo-Pane (nicht mehr außerhalb über der ganzen Seite!), damit alle
+             Elemente garantiert auf derselben Höhe stehen UND der "+ ToDo"-Button trotzdem
+             immer am rechten Rand des tatsächlichen ToDo-Bereichs sitzt — bei offenem
+             Kalender vor dessen Spalte, bei geschlossenem Kalender auf voller Breite. Genau
+             das spiegelbildliche Pendant zu "+ Termin" im Kalender-Pane-Head. Verhalten der
+             Filter 1:1 aus V4 (inQuickBucket/renderQuickCounts, Berater-Dropdown); Farben/
+             Radius/Spacing bleiben die bereits in V5 etablierten Tokens statt V4s eigener Werte. -->
+        <div class="todo-pane-head">
+          <div class="segmented segmented--quick" id="quickSeg" role="group" aria-label="Schnellfilter">
+            <button data-quick="alle" class="active" style="--qf:var(--color-primary-500);--qf-tint:var(--color-primary-100)"><span class="qf-strip"></span><span class="qf-count">0</span>Alle</button>
+            <button data-quick="ueberfaellig" style="--qf:var(--color-error-500);--qf-tint:var(--color-error-100)"><span class="qf-strip"></span><span class="qf-count">0</span>Überfällig</button>
+            <button data-quick="heute" style="--qf:var(--color-warning-high);--qf-tint:var(--color-warning-high-light)"><span class="qf-strip"></span><span class="qf-count">0</span>Heute fällig</button>
+            <button data-quick="morgen" style="--qf:var(--color-brand-blue);--qf-tint:#E8F0FC"><span class="qf-strip"></span><span class="qf-count">0</span>Morgen fällig</button>
+            <button data-quick="erledigt" style="--qf:var(--color-primary-500);--qf-tint:var(--color-primary-100)"><span class="qf-strip"></span><span class="qf-count">0</span>Erledigte</button>
+          </div>
+
+          <div class="berater-filter">
+            <button class="btn btn-secondary" id="btnBerater">
+              <span class="material-symbols-outlined">person</span> Berater
+              <span class="btn-badge" id="beraterCount" style="display:none">0</span>
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="menu berater-menu" id="menuBerater"></div>
+          </div>
+
+          <!-- ZEITRAUM-FILTER: findet ToDos, deren Fälligkeit in einem frei wählbaren Von/Bis
+               liegt — ergänzt die festen Schnellfilter-Buckets (Heute/Morgen/…) um einen
+               freien Bereich. Gleiches Dropdown-Pattern wie der Berater-Filter. -->
+          <div class="range-filter">
+            <button class="btn btn-secondary" id="btnRange">
+              <span class="material-symbols-outlined">date_range</span> Zeitraum
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="menu range-menu" id="menuRange">
+              <div class="rmenu-presets">
+                <button data-preset="woche">Diese Woche</button>
+                <button data-preset="monat">Dieser Monat</button>
+              </div>
+              <div class="rmenu-fields">
+                <label><span>Von</span> <input type="date" id="rangeFrom" /></label>
+                <label><span>Bis</span> <input type="date" id="rangeTo" /></label>
+              </div>
+              <div class="bmenu-foot">
+                <button class="btn btn-primary" id="rangeApply">Anwenden</button>
+                <button class="bmenu-clear" id="rangeClear">Zurücksetzen</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="addTodoBtn">
+            <span class="material-symbols-outlined">add</span> ToDo
+          </button>
+
+          <!-- Nur sichtbar, solange der Kalender eingeklappt ist (siehe body.cal-open #btnCal
+               weiter unten) — sitzt dann direkt neben "+ ToDo", auf gleicher Höhe. -->
+          <button class="btn btn-secondary" id="btnCal">
+            <span class="material-symbols-outlined">calendar_month</span> Kalender
+          </button>
+        </div>
+        <!-- AKTIVE-FILTER-CHIPS: 1:1 aus mein-tag-v4.html, direkt unter der Filterzeile. -->
+        <div class="chip-row" id="chipRow"></div>
+        <div class="pane-body">
+
+        <div class="no-todos-banner">
+          <span class="material-symbols-outlined">assignment_turned_in</span>
+          <p>Sie haben <b>5 Anträge</b> ohne ToDos</p>
+          <button class="no-todos-open" title="Anträge ohne ToDos ansehen">
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- INLINE-ANLEGEN: bewusst ÜBER den Gruppen (statt innerhalb der "Heute fällig"-
+             Gruppe) — eine neue ToDo-Anlage gehört noch keiner Gruppe an, solange sie nicht
+             bestätigt ist. Neue ToDos landen nach dem Speichern trotzdem ganz oben in
+             "Heute fällig" (siehe addConfirm im Script weiter unten). -->
+        <div class="add-row" id="addRow">
+          <div class="add-row-fields">
+            <input type="text" class="add-title" placeholder="Titel des ToDos …" id="addTitle" />
+            <select class="add-person" id="addPerson" aria-label="Antragsteller"></select>
+            <input type="date" class="add-due" id="addDue" aria-label="Fälligkeit" />
+            <!-- Art des ToDos: optionale Quickaction-Pills statt Dropdown (anders als in
+                 mein-tag-v4.html, wo #addTyp ein <select> ist) — bestimmt, welches Icon
+                 nachher neben dem Titel in der Zeile steht (siehe Figma-Node 4068-9553). -->
+            <div class="add-row-typ" id="addTypPills" role="group" aria-label="Art des ToDos">
+              <button type="button" class="add-typ-pill" data-typ="email"><span class="material-symbols-outlined">mail</span>Email</button>
+              <button type="button" class="add-typ-pill" data-typ="anruf"><span class="material-symbols-outlined">call</span>Anruf</button>
+              <button type="button" class="add-typ-pill" data-typ="link"><span class="material-symbols-outlined">link</span>Link</button>
+            </div>
+          </div>
+          <div class="add-row-actions">
+            <button class="btn btn-primary" id="addConfirm">Hinzufügen</button>
+            <button class="add-cancel" id="addCancel">Abbrechen</button>
+          </div>
+        </div>
+
+        <!-- ===== Gruppe: Heute fällig ===== -->
+        <section class="todo-group" data-tone="today">
+          <div class="group-title-row">
+            <button class="group-headline">
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+              <span class="group-name">Heute fällig</span>
+              <span class="group-count">(2)</span>
+            </button>
+            <div class="group-labels">
+              <span class="col-applicant">Antragsteller</span>
+              <span class="col-due">Fälligkeit</span>
+              <span class="col-activity">Letzte Aktivität</span>
+            </div>
+          </div>
+          <div class="todo-table-wrap">
+            <div class="todo-table-accent"></div>
+            <div class="todo-table-body">
+              <div class="todo-row" data-berater="Jan Joisten">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Antrag prüfen – Kunde hat ein Angebot angefragt</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Andreas Weber</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Heute – 10:30</span></div>
+                <span class="todo-activity">27.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückruf: offene Fragen zur Finanzierung</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Lena Bachmann</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Heute – 14:00</span></div>
+                <span class="todo-activity">26.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="todo-pagination">
+            <span class="pg-text">Einträge pro Seite 25</span>
+            <span class="pg-text">1 – 2 von 2</span>
+            <div class="pg-nav">
+              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Gruppe: Überfällig ===== -->
+        <section class="todo-group" data-tone="overdue">
+          <div class="group-title-row">
+            <button class="group-headline">
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+              <span class="group-name">Überfällig</span>
+              <span class="group-count">(2)</span>
+            </button>
+            <div class="group-labels">
+              <span class="col-applicant">Antragsteller</span>
+              <span class="col-due">Fälligkeit</span>
+              <span class="col-activity">Letzte Aktivität</span>
+            </div>
+          </div>
+          <div class="todo-table-wrap">
+            <div class="todo-table-accent"></div>
+            <div class="todo-table-body">
+              <div class="todo-row" data-berater="Bernd Krüger">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Gehaltsnachweise prüfen</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Sandra Klein</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-25"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Gestern – 09:00</span></div>
+                <span class="todo-activity">24.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Dokumente von Kunde prüfen</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Petra Schulz</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-24"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Vorgestern – 16:00</span></div>
+                <span class="todo-activity">23.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="todo-pagination">
+            <span class="pg-text">Einträge pro Seite 25</span>
+            <span class="pg-text">1 – 2 von 2</span>
+            <div class="pg-nav">
+              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Gruppe: Morgen fällig ===== -->
+        <section class="todo-group" data-tone="morgen">
+          <div class="group-title-row">
+            <button class="group-headline">
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+              <span class="group-name">Morgen fällig</span>
+              <span class="group-count">(1)</span>
+            </button>
+            <div class="group-labels">
+              <span class="col-applicant">Antragsteller</span>
+              <span class="col-due">Fälligkeit</span>
+              <span class="col-activity">Letzte Aktivität</span>
+            </div>
+          </div>
+          <div class="todo-table-wrap">
+            <div class="todo-table-accent"></div>
+            <div class="todo-table-body">
+              <div class="todo-row" data-berater="Sandra Wolf">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Angebot Lassestraße finalisieren</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Familie Meier</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-27"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Morgen – 09:00</span></div>
+                <span class="todo-activity">27.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="todo-pagination">
+            <span class="pg-text">Einträge pro Seite 25</span>
+            <span class="pg-text">1 – 1 von 1</span>
+            <div class="pg-nav">
+              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Gruppe: Später fällig (alles ab übermorgen) ===== -->
+        <section class="todo-group" data-tone="spaeter">
+          <div class="group-title-row">
+            <button class="group-headline">
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+              <span class="group-name">Später fällig</span>
+              <span class="group-count">(1)</span>
+            </button>
+            <div class="group-labels">
+              <span class="col-applicant">Antragsteller</span>
+              <span class="col-due">Fälligkeit</span>
+              <span class="col-activity">Letzte Aktivität</span>
+            </div>
+          </div>
+          <div class="todo-table-wrap">
+            <div class="todo-table-accent"></div>
+            <div class="todo-table-body">
+              <div class="todo-row" data-berater="Jan Joisten">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Konditionen final abstimmen</span></span>
+                </div>
+                <div class="todo-applicant">
+                  <button class="todo-applicant-name">Thomas Berger</button>
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                </div>
+                <div class="todo-due" data-due="2026-08-28"><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">Übermorgen – 11:00</span></div>
+                <span class="todo-activity">25.06.2026</span>
+                <button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="todo-pagination">
+            <span class="pg-text">Einträge pro Seite 25</span>
+            <span class="pg-text">1 – 1 von 1</span>
+            <div class="pg-nav">
+              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+            </div>
+          </div>
+        </section>
+
+        </div><!-- /pane-body -->
+        </section><!-- /todo-pane -->
+
+        <!-- RAND-HANDLE: 1:1 aus mein-tag-v4.html — einziges Control zum Ein-/Ausklappen. -->
+        <button class="cal-edge-handle" id="calEdgeHandle" title="Kalender anzeigen" aria-label="Kalender anzeigen">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+
+        <!-- KALENDER-PANE: 1:1 aus mein-tag-v4.html — Tag/3 Tage/Woche, Mock-Termine + Geburtstage. -->
+        <section class="pane cal-pane" id="calPane">
+          <!-- Eigene Zeile ÜBER dem Kalender-Header, nur für "+ Termin" — dadurch auf
+               gleicher Höhe wie "+ ToDo" (beide y=0 relativ zu ihrer Pane); der eigentliche
+               Kalender-Header ("Kalender" + Datum) rutscht dafür einen Schritt weiter runter,
+               genau wie bei der ToDo-Pane, wo die Filter-Zeile auch vor den Inhalten steht. -->
+          <div class="cal-pane-head">
+            <button class="btn btn-primary" id="btnAddTermin" title="Im Prototyp nicht interaktiv">
+              <span class="material-symbols-outlined">add</span> Termin
+            </button>
+          </div>
+          <!-- Die eigentliche Karte (Hintergrund/Rahmen/Schatten) beginnt erst HIER, unter der
+               "+ Termin"-Zeile — dadurch liegt der Button wirklich ÜBER dem Kalender statt in
+               dessen Karte. .cal-pane selbst trägt ab jetzt keine Karten-Optik mehr, genauso
+               wie .todo-pane auch keine eigene Karte hat. -->
+          <div class="cal-card">
+          <div class="pane-head">
+            <span class="pane-title"><span class="material-symbols-outlined">calendar_month</span> Kalender</span>
+            <div class="pane-head-tools">
+              <span class="cal-range-label" id="calRangeLabel"></span>
+            </div>
+          </div>
+          <div class="pane-body">
+            <div class="cal-toolbar">
+              <div class="segmented segmented--sm" id="calViewSeg" role="group" aria-label="Zeitraum">
+                <button data-view="tag" class="active" aria-pressed="true">1 Tag</button>
+                <button data-view="drei" aria-pressed="false">3 Tage</button>
+                <button data-view="woche" aria-pressed="false">Woche</button>
+              </div>
+              <div class="cal-nav">
+                <button class="cal-nav-btn" id="calPrev" title="Zurück"><span class="material-symbols-outlined">chevron_left</span></button>
+                <button class="cal-today-btn" id="calToday">Heute</button>
+                <button class="cal-nav-btn" id="calNext" title="Weiter"><span class="material-symbols-outlined">chevron_right</span></button>
+              </div>
+            </div>
+            <div class="cal-legend" id="calLegend"></div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          </div><!-- /cal-card -->
+        </section><!-- /cal-pane -->
+
+        </div><!-- /workspace -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Checkbox: ToDo abhaken. Erledigte ToDos verschwinden aus "Alle" & Co. und tauchen nur
+    // noch im Schnellfilter "Erledigte" auf (siehe inQuickBucket) — kein separater
+    // "Erledigte anzeigen"-Toggle mehr nötig, das übernimmt jetzt der Schnellfilter.
+    document.querySelectorAll('.todo-check').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var row = btn.closest('.todo-row');
+        row.classList.toggle('done');
+        updateGroupCount(row.closest('.todo-group'));
+      });
+    });
+
+    function updateGroupCount(group) {
+      var openCount = group.querySelectorAll('.todo-row:not(.done)').length;
+      group.querySelector('.group-count').textContent = '(' + openCount + ')';
+    }
+
+    // Gruppen ein-/ausklappen
+    document.querySelectorAll('.group-headline').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btn.closest('.todo-group').classList.toggle('collapsed');
+      });
+    });
+
+    // Suche: filtert ToDo-Text und Antragsteller über alle Gruppen
+    document.getElementById('search').addEventListener('input', function (e) {
+      var q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll('.todo-row').forEach(function (row) {
+        if (row.id === 'addRow') return;
+        var text = (row.querySelector('.todo-text').textContent + ' ' + row.querySelector('.todo-applicant-name').textContent).toLowerCase();
+        row.style.display = q && text.indexOf(q) === -1 ? 'none' : '';
+      });
+    });
+
+    // Antragsteller beim Anlegen: Dropdown statt Freitext, analog zu mein-tag-v4.html
+    // (dortiges CUSTOMERS/#addPerson-Select) — hier als einfache Namensliste, da V5-Trial
+    // (anders als V4) keine Kundennummern/Kontaktdaten pro Antragsteller pflegt.
+    var ANTRAGSTELLER_ALL = ['Andreas Weber', 'Lena Bachmann', 'Sandra Klein', 'Petra Schulz', 'Familie Meier', 'Thomas Berger', 'Michael Braun', 'Julia Hoffmann', 'Mehmet Öztürk'];
+    document.getElementById('addPerson').innerHTML = '<option value="">Antragsteller</option>' + ANTRAGSTELLER_ALL.map(function (n) {
+      return '<option value="' + n + '">' + n + '</option>';
+    }).join('');
+
+    var TODAY_ISO = '2026-08-26';
+    function tomorrowIso() {
+      var p = TODAY_ISO.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      d.setDate(d.getDate() + 1);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    // Art des ToDos (Email/Anruf/Link): optionale Quickaction-Pills, einfachauswahl — Klick
+    // auf die bereits aktive Pill wählt wieder ab (dann ohne Art, wie bisher). Bestimmt das
+    // Icon, das nach dem Speichern neben dem Titel steht (siehe .todo-typ-icon).
+    var TYP_ICON = { email: 'mail', anruf: 'call', link: 'link' };
+    var TYP_LABEL = { email: 'Email', anruf: 'Anruf', link: 'Link' };
+    var selectedTyp = null;
+    var typPills = document.getElementById('addTypPills');
+    typPills.addEventListener('click', function (e) {
+      var pill = e.target.closest('.add-typ-pill');
+      if (!pill) return;
+      var typ = pill.dataset.typ;
+      selectedTyp = (selectedTyp === typ) ? null : typ;
+      typPills.querySelectorAll('.add-typ-pill').forEach(function (p) {
+        p.classList.toggle('active', p.dataset.typ === selectedTyp);
+      });
+    });
+    function resetTypPills() {
+      selectedTyp = null;
+      typPills.querySelectorAll('.add-typ-pill').forEach(function (p) { p.classList.remove('active'); });
+    }
+
+    // "+ ToDo": zeigt die Inline-Anlege-Zeile in der ersten Gruppe
+    var addRow = document.getElementById('addRow');
+    document.getElementById('addTodoBtn').addEventListener('click', function () {
+      addRow.classList.add('open');
+      // Fälligkeit ist beim Öffnen schon auf morgen vorbelegt, statt leer zu starten —
+      // die meisten neu angelegten ToDos sind ohnehin nicht taggleich fällig.
+      document.getElementById('addDue').value = tomorrowIso();
+      resetTypPills();
+      document.getElementById('addTitle').focus();
+    });
+    document.getElementById('addCancel').addEventListener('click', function () {
+      addRow.classList.remove('open');
+    });
+    document.getElementById('addConfirm').addEventListener('click', function () {
+      var title = document.getElementById('addTitle').value.trim();
+      if (!title) { document.getElementById('addTitle').focus(); return; }
+      var person = document.getElementById('addPerson').value.trim() || 'Ohne Antragsteller';
+      var due = document.getElementById('addDue').value || tomorrowIso();
+      var dueLabel = window.relativeDueLabel ? window.relativeDueLabel(due, 'jetzt') : due;
+      var typIconHtml = selectedTyp
+        ? '<span class="todo-typ-icon" title="' + TYP_LABEL[selectedTyp] + '"><span class="material-symbols-outlined">' + TYP_ICON[selectedTyp] + '</span></span>'
+        : '';
+      var row = document.createElement('div');
+      row.className = 'todo-row';
+      row.dataset.berater = 'Jan Joisten';
+      row.innerHTML =
+        '<div class="todo-title">' +
+        '<button class="todo-check"><span class="material-symbols-outlined">done</span></button>' +
+        '<span class="todo-text-group">' +
+        '<span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern"></span>' +
+        typIconHtml +
+        '</span>' +
+        '</div>' +
+        '<div class="todo-applicant"><button class="todo-applicant-name"></button>' +
+        '<button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button></div>' +
+        '<div class="todo-due" data-due=""><span class="material-symbols-outlined">schedule</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern"></span></div>' +
+        '<span class="todo-activity">–</span>' +
+        '<button class="todo-more"><span class="material-symbols-outlined">more_horiz</span></button>';
+      row.querySelector('.todo-text').textContent = title;
+      row.querySelector('.todo-applicant-name').textContent = person;
+      row.querySelector('.todo-due').dataset.due = due;
+      row.querySelector('.due-text').textContent = dueLabel;
+      row.querySelector('.todo-check').addEventListener('click', function () {
+        row.classList.toggle('done');
+        updateGroupCount(row.closest('.todo-group'));
+      });
+      // Die Anlege-Zeile liegt über den Gruppen (gehört noch keiner an) — neue ToDos landen
+      // nach dem Speichern ganz oben in "Heute fällig", nicht direkt neben #addRow selbst.
+      var todayBody = document.querySelector('.todo-group[data-tone="today"] .todo-table-body');
+      todayBody.insertBefore(row, todayBody.firstChild);
+      updateGroupCount(row.closest('.todo-group'));
+      if (window.applyQuickFilter) window.applyQuickFilter();
+      if (window.applyRangeFilter) window.applyRangeFilter();
+      document.getElementById('addTitle').value = '';
+      document.getElementById('addPerson').value = '';
+      addRow.classList.remove('open');
+    });
+  </script>
+
+  <!-- =======================================================================
+       INLINE-EDITING (Titel/Fälligkeit) — Verhalten 1:1 aus mein-tag-v4.html
+       (startInline/handleInlineMouse), per Event-Delegation auf document statt auf einer
+       <tbody> (V5 hat keine <table>) — deckt dadurch automatisch auch später per "+ ToDo"
+       neu eingefügte Zeilen ab, ohne sie einzeln verkabeln zu müssen. Antragsteller bleibt
+       wie in V4 NICHT inline editierbar (nur beim Anlegen per Dropdown wählbar).
+       ======================================================================= -->
+  <script>
+  (function () {
+    var TODAY_ISO = '2026-08-26';
+    var RELATIVE_LABEL = { '-2': 'Vorgestern', '-1': 'Gestern', '0': 'Heute', '1': 'Morgen', '2': 'Übermorgen' };
+
+    function toDate(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+    function isoOf(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function fmtAbs(iso) { var p = iso.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+    function relativeDueLabel(iso, timePart) {
+      var diffDays = Math.round((toDate(iso) - toDate(TODAY_ISO)) / 86400000);
+      var label = RELATIVE_LABEL[String(diffDays)] || fmtAbs(iso);
+      return timePart ? label + ' – ' + timePart : label;
+    }
+    // Für die Anlege-Zeile (+ ToDo), damit neu erstellte ToDos dieselbe "Heute/Morgen/…"-
+    // Formatierung wie das Inline-Editing bekommen, ohne diesen privaten Scope zu kennen.
+    window.relativeDueLabel = relativeDueLabel;
+
+    var inlineActive = null; // aktuell offenes .inline-edit-Element, nur eins gleichzeitig
+
+    function startInline(el) {
+      if (el === inlineActive) return;
+      if (inlineActive && inlineActive._inlineFinish) inlineActive._inlineFinish(true); // offenes Feld erst committen
+
+      var field = el.dataset.field;
+      var isDate = field === 'faelligkeit';
+      var dueDiv = isDate ? el.closest('.todo-due') : null;
+      var displayText = el.textContent;
+      var original = isDate ? dueDiv.dataset.due : displayText;
+      var timePart = null;
+      if (isDate) {
+        var m = displayText.match(/–\s*(.+)$/);
+        timePart = m ? m[1].trim() : null;
+      }
+
+      var input = document.createElement('input');
+      input.className = 'inline-input';
+      input.type = isDate ? 'date' : 'text';
+      input.value = original;
+      el.classList.add('editing');
+      el.textContent = '';
+      el.appendChild(input);
+
+      var bumpBtn = null;
+      if (isDate) {
+        bumpBtn = document.createElement('button');
+        bumpBtn.type = 'button';
+        bumpBtn.className = 'due-bump';
+        bumpBtn.textContent = '+1 Tag';
+        bumpBtn.title = 'Datum im Feld um 1 Tag verschieben';
+        bumpBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+        bumpBtn.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          var d = toDate(input.value || original); d.setDate(d.getDate() + 1);
+          input.value = isoOf(d);
+        });
+        dueDiv.appendChild(bumpBtn);
+      }
+
+      input.focus();
+      if (!isDate) input.select();
+
+      var closed = false;
+      function finish(commit) {
+        if (closed) return;
+        closed = true;
+        if (inlineActive === el) inlineActive = null;
+        if (bumpBtn && bumpBtn.parentNode) bumpBtn.parentNode.removeChild(bumpBtn);
+        el.classList.remove('editing');
+        el._inlineFinish = null;
+        var val = isDate ? input.value : input.value.trim();
+        if (commit && val && val !== original) {
+          if (isDate) {
+            dueDiv.dataset.due = val;
+            el.textContent = relativeDueLabel(val, timePart);
+            if (window.applyQuickFilter) window.applyQuickFilter();
+            if (window.applyRangeFilter) window.applyRangeFilter();
+          } else {
+            el.textContent = val;
+          }
+        } else {
+          el.textContent = displayText;
+        }
+      }
+      el._inlineFinish = finish;
+      inlineActive = el;
+
+      input.addEventListener('keydown', function (ev) {
+        ev.stopPropagation();
+        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+        else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+      });
+      input.addEventListener('blur', function () { finish(true); });
+      input.addEventListener('click', function (ev) { ev.stopPropagation(); });
+    }
+
+    // Delegation statt Einzel-Listener pro Zeile: erfasst automatisch auch neue, per
+    // "+ ToDo" eingefügte Zeilen, ohne dass deren Erzeugung diesen Scope kennen muss.
+    document.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      var el = e.target.closest('.inline-edit');
+      if (!el || el.classList.contains('editing')) return;
+      e.preventDefault();
+      startInline(el);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var el = e.target.closest && e.target.closest('.inline-edit');
+      if (!el || el.classList.contains('editing')) return;
+      e.preventDefault();
+      startInline(el);
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       KALENDER — Logik 1:1 aus mein-tag-v4.html übernommen (Mock-Termine,
+       Tag/3-Tage/Woche-Ansicht, Rand-Handle zum Ein-/Ausklappen). Eigener
+       IIFE-Scope, damit nichts mit dem obigen Script kollidiert.
+       ======================================================================= -->
+  <script>
+  (function () {
+    var $ = function (s) { return document.querySelector(s); };
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function iso(y, m, d) { return y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
+
+    // Prototyp-Referenzdatum
+    var TODAY = new Date(2026, 7, 26);
+    TODAY.setHours(0, 0, 0, 0);
+
+    // Farbkodierung nach Termin-ART statt nach Anlass: online (Video/Telefon), vor Ort
+    // (Kunde/Notar/Büro persönlich), privat (kein Kundentermin).
+    var TERMIN_TYP = {
+      online: { c: 'var(--color-brand-blue)', bg: '#E8F0FC', label: 'Online' },
+      vorort: { c: 'var(--color-primary-500)', bg: 'var(--color-primary-100)', label: 'Vor Ort' },
+      privat: { c: '#B457C9', bg: '#F7ECFB', label: 'Privat' }
+    };
+    // laufende Woche: Mo 24.08. – So 30.08.2026 — dieselben Antragsteller wie in der ToDo-Liste oben
+    var TERMINE = [
+      { datum: iso(2026, 8, 24), zeit: '09:00', titel: 'Erstberatung', person: 'Andreas Weber', typ: 'vorort' },
+      { datum: iso(2026, 8, 24), zeit: '14:30', titel: 'Teammeeting', typ: 'vorort' },
+      { datum: iso(2026, 8, 25), zeit: '08:00', titel: 'Angebot Lassestraße finalisieren', person: 'Familie Meier', typ: 'online' },
+      { datum: iso(2026, 8, 25), zeit: '11:30', titel: 'Rückruf: offene Fragen zur Finanzierung', person: 'Lena Bachmann', typ: 'online' },
+      { datum: iso(2026, 8, 25), zeit: '16:00', titel: 'Wochenabschluss Team', typ: 'vorort' },
+      { datum: iso(2026, 8, 26), zeit: '10:00', titel: 'Notartermin', person: 'Sandra Klein', typ: 'vorort' },
+      { datum: iso(2026, 8, 27), zeit: '09:30', titel: 'Objektbesichtigung', typ: 'vorort' },
+      { datum: iso(2026, 8, 27), zeit: '15:00', titel: 'Telefonat', person: 'Thomas Berger', typ: 'online' },
+      { datum: iso(2026, 8, 28), zeit: '10:00', titel: 'Beratung Finanzierung', person: 'Petra Schulz', typ: 'online' },
+      { datum: iso(2026, 8, 29), zeit: '10:00', titel: 'Besichtigung (privat)', typ: 'privat' }
+    ];
+    // Geburtstage stehen unter den Terminen des jeweiligen Tages, nicht in der ToDo-Liste
+    var BDAYS = [
+      { datum: iso(2026, 8, 25), name: 'Lena Bachmann' }
+    ];
+
+    var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+    var WD_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    var WD_FULL = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+    function addDays(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); x.setHours(0, 0, 0, 0); return x; }
+    function mondayOf(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); var wd = (x.getDay() + 6) % 7; return addDays(x, -wd); }
+
+    var CAL_SPAN = { tag: 1, drei: 3, woche: 7 };
+    var calView = 'tag';
+    var calStart = new Date(TODAY);
+
+    function calAlign(anchor) { return calView === 'woche' ? mondayOf(anchor) : addDays(anchor, 0); }
+    function calEnd() { return addDays(calStart, CAL_SPAN[calView] - 1); }
+    function calAnchor() { return (TODAY >= calStart && TODAY <= calEnd()) ? TODAY : calStart; }
+    function fmtRangeLabel() {
+      var start = calStart, end = calEnd();
+      if (calView === 'tag') return WD_SHORT[(start.getDay() + 6) % 7] + ', ' + start.getDate() + '. ' + MONTHS[start.getMonth()] + ' ' + start.getFullYear();
+      if (start.getMonth() === end.getMonth()) return start.getDate() + '.–' + end.getDate() + '. ' + MONTHS[end.getMonth()] + ' ' + end.getFullYear();
+      return start.getDate() + '. ' + MONTHS[start.getMonth()].slice(0, 3) + ' – ' + end.getDate() + '. ' + MONTHS[end.getMonth()].slice(0, 3) + ' ' + end.getFullYear();
+    }
+    function shortPerson(n) { var p = n.trim().split(/\s+/); return p.length > 1 ? p[0][0] + '. ' + p[p.length - 1] : n; }
+    function evHtml(e) {
+      var c = TERMIN_TYP[e.typ] || TERMIN_TYP.vorort;
+      var who = e.person ? ' · ' + shortPerson(e.person) : '';
+      var full = e.zeit + ' ' + e.titel + (e.person ? ' – ' + e.person : '');
+      return '<div class="cal-event" style="--evc:' + c.c + ';--evbg:' + c.bg + '" title="' + esc(full) + '">' +
+        '<span class="cal-ev-time">' + esc(e.zeit) + '</span>' +
+        '<span class="cal-ev-title">' + esc(e.titel) + esc(who) + '</span>' +
+        '</div>';
+    }
+    function bdayHtml(b) {
+      return '<div class="cal-bday"><span class="material-symbols-outlined">cake</span><span class="cal-bday-name">' + esc(b.name) + '</span></div>';
+    }
+    function renderLegend() {
+      $('#calLegend').innerHTML = Object.keys(TERMIN_TYP).map(function (key) {
+        var t = TERMIN_TYP[key];
+        return '<span class="cal-legend-item"><span class="cal-legend-dot" style="--lc:' + t.c + '"></span>' + esc(t.label) + '</span>';
+      }).join('');
+    }
+    renderLegend();
+    function renderCalendar() {
+      var span = CAL_SPAN[calView];
+      var html = '';
+      for (var i = 0; i < span; i++) {
+        var day = addDays(calStart, i);
+        var dISO = iso(day.getFullYear(), day.getMonth() + 1, day.getDate());
+        var wd = (day.getDay() + 6) % 7;
+        var isToday = day.getTime() === TODAY.getTime();
+        var weekend = wd >= 5;
+        var label = calView === 'tag' ? WD_FULL[wd] : WD_SHORT[wd];
+        var evs = TERMINE.filter(function (t) { return t.datum === dISO; }).sort(function (a, b) { return a.zeit.localeCompare(b.zeit); });
+        var body = evs.length ? evs.map(evHtml).join('') : '<div class="cal-empty">Keine Termine</div>';
+        var bdays = BDAYS.filter(function (b) { return b.datum === dISO; });
+        var bdaySection = bdays.length ? '<div class="cal-bdays"><div class="cal-bdays-head">Geburtstage</div>' + bdays.map(bdayHtml).join('') + '</div>' : '';
+        html += '<div class="cal-day' + (isToday ? ' today' : '') + (weekend ? ' weekend' : '') + '">' +
+          '<div class="cal-day-head"><div class="cal-wd">' + label + '</div><div class="cal-dnum">' + day.getDate() + '</div></div>' +
+          '<div class="cal-events">' + body + '</div>' +
+          bdaySection +
+          '</div>';
+      }
+      $('#calGrid').innerHTML = html;
+      $('#calRangeLabel').textContent = fmtRangeLabel();
+      var calPane = $('#calPane');
+      calPane.classList.toggle('view-tag', calView === 'tag');
+      calPane.classList.toggle('view-drei', calView === 'drei');
+      calPane.classList.toggle('view-woche', calView === 'woche');
+      document.querySelectorAll('#calViewSeg button').forEach(function (b) {
+        var on = b.dataset.view === calView;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    function setCalView(view) {
+      if (!CAL_SPAN[view]) return;
+      var anchor = calAnchor();
+      calView = view;
+      calStart = calAlign(anchor);
+      renderCalendar();
+    }
+    function setCalOpen(open) {
+      document.body.classList.toggle('cal-open', open);
+      var handle = $('#calEdgeHandle');
+      handle.querySelector('.material-symbols-outlined').textContent = open ? 'chevron_right' : 'chevron_left';
+      var label = open ? 'Kalender ausblenden' : 'Kalender anzeigen';
+      handle.title = label;
+      handle.setAttribute('aria-label', label);
+      if (open) renderCalendar();
+      positionCalEdgeHandle();
+    }
+    function positionCalEdgeHandle() {
+      var handle = $('#calEdgeHandle');
+      if (document.body.classList.contains('cal-open') || window.innerWidth < 861) { handle.style.top = ''; return; }
+      var top = $('#workspace').getBoundingClientRect().top;
+      handle.style.top = (top + (window.innerHeight - top) / 2) + 'px';
+    }
+    window.addEventListener('resize', positionCalEdgeHandle);
+    new ResizeObserver(positionCalEdgeHandle).observe($('.content'));
+    // Kalender startet standardmäßig geöffnet (statt erst per Klick auf den Rand-Handle/Button).
+    setCalOpen(true);
+
+    $('#btnCal').addEventListener('click', function () { setCalOpen(true); });
+    $('#calEdgeHandle').addEventListener('click', function () { setCalOpen(!document.body.classList.contains('cal-open')); });
+    $('#calPrev').addEventListener('click', function () { calStart = addDays(calStart, -CAL_SPAN[calView]); renderCalendar(); });
+    $('#calNext').addEventListener('click', function () { calStart = addDays(calStart, CAL_SPAN[calView]); renderCalendar(); });
+    $('#calToday').addEventListener('click', function () { calStart = calAlign(TODAY); renderCalendar(); });
+    $('#calViewSeg').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-view]');
+      if (b) setCalView(b.dataset.view);
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       SCHNELLFILTER — Verhalten 1:1 aus mein-tag-v4.html (inQuickBucket/
+       renderQuickCounts), unabhängiger Scope, rührt die bestehenden Scripts
+       (Suche/Abhaken/Kalender) nicht an, reagiert nur zusätzlich auf sie.
+       ======================================================================= -->
+  <script>
+  (function () {
+    var state = { quick: 'alle' };
+
+    function isAddRow(row) { return row.id === 'addRow'; }
+    function isDone(row) { return row.classList.contains('done'); }
+    function toneOf(row) { var g = row.closest('.todo-group'); return g ? g.dataset.tone : ''; }
+    function dueText(row) { var el = row.querySelector('.due-text'); return el ? el.textContent : ''; }
+    function matchesSearch(row) { return row.style.display !== 'none'; }
+
+    // Gehört die Zeile in den Topf eines Schnellfilters? Eigene Funktion, damit
+    // Ansicht und Zähler garantiert dieselbe Regel benutzen — wie in V4.
+    function inQuickBucket(row, quick) {
+      if (quick === 'erledigt') return isDone(row);
+      if (isDone(row)) return false; // erledigte nur im Erledigte-Filter
+      var tone = toneOf(row);
+      if (quick === 'ueberfaellig') return tone === 'overdue';
+      if (quick === 'heute') return tone === 'today' || tone === 'overdue'; // "Heute" schließt Überfällige ein, wie in V4
+      if (quick === 'morgen') return dueText(row).indexOf('Morgen') === 0; // Prototyp: Text- statt echter Datumsvergleich, "Übermorgen" matcht bewusst nicht
+      return true; // 'alle'
+    }
+
+    // Gemeinsam mit Berater- und Zeitraum-Filter genutzt: eine Zeile gilt als sichtbar, wenn
+    // KEINER der drei Filter sie ausblendet. Auf window, damit alle unabhängigen Script-Blöcke
+    // dieselbe Regel für "Gruppe ist leer" verwenden.
+    window.recomputeGroupEmptiness = function () {
+      document.querySelectorAll('.todo-group').forEach(function (group) {
+        var rows = Array.prototype.filter.call(group.querySelectorAll('.todo-row'), function (r) { return !isAddRow(r); });
+        var anyLeft = rows.some(function (r) {
+          return !r.classList.contains('quick-hidden') && !r.classList.contains('berater-hidden') && !r.classList.contains('range-hidden');
+        });
+        group.classList.toggle('quick-empty', !anyLeft);
+      });
+    };
+
+    function applyQuickFilter() {
+      document.querySelectorAll('.todo-row').forEach(function (row) {
+        if (isAddRow(row)) return;
+        row.classList.toggle('quick-hidden', !inQuickBucket(row, state.quick));
+      });
+      window.recomputeGroupEmptiness();
+      renderQuickCounts();
+      // Die Gruppenüberschriften (Überfällig/Heute fällig/…) sind nur bei "Alle" nötig, wo
+      // mehrere Kategorien gemeinsam sichtbar sind — bei einem konkreten Schnellfilter zeigt
+      // ohnehin schon der aktive Tab, worum es geht; die Überschrift wäre dort redundant.
+      document.body.classList.toggle('quick-filtered', state.quick !== 'alle');
+    }
+    // Damit das Inline-Editing (Fälligkeitsdatum ändern) die Schnellfilter-Sichtbarkeit
+    // danach neu bewerten kann, ohne diesen privaten Scope zu kennen.
+    window.applyQuickFilter = applyQuickFilter;
+
+    // Zeigt, was ein Klick brächte: Suche zählt mit, der Schnellfilter selbst nicht — wie in V4.
+    function renderQuickCounts() {
+      document.querySelectorAll('#quickSeg button[data-quick]').forEach(function (b) {
+        var n = 0;
+        document.querySelectorAll('.todo-row').forEach(function (row) {
+          if (isAddRow(row) || !matchesSearch(row)) return;
+          if (inQuickBucket(row, b.dataset.quick)) n++;
+        });
+        var countEl = b.querySelector('.qf-count');
+        if (countEl) countEl.textContent = n;
+      });
+    }
+
+    document.getElementById('quickSeg').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-quick]');
+      if (!b) return;
+      state.quick = b.dataset.quick;
+      document.querySelectorAll('#quickSeg button').forEach(function (x) { x.classList.toggle('active', x === b); });
+      applyQuickFilter();
+    });
+
+    // Reagiert zusätzlich auf Suche, Abhaken und neu angelegte ToDos, ohne die
+    // bestehenden Listener dafür zu ersetzen.
+    var searchInput = document.getElementById('search');
+    if (searchInput) searchInput.addEventListener('input', applyQuickFilter);
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('.todo-check') || e.target.closest('#addConfirm')) {
+        setTimeout(applyQuickFilter, 0);
+      }
+    });
+
+    applyQuickFilter();
+  })();
+  </script>
+
+  <!-- =======================================================================
+       BERATER-FILTER (Dropdown) — Struktur/Verhalten 1:1 aus mein-tag-v4.html
+       (buildBeraterMenu/updateBeraterButton), Menü-Positionierung vereinfacht
+       auf position:absolute (wie das bereits vorhandene "Fällig"-Dropdown)
+       statt V4s JS-berechneter position:fixed-Platzierung. Werte/Radius/
+       Spacing sind die bereits in V5 etablierten Tokens.
+       ======================================================================= -->
+  <script>
+  (function () {
+    var ME = 'Jan Joisten';
+    var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
+    var beraterFilter = new Set();   // leer = alle
+    var beraterPending = new Set();  // Arbeitsauswahl im offenen Menü, erst "Filter anwenden" übernimmt sie
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    var menuEl = document.getElementById('menuBerater');
+    var btnEl = document.getElementById('btnBerater');
+    // Klicks im Menü nie zum document durchreichen: buildBeraterMenu() ersetzt innerHTML
+    // während der Bubbling-Phase, wodurch das ursprüngliche Klick-Ziel vom DOM getrennt
+    // wird — der globale "Klick außerhalb schließt"-Listener würde das Menü sonst
+    // sofort wieder schließen, weil e.target.closest(...) auf dem getrennten Knoten
+    // keine Vorfahren mehr findet.
+    menuEl.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    function beraterMarks() { return { mine: beraterPending.size === 1 && beraterPending.has(ME), all: beraterPending.size === 0 }; }
+
+    function buildBeraterMenu() {
+      var marks = beraterMarks();
+      menuEl.innerHTML =
+        '<button class="bmenu-row strong' + (marks.mine ? ' active' : '') + '" id="bMine">Meine ToDos <span class="material-symbols-outlined check">check</span></button>' +
+        '<button class="bmenu-row' + (marks.all ? ' active' : '') + '" id="bAll">Alle Berater <span class="material-symbols-outlined check">check</span></button>' +
+        '<div class="bmenu-search-wrap"><div class="search-mini">' +
+        '<input class="menu-search" id="beraterSearch" placeholder="Suchen" autocomplete="off" />' +
+        '<span class="material-symbols-outlined">search</span>' +
+        '</div></div>' +
+        '<label class="bmenu-check bmenu-selectall"><input type="checkbox" id="bSelectAll" /> <span>Alle auswählen</span></label>' +
+        '<div class="bmenu-list" id="beraterListEl">' + BERATER_ALL.map(function (n) {
+          return '<label class="bmenu-check" data-name="' + esc(n) + '"><input type="checkbox" ' + (beraterPending.has(n) ? 'checked' : '') + ' /> <span>' + esc(n) + '</span></label>';
+        }).join('') + '</div>' +
+        '<div class="bmenu-foot">' +
+        '<button class="btn btn-primary" id="bApply">Filter anwenden (' + beraterPending.size + ')</button>' +
+        '<button class="bmenu-clear" id="bClear">Alle löschen</button>' +
+        '</div>';
+
+      document.getElementById('bMine').addEventListener('click', function () { beraterPending = new Set([ME]); buildBeraterMenu(); });
+      document.getElementById('bAll').addEventListener('click', function () { beraterPending = new Set(); buildBeraterMenu(); });
+
+      var search = document.getElementById('beraterSearch');
+      search.addEventListener('input', function () {
+        var q = search.value.toLowerCase();
+        menuEl.querySelectorAll('#beraterListEl .bmenu-check').forEach(function (it) {
+          it.style.display = it.dataset.name.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+        });
+        syncBeraterSelectAll();
+      });
+
+      document.getElementById('bSelectAll').addEventListener('change', function (e) {
+        menuEl.querySelectorAll('#beraterListEl .bmenu-check').forEach(function (it) {
+          if (it.style.display === 'none') return;
+          var n = it.dataset.name, cb = it.querySelector('input');
+          cb.checked = e.target.checked;
+          if (e.target.checked) beraterPending.add(n); else beraterPending.delete(n);
+        });
+        updateBeraterMarks();
+      });
+
+      menuEl.querySelectorAll('#beraterListEl .bmenu-check input').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var n = cb.closest('.bmenu-check').dataset.name;
+          if (cb.checked) beraterPending.add(n); else beraterPending.delete(n);
+          updateBeraterMarks(); syncBeraterSelectAll();
+        });
+      });
+
+      document.getElementById('bApply').addEventListener('click', function () {
+        beraterFilter = new Set(beraterPending);
+        updateBeraterButton();
+        closeBeraterMenu();
+        applyBeraterFilter();
+        if (window.renderChips) window.renderChips();
+      });
+      document.getElementById('bClear').addEventListener('click', function () { beraterPending = new Set(); buildBeraterMenu(); });
+
+      syncBeraterSelectAll();
+    }
+
+    function updateBeraterMarks() {
+      var btn = document.getElementById('bApply');
+      if (btn) btn.textContent = 'Filter anwenden (' + beraterPending.size + ')';
+      var marks = beraterMarks();
+      var mine = document.getElementById('bMine'), all = document.getElementById('bAll');
+      if (mine) mine.classList.toggle('active', marks.mine);
+      if (all) all.classList.toggle('active', marks.all);
+    }
+    function syncBeraterSelectAll() {
+      var sa = document.getElementById('bSelectAll'); if (!sa) return;
+      var visible = Array.prototype.filter.call(menuEl.querySelectorAll('#beraterListEl .bmenu-check'), function (it) { return it.style.display !== 'none'; });
+      var checked = visible.filter(function (it) { return it.querySelector('input').checked; });
+      sa.checked = visible.length > 0 && checked.length === visible.length;
+      sa.indeterminate = checked.length > 0 && checked.length < visible.length;
+    }
+    function updateBeraterButton() {
+      var n = beraterFilter.size, badge = document.getElementById('beraterCount');
+      badge.textContent = n; badge.style.display = n ? '' : 'none';
+      btnEl.classList.toggle('filter-active', n > 0);
+    }
+
+    // Für die geteilte Aktive-Filter-Chip-Zeile (siehe eigenes <script> weiter unten, das
+    // Berater- UND Zeitraum-Chips zusammen rendert): aktuelle Auswahl lesen bzw. komplett
+    // löschen, ohne den privaten beraterFilter-Scope hier zu verlassen.
+    window.getBeraterFilter = function () { return beraterFilter; };
+    window.clearBeraterFilter = function () {
+      beraterFilter = new Set();
+      updateBeraterButton();
+      applyBeraterFilter();
+    };
+    function applyBeraterFilter() {
+      document.querySelectorAll('.todo-row').forEach(function (row) {
+        if (row.id === 'addRow') return;
+        var show = beraterFilter.size === 0 || beraterFilter.has(row.dataset.berater);
+        row.classList.toggle('berater-hidden', !show);
+      });
+      if (window.recomputeGroupEmptiness) window.recomputeGroupEmptiness();
+    }
+
+    function closeBeraterMenu() { menuEl.classList.remove('open'); }
+
+    btnEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = !menuEl.classList.contains('open');
+      if (willOpen) { beraterPending = new Set(beraterFilter); buildBeraterMenu(); }
+      menuEl.classList.toggle('open', willOpen);
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.berater-filter')) closeBeraterMenu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeBeraterMenu();
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       ERWEITERBARES SUCHFELD — gängiges Muster: Klick auf das Icon blendet das
+       Eingabefeld ein und fokussiert es; ohne Text kollabiert es beim Verlassen
+       wieder aufs Icon, mit Text bleibt es offen; Escape löscht und kollabiert.
+       ======================================================================= -->
+  <script>
+  (function () {
+    var wrap = document.getElementById('searchWrap');
+    var toggle = document.getElementById('searchToggle');
+    var input = document.getElementById('search');
+
+    function open() { wrap.classList.add('open'); input.focus(); }
+    function collapseIfEmpty() { if (!input.value) wrap.classList.remove('open'); }
+
+    toggle.addEventListener('click', function () {
+      if (wrap.classList.contains('open')) { input.focus(); return; }
+      open();
+    });
+    input.addEventListener('blur', collapseIfEmpty);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; input.dispatchEvent(new Event('input')); wrap.classList.remove('open'); toggle.focus(); }
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       ZEITRAUM-FILTER — findet ToDos, deren Fälligkeit (data-due, ISO) in einem
+       frei wählbaren Von/Bis liegt. Gleiches Dropdown-Pattern wie der
+       Berater-Filter (eigener Scope, stopPropagation gegen denselben
+       Detachment-Bug wie beim Berater-Menü).
+       ======================================================================= -->
+  <script>
+  (function () {
+    var TODAY_ISO = '2026-08-26';
+
+    var menuEl = document.getElementById('menuRange');
+    var btnEl = document.getElementById('btnRange');
+    var fromEl = document.getElementById('rangeFrom');
+    var toEl = document.getElementById('rangeTo');
+    menuEl.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    var range = null; // { from: 'YYYY-MM-DD', to: 'YYYY-MM-DD' } | null = kein Filter
+
+    function toDate(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+    function addDays(iso, n) { var d = toDate(iso); d.setDate(d.getDate() + n); return isoOf(d); }
+    function isoOf(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function mondayOf(iso) { var d = toDate(iso); var wd = (d.getDay() + 6) % 7; d.setDate(d.getDate() - wd); return isoOf(d); }
+
+    function applyPreset(name) {
+      if (name === 'woche') { var mon = mondayOf(TODAY_ISO); fromEl.value = mon; toEl.value = addDays(mon, 6); }
+      else if (name === 'monat') {
+        var d = toDate(TODAY_ISO);
+        fromEl.value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01';
+        var last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+        toEl.value = isoOf(last);
+      }
+    }
+    menuEl.querySelectorAll('.rmenu-presets button').forEach(function (b) {
+      b.addEventListener('click', function () { applyPreset(b.dataset.preset); });
+    });
+
+    function applyRangeFilter() {
+      document.querySelectorAll('.todo-row').forEach(function (row) {
+        if (row.id === 'addRow') return;
+        var show = true;
+        if (range) {
+          var due = row.querySelector('.todo-due') ? row.querySelector('.todo-due').dataset.due : null;
+          show = !!due && due >= range.from && due <= range.to;
+        }
+        row.classList.toggle('range-hidden', !show);
+      });
+      if (window.recomputeGroupEmptiness) window.recomputeGroupEmptiness();
+    }
+    // Damit das Inline-Editing (Fälligkeitsdatum ändern) die Zeitraum-Sichtbarkeit danach
+    // neu bewerten kann, ohne diesen privaten Scope zu kennen.
+    window.applyRangeFilter = applyRangeFilter;
+    // Der ausgewählte Zeitraum selbst steht nicht mehr im Button (das übernimmt die
+    // Filter-Chip unten) — der Button heißt immer schlicht "Zeitraum", nur die
+    // Active-Hervorhebung zeigt an, dass ein Filter gesetzt ist.
+    function updateRangeButton() {
+      btnEl.classList.toggle('filter-active', !!range);
+    }
+    function closeRangeMenu() { menuEl.classList.remove('open'); }
+
+    // Für die geteilte Aktive-Filter-Chip-Zeile: aktuellen Zeitraum lesen bzw. komplett
+    // löschen, ohne den privaten range-Scope hier zu verlassen (gleiches Muster wie beim
+    // Berater-Filter).
+    window.getRangeFilter = function () { return range; };
+    window.clearRangeFilter = function () {
+      range = null; fromEl.value = ''; toEl.value = '';
+      updateRangeButton();
+      applyRangeFilter();
+    };
+
+    document.getElementById('rangeApply').addEventListener('click', function () {
+      if (!fromEl.value || !toEl.value) return;
+      range = { from: fromEl.value, to: toEl.value };
+      updateRangeButton();
+      closeRangeMenu();
+      applyRangeFilter();
+      if (window.renderChips) window.renderChips();
+    });
+    document.getElementById('rangeClear').addEventListener('click', function () {
+      window.clearRangeFilter();
+      closeRangeMenu();
+      if (window.renderChips) window.renderChips();
+    });
+
+    btnEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menuEl.classList.toggle('open');
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.range-filter')) closeRangeMenu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeRangeMenu();
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       AKTIVE-FILTER-CHIPS: kombiniert Berater- UND Zeitraum-Filter zu Sammel-Pillen unter
+       der Filterzeile (#chipRow) — Grundmuster aus mein-tag-v4.html. Bewusst als eigenes,
+       drittes Script NACH beiden Filter-Scripts: liest deren Zustand nur über die dort
+       exponierten window.getXFilter()/clearXFilter()-Funktionen, ohne deren private Scopes
+       zu kennen. So kann jeder Filter unabhängig erweitert werden, ohne dieses Script
+       anzufassen (und umgekehrt). -->
+  <script>
+  (function () {
+    var chipRowEl = document.getElementById('chipRow');
+
+    function fmtChipDate(iso) { var p = iso.split('-'); return p[2] + '.' + p[1] + '.'; }
+
+    function renderChips() {
+      var chips = [];
+      var beraterFilter = window.getBeraterFilter ? window.getBeraterFilter() : null;
+      if (beraterFilter && beraterFilter.size) {
+        chips.push('<span class="fchip">Berater: ' + [...beraterFilter].join(', ') + ' <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>');
+      }
+      var range = window.getRangeFilter ? window.getRangeFilter() : null;
+      if (range) {
+        chips.push('<span class="fchip">Zeitraum: ' + fmtChipDate(range.from) + '–' + fmtChipDate(range.to) + ' <button data-clear="range"><span class="material-symbols-outlined">close</span></button></span>');
+      }
+      chipRowEl.innerHTML = chips.length ? chips.join('') + '<button class="chip-reset" id="chipReset">Filter zurücksetzen</button>' : '';
+    }
+
+    chipRowEl.addEventListener('click', function (e) {
+      var clearBtn = e.target.closest('button[data-clear]');
+      var resetBtn = e.target.closest('#chipReset');
+      if (clearBtn) {
+        if (clearBtn.dataset.clear === 'berater' && window.clearBeraterFilter) window.clearBeraterFilter();
+        if (clearBtn.dataset.clear === 'range' && window.clearRangeFilter) window.clearRangeFilter();
+        renderChips();
+      } else if (resetBtn) {
+        if (window.clearBeraterFilter) window.clearBeraterFilter();
+        if (window.clearRangeFilter) window.clearRangeFilter();
+        renderChips();
+      }
+    });
+
+    window.renderChips = renderChips;
+  })();
+  </script>
+
+  <!-- Verlaufs-Kante an den Schnellfilter-Tabs: nur sichtbar, wenn dort tatsächlich mehr
+       Tabs stecken, als gerade Platz haben (abhängig von Kalender-Status/-Ansicht). -->
+  <script>
+  (function () {
+    var seg = document.getElementById('quickSeg');
+    function updateFade() {
+      var atEnd = seg.scrollLeft + seg.clientWidth >= seg.scrollWidth - 1;
+      seg.classList.toggle('has-overflow', seg.scrollWidth > seg.clientWidth && !atEnd);
+    }
+    seg.addEventListener('scroll', updateFade);
+    window.addEventListener('resize', updateFade);
+    new ResizeObserver(updateFade).observe(seg);
+    updateFade();
+  })();
+  </script>
+</body>
+</html>

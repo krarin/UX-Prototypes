@@ -123,6 +123,12 @@ window.PROTOTYPES = {
         { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v4.html" }
       ],
       changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)." },
+    { id:"mein-tag-v5a", project:"mein-tag", version:5, variant:"A", title:"Mein Tag V5-A",
+      file:"to-do/mein-tag-v5-a.html", status:"archiv",
+      changes:"Gegenüber V4: Kalender-Termine jetzt farbcodiert nach Online/Vor Ort/Privat (mit Legende); Schnellfilter-Tabs + Berater-/Zeitraum-Filter mit Filter-Chips; aufklappbare Suche; Inline-Editing von Titel/Fälligkeit direkt in der Zeile; Antragsteller-Dropdown und Quickaction-Pills (Email/Anruf/Link) beim Anlegen, inkl. Icon neben dem Titel; Gruppentitel nur noch bei Schnellfilter „Alle“ sichtbar. Vormals „mein-tag-v5-trial.html“." },
+    { id:"mein-tag-v5b", project:"mein-tag", version:5, variant:"B", title:"Mein Tag V5-B",
+      file:"to-do/mein-tag-v5-b.html", status:"archiv",
+      changes:"Gegenüber V5-A (vormals „mein-tag-v5-c.html“): Suche in die Filterzeile verschoben; Spalte „Letzte Aktivität“ entfernt; Berater-Spalte neben Fälligkeit, inkl. eigenem Dropdown im Anlege-Formular; Radiobuttons statt Pills für „Art des ToDos“; Anlege-Formular schließt sich beim Wegklicken automatisch, wenn nichts eingegeben wurde. Klick auf Titel/Fälligkeit öffnet jetzt die ganze Zeile als Formular statt nur ein Einzelfeld, committet automatisch beim Verlassen. Echtes „Gruppierung“-Dropdown (Anruf/Email/Link, ausgewählter Typ zuerst) sowie Rückmeldungs-Toasts bei jeder ToDo-Änderung." },
 
     /* ---- Advisors · ToDo-Sortierung ---- */
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",
