@@ -1,0 +1,679 @@
+/* =====================================================================
+   CUSTOMER SKIN — nachgebaut nach dem heutigen Kundendashboard
+
+   Bewusst NICHT design-system/tokens.css: das Design-System ist
+   tuerkis und Berater-Chrome, das Kundenprodukt ist blau und hat
+   eine eigene Formensprache (gestrichelte Karten, grosse leichte
+   Ueberschriften, Statuswort rechts). Wuerden beide Ebenen geladen,
+   kaempfen zwei Primaerfarben gegeneinander.
+
+   Diese Datei ist die Formensprache, nicht der Prototyp. Jede
+   weitere Version dieses Flows laedt sie erneut — dadurch bleibt
+   „so sieht das Produkt aus" an einer Stelle aenderbar.
+
+   ACHTUNG FARBWERTE: aus den Produkt-Screenshots abgeleitet, nicht
+   aus einer Token-Datei uebernommen. Wenn es echte Hexwerte gibt,
+   gehoeren sie hier hinein — dann stimmt alles Weitere von selbst.
+   ===================================================================== */
+
+:root {
+  /* ---- Blau: die Produktfarbe ---- */
+  --c-blue-700: #12379E;
+  --c-blue-600: #1740C4;
+  --c-blue-500: #1B4DE0;      /* Links, Buttons, Stepper, Icons */
+  --c-blue-200: #C8D6F7;
+  --c-blue-100: #EDF2FC;      /* Hinweisbox */
+  --c-blue-050: #F5F8FE;
+
+  /* ---- Schrift ---- */
+  --c-ink-900: #2B3038;       /* Ueberschriften */
+  --c-ink-700: #454B54;       /* Fliesstext */
+  --c-ink-500: #6E757E;       /* Statuswort, Hilfstext */
+  --c-ink-300: #9AA0A8;
+
+  /* ---- Flaechen und Linien ---- */
+  --c-bg:        #F7F8FA;
+  --c-gray-row:  #EDEDED;     /* Zeile eines laufenden Uploads */
+  --c-surface:   #FFFFFF;
+  --c-line:      #E3E6EB;     /* Trennlinien */
+  --c-dash:      #C9CFD8;     /* gestrichelte Kartenrahmen */
+
+  /* ---- Status ---- */
+  --c-red:       #E02020;     /* Abgelehnt */
+  --c-red-dash:  #E5484D;
+  --c-red-050:   #FEF4F4;
+  --c-green:     #12A150;     /* Angenommen */
+  --c-green-050: #EFFAF3;
+  --c-amber:     #B26A00;     /* In Pruefung */
+  --c-amber-050: #FFF8EC;
+
+  --radius-card: 4px;         /* das Produkt ist kantig, nicht rund */
+  --radius-s:    3px;
+  --sidebar-w:   280px;
+  --content-max: 1240px;
+
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--c-ink-700);
+  background: var(--c-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+/* =====================================================================
+   GERUEST
+   ===================================================================== */
+.app { display: flex; min-height: 100vh; align-items: stretch; }
+
+/* ---------- Sidebar ---------- */
+.side {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--c-surface);
+  border-right: 1px solid var(--c-line);
+  display: flex; flex-direction: column;
+  padding: 28px 0 32px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 28px 40px; font-size: 20px; font-weight: 700;
+  color: var(--c-ink-900); letter-spacing: -0.3px;
+}
+.brand-mark {
+  width: 26px; height: 26px; border-radius: var(--radius-s);
+  background: var(--c-blue-500); color: #fff;
+  display: grid; place-items: center; font-size: 13px; font-weight: 700;
+}
+
+/* ---------- Stepper ----------
+   Die Verbindungslinie laeuft durch die Kreise hindurch, nicht
+   zwischen ihnen — sonst reisst sie bei langen Labels ab. */
+.stepper { padding: 0 28px; }
+.step {
+  display: flex; gap: 16px; align-items: flex-start;
+  position: relative; padding-bottom: 22px;
+}
+.step:last-child { padding-bottom: 0; }
+.step::before {
+  content: ''; position: absolute; left: 15px; top: 30px; bottom: 0;
+  width: 1px; background: var(--c-line);
+}
+.step:last-child::before { display: none; }
+.step-dot {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: grid; place-items: center; font-size: 14px; font-weight: 600;
+  background: var(--c-surface); border: 1.5px solid var(--c-line);
+  color: var(--c-ink-300); position: relative; z-index: 1;
+}
+.step.done .step-dot,
+.step.current .step-dot {
+  background: var(--c-blue-500); border-color: var(--c-blue-500); color: #fff;
+}
+.step.done .step-dot { background: var(--c-blue-200); border-color: var(--c-blue-200); color: var(--c-blue-700); }
+.step.done .step-dot .material-symbols-outlined { font-size: 18px; font-variation-settings: 'wght' 500; }
+.step-label { font-size: 16px; color: var(--c-ink-500); padding-top: 3px; }
+.step.done    .step-label { color: var(--c-ink-900); }
+.step.current .step-label { color: var(--c-blue-500); font-weight: 600; }
+
+/* ---------- Navigation ---------- */
+.nav { padding: 44px 28px 0; display: flex; flex-direction: column; gap: 22px; }
+.nav-item {
+  display: flex; align-items: center; gap: 16px;
+  color: var(--c-ink-900); text-decoration: none; font-size: 16px;
+}
+.nav-item .material-symbols-outlined { font-size: 26px; color: var(--c-blue-500); }
+.nav-item:hover { color: var(--c-blue-500); }
+.nav-item[aria-current="page"] { font-weight: 600; }
+
+.side-foot { margin-top: auto; padding: 32px 28px 0; }
+.side-foot a { color: var(--c-blue-500); text-decoration: none; font-size: 16px; }
+.side-foot a:hover { text-decoration: underline; }
+.side-foot p { margin: 2px 0 0; font-size: 15px; color: var(--c-ink-500); line-height: 1.4; }
+
+/* ---------- Hauptspalte ---------- */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  display: flex; justify-content: flex-end; align-items: center; gap: 20px;
+  padding: 18px 40px; border-bottom: 1px solid var(--c-line);
+  font-size: 16px; color: var(--c-ink-700); flex-shrink: 0;
+}
+.topbar > span { display: flex; align-items: center; gap: 8px; }
+.topbar .sep { width: 1px; height: 22px; background: var(--c-line); }
+.topbar .material-symbols-outlined { font-size: 20px; color: var(--c-blue-500); }
+
+.crumb {
+  display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  padding: 22px 48px 0; max-width: calc(var(--content-max) + 96px); width: 100%;
+}
+.crumb .here { font-size: 18px; font-weight: 700; color: var(--c-blue-500); }
+.crumb a { font-size: 16px; color: var(--c-blue-500); text-decoration: none; }
+.crumb a:hover { text-decoration: underline; }
+
+.content { padding: 34px 48px 96px; max-width: calc(var(--content-max) + 96px); width: 100%; }
+.content.tinted { background: var(--c-bg); }
+
+/* =====================================================================
+   TYPOGRAFIE
+   Die Ueberschriften des Produkts sind gross und LEICHT, nicht fett.
+   Das ist der auffaelligste Unterschied zum Berater-Chrome — es
+   nimmt der Seite den Formular-Ernst.
+   ===================================================================== */
+.h-page {
+  font-size: 40px; font-weight: 400; line-height: 1.2; letter-spacing: -0.5px;
+  color: var(--c-ink-900); margin: 0 0 20px; max-width: 22ch;
+}
+.h-section {
+  font-size: 28px; font-weight: 400; line-height: 1.3;
+  color: var(--c-ink-900); margin: 0 0 14px;
+}
+.h-block { font-size: 22px; font-weight: 400; color: var(--c-ink-900); margin: 0; }
+.lead { font-size: 16px; color: var(--c-ink-700); margin: 0 0 18px; }
+
+/* Aufzaehlung mit blauem Punkt */
+.blist { list-style: none; margin: 0 0 28px; padding: 0; }
+.blist li { position: relative; padding-left: 18px; margin-bottom: 12px; }
+.blist li::before {
+  content: ''; position: absolute; left: 0; top: 10px;
+  width: 5px; height: 5px; border-radius: 50%; background: var(--c-blue-500);
+}
+
+/* Abschnittstitel mit Haarlinie darunter */
+.rule { border: 0; border-top: 1px solid var(--c-line); margin: 0 0 22px; }
+
+/* =====================================================================
+   HINWEISBOX
+   ===================================================================== */
+.info {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--c-blue-100); border-radius: var(--radius-card);
+  padding: 22px 26px; margin: 0 0 44px; max-width: 1000px;
+}
+.info .material-symbols-outlined { font-size: 22px; color: var(--c-blue-500); flex-shrink: 0; }
+.info b { display: block; color: var(--c-ink-900); font-weight: 700; margin-bottom: 2px; }
+.info p { margin: 0; color: var(--c-ink-700); }
+.info a { color: var(--c-blue-500); }
+
+/* =====================================================================
+   KLEINTEILE, die mehrere Bausteine benutzen
+   ===================================================================== */
+
+/* Statuswort als Marke — an der Karte, in der Upload-Rueckmeldung,
+   in der Fokusbox von V2. */
+.tag {
+  font-size: 12px; font-weight: 600; letter-spacing: .2px;
+  border-radius: 2px; padding: 3px 9px; white-space: nowrap;
+  background: rgba(27,77,224,.10); color: var(--c-blue-700);
+}
+.tag-abgelehnt { background: var(--c-red-050); color: var(--c-red); }
+.tag-frist     { background: var(--c-amber-050); color: var(--c-amber); }
+.tag-offen     { background: var(--c-bg); color: var(--c-ink-500); }
+
+/* Textlink mit Pfeil, z. B. „Zum Dokument". */
+.linkbtn {
+  font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  background: none; border: 0; padding: 0; color: var(--c-blue-500);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.linkbtn:hover { text-decoration: underline; }
+.linkbtn .material-symbols-outlined { font-size: 18px; }
+
+/* =====================================================================
+   FOKUSBOX — NUR NOCH VON V2 BENUTZT
+
+   V3 hat sie entfernt: die Aufmerksamkeit gehoert dorthin, wo die
+   Handlung passiert — direkt unter die Upload-Box, unmittelbar nach
+   dem Upload, nicht an den Seitenkopf. Die Klassen bleiben hier
+   stehen, damit replace-or-add-document-flow-v2.html weiter richtig
+   aussieht. Nichts in V3 verwendet sie.
+   ===================================================================== */
+.focus {
+  background: var(--c-blue-100); border-radius: var(--radius-card);
+  margin: 0 0 44px; max-width: 1000px; overflow: hidden;
+}
+.focus-head { display: flex; gap: 14px; align-items: flex-start; padding: 22px 26px 18px; }
+.focus-head .material-symbols-outlined { font-size: 22px; color: var(--c-blue-500); flex-shrink: 0; }
+.focus-head b { display: block; color: var(--c-ink-900); font-size: 17px; font-weight: 700; }
+.focus-head p { margin: 2px 0 0; color: var(--c-ink-700); font-size: 15px; }
+
+.frow {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 18px 26px; border-top: 1px solid rgba(27,77,224,.13);
+}
+.frank {
+  width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; margin-top: 1px;
+  background: var(--c-blue-500); color: #fff;
+  display: grid; place-items: center; font-size: 13px; font-weight: 700;
+}
+.ftxt { flex: 1; min-width: 0; }
+.ftitle { color: var(--c-ink-900); font-weight: 600; font-size: 16px; }
+.ftitle .where { font-weight: 400; color: var(--c-ink-500); }
+.fwhy { font-size: 15px; color: var(--c-ink-700); margin-top: 3px; }
+.ftags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.facts { flex-shrink: 0; padding-top: 2px; }
+
+.focus-foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  flex-wrap: wrap; padding: 16px 26px;
+  border-top: 1px solid rgba(27,77,224,.13);
+  font-size: 15px; color: var(--c-ink-700);
+}
+.focus-why {
+  padding: 4px 26px 22px; font-size: 15px; color: var(--c-ink-700);
+}
+.focus-why ol { margin: 8px 0 0; padding-left: 20px; }
+.focus-why li { margin-bottom: 4px; }
+
+/* Ruhiger Zustand: die Box verschwindet nicht, sie wird still.
+   Verschwaende sie, waere jedes Wiederauftauchen ein Schreck — und
+   der Kunde wuesste nie, ob sie noch da ist. */
+.focus.calm { background: var(--c-green-050); }
+.focus.calm .focus-head .material-symbols-outlined { color: var(--c-green); }
+
+/* =====================================================================
+   UNKATEGORISIERTE SEITEN IM FUSS DER BOX — NUR NOCH VON V2 BENUTZT
+
+   V3 hat diese Liste entfernt: dieselben Dateien standen hier und in
+   der Meldung unter der Box, mit zwei Zuordnen-Knoepfen fuer dieselbe
+   Handlung. Jetzt gibt es nur die Meldung. Die Klassen bleiben, damit
+   V2 weiter richtig aussieht.
+   ===================================================================== */
+.unkat-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.unkat {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: var(--c-surface); border: 1px solid var(--c-line);
+  border-radius: var(--radius-card); padding: 12px 16px;
+}
+.unkat .material-symbols-outlined { font-size: 22px; color: var(--c-ink-300); }
+.unkat .nm { font-size: 15px; color: var(--c-ink-900); }
+.unkat select {
+  font: inherit; font-size: 15px; padding: 8px 10px; flex: 1; min-width: 240px;
+  border: 1px solid var(--c-dash); border-radius: var(--radius-s);
+  background: var(--c-surface); color: var(--c-ink-900);
+}
+
+/* =====================================================================
+   LAUFENDER UPLOAD — die Datei ist sichtbar, waehrend sie hochlaedt
+
+   Heute ist der Sammel-Upload stumm: der Kunde legt Dateien ab und
+   sieht bis zum Ende nichts. Diese Zeile ist die Gegenmassnahme —
+   sie erscheint sofort, mit dem Namen der Datei, und verschwindet
+   erst, wenn die Datei in ihrem Slot liegt.
+   ===================================================================== */
+.uprow {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--c-gray-row); border-radius: var(--radius-card);
+  padding: 12px 18px; margin-bottom: 10px;
+}
+.uprow-ico {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border: 1px solid var(--c-blue-500); border-radius: var(--radius-card);
+  display: grid; place-items: center;
+}
+.uprow-ico .material-symbols-outlined { font-size: 20px; color: var(--c-blue-500); }
+/* Der Name wird abgeschnitten, aber nie verschwiegen: `title` am
+   Element zeigt ihn vollstaendig. Das graue Kaestchen im Screenshot
+   ist genau dieser Browser-Tooltip. */
+.uprow .nm {
+  flex: 1; min-width: 0; font-size: 16px; color: var(--c-ink-900);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.uprow .state { font-size: 16px; color: var(--c-ink-700); white-space: nowrap; }
+.uprow.done { background: var(--c-green-050); }
+.uprow.done .state { color: var(--c-green); }
+.uprow.fail { background: var(--c-red-050); }
+.uprow.fail .state { color: var(--c-red); }
+.uprow.open { background: var(--c-amber-050); }
+.uprow.open .state { color: var(--c-amber); }
+.uprow .material-symbols-outlined.tick {
+  font-size: 22px; font-variation-settings: 'FILL' 1;
+}
+
+/* =====================================================================
+   RUECKMELDUNG NACH DEM UPLOAD
+
+   Steht direkt unter der Upload-Box, nicht in einem Dialog: ein
+   Modal klickt man weg und findet es nie wieder. Hier bleibt es
+   stehen, bis der Kunde es schliesst oder neu hochlaedt.
+   ===================================================================== */
+.uresult {
+  border: 1px solid var(--c-line); border-left: 3px solid var(--c-green);
+  border-radius: var(--radius-card); background: var(--c-surface);
+  margin: 18px 0 0; overflow: hidden;
+}
+.uresult.needs { border-left-color: var(--c-amber); }
+.uresult-head {
+  display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px;
+}
+.uresult-head .material-symbols-outlined {
+  font-size: 22px; color: var(--c-green); flex-shrink: 0;
+  font-variation-settings: 'FILL' 1;
+}
+.uresult.needs .uresult-head .material-symbols-outlined { color: var(--c-amber); }
+.uresult-head .txt { flex: 1; min-width: 0; }
+.uresult-head .ok  { color: var(--c-ink-900); font-weight: 600; font-size: 16px; }
+.uresult-head .att { color: var(--c-ink-700); font-size: 16px; margin-top: 2px; }
+
+.ures-row {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 22px; border-top: 1px solid var(--c-line);
+}
+.ures-row > .material-symbols-outlined {
+  font-size: 20px; flex-shrink: 0; font-variation-settings: 'FILL' 1;
+}
+.ures-row.rejected  > .material-symbols-outlined { color: var(--c-red); }
+.ures-row.unmatched > .material-symbols-outlined { color: var(--c-ink-300); }
+.ures-row .nm {
+  flex: 1; min-width: 160px; font-size: 16px; color: var(--c-ink-900);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Die Gruende der Ablehnung. Eigene Zeile unter dem Dateinamen
+   (`flex-basis:100%` bricht die Zeile der Row um), eingerueckt bis
+   unter den Namen — damit sie zur Datei gehoeren und nicht zur
+   Meldung insgesamt. */
+.ures-why {
+  flex-basis: 100%; margin: 2px 0 0; padding: 0 0 0 34px;
+  list-style: none; display: grid; gap: 5px;
+}
+.ures-why li {
+  position: relative; padding-left: 16px;
+  font-size: 15px; line-height: 1.45; color: var(--c-ink-700);
+  white-space: normal;
+}
+.ures-why li::before {
+  content: '•'; position: absolute; left: 2px; color: var(--c-ink-300);
+}
+
+/* Die Auswahl klappt in der Zeile selbst auf — die Handlung passiert
+   dort, wo der Kunde hinsieht, nicht an einer zweiten Stelle. */
+.ures-row select {
+  font: inherit; font-size: 15px; padding: 8px 10px;
+  flex: 0 0 auto; width: 320px; max-width: 100%;
+  border: 1px solid var(--c-dash); border-radius: var(--radius-s);
+  background: var(--c-surface); color: var(--c-ink-900);
+}
+.ures-row select:focus {
+  border-color: var(--c-blue-500); outline: none;
+  box-shadow: 0 0 0 2px var(--c-blue-100);
+}
+
+/* =====================================================================
+   VERTRAUENSZEILE
+   ===================================================================== */
+.trust {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px 60px; margin: 0 0 56px; max-width: 1100px;
+}
+.trust-item { display: flex; gap: 16px; align-items: flex-start; }
+.trust-item .material-symbols-outlined {
+  font-size: 26px; color: var(--c-blue-500);
+  font-variation-settings: 'FILL' 1;
+}
+.trust-badge {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--c-blue-500); color: #fff;
+  display: grid; place-items: center; font-size: 11px; font-weight: 700;
+}
+.trust-item b { display: block; font-weight: 400; color: var(--c-ink-900); }
+.trust-item span { font-size: 15px; color: var(--c-ink-500); }
+
+/* =====================================================================
+   DROPZONE — zugleich Ablage fuer unkategorisierte Seiten
+   ===================================================================== */
+.upload-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 32px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.upload-req { font-size: 14px; color: var(--c-ink-500); text-align: right; line-height: 1.5; }
+
+.drop {
+  border: 1px dashed var(--c-dash); border-radius: var(--radius-card);
+  min-height: 340px; padding: 28px;
+  display: flex; flex-direction: column;
+  transition: border-color .15s, background .15s;
+}
+.drop.over { border-color: var(--c-blue-500); background: var(--c-blue-050); }
+.drop-mid { flex: 1; display: grid; place-content: center; text-align: center; gap: 6px; }
+.drop-mid .material-symbols-outlined { font-size: 34px; color: var(--c-blue-500); }
+.drop-mid b { font-weight: 700; color: var(--c-ink-900); }
+.drop-mid span { color: var(--c-ink-700); }
+.drop-foot {
+  font-size: 16px; color: var(--c-ink-700);
+  border-top: 1px solid var(--c-line); margin-top: 22px; padding-top: 20px;
+}
+.drop-foot .empty { color: var(--c-ink-300); font-size: 15px; }
+
+/* =====================================================================
+   DOKUMENTKARTE
+   Eine Karte = eine Anforderung. Zwei Zeilen: oben Titel und
+   Statuswort, unten die Handlung rechts. Das Statuswort steht
+   rechts und ohne Farbe, solange nichts schiefgeht — der Screen
+   soll nicht dauernd Alarm schlagen.
+   ===================================================================== */
+.doc-section { margin-top: 52px; }
+.doc-card {
+  border: 1px dashed var(--c-dash); border-radius: var(--radius-card);
+  padding: 22px 26px; margin-bottom: 14px; background: var(--c-surface);
+}
+.doc-row { display: flex; align-items: flex-start; gap: 20px; }
+.doc-title { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.doc-title .t { font-size: 16px; color: var(--c-ink-900); }
+.doc-status { font-size: 16px; color: var(--c-ink-500); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+.doc-actions { display: flex; justify-content: flex-end; align-items: center; gap: 22px; margin-top: 14px; }
+
+/* Zustaende */
+.doc-card.is-rejected { border-color: var(--c-red-dash); }
+.doc-card.is-rejected .doc-status { color: var(--c-red); font-weight: 600; }
+.doc-card.is-rejected .doc-status .material-symbols-outlined {
+  font-size: 20px; font-variation-settings: 'FILL' 1;
+}
+.doc-card.is-accepted { border-style: solid; border-color: var(--c-line); }
+.doc-card.is-accepted .doc-status { color: var(--c-green); }
+.doc-card.is-review { border-style: solid; border-color: var(--c-line); }
+.doc-card.is-review .doc-status { color: var(--c-amber); }
+.doc-card .status-dot { font-size: 20px; font-variation-settings: 'FILL' 1; }
+
+/* Ablehnungsgrund: durch eine Linie vom Kopf getrennt, damit er
+   nicht wie eine Unterzeile des Titels wirkt. */
+.doc-reason {
+  border-top: 1px solid var(--c-line); margin-top: 18px; padding-top: 18px;
+  color: var(--c-red); font-size: 16px; line-height: 1.5;
+}
+.doc-reason b { font-weight: 400; }
+
+/* Dateizeile in der Karte */
+.doc-file {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 18px; font-size: 16px;
+}
+.doc-file .material-symbols-outlined { font-size: 22px; color: var(--c-blue-500); }
+.doc-file .fn { flex: 1; min-width: 0; color: var(--c-blue-500); text-decoration: none;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.doc-file .fn:hover { text-decoration: underline; }
+.doc-file .fd { font-size: 14px; color: var(--c-ink-300); white-space: nowrap; }
+.icon-btn {
+  background: none; border: 0; cursor: pointer; padding: 4px;
+  color: var(--c-ink-500); display: grid; place-items: center; border-radius: var(--radius-s);
+}
+.icon-btn:hover { color: var(--c-red); background: var(--c-red-050); }
+
+/* Hilfe-Marke hinter dem Titel */
+.help {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background: var(--c-ink-300); color: #fff; border: 0; cursor: help;
+  font: inherit; font-size: 12px; font-weight: 700; line-height: 1;
+  display: grid; place-items: center; padding: 0;
+}
+.help:hover { background: var(--c-ink-500); }
+
+/* =====================================================================
+   AKTIONEN
+   „Datei hochladen" ist im Produkt ein blauer Text mit Icon, kein
+   Button mit Flaeche. Das bleibt so — ein gefuellter Button waere
+   auf einer Seite mit 15 Karten 15-mal ein Aufruf.
+   ===================================================================== */
+.act {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: 16px; color: var(--c-blue-500); white-space: nowrap;
+}
+.act:hover { color: var(--c-blue-700); text-decoration: underline; }
+.act .material-symbols-outlined { font-size: 22px; }
+.act.muted { color: var(--c-ink-500); }
+.act.muted:hover { color: var(--c-ink-900); }
+
+.btn {
+  font: inherit; font-size: 16px; cursor: pointer; border: 1px solid transparent;
+  border-radius: var(--radius-card); padding: 11px 26px; white-space: nowrap;
+}
+.btn-primary { background: var(--c-blue-500); color: #fff; }
+.btn-primary:hover { background: var(--c-blue-600); }
+.btn-secondary { background: var(--c-surface); color: var(--c-blue-500); border-color: var(--c-blue-500); }
+.btn-secondary:hover { background: var(--c-blue-050); }
+.btn-ghost { background: none; color: var(--c-ink-700); }
+.btn-ghost:hover { background: var(--c-bg); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; }
+
+/* =====================================================================
+   DIALOG
+   ===================================================================== */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(28,33,40,.42);
+  display: grid; place-items: center; padding: 28px; z-index: 90; overflow: auto;
+}
+.modal {
+  background: var(--c-surface); border-radius: var(--radius-card);
+  box-shadow: 0 18px 48px rgba(20,28,44,.22);
+  max-width: 580px; width: 100%; padding: 32px;
+}
+.modal h2 { font-size: 24px; font-weight: 400; color: var(--c-ink-900); margin: 0 0 4px; }
+.modal .sub { font-size: 15px; color: var(--c-ink-500); margin: 0 0 24px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+.modal-foot .left { margin-right: auto; }
+
+/* Dateiwahl im Dialog */
+.pick {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  border: 1px dashed var(--c-dash); border-radius: var(--radius-card);
+  padding: 30px; cursor: pointer; color: var(--c-blue-500); font-size: 16px;
+  text-align: center;
+}
+.pick:hover { border-color: var(--c-blue-500); background: var(--c-blue-050); }
+.pick .material-symbols-outlined { font-size: 26px; }
+.pick input { display: none; }
+.picked {
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid var(--c-line); border-radius: var(--radius-card); padding: 14px 16px;
+}
+.picked .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Der Ablehnungsgrund im Dialog: der Kunde muss wissen, WAS er
+   reparieren soll, bevor er eine Datei waehlt. */
+.recap {
+  background: var(--c-red-050); border-left: 3px solid var(--c-red);
+  border-radius: var(--radius-s); padding: 16px 18px; margin-bottom: 22px;
+  font-size: 15px; color: var(--c-ink-700);
+}
+.recap b { display: block; color: var(--c-red); margin-bottom: 4px; }
+.recap details { margin-top: 10px; }
+.recap summary { cursor: pointer; color: var(--c-blue-500); font-size: 14px; }
+.recap .full { margin-top: 10px; font-size: 14px; color: var(--c-ink-500); line-height: 1.5; }
+
+/* =====================================================================
+   DIE FRAGE — hinzufuegen oder ersetzen
+
+   Zwei Karten, nie ein Dropdown: die beiden Ausgaenge sind nicht
+   gleichwertig, und der Unterschied steckt in der FOLGE, nicht im
+   Wort. Deshalb steht unter jeder Karte, was danach an der
+   Anforderung haengt — nicht, wie die Aktion heisst.
+   ===================================================================== */
+.choice { display: grid; gap: 12px; margin-top: 20px; }
+.choice label {
+  display: flex; gap: 14px; align-items: flex-start; cursor: pointer;
+  border: 1.5px solid var(--c-line); border-radius: var(--radius-card); padding: 16px 18px;
+}
+.choice label:hover { border-color: var(--c-blue-500); }
+.choice label:has(input:checked) { border-color: var(--c-blue-500); background: var(--c-blue-050); }
+.choice input { margin: 4px 0 0; accent-color: var(--c-blue-500); flex-shrink: 0; }
+.choice .ct {
+  font-weight: 700; color: var(--c-ink-900); font-size: 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.choice .cd { font-size: 14px; color: var(--c-ink-700); margin-top: 2px; }
+.choice .cafter {
+  display: block; margin-top: 8px; font-size: 13px; color: var(--c-ink-700);
+  background: var(--c-bg); border-radius: var(--radius-s); padding: 8px 10px;
+}
+.rec {
+  font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+  background: var(--c-blue-500); color: #fff; border-radius: 2px; padding: 2px 8px;
+}
+.why {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--c-bg); border-radius: var(--radius-card); padding: 16px 18px;
+  margin-top: 20px; font-size: 15px; color: var(--c-ink-700);
+}
+.why .material-symbols-outlined { font-size: 20px; color: var(--c-ink-300); flex-shrink: 0; }
+
+/* Ergebniszeile */
+.result { display: flex; gap: 14px; align-items: flex-start;
+          border-radius: var(--radius-card); padding: 18px 20px; }
+.result .material-symbols-outlined { flex-shrink: 0; font-variation-settings: 'FILL' 1; }
+.result b { display: block; color: var(--c-ink-900); margin-bottom: 2px; }
+.result p { margin: 0; font-size: 15px; }
+.r-ok    { background: var(--c-green-050); }
+.r-ok    .material-symbols-outlined { color: var(--c-green); }
+.r-part  { background: var(--c-blue-100); }
+.r-part  .material-symbols-outlined { color: var(--c-blue-500); }
+.r-fail  { background: var(--c-red-050); }
+.r-fail  .material-symbols-outlined { color: var(--c-red); }
+.r-guess { background: var(--c-amber-050); }
+.r-guess .material-symbols-outlined { color: var(--c-amber); }
+
+.spin {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  border: 2.5px solid var(--c-line); border-top-color: var(--c-blue-500);
+  animation: sp .7s linear infinite;
+}
+@keyframes sp { to { transform: rotate(360deg); } }
+.busy { display: flex; gap: 14px; align-items: center; padding: 24px 0; color: var(--c-ink-700); }
+
+/* Frühere Fassung an der Karte */
+.doc-file.old .material-symbols-outlined { color: var(--c-ink-300); }
+.doc-file.old .fn { color: var(--c-ink-300); text-decoration: line-through; cursor: default; }
+.doc-file.old .fn:hover { text-decoration: line-through; }
+.hist-toggle {
+  font: inherit; font-size: 14px; cursor: pointer; background: none; border: 0;
+  padding: 10px 0 0; color: var(--c-ink-500);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.hist-toggle:hover { color: var(--c-ink-900); }
+.hist-toggle .material-symbols-outlined { font-size: 18px; }
+
+/* Zaehler „2 von 4" im Kartentitel */
+.count {
+  font-size: 13px; font-weight: 600; color: var(--c-ink-500);
+  background: var(--c-bg); border-radius: 2px; padding: 2px 8px; white-space: nowrap;
+}
+
+/* Kurz aufblitzen, wenn sich an einer Karte etwas geaendert hat */
+.doc-card.flash { animation: fl 1.6s ease-out; }
+@keyframes fl {
+  from { background: var(--c-blue-100); border-color: var(--c-blue-500); }
+  to   { background: var(--c-surface); }
+}
+
+.hidden { display: none !important; }

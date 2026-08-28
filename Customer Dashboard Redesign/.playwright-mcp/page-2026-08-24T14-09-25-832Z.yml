@@ -1,0 +1,89 @@
+- generic [ref=f6e2]:
+  - banner [ref=f6e3]:
+    - generic [ref=f6e4]: menu
+    - heading "Meine Dokumente" [level=1] [ref=f6e5]
+    - generic [ref=f6e6]: IP
+  - generic [ref=f6e7]:
+    - emphasis [ref=f6e8]: Prototyp — Variante
+    - button "A · Gruppiert" [pressed] [ref=f6e9] [cursor=pointer]
+    - button "B · Liste" [ref=f6e10] [cursor=pointer]
+  - generic [ref=f6e11]:
+    - paragraph [ref=f6e12]: Alle Unterlagen für Ihre Finanzierung — vollständig, von Anfang an. Sie können alles auf einmal hochladen, wir ordnen es automatisch zu.
+    - generic [ref=f6e13]:
+      - button "5 Offen" [ref=f6e14] [cursor=pointer]:
+        - generic [ref=f6e18]: "5"
+        - text: Offen
+      - button "3 Aktion" [ref=f6e19] [cursor=pointer]:
+        - generic [ref=f6e23]: "3"
+        - text: Aktion
+      - button "13 Erhalten" [ref=f6e24] [cursor=pointer]:
+        - generic [ref=f6e28]: "13"
+        - text: Erhalten
+    - generic [ref=f6e30]:
+      - heading "error Aktion erforderlich (3)" [level=2] [ref=f6e31]:
+        - generic [ref=f6e32]: error
+        - text: Aktion erforderlich (3)
+      - generic [ref=f6e33]:
+        - generic [ref=f6e34]:
+          - generic [ref=f6e35]: Kontoauszug
+          - button "Hochladen" [ref=f6e36] [cursor=pointer]
+        - generic [ref=f6e37]: Auf Ihrer Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte laden Sie einen aktuellen Kontoauszug hoch, damit wir die IBAN bestätigen können.
+        - button "Warum?" [ref=f6e38] [cursor=pointer]
+      - generic [ref=f6e39]:
+        - generic [ref=f6e40]:
+          - generic [ref=f6e41]: Verlängerung Aufenthaltstitel
+          - button "Hochladen" [ref=f6e42] [cursor=pointer]
+        - generic [ref=f6e43]: Der eingereichte Aufenthaltstitel läuft in weniger als 6 Monaten ab. Bitte reichen Sie die Verlängerung nach.
+        - button "Warum?" [ref=f6e44] [cursor=pointer]
+      - generic [ref=f6e45]:
+        - generic [ref=f6e46]:
+          - generic [ref=f6e47]: Exposé — neue Fassung
+          - button "Hochladen" [ref=f6e48] [cursor=pointer]
+        - generic [ref=f6e49]: Die eingereichte Fassung ist unleserlich. Bitte scannen Sie das Exposé erneut ein oder fotografieren Sie es bei besserem Licht.
+        - button "Warum?" [ref=f6e50] [cursor=pointer]
+    - generic [ref=f6e51]:
+      - generic [ref=f6e52]:
+        - button "person Iva Petrova 2 offen expand_more" [ref=f6e53] [cursor=pointer]:
+          - generic [ref=f6e54]: person
+          - generic [ref=f6e55]: Iva Petrova
+          - generic [ref=f6e56]: 2 offen
+          - generic [ref=f6e57]: expand_more
+        - generic [ref=f6e58]:
+          - generic [ref=f6e59]: check_circle
+          - generic [ref=f6e61]:
+            - text: Gehaltsabrechnung Juli
+            - generic [ref=f6e62]: IMG_4821.jpg · Erhalten
+        - generic [ref=f6e63]:
+          - generic [ref=f6e64]: check_circle
+          - generic [ref=f6e66]:
+            - text: Gehaltsabrechnung August
+            - generic [ref=f6e67]: IMG_4822.jpg · Erhalten
+        - generic [ref=f6e68]:
+          - generic [ref=f6e69]: radio_button_unchecked
+          - generic [ref=f6e71]: Gehaltsabrechnung September
+          - button "Hochladen" [ref=f6e72] [cursor=pointer]
+        - generic [ref=f6e73]:
+          - generic [ref=f6e74]: check_circle
+          - generic [ref=f6e76]:
+            - text: Ausweiskopie
+            - generic [ref=f6e77]: ausweis-iva.pdf · Erhalten
+        - generic [ref=f6e78]:
+          - generic [ref=f6e79]: error
+          - generic [ref=f6e81]:
+            - text: Kontoauszug
+            - generic [ref=f6e82]: Aktuell, mit sichtbarer IBAN
+            - generic [ref=f6e83]: Neu angefordert
+          - button "Hochladen" [ref=f6e85] [cursor=pointer]
+      - button "person Michael Petrov 3 offen expand_more" [ref=f6e87] [cursor=pointer]:
+        - generic [ref=f6e88]: person
+        - generic [ref=f6e89]: Michael Petrov
+        - generic [ref=f6e90]: 3 offen
+        - generic [ref=f6e91]: expand_more
+      - button "home Immobilie Lindenstraße 14, 50674 Köln 3 offen expand_more" [ref=f6e93] [cursor=pointer]:
+        - generic [ref=f6e94]: home
+        - generic [ref=f6e95]:
+          - text: Immobilie
+          - generic [ref=f6e96]: Lindenstraße 14, 50674 Köln
+        - generic [ref=f6e97]: 3 offen
+        - generic [ref=f6e98]: expand_more
+  - button "Unterlagen hinzufügen" [ref=f6e100] [cursor=pointer]

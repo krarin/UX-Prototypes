@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replace or Add Document Flow V1</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+<!-- Kundensicht wie im Customer Dashboard V3: nur tokens + reset.
+     layout.css / components.css sind Berater-Chrome und bleiben hier bewusst aus. -->
+<link rel="stylesheet" href="../../design-system/tokens.css" />
+<link rel="stylesheet" href="../../design-system/styles.css" />
+
+<style>
+  :root { --font-family: 'Plus Jakarta Sans', sans-serif; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font-family);
+    background: var(--color-neutral-light-000);
+    color: var(--color-neutral-dark-900);
+    font-size: 15px; line-height: 1.5;
+  }
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- Sidebar (Mock, Chrome wie im Customer Dashboard) ---------- */
+  .side {
+    width: 272px; flex-shrink: 0; background: var(--color-neutral-light-000);
+    border-right: 1px solid var(--color-neutral-light-500);
+    display: flex; flex-direction: column; padding: var(--space-l) 0;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    display: flex; align-items: center; gap: var(--space-s);
+    padding: 0 var(--space-l) var(--space-xl);
+    font-size: 24px; font-weight: 700; letter-spacing: -0.4px;
+  }
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: var(--radius-s);
+    background: var(--color-primary-500); color: #fff;
+    display: grid; place-items: center; font-size: 15px; font-weight: 700;
+  }
+  .stepper { padding: 0 var(--space-l); display: flex; flex-direction: column; gap: 2px; }
+  .step { display: flex; align-items: center; gap: var(--space-m); padding: 7px 0; }
+  .step-dot {
+    width: 24px; height: 24px; border-radius: var(--radius-full); flex-shrink: 0;
+    display: grid; place-items: center; font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--color-neutral-light-500);
+    color: var(--color-neutral-dark-300); background: var(--color-neutral-light-000);
+  }
+  .step.done .step-dot, .step.current .step-dot {
+    background: var(--color-primary-500); border-color: var(--color-primary-500); color: #fff;
+  }
+  .step-label { font-size: 14px; color: var(--color-neutral-dark-600); }
+  .step.current .step-label { color: var(--color-primary-600); font-weight: 600; }
+  .step.done .step-label { color: var(--color-neutral-dark-900); }
+  .step .material-symbols-outlined { font-size: 15px; }
+
+  .nav { padding: var(--space-xl) var(--space-m) 0; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: var(--space-m);
+    padding: 11px var(--space-s); border-radius: var(--radius-m);
+    color: var(--color-neutral-dark-600); text-decoration: none; font-size: 14px;
+  }
+  .nav-item:hover { background: var(--color-neutral-light-200); }
+  .nav-item.active { background: var(--color-primary-100); color: var(--color-primary-700); font-weight: 600; }
+  .nav-item .material-symbols-outlined { font-size: 22px; }
+
+  .side-foot {
+    margin-top: auto; padding: var(--space-l) var(--space-l) 0;
+    border-top: 1px solid var(--color-neutral-light-200);
+  }
+  .side-foot a { color: var(--color-primary-600); font-weight: 600; text-decoration: none; font-size: 14px; }
+  .side-foot p { margin: var(--space-xs) 0 0; font-size: 13px; color: var(--color-neutral-dark-300); }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; background: var(--color-neutral-light-100); }
+  .topbar {
+    display: flex; justify-content: flex-end; align-items: center; gap: var(--space-l);
+    padding: var(--space-l) var(--space-xl); background: var(--color-neutral-light-000);
+    border-bottom: 1px solid var(--color-neutral-light-500);
+    font-size: 14px; color: var(--color-neutral-dark-600);
+  }
+  .topbar .sep { width: 1px; height: 20px; background: var(--color-neutral-light-500); }
+  .topbar span { display: flex; align-items: center; gap: 6px; }
+
+  .content { padding: var(--space-xl) var(--space-xl) var(--space-xxl); }
+  .wrap { max-width: 960px; width: 100%; margin: 0 auto; }
+
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 var(--space-s); line-height: 1.25; }
+  .lead { color: var(--color-neutral-dark-600); margin: 0 0 var(--space-l); max-width: 62ch; }
+
+  /* =====================================================================
+     NOTIZ-BOX — die drei groessten Gruende, jetzt etwas zu tun.
+
+     Sie ist kein Filter und keine Zusammenfassung der Liste. Sie ist
+     eine Auswahl: hoechstens drei Zeilen, immer mit dem Grund im
+     Klartext daneben. Alles Uebrige bleibt unten stehen und wird
+     unten gezaehlt — die Box verschweigt also nichts, sie ordnet nur.
+
+     Warum drei und nicht „alles Dringende": eine Liste, die je nach
+     Lage zwischen zwei und neun Eintraegen schwankt, ist keine
+     Fokushilfe mehr. Drei ist die Zahl, die auch im schlimmsten Fall
+     noch am Stueck lesbar bleibt.
+     ===================================================================== */
+  .notice {
+    background: var(--color-neutral-light-000);
+    border: 1px solid var(--color-neutral-light-500);
+    border-left: 4px solid var(--color-warning-high);
+    border-radius: var(--radius-l);
+    margin-bottom: var(--space-xl); overflow: hidden;
+  }
+  .notice.calm { border-left-color: var(--color-success); }
+  .notice-head {
+    display: flex; align-items: flex-start; gap: var(--space-m);
+    padding: var(--space-l) var(--space-l) var(--space-m);
+  }
+  .notice-head .material-symbols-outlined { color: var(--color-warning-high); font-size: 24px; }
+  .notice.calm .notice-head .material-symbols-outlined { color: var(--color-success); }
+  .notice-head h2 { font-size: 19px; font-weight: 700; margin: 0 0 2px; }
+  .notice-head p { margin: 0; font-size: 14px; color: var(--color-neutral-dark-600); }
+
+  .nrow {
+    display: flex; align-items: flex-start; gap: var(--space-m);
+    padding: var(--space-m) var(--space-l);
+    border-top: 1px solid var(--color-neutral-light-200);
+  }
+  .nrank {
+    width: 26px; height: 26px; flex-shrink: 0; border-radius: var(--radius-full);
+    background: var(--color-neutral-dark-900); color: #fff;
+    display: grid; place-items: center; font-size: 13px; font-weight: 700; margin-top: 2px;
+  }
+  .ntxt { flex: 1; min-width: 0; }
+  .ntitle { font-weight: 600; font-size: 15px; }
+  .nwhy { font-size: 14px; color: var(--color-neutral-dark-600); max-width: 62ch; margin-top: 2px; }
+  .nmeta { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-s); }
+  .nacts { display: flex; gap: var(--space-s); flex-shrink: 0; margin-top: 2px; }
+
+  .tag {
+    font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+    border-radius: var(--radius-full); padding: 3px 9px; white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .tag-blocker     { background: var(--color-error-100); color: var(--color-error-600); border-color: var(--color-error-500); }
+  .tag-frist       { background: var(--color-warning-high-light); color: #8A5200; border-color: var(--color-warning-high); }
+  .tag-nachgefragt { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); border-color: var(--color-neutral-light-500); }
+  .tag-normal      { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); }
+
+  .notice-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-m);
+    flex-wrap: wrap; padding: var(--space-m) var(--space-l);
+    background: var(--color-neutral-light-100);
+    border-top: 1px solid var(--color-neutral-light-200);
+    font-size: 14px; color: var(--color-neutral-dark-600);
+  }
+  .linkbtn {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    background: none; border: 0; padding: 0; color: var(--color-primary-600);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .linkbtn:hover { text-decoration: underline; }
+  .why-box {
+    padding: var(--space-m) var(--space-l) var(--space-l);
+    background: var(--color-neutral-light-100);
+    border-top: 1px solid var(--color-neutral-light-200);
+    font-size: 14px; color: var(--color-neutral-dark-600);
+  }
+  .why-box ol { margin: 0; padding-left: 20px; }
+  .why-box li { margin-bottom: 3px; }
+
+  /* ---------- Gruppen + Zeilen ---------- */
+  .group {
+    background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+    border-radius: var(--radius-l); margin-bottom: var(--space-m); overflow: hidden;
+  }
+  .group-head {
+    display: flex; align-items: center; gap: var(--space-m); width: 100%;
+    padding: var(--space-m) var(--space-l); background: none; border: 0; cursor: pointer;
+    font: inherit; text-align: left; color: inherit;
+  }
+  .group-head:hover { background: var(--color-neutral-light-100); }
+  .group-head .avatar {
+    width: 36px; height: 36px; border-radius: var(--radius-full);
+    background: var(--color-primary-100); color: var(--color-primary-700);
+    display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
+  }
+  .group-title { flex: 1; min-width: 0; }
+  .group-title .n { font-weight: 700; font-size: 16px; }
+  .group-title .s { font-size: 13px; color: var(--color-neutral-dark-300); }
+  .group-count { font-size: 13px; color: var(--color-neutral-dark-600); white-space: nowrap; }
+  .chev { color: var(--color-neutral-dark-300); transition: transform var(--transition-base); }
+  .group.open .chev { transform: rotate(180deg); }
+  .group-body { border-top: 1px solid var(--color-neutral-light-200); }
+
+  .doc { padding: 13px var(--space-l); border-top: 1px solid var(--color-neutral-light-200); }
+  .doc:first-child { border-top: 0; }
+  .doc.flash { animation: fl 1.4s ease-out; }
+  @keyframes fl { from { background: var(--color-primary-100); } to { background: transparent; } }
+  .doc-top { display: flex; align-items: flex-start; gap: var(--space-m); }
+  .doc-ico { width: 22px; height: 22px; flex-shrink: 0; display: grid; place-items: center; margin-top: 1px; }
+  .doc-ico .material-symbols-outlined { font-size: 20px; }
+  .st-erhalten .doc-ico { color: var(--color-success); }
+  .st-todo     .doc-ico { color: var(--color-neutral-light-500); }
+  .doc.is-warn .doc-ico { color: var(--color-warning-high); }
+  .doc-txt { flex: 1; min-width: 0; }
+  .doc-name { font-size: 15px; }
+  .st-erhalten .doc-name { color: var(--color-neutral-dark-600); }
+  .doc-sub { font-size: 13px; color: var(--color-neutral-dark-300); max-width: 62ch; }
+  .doc-sub.warn { color: #8A5200; }
+  .doc-acts { display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0; }
+
+  /* ---------- Dateien an einer Anforderung ----------
+     Der eigentliche Unterschied zu V3: eine Zeile ist ein Bedarf,
+     keine Datei. Erst dadurch gibt es ueberhaupt etwas zu ersetzen
+     oder hinzuzufuegen — und einen Zustand „teilweise da". */
+  .files { margin: var(--space-s) 0 0 38px; }
+  .file {
+    display: flex; align-items: center; gap: var(--space-s);
+    padding: 7px 10px; border-radius: var(--radius-s);
+    background: var(--color-neutral-light-100); margin-bottom: 4px;
+    font-size: 13px; color: var(--color-neutral-dark-600);
+  }
+  .file .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-300); }
+  .file .fn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file .fd { color: var(--color-neutral-dark-300); white-space: nowrap; }
+  .file.old { background: none; border: 1px dashed var(--color-neutral-light-500); }
+  .file.old .fn { color: var(--color-neutral-dark-300); text-decoration: line-through; }
+  .file.bad { background: var(--color-warning-high-light); }
+  .file.bad .material-symbols-outlined { color: var(--color-warning-high); }
+  .miniact {
+    font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    background: none; border: 0; padding: 2px 6px; border-radius: var(--radius-s);
+    color: var(--color-primary-600); white-space: nowrap;
+  }
+  .miniact:hover { background: var(--color-primary-100); }
+  .miniact.danger { color: var(--color-error-600); }
+  .miniact.danger:hover { background: var(--color-error-100); }
+  .hist-toggle {
+    font: inherit; font-size: 12px; cursor: pointer; background: none; border: 0;
+    padding: 3px 0; color: var(--color-neutral-dark-300);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .hist-toggle:hover { color: var(--color-neutral-dark-600); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-radius: var(--radius-m); padding: 9px 18px; white-space: nowrap;
+    border: 1px solid transparent; transition: background var(--transition-base);
+  }
+  .btn-primary { background: var(--color-primary-500); color: #fff; }
+  .btn-primary:hover { background: var(--color-primary-600); }
+  .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-primary-600); border-color: var(--color-primary-500); }
+  .btn-secondary:hover { background: var(--color-primary-100); }
+  .btn-ghost { background: none; color: var(--color-neutral-dark-600); }
+  .btn-ghost:hover { background: var(--color-neutral-light-200); }
+  .btn-small { padding: 6px 14px; font-size: 13px; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+  /* ---------- Dialog ---------- */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(55,71,79,.45);
+    display: grid; place-items: center; z-index: var(--z-modal); padding: var(--space-l);
+    overflow: auto;
+  }
+  .modal {
+    background: #fff; border-radius: var(--radius-l); box-shadow: var(--shadow-l);
+    max-width: 560px; width: 100%; padding: var(--space-l);
+  }
+  .modal h2 { font-size: 20px; font-weight: 700; margin: 0 0 var(--space-xs); }
+  .modal .up-doc { font-size: 13px; color: var(--color-neutral-dark-300); margin: 0 0 var(--space-l); }
+  .modal-foot { display: flex; justify-content: flex-end; gap: var(--space-s); margin-top: var(--space-l); }
+  .modal-foot .left { margin-right: auto; }
+
+  .up-pick {
+    border: 1.5px dashed var(--color-neutral-light-500); border-radius: var(--radius-m);
+    padding: var(--space-l); text-align: center; cursor: pointer; display: block;
+    transition: border-color var(--transition-base), background var(--transition-base);
+  }
+  .up-pick:hover { border-color: var(--color-primary-500); background: var(--color-primary-100); }
+  .up-pick .material-symbols-outlined { font-size: 32px; color: var(--color-primary-500); }
+  .up-pick .p1 { font-weight: 600; margin-top: var(--space-s); }
+  .up-pick .p2 { font-size: 13px; color: var(--color-neutral-dark-300); }
+  .up-pick input { display: none; }
+  .up-file {
+    display: flex; align-items: center; gap: var(--space-m);
+    border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-m);
+    padding: var(--space-m);
+  }
+  .up-file .material-symbols-outlined { color: var(--color-neutral-dark-300); }
+  .up-file .nm { flex: 1; min-width: 0; font-size: 14px; overflow: hidden;
+                 text-overflow: ellipsis; white-space: nowrap; }
+  .up-file button { background: none; border: 0; cursor: pointer;
+                    color: var(--color-neutral-dark-300); padding: 0; display: grid; place-items: center; }
+  .up-hint { font-size: 13px; color: var(--color-neutral-dark-600); margin-top: var(--space-s); }
+  .up-state { display: flex; align-items: center; gap: var(--space-m);
+              padding: var(--space-l) 0; color: var(--color-neutral-dark-600); }
+  .spin {
+    width: 22px; height: 22px; border-radius: var(--radius-full); flex-shrink: 0;
+    border: 2.5px solid var(--color-neutral-light-500);
+    border-top-color: var(--color-primary-500); animation: sp .7s linear infinite;
+  }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  /* =====================================================================
+     DIE FRAGE — hinzufuegen oder ersetzen.
+
+     Zwei Karten, nie ein Dropdown: die beiden Ausgaenge sind nicht
+     gleichwertig, und der Unterschied steckt in der FOLGE, nicht im
+     Wort. Deshalb steht unter jeder Karte, was danach in der Liste
+     steht — nicht, was die Aktion heisst.
+     ===================================================================== */
+  .choice { display: grid; gap: var(--space-s); margin-top: var(--space-m); }
+  .choice label {
+    display: flex; gap: var(--space-m); align-items: flex-start; cursor: pointer;
+    border: 1.5px solid var(--color-neutral-light-500); border-radius: var(--radius-m);
+    padding: var(--space-m); transition: border-color var(--transition-base), background var(--transition-base);
+  }
+  .choice label:hover { border-color: var(--color-primary-500); }
+  .choice input { margin: 3px 0 0; accent-color: var(--color-primary-500); flex-shrink: 0; }
+  .choice label:has(input:checked) { border-color: var(--color-primary-500); background: var(--color-primary-100); }
+  .choice .ct { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; }
+  .choice .cd { font-size: 13px; color: var(--color-neutral-dark-600); margin-top: 2px; }
+  .choice .cafter {
+    font-size: 12px; margin-top: 6px; color: var(--color-neutral-dark-600);
+    background: var(--color-neutral-light-100); border-radius: var(--radius-s);
+    padding: 6px 9px; display: block;
+  }
+  .rec {
+    font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+    background: var(--color-primary-500); color: #fff; border-radius: var(--radius-full);
+    padding: 2px 8px;
+  }
+  .decide-why {
+    display: flex; gap: var(--space-s); align-items: flex-start;
+    font-size: 13px; color: var(--color-neutral-dark-600);
+    background: var(--color-neutral-light-100); border-radius: var(--radius-m);
+    padding: var(--space-m); margin-top: var(--space-m);
+  }
+  .decide-why .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-300); flex-shrink: 0; }
+
+  .up-result { display: flex; gap: var(--space-m); align-items: flex-start;
+               border-radius: var(--radius-m); padding: var(--space-m); }
+  .up-result .material-symbols-outlined { flex-shrink: 0; }
+  .up-result .rt { font-weight: 700; margin-bottom: 2px; }
+  .up-result .rd { font-size: 14px; }
+  .up-ok   { background: var(--color-success-light); }
+  .up-ok   .material-symbols-outlined { color: var(--color-success); }
+  .up-part { background: var(--color-primary-100); }
+  .up-part .material-symbols-outlined { color: var(--color-primary-600); }
+  .up-guess { background: var(--color-warning-high-light); border: 1px solid var(--color-warning-high); }
+  .up-guess .material-symbols-outlined { color: var(--color-warning-high); }
+
+  /* ---------- Viewer ---------- */
+  .viewer-bg { position: fixed; inset: 0; background: #161e21;
+    z-index: var(--z-modal); display: flex; flex-direction: column; }
+  .viewer-bar { display: flex; align-items: center; gap: var(--space-m);
+    padding: var(--space-m) var(--space-l); color: #fff; flex-shrink: 0;
+    background: #141c1f; border-bottom: 1px solid rgba(255,255,255,.14); }
+  .viewer-bar .vt { font-weight: 700; font-size: 16px; }
+  .viewer-bar .vf { font-size: 13px; opacity: .7; }
+  .viewer-bar .grow { flex: 1; min-width: 0; }
+  .viewer-bar button { font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-radius: var(--radius-m); padding: 8px 16px; border: 1px solid rgba(255,255,255,.45);
+    background: none; color: #fff; }
+  .viewer-bar button:hover { background: rgba(255,255,255,.14); }
+  .viewer-bar .x { border: 0; padding: 6px; display: grid; place-items: center; }
+  .viewer-body { flex: 1; overflow: auto; padding: 0 var(--space-l) var(--space-xl); }
+  .viewer-note { max-width: 420px; margin: 0 auto var(--space-m); border-radius: var(--radius-m);
+    padding: 12px var(--space-m); background: var(--color-warning-high-light);
+    border: 1px solid var(--color-warning-high); font-size: 13px; }
+  .viewer-note b { display: block; margin-bottom: 2px; }
+  .viewer-note.info { background: var(--color-primary-100); border-color: var(--color-primary-500); }
+
+  /* ---------- Prototyp-Umschalter ---------- */
+  .vswitch {
+    position: fixed; right: var(--space-l); bottom: var(--space-l); z-index: var(--z-toast);
+    background: var(--color-neutral-dark-900); color: #fff; border-radius: var(--radius-full);
+    padding: 6px; display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow-l);
+  }
+  .vswitch span { font-size: 11px; letter-spacing: .5px; text-transform: uppercase;
+                  opacity: .65; padding: 0 10px; }
+  .vswitch button {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: #fff;
+    background: none; border: 0; padding: 7px 14px; border-radius: var(--radius-full);
+  }
+  .vswitch button[aria-pressed="true"] { background: var(--color-primary-500); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (Mock) ============ -->
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">Fi</span>FinLink</div>
+
+    <div class="stepper">
+      <div class="step done"><span class="step-dot"><span class="material-symbols-outlined">check</span></span><span class="step-label">Machbarkeit prüfen</span></div>
+      <div class="step current"><span class="step-dot">2</span><span class="step-label">Optionen vergleichen</span></div>
+      <div class="step"><span class="step-dot">3</span><span class="step-label">Beratungsgespräch</span></div>
+      <div class="step"><span class="step-dot">4</span><span class="step-label">Finanzierung beantragen</span></div>
+      <div class="step"><span class="step-dot">5</span><span class="step-label">Bestätigung erhalten</span></div>
+    </div>
+
+    <nav class="nav">
+      <a href="#" class="nav-item active"><span class="material-symbols-outlined">description</span>Meine Dokumente</a>
+      <a href="#" class="nav-item"><span class="material-symbols-outlined">monitoring</span>Finanzierungs-Assistent</a>
+      <a href="#" class="nav-item"><span class="material-symbols-outlined">info</span>Ablauf verstehen</a>
+    </nav>
+
+    <div class="side-foot">
+      <a href="#">Termin vereinbaren</a>
+      <p>Beratung vom Finanzierungsexperten</p>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <span>Support <span class="material-symbols-outlined" style="font-size:18px">call</span></span>
+      <div class="sep"></div><span>DE</span><div class="sep"></div>
+      <span>Frau Petrova <span class="material-symbols-outlined" style="font-size:18px">expand_more</span></span>
+    </div>
+
+    <div class="content">
+      <div class="wrap">
+
+        <h1>Meine Dokumente</h1>
+        <p class="lead">Hier sehen Sie alle Unterlagen, die wir für Ihre Finanzierung brauchen.
+           Ganz oben steht, was gerade am wichtigsten ist — der Rest steht darunter und
+           läuft Ihnen nicht weg.</p>
+
+        <!-- Die Notiz-Box: hoechstens drei Zeilen, mit Grund -->
+        <div id="notice"></div>
+
+        <!-- Die vollstaendige Liste -->
+        <div id="list"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Umschalter fuer die zweite offene Frage: fragen oder entscheiden? -->
+<div class="vswitch">
+  <span>Upload</span>
+  <button id="vA" aria-pressed="true">A · Wir fragen</button>
+  <button id="vB" aria-pressed="false">B · Wir entscheiden</button>
+</div>
+
+<div id="modalHost"></div>
+<div id="viewerHost"></div>
+
+<!-- Papiervorschauen aus dem Customer Dashboard mitbenutzt: dieselben
+     Dokumente, dieselben Blaetter — der Flow soll sich im Test nicht
+     nach einem anderen Produkt anfuehlen. -->
+<script src="../dashboard-previews.js"></script>
+<script src="replace-or-add-data.js"></script>
+<script>
+(function () {
+  var D = window.ReplaceOrAddData;
+  var P = window.DashboardPreviews;
+
+  var TOP_N   = 3;              // die Zahl aus dem Briefing
+  var variant = 'A';            // A = wir fragen, B = wir entscheiden + Undo
+  var open    = { iva:true, michael:true, immobilie:true };
+  var showWhy = false;          // „Warum diese drei?" aufgeklappt
+  var showHist = {};            // je Dokument: frühere Fassungen sichtbar
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]; }); }
+
+  /* ===================================================================
+     NOTIZ-BOX
+     =================================================================== */
+  function noticeRow(d, rank) {
+    var g = D.group(d.group);
+    return '<div class="nrow">' +
+      '<span class="nrank">' + rank + '</span>' +
+      '<span class="ntxt">' +
+        '<div class="ntitle">' + esc(d.label) + ' — ' + esc(g.label) + '</div>' +
+        '<div class="nwhy">' + esc(d.reason || d.qualifier || '') + '</div>' +
+        '<div class="nmeta">' +
+          '<span class="tag tag-' + d.urgency + '">' + esc(D.urgencyLabel[d.urgency]) +
+            (d.frist ? ' · ' + esc(d.frist) : '') + '</span>' +
+          (d.files.length
+            ? '<span class="tag tag-normal">' + d.files.length +
+              (d.multi ? ' von ' + (d.soll || 2) : '') + ' Dateien da</span>'
+            : '') +
+        '</div>' +
+      '</span>' +
+      '<span class="nacts">' +
+        (d.form ? '<button class="btn btn-ghost btn-small" data-dl="' + d.id + '">Formular</button>' : '') +
+        '<button class="btn btn-primary btn-small" data-up="' + d.id + '">' +
+          (d.files.length ? 'Datei hochladen' : 'Hochladen') + '</button>' +
+      '</span>' +
+    '</div>';
+  }
+
+  function renderNotice() {
+    var top  = D.top(TOP_N);
+    var rest = D.restCount(TOP_N);
+    var host = document.getElementById('notice');
+
+    /* Alles Wichtige erledigt: die Box verschwindet nicht, sie wird
+       still. Verschwaende sie, waere jedes Wiederauftauchen ein
+       Schreck — und der Kunde wuesste nie, ob sie noch da ist. */
+    if (!top.length) {
+      host.innerHTML =
+        '<section class="notice calm"><div class="notice-head">' +
+          '<span class="material-symbols-outlined">task_alt</span>' +
+          '<span><h2>Nichts liegt an</h2>' +
+            '<p>Alle Unterlagen sind bei uns. Wir melden uns, wenn die Bank noch etwas braucht.</p>' +
+          '</span></div></section>';
+      return;
+    }
+
+    host.innerHTML =
+      '<section class="notice">' +
+        '<div class="notice-head">' +
+          '<span class="material-symbols-outlined">flag</span>' +
+          '<span><h2>Das ist als Nächstes dran</h2>' +
+            '<p>' + (rest
+              ? 'Die ' + (top.length === 1 ? 'wichtigste Sache' : top.length + ' wichtigsten Punkte') +
+                ' von ' + D.open().length + ' offenen. Der Rest steht unten in der Liste.'
+              : 'Mehr ist gerade nicht offen.') +
+            '</p></span>' +
+        '</div>' +
+        top.map(function (d, i) { return noticeRow(d, i + 1); }).join('') +
+        '<div class="notice-foot">' +
+          (rest
+            ? '<button class="linkbtn" data-scroll="1">' + rest +
+              (rest === 1 ? ' weiterer Punkt' : ' weitere Punkte') +
+              ' <span class="material-symbols-outlined" style="font-size:18px">arrow_downward</span></button>'
+            : '<span>Alles Weitere ist erledigt.</span>') +
+          '<button class="linkbtn" data-why="1">' +
+            (showWhy ? 'Erklärung schließen' : 'Warum diese drei?') + '</button>' +
+        '</div>' +
+        (showWhy
+          ? '<div class="why-box"><p style="margin:0 0 var(--space-s)">Wir sortieren nach Folgen, ' +
+            'nicht nach Eingangsdatum:</p><ol>' +
+            D.rankExplain.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
+            '</ol></div>'
+          : '') +
+      '</section>';
+  }
+
+  /* ===================================================================
+     LISTE
+     =================================================================== */
+  function fileRow(d, f, alt) {
+    return '<div class="file' + (alt ? ' old' : (f.unscharf ? ' bad' : '')) + '">' +
+      '<span class="material-symbols-outlined">' +
+        (alt ? 'history' : f.unscharf ? 'warning' : 'draft') + '</span>' +
+      '<span class="fn">' + esc(f.name) + '</span>' +
+      '<span class="fd">' + (alt ? 'ersetzt am ' + esc(f.ersetztAm) : esc(f.datum)) + '</span>' +
+      (P.has({ file:f.name, preview:f.preview, previewOpts:f.previewOpts })
+        ? '<button class="miniact" data-view="' + d.id + '|' + esc(f.name) + '">Ansehen</button>' : '') +
+      (alt
+        ? '<button class="miniact" data-restore="' + d.id + '|' + esc(f.name) + '">Zurückholen</button>'
+        : '<button class="miniact danger" data-rm="' + d.id + '|' + esc(f.name) + '">Entfernen</button>') +
+    '</div>';
+  }
+
+  function docRow(d) {
+    var warn = d.status === 'todo' && !!d.reason;
+    var ico  = d.status === 'erhalten' ? 'check_circle'
+             : warn ? 'error' : 'radio_button_unchecked';
+    var sub  = warn ? d.reason : (d.qualifier || '');
+    var hist = d.history.length;
+    var erg  = d.ergaenzt ? D.doc(d.ergaenzt) : null;
+
+    return '<div class="doc st-' + d.status + (warn ? ' is-warn' : '') + '" id="row-' + d.id + '">' +
+      '<div class="doc-top">' +
+        '<span class="doc-ico"><span class="material-symbols-outlined">' + ico + '</span></span>' +
+        '<span class="doc-txt">' +
+          '<span class="doc-name">' + esc(d.label) + '</span>' +
+          (d.multi ? ' <span class="tag tag-normal">' + d.files.length + ' von ' +
+                     (d.soll || 2) + '</span>' : '') +
+          (sub ? '<div class="doc-sub' + (warn ? ' warn' : '') + '">' + esc(sub) + '</div>' : '') +
+          /* Hinzufuegen oder ersetzen als Frage der Anforderung, nicht
+             der Datei: die Verlaengerung tritt nicht an die Stelle des
+             Titels, sie kommt daneben. Das muss die Zeile sagen —
+             sonst laedt der Kunde sie in die alte Zeile hinein. */
+          (erg ? '<div class="doc-sub">Kommt zu „' + esc(erg.label) +
+                 '" dazu — die vorhandene Datei bleibt gültig.</div>' : '') +
+        '</span>' +
+        '<span class="doc-acts">' +
+          (d.form ? '<button class="btn btn-ghost btn-small" data-dl="' + d.id + '">Formular</button>' : '') +
+          /* Bewusst neutral beschriftet. Waere hier „Ersetzen" oder
+             „Hinzufügen" zu lesen, waere die Frage schon beantwortet —
+             und zwar an der Stelle, an der der Kunde die Folgen noch
+             nicht sieht. */
+          '<button class="btn ' + (d.status === 'erhalten' ? 'btn-ghost' : 'btn-secondary') +
+            ' btn-small" data-up="' + d.id + '">' +
+            (d.files.length ? 'Datei hochladen' : 'Hochladen') + '</button>' +
+        '</span>' +
+      '</div>' +
+      (d.files.length || hist
+        ? '<div class="files">' +
+            d.files.map(function (f) { return fileRow(d, f, false); }).join('') +
+            (hist
+              ? '<button class="hist-toggle" data-hist="' + d.id + '">' +
+                  '<span class="material-symbols-outlined" style="font-size:16px">' +
+                    (showHist[d.id] ? 'expand_less' : 'expand_more') + '</span>' +
+                  hist + (hist === 1 ? ' frühere Fassung' : ' frühere Fassungen') +
+                '</button>' +
+                (showHist[d.id]
+                  ? d.history.map(function (f) { return fileRow(d, f, true); }).join('')
+                  : '')
+              : '') +
+          '</div>'
+        : '');
+  }
+
+  function renderList() {
+    document.getElementById('list').innerHTML = D.groups.map(function (g) {
+      var rows = D.byGroup(g.id);
+      var todo = rows.filter(function (d) { return d.status === 'todo'; }).length;
+
+      return '<section class="group ' + (open[g.id] ? 'open' : '') + '">' +
+        '<button class="group-head" data-g="' + g.id + '">' +
+          '<span class="material-symbols-outlined avatar">' +
+            (g.kind === 'person' ? 'person' : 'home') + '</span>' +
+          '<span class="group-title"><span class="n">' + esc(g.label) + '</span>' +
+            (g.hint ? '<div class="s">' + esc(g.hint) + '</div>' : '') + '</span>' +
+          '<span class="group-count">' + (todo ? todo + ' zu erledigen' : 'Alles erhalten') + '</span>' +
+          '<span class="material-symbols-outlined chev">expand_more</span>' +
+        '</button>' +
+        (open[g.id]
+          ? '<div class="group-body">' + rows.map(docRow).join('') + '</div>'
+          : '') +
+      '</section>';
+    }).join('');
+  }
+
+  function render() { renderNotice(); renderList(); }
+
+  /* ===================================================================
+     UPLOAD — hier steckt die Frage
+
+     Variante A: wir fragen, bevor etwas passiert.
+     Variante B: wir entscheiden still und sagen hinterher, was wir
+                 getan haben — mit einem Klick, der es umdreht.
+     Beide Wege enden im selben Datenmodell; unterschiedlich ist nur,
+     wann der Kunde die Entscheidung sieht.
+     =================================================================== */
+  var up = null;   // { id, file, mode, decision, state, result }
+
+  function openUpload(docId) {
+    var dec = D.decide(docId);
+    up = { id: docId, file: null, decision: dec,
+           mode: dec && dec.sicher ? dec.mode : (dec ? null : 'add'),
+           state: 'pick', result: null };
+    document.getElementById('viewerHost').innerHTML = '';
+    renderUpload();
+  }
+
+  function choiceCard(mode, d) {
+    var soll = d.soll || 2;
+    var titel = mode === 'add' ? 'Hinzufügen' : 'Ersetzen';
+    var text  = mode === 'add'
+      ? 'Die neue Datei kommt zu den vorhandenen dazu. Alles bleibt gültig.'
+      : 'Die neue Datei tritt an die Stelle der bisherigen.';
+    /* Der Satz, auf den es ankommt: nicht was die Aktion heisst,
+       sondern was danach in der Liste steht. */
+    var danach = mode === 'add'
+      ? 'Danach: ' + (d.files.length + 1) + (d.multi ? ' von ' + soll : '') + ' Dateien an dieser Unterlage.'
+      : 'Danach: 1 Datei an dieser Unterlage. ' +
+        (d.files.length === 1
+          ? 'Die bisherige bleibt als frühere Fassung einsehbar'
+          : 'Die bisherigen ' + d.files.length + ' bleiben als frühere Fassungen einsehbar') +
+        ' — gelöscht wird nichts.';
+    var empfohlen = up.decision && up.decision.sicher && up.decision.mode === mode;
+
+    return '<label>' +
+      '<input type="radio" name="mode" value="' + mode + '"' +
+        (up.mode === mode ? ' checked' : '') + ' data-mode="' + mode + '" />' +
+      '<span><span class="ct">' + titel +
+        (empfohlen ? '<span class="rec">Empfohlen</span>' : '') + '</span>' +
+        '<span class="cd">' + text + '</span>' +
+        '<span class="cafter">' + danach + '</span>' +
+      '</span></label>';
+  }
+
+  function renderUpload() {
+    var d = D.doc(up.id);
+    if (!d) return;
+    var g = D.group(d.group);
+    var body, foot = '';
+
+    if (up.state === 'pick') {
+      body = (up.file
+        ? '<div class="up-file"><span class="material-symbols-outlined">draft</span>' +
+            '<span class="nm">' + esc(up.file) + '</span>' +
+            '<button data-upclear="1" title="Entfernen">' +
+              '<span class="material-symbols-outlined">close</span></button></div>'
+        : '<label class="up-pick">' +
+            '<span class="material-symbols-outlined">upload_file</span>' +
+            '<div class="p1">Datei auswählen</div>' +
+            '<div class="p2">PDF, JPG oder PNG — beliebige Datei, es zählt nur der Name</div>' +
+            '<input type="file" id="upInput" />' +
+          '</label>') +
+        (d.qualifier ? '<p class="up-hint">Benötigt: ' + esc(d.qualifier) + '</p>' : '');
+
+      /* Die Frage stellt sich nur, wenn schon etwas da liegt — und in
+         Variante A auch nur dann, wenn eine Datei gewaehlt ist. Vorher
+         waere sie eine Frage ins Leere. */
+      if (variant === 'A' && up.decision && up.file) {
+        body += '<div class="decide-why">' +
+            '<span class="material-symbols-outlined">' +
+              (up.decision.sicher ? 'lightbulb' : 'help') + '</span>' +
+            '<span>' + esc(up.decision.warum) + '</span></div>' +
+          '<div class="choice">' + choiceCard('add', d) + choiceCard('replace', d) + '</div>';
+      }
+      if (variant === 'B' && up.decision && up.file) {
+        /* Variante B fragt nicht — aber sie versteckt auch nicht, dass
+           gleich entschieden wird. Ein Satz, kein Bedienelement. */
+        body += '<div class="decide-why">' +
+            '<span class="material-symbols-outlined">bolt</span>' +
+            '<span>An dieser Unterlage ' +
+              (d.files.length === 1 ? 'liegt bereits eine Datei' : 'liegen bereits ' + d.files.length + ' Dateien') +
+              '. Wir ordnen die neue selbst ein und sagen Ihnen danach, wie — ändern können Sie es mit einem Klick.' +
+            '</span></div>';
+      }
+
+      var blockiert = variant === 'A' && up.decision && !up.mode;
+      foot = '<button class="btn btn-secondary" data-close="1">Abbrechen</button>' +
+             '<button class="btn btn-primary" data-send="1"' +
+               (up.file && !blockiert ? '' : ' disabled') + '>' +
+               (variant === 'A' && up.mode === 'replace' ? 'Ersetzen'
+                : variant === 'A' && up.mode === 'add' && up.decision ? 'Hinzufügen'
+                : 'Hochladen') + '</button>';
+    }
+    else if (up.state === 'busy') {
+      body = '<div class="up-state"><span class="spin"></span>' +
+             '<span>Datei wird übertragen …</span></div>';
+    }
+    else {                                       // done
+      var r = up.result;
+      var geraten = variant === 'B' && up.decision && !up.decision.sicher;
+      var klasse  = geraten ? 'up-guess' : (r.status === 'erhalten' ? 'up-ok' : 'up-part');
+      var ikon    = geraten ? 'help' : (r.status === 'erhalten' ? 'check_circle' : 'hourglass_top');
+
+      var titel = !up.decision ? 'Datei erhalten'
+                : r.mode === 'add' ? 'Hinzugefügt' : 'Ersetzt';
+      var text;
+      if (!up.decision) {
+        text = r.status === 'erhalten'
+          ? 'Diese Unterlage ist damit vollständig bei uns.'
+          : 'Wir haben Ihre Datei. ' + (r.fehlt === 1
+              ? 'Es fehlt noch eine.' : 'Es fehlen noch ' + r.fehlt + '.');
+      } else if (r.mode === 'add') {
+        text = 'Die Datei liegt jetzt zusätzlich an „' + esc(d.label) + '". ' +
+               (r.status === 'erhalten'
+                 ? 'Damit ist die Unterlage vollständig.'
+                 : (r.fehlt === 1 ? 'Es fehlt noch eine Datei.' : 'Es fehlen noch ' + r.fehlt + ' Dateien.'));
+      } else {
+        text = 'Die neue Datei zählt ab jetzt. Die bisherige finden Sie an derselben Stelle ' +
+               'unter „frühere Fassungen" — gelöscht haben wir nichts.';
+      }
+
+      body = '<div class="up-result ' + klasse + '">' +
+          '<span class="material-symbols-outlined">' + ikon + '</span>' +
+          '<span><div class="rt">' + titel +
+            (geraten ? ' — geraten' : '') + '</div>' +
+            '<div class="rd">' + text + '</div>' +
+          '</span></div>';
+
+      /* Der Umkehrschalter. In Variante B ist er der einzige Ort, an
+         dem die Entscheidung ueberhaupt sichtbar wird — deshalb steht
+         er hier gleichwertig neben „Fertig", nicht als Fussnote. */
+      if (up.decision) {
+        foot += '<button class="btn btn-ghost left" data-flip="1">' +
+          (r.mode === 'replace' ? 'Doch beide behalten' : 'Doch die alte ersetzen') +
+          '</button>';
+      }
+      foot += '<button class="btn btn-secondary" data-viewnow="1">Ansehen</button>' +
+              '<button class="btn btn-primary" data-close="1">Fertig</button>';
+    }
+
+    document.getElementById('modalHost').innerHTML =
+      '<div class="modal-bg"><div class="modal">' +
+        '<h2>' + esc(d.label) + '</h2>' +
+        '<p class="up-doc">' + esc(g.label) +
+          (d.files.length ? ' · ' + d.files.length +
+            (d.multi ? ' von ' + (d.soll || 2) : '') + ' Dateien vorhanden' : '') + '</p>' +
+        body +
+        (foot ? '<div class="modal-foot">' + foot + '</div>' : '') +
+      '</div></div>';
+
+    var inp = document.getElementById('upInput');
+    if (inp) inp.addEventListener('change', function () {
+      if (this.files && this.files[0]) { up.file = this.files[0].name; renderUpload(); }
+    });
+  }
+
+  function send() {
+    var mode = up.mode || (up.decision ? up.decision.mode : 'add');
+    up.state = 'busy';
+    renderUpload();
+    setTimeout(function () {
+      up.result = D.accept(up.id, up.file, mode);
+      up.state  = 'done';
+      render();
+      renderUpload();
+    }, 900);
+  }
+
+  function flip() {
+    var neu = D.flip(up.id, up.result.mode);
+    var d = D.doc(up.id);
+    up.result = { mode: neu, status: d.status,
+                  fehlt: d.multi ? Math.max(0, (d.soll || 2) - d.files.length) : 0 };
+    /* Nach dem Umdrehen war es kein Rateschluss mehr, sondern eine
+       Ansage des Kunden — also faellt die Warnung weg. */
+    if (up.decision) up.decision = { mode:neu, sicher:true, warum:up.decision.warum };
+    render();
+    renderUpload();
+  }
+
+  /* ===================================================================
+     VIEWER
+     =================================================================== */
+  function openViewer(docId, fileName) {
+    var d = D.doc(docId);
+    if (!d) return;
+    var alt = false;
+    var f = d.files.filter(function (x) { return x.name === fileName; })[0];
+    if (!f) { f = d.history.filter(function (x) { return x.name === fileName; })[0]; alt = true; }
+    if (!f) return;
+
+    var shim = { file:f.name, preview:f.preview, previewOpts:f.previewOpts || {} };
+    if (!P.has(shim)) return;
+    var sc = P.scaleFor(Math.min(window.innerWidth - 80, 640));
+
+    document.getElementById('modalHost').innerHTML = '';
+    document.getElementById('viewerHost').innerHTML =
+      '<div class="viewer-bg"><div class="viewer-bar">' +
+        '<span class="grow"><span class="vt">' + esc(d.label) + '</span><br>' +
+          '<span class="vf">' + esc(f.name) + ' · ' +
+            (alt ? 'ersetzt am ' + esc(f.ersetztAm) : 'hochgeladen am ' + esc(f.datum)) +
+          '</span></span>' +
+        (alt
+          ? '<button data-restore="' + d.id + '|' + esc(f.name) + '">Zurückholen</button>'
+          : '<button data-up="' + d.id + '">Datei hochladen</button>') +
+        '<button class="x" data-vclose="1"><span class="material-symbols-outlined">close</span></button>' +
+      '</div><div class="viewer-body">' +
+        (alt
+          ? '<div class="viewer-note"><b>Frühere Fassung</b>Diese Datei wurde am ' +
+            esc(f.ersetztAm) + ' ersetzt und zählt nicht mehr. ' +
+            'Sie bleibt einsehbar, damit Sie nachvollziehen können, was Sie geschickt haben.</div>'
+          : '') +
+        (!alt && d.reason
+          ? '<div class="viewer-note"><b>Dazu haben wir eine Rückmeldung</b>' + esc(d.reason) + '</div>'
+          : '') +
+        '<div class="pv-wrap"><div class="pv-scaler" style="--pv-scale:' + sc + ';' +
+          'height:' + Math.round(P.PAPER_H * sc) + 'px">' + P.render(shim) + '</div></div>' +
+      '</div></div>';
+  }
+
+  /* Leeres Formular ansehen — im Produkt eine PDF, hier das Blatt. */
+  function openTemplate(docId) {
+    var d = D.doc(docId);
+    if (!d || !d.form) return;
+    var o = {}, k;
+    for (k in (d.previewOpts || {})) o[k] = d.previewOpts[k];
+    o.ausgefuellt = false;
+    var sc = P.scaleFor(Math.min(window.innerWidth - 80, 640));
+
+    document.getElementById('modalHost').innerHTML = '';
+    document.getElementById('viewerHost').innerHTML =
+      '<div class="viewer-bg"><div class="viewer-bar">' +
+        '<span class="grow"><span class="vt">' + esc(d.label) + '</span><br>' +
+          '<span class="vf">' + esc(d.form.file) + ' · ' + esc(d.form.size) +
+          ' · ' + d.form.seiten + ' Seiten</span></span>' +
+        '<button data-up="' + d.id + '">Ausgefüllt hochladen</button>' +
+        '<button class="x" data-vclose="1"><span class="material-symbols-outlined">close</span></button>' +
+      '</div><div class="viewer-body">' +
+        '<div class="viewer-note info"><b>Prototyp</b>Im Produkt lädt dieser Klick die PDF ' +
+          'auf Ihr Gerät. Hier sehen Sie das Formular direkt.</div>' +
+        '<div class="pv-wrap"><div class="pv-scaler" style="--pv-scale:' + sc + ';' +
+          'height:' + Math.round(P.PAPER_H * sc) + 'px">' +
+          P.render({ preview:'formular', previewOpts:o }) + '</div></div>' +
+      '</div></div>';
+  }
+
+  function flashRow(docId) {
+    var el = document.getElementById('row-' + docId);
+    if (!el) return;
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    el.classList.add('flash');
+    setTimeout(function () { el.classList.remove('flash'); }, 1400);
+  }
+
+  /* ===================================================================
+     EVENTS
+     =================================================================== */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-g],[data-up],[data-dl],[data-why],[data-scroll],' +
+                             '[data-view],[data-rm],[data-restore],[data-hist],' +
+                             '[data-close],[data-send],[data-upclear],[data-flip],' +
+                             '[data-viewnow],[data-vclose],#vA,#vB');
+    if (!t) return;
+    var parts;
+
+    if (t.id === 'vA' || t.id === 'vB') {
+      variant = t.id === 'vA' ? 'A' : 'B';
+      document.getElementById('vA').setAttribute('aria-pressed', variant === 'A');
+      document.getElementById('vB').setAttribute('aria-pressed', variant === 'B');
+      if (up && up.state === 'pick') {           // laufenden Dialog mitziehen
+        up.mode = up.decision && up.decision.sicher ? up.decision.mode
+                : (up.decision ? (variant === 'B' ? up.decision.mode : null) : 'add');
+        renderUpload();
+      }
+      return;
+    }
+    if (t.dataset.g)      { open[t.dataset.g] = !open[t.dataset.g]; return renderList(); }
+    if (t.dataset.why)    { showWhy = !showWhy; return renderNotice(); }
+    if (t.dataset.hist)   { showHist[t.dataset.hist] = !showHist[t.dataset.hist]; return renderList(); }
+    if (t.dataset.scroll) { document.getElementById('list')
+                              .scrollIntoView({ behavior:'smooth', block:'start' }); return; }
+    if (t.dataset.dl)     return openTemplate(t.dataset.dl);
+    if (t.dataset.up)     return openUpload(t.dataset.up);
+    if (t.dataset.view)   { parts = t.dataset.view.split('|'); return openViewer(parts[0], parts[1]); }
+    if (t.dataset.rm)     { parts = t.dataset.rm.split('|');
+                            D.removeFile(parts[0], parts[1]); return render(); }
+    if (t.dataset.restore){ parts = t.dataset.restore.split('|');
+                            D.restore(parts[0], parts[1]);
+                            document.getElementById('viewerHost').innerHTML = '';
+                            render(); return flashRow(parts[0]); }
+    if (t.dataset.send)     return send();
+    if (t.dataset.flip)     return flip();
+    if (t.dataset.upclear)  { up.file = null; return renderUpload(); }
+    if (t.dataset.viewnow)  { var d = D.doc(up.id);
+                              var last = d.files[d.files.length - 1];
+                              document.getElementById('modalHost').innerHTML = '';
+                              return last ? openViewer(d.id, last.name) : null; }
+    if (t.dataset.vclose)   return (document.getElementById('viewerHost').innerHTML = '');
+    if (t.dataset.close)    { var id = up && up.id;
+                              document.getElementById('modalHost').innerHTML = '';
+                              up = null;
+                              return id ? flashRow(id) : null; }
+  });
+
+  /* Auswahl in den Entscheidungskarten */
+  document.addEventListener('change', function (e) {
+    if (e.target.dataset && e.target.dataset.mode) {
+      up.mode = e.target.dataset.mode;
+      renderUpload();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('viewerHost').innerHTML) {
+      document.getElementById('viewerHost').innerHTML = '';
+    } else if (document.getElementById('modalHost').innerHTML) {
+      document.getElementById('modalHost').innerHTML = '';
+      up = null;
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

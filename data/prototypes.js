@@ -80,6 +80,9 @@ window.PROTOTYPES = {
     { id: "customer-dashboard", team: "customer-dashboard", name: "Customer Dashboard",
       flow: "Das gesamte Kundendashboard in einem Prototyp: Finanzierungsstatus, offene Aufgaben, Dokumenten-Upload und die Navigation, die alles zusammenhält." },
 
+    { id: "replace-or-add-document-flow", team: "customer-dashboard", name: "Replace or Add document flow",
+      flow: "Der Kunde lädt Unterlagen hoch und erfährt, was daraus geworden ist: was zugeordnet wurde, was die Prüfung nicht bestanden hat — und wie er eine abgelehnte Datei ersetzt, ohne die alte zu verlieren." },
+
     { id: "offer-submission", team: "mortgage-hub", name: "Offer Submission",
       flow: "Der Berater sucht Angebote, vergleicht Konditionen und reicht die Finanzierung beim Kreditgeber ein." },
 
@@ -115,12 +118,49 @@ window.PROTOTYPES = {
       changes:"Gegenüber V2: Status-Spalte entfallen — ihre Aussage steckt jetzt als Label (Überfällig / Heute / Morgen / Erledigt) direkt in der Spalte „Fälligkeit“. Neuer Filter „Fälligkeit“. Stand nach dem Usability-Test." },
 
     { id:"mein-tag-v4", project:"mein-tag", version:4, title:"Mein Tag V4",
-      file:"to-do/mein-tag-v4.html", status:"aktuell",
+      file:"to-do/mein-tag-v4.html", status:"abgeloest",
       links: [
         { label:"Web Prototyp öffnen", file:"to-do/mein-tag-v4.html" },
         { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v4.html" }
       ],
       changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)." },
+
+    { id:"mein-tag-v7", project:"mein-tag", version:7, title:"Mein Tag V7",
+      file:"to-do/mein-tag-v7.html", status:"aktuell",
+      changes:"Kopie von V3 als Ausgangspunkt. Nach dem Stakeholder-Feedback sind neue Anforderungen dazugekommen — sie sind unten vollständig aufgeführt und noch nicht umgesetzt.",
+      details:[
+        { group:"For each To do on the My Day page, show", items:[
+          "assigned advisor",
+          "assigned loan application link + name(s)",
+          "applicant name(s) for all applicants",
+          "employment type(s) for all applicants",
+          "financing wish details",
+          "finance type",
+          "property type",
+          "property usage",
+          "property zip code + city" ] },
+        { group:"Title", items:[
+          "Page name \"My Day\"" ] },
+        { group:"Appointments", items:[
+          "Change colour coding to 3 colours for online, in-person and private appointments" ] },
+        { group:"Filter", items:[
+          "Add time range filter",
+          "Move search bar into filter line",
+          "Make search bar an icon / small component which expands on focus if needed",
+          "Add \"Add To Do\" button to the filter line" ] },
+        { group:"Grouping", items:[
+          "Show grouping option",
+          "Add options to group by priority, day + overdue, or quick action" ] },
+        { group:"Add To Do", items:[
+          "The user writes the description or selects from (custom) templates",
+          "The user optionally selects quick actions (e.g. email, phone, link, none)",
+          "The system detects certain keywords and pre-selects the matching quick action (e.g. „Rückruf“ or „anrufen“ → phone)",
+          "Add option to save a custom template for a to-do description, with a title" ] },
+        { group:"Inline add To Do", items:[
+          "Add quick actions" ] },
+        { group:"Loan applications without To do's", items:[
+          "Show two options for validation: a) as To Do  b) as tile" ] }
+      ] },
 
     /* ---- Advisors · ToDo-Sortierung ---- */
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",
@@ -257,8 +297,41 @@ window.PROTOTYPES = {
 
     /* ---- Customer Dashboard · Customer Dashboard ---- */
     { id:"customer-dashboard-v1", project:"customer-dashboard", version:1, title:"Customer Dashboard V1",
-      file:"customer-dashboard/customer-dashboard-v1.html", status:"aktuell",
+      file:"customer-dashboard/customer-dashboard-v1.html", status:"abgeloest",
       changes:"Erste Fassung: das gesamte Kundendashboard als ein Screen — Status, Aufgaben, Dokumente und Navigation zusammen, um den Gesamtzusammenhang zu prüfen." },
+
+    { id:"customer-dashboard-v2", project:"customer-dashboard", version:2,
+      title:"Customer Dashboard V2 — Meine Dokumente",
+      file:"customer-dashboard/customer-dashboard-v2.html", status:"abgeloest",
+      links: [
+        { label:"Web Prototyp öffnen", file:"customer-dashboard/customer-dashboard-v2.html" },
+        { label:"Mobile Prototyp öffnen", file:"customer-dashboard/customer-dashboard-mobile-v2.html" }
+      ],
+      changes:"Gegenüber V1: „Meine Dokumente“ ausgebaut, restliche Navigation bleibt Mock (Chrome nach Produkt-Screenshot: 5-Schritt-Stepper, Meine Dokumente / Finanzierungs-Assistent / Ablauf verstehen). Gruppierung nach Antragsteller statt nach Dokumentkategorie (Iva Petrova · Michael Petrov · Immobilie). Drei Bucket-Ringe ohne Nenner (Offen · Aktion erforderlich · Erhalten), zugleich Filter — kein Fortschrittsbalken, der bei neuen Anforderungen zurückläuft. „Erhalten“ statt „Angenommen“: der Screen behauptet nur den Eingang, keine Freigabe. Späte Rückmeldungen erscheinen als Zusatz-Anforderung, nie als Rücknahme einer erledigten Zeile. Aktionszone erscheint nur, wenn es etwas zu tun gibt. Bulk-Upload mit Auto-Zuordnung, Rückfrage nur bei unsicheren Dateien. Zwei Kartenvarianten per Schalter: A gruppiert, B flache Liste. Eigener Kundenskin (Plus Jakarta Sans, nur tokens.css + styles.css, kein Berater-Chrome); Daten in dashboard-data.js, gemeinsam mit der Mobile-Fassung." },
+
+    { id:"customer-dashboard-v3", project:"customer-dashboard", version:3,
+      title:"Customer Dashboard V3 — Meine Dokumente",
+      file:"customer-dashboard/customer-dashboard-v3.html", status:"aktuell",
+      changes:"Gegenüber V2: „Offen“ und „Aktion erforderlich“ zu einem Bucket „Zu erledigen“ zusammengelegt — beides hieß dasselbe („Sie sind dran“) und wurde doppelt gezählt; was sie unterschied, war nur, ob wir eine Begründung schulden, und die steht jetzt als Zeile am Dokument statt als eigener Ring. Damit zwei Ringe statt drei, weiterhin ohne Nenner und weiterhin als Filter. Ein fehlgeschlagener Upload bewegt dafür keine Zahl mehr; die Rückmeldung kommt aus dem Dialog und aus der Warn-Zeile. Neu: Karte „Formulare zum Ausfüllen“ oben, quer zu den Gruppen — für Unterlagen, die die Bank dem Kunden zuerst schuldet (Selbstauskunft, SCHUFA-Einwilligung). Diese Karte sieht aus wie die Gruppenkarten (gleiche Kopfzeile, gleiche Zeilen, gleiche Statusikonen) und ist wie sie auf- und zuklappbar — nur ihr Platz ist besonders, nicht ihr Look. Darin eine Drei-Schritt-Erklärung (Herunterladen · Ausfüllen · Hochladen). Die Zuordnung steht im Zeilentitel („SCHUFA-Einwilligung — Iva Petrova“) statt in einem Chip, weil hier Zeilen verschiedener Personen nebeneinander stehen; nicht personenbezogene Formulare gehören zur neuen Gruppe „Allgemeine Unterlagen“. Nach dem Upload verlässt das Formular die Karte und erscheint unter seiner Person bzw. der Immobilie. Der Gruppenkopf zählt die oben stehenden Formulare mit und zeigt statt einer Dublette eine Zeiger-Zeile nach oben, damit nie „Alles erhalten“ neben einem offenen Formular steht. Eigene Datendatei dashboard-data-v3.js, damit V2 (Desktop + Mobile) unverändert bleibt; Formular-Vorschau (leeres und ausgefülltes Blatt) additiv in dashboard-previews.js. Mobile-Fassung noch offen." },
+
+    /* ---- Customer Dashboard · Replace or Add document flow ---- */
+    { id:"replace-or-add-document-flow-v1", project:"replace-or-add-document-flow", version:1,
+      title:"Replace or Add Document Flow V1",
+      file:"customer-dashboard/replace-or-add-document-flow/replace-or-add-document-flow-v1.html",
+      status:"abgeloest",
+      changes:"Erste Fassung, zwei Fragen in einem Screen. (1) Notiz-Box oben: höchstens drei offene Punkte, jeder mit dem Grund im Klartext und einem Dringlichkeits-Tag; sortiert nach Folgen (hält den Antrag auf · Frist · schon einmal nachgefragt · Übriges), nicht nach Eingangsdatum. Was nicht in die drei passt, wird im Fuß gezählt und steht unten in der Liste — die Box wählt aus, sie verschweigt nichts. „Warum diese drei?“ klappt die Regel auf. Ist nichts Wichtiges offen, wird die Box still statt zu verschwinden. (2) Hinzufügen oder ersetzen: eine Zeile ist hier ein Bedarf und hält mehrere Dateien, dadurch gibt es den Zustand „teilweise da“ (1 von 3 Kontoauszügen, 2 von 4 Objektfotos) und überhaupt etwas zu ersetzen. Ersetzen löscht nie — die alte Datei wandert in „frühere Fassungen“, bleibt ansehbar und lässt sich zurückholen. Der Zeilen-Button bleibt neutral („Datei hochladen“), damit die Entscheidung erst dort fällt, wo ihre Folgen stehen. Zwei Varianten per Schalter: A fragt vor dem Upload mit zwei Karten, jede mit dem Satz „Danach: …“ und einer Empfehlung, wenn wir sicher sind; B entscheidet still und sagt hinterher, was passiert ist, mit einem gleichrangigen Umkehrschalter — und markiert das Ergebnis als „geraten“, wenn es nicht ableitbar war. Dritter Fall im Datensatz: Verlängerung Aufenthaltstitel als eigene Zeile, weil hier die Anforderung ergänzt und nicht ersetzt wird. Papiervorschauen aus dashboard-previews.js mitbenutzt, Daten in replace-or-add-data.js." },
+
+    { id:"replace-or-add-document-flow-v2", project:"replace-or-add-document-flow", version:2,
+      title:"Replace or Add Document Flow V2",
+      file:"customer-dashboard/replace-or-add-document-flow/replace-or-add-document-flow-v2.html",
+      status:"abgeloest",
+      changes:"Gegenüber V1: Neuanfang auf der Formensprache des heutigen Kundendashboards statt auf dem Design-System, und auf drei Flows eingekürzt. V1 sah aus wie Berater-Chrome (türkis, kompakte Zeilen, Ringe als Filter); V2 ist nach den Produkt-Screenshots gebaut — blaue Primärfarbe, große leichte Überschriften statt fetter, gestrichelte Karten mit kleinem Radius, Statuswort rechts an der Karte, „Datei hochladen“ als blauer Text mit Icon statt als Button, Sammel-Dropzone mit „Unkategorisierte Seiten“ am Fuß, Vertrauenszeile. Die Formensprache liegt in customer-skin.css und lädt tokens.css bewusst nicht mit — zwei Primärfarben würden gegeneinander laufen; die Hexwerte sind aus den Screenshots abgeleitet und gehören ersetzt, sobald die echten vorliegen. Vier Kartenzustände (angefordert · In Prüfung · Abgelehnt mit Grund · Angenommen), Ablehnung nach dem echten Maschinen-Text aus dem Screenshot. Eine Karte ist eine Anforderung und hält mehrere Dateien (`soll`), dadurch gibt es den Zähler „2 von 4“ und überhaupt etwas zu ersetzen. — FOKUSHILFE: die Hinweisbox an ihrer alten Stelle zeigt statt eines Danks höchstens drei offene Punkte, jeden mit dem Grund in einem Satz und einem Tag (Zurückgewiesen · Mit Frist · Wird gebraucht); sortiert nach Folgen, nicht nach Eingangsdatum. Der Rest wird im Fuß gezählt, „Warum diese drei?“ klappt die Regel auf; ist nichts offen, wird die Box still statt zu verschwinden. Der lange Maschinentext bleibt an der Karte — in der Box steht die Kurzfassung. — FLOW 1 (Abgelehntes ersetzen): der Ablehnungsgrund steht im Dialog VOR der Dateiwahl, mit der Prüfmeldung als aufklappbarem Detail; die neue Fassung ersetzt, die alte wandert in „frühere Fassungen“ und lässt sich zurückholen. — FLOW 2 (Hinzufügen): mehrteilige Anforderungen (drei Kontoauszüge, vier Objektfotos) nehmen Dateien dazu. Die Frage „ersetzen oder hinzufügen?“ wird nur gestellt, wenn wir sie nicht beantworten können: bei Ablehnung ist es ein Ersetzen, bei unvollständig mehrteilig ein Hinzufügen — beides sagen wir statt zu fragen. Nur wenn die Unterlage vollständig ist und trotzdem etwas kommt, gibt es zwei Karten, ohne Empfehlung, jede mit dem Satz „Danach: …“. Danach ein gleichrangiger Umkehrschalter. Der Knopf an der Karte trägt die Folge im Namen („Neue Fassung hochladen“ / „Datei hinzufügen“) und bleibt neutral, wo sie offen ist. — FLOW 3 (Sammel-Upload): Dateien in die Dropzone, automatische Zuordnung über das längste passende Wortstück im Dateinamen (nicht das erste — sonst landet „grundbuchauszug.pdf“ bei den Kontoauszügen), Ergebnisdialog mit Zuordnungsliste. Was nicht erkannt wird, liegt unten unter „Unkategorisierte Seiten“ und wird dort per Auswahl zugeordnet. Die Automatik überschreibt nie: vollständige und zurückgewiesene Anforderungen nimmt sie nicht an — deshalb landet eine neue Fassung für ein abgelehntes Dokument in den unkategorisierten Seiten und geht von dort durch die Ersetzen-Frage. Knopf „Beispieldateien verwenden“, damit ein Test nicht daran hängt, welche Dateien gerade auf dem Rechner liegen. Daten in documents-data.js." },
+
+    { id:"replace-or-add-document-flow-v3", project:"replace-or-add-document-flow", version:3,
+      title:"Replace or Add Document Flow V3",
+      file:"customer-dashboard/replace-or-add-document-flow/replace-or-add-document-flow-v3.html",
+      status:"aktuell",
+      changes:"Gegenüber V2: die Top-3-Box am Seitenkopf ist weg, und der Prototyp konzentriert sich auf zwei ineinandergreifende Flows. Die Box wollte Aufmerksamkeit oben stiften, wo gerade nichts passiert; sie sitzt jetzt dort, wo gehandelt wird — direkt unter der Upload-Box, unmittelbar nach dem Upload. Die Stelle am Seitenkopf bleibt leer, damit nichts mit der neuen Meldung konkurriert. — FLOW 1, Sammel-Upload mit Rückmeldung: heute ist dieser Weg stumm; scheitert eine Datei an der Prüfung, erfährt der Kunde es nirgends, die Ablehnung liegt rot aber unbemerkt zwischen fünfzehn Karten. Jetzt drei Phasen. (1) Jede Datei erscheint sofort als graue Zeile mit Dateityp-Icon (Kamera für Bilder, Dokument für PDF), Namen und Spinner, Name vollständig im Tooltip — nichts läuft im Verborgenen. (2) Die Zeilen lösen gestaffelt auf, eine alle 450 ms, und zeigen einzeln ihr Ergebnis (Zugeordnet · Abgelehnt · Nicht zugeordnet); erst danach räumt sich die Liste ab. (3) Direkt unter der Box steht die Meldung: „3 Dokumente erfolgreich kategorisiert. 2 Dokumente brauchen Ihre Aufmerksamkeit.“ und darunter jeder offene Fall mit Statusikone, Marke und einem Weg dorthin — abgelehnt → „Zum Dokument“ (springt an die Karte und lässt sie aufblitzen), nicht erkannt → „Zuordnen“ (springt in den Fuß der Box und fokussiert die Auswahl). Als Panel, nicht als Dialog: ein Modal klickt man weg und findet es nie wieder. Schließen möglich, ein neuer Upload ersetzt es. — FLOW 2, abgelehnte Datei ersetzen: Eingang aus der Meldung oder von der Karte. Der Ablehnungsgrund steht im Dialog vor der Dateiwahl, die vollständige Prüfmeldung als aufklappbares Detail; Ersetzen löscht nicht, die alte Fassung bleibt einsehbar und lässt sich zurückholen. — NEU IM MODELL: es gibt überhaupt eine Prüfung. V2 konnte keine Ablehnung erzeugen, jeder Upload landete auf „In Prüfung“ — damit war der Kernfall des Produkts nur Startzustand und nie Ergebnis einer Handlung. Jetzt fällt eine Anforderung beim ersten vollständigen Upload durch und besteht beim zweiten, deterministisch, damit Demo und Usability-Test vergleichbar bleiben. Geprüft wird erst bei Vollständigkeit: zwei von vier Fotos kann niemand beurteilen. Der Beispiellauf trifft genau die Zahlen der Meldung — Kontoauszug, Grundbuch und Innenfoto gehen durch, „Docs-Reisepass.jpg“ wird abgelehnt, „scan0007.pdf“ ist nicht erkennbar. Eigene Datendatei documents-data-v3.js, damit V2 mit seiner Box unverändert läuft; customer-skin.css bleibt gemeinsam und wächst nur um Klassen, der Fokusbox-Block ist als „nur noch von V2“ markiert." },
 
     /* ---- Mortgage Hub · Offer Submission ---- */
     { id:"offer-submission-v1", project:"offer-submission", version:1, title:"Angebotssuche V1",

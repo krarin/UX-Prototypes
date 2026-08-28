@@ -92,6 +92,20 @@ body {
 .sect-row a { color: var(--color-primary-600); text-decoration: none; }
 .sect-row a:hover { text-decoration: underline; }
 
+/* ---------- Anforderungsliste auf einer Prototyp-Karte ---------- */
+.proto-details { margin-bottom: var(--space-m); border-top: 1px solid var(--color-neutral-light-200); padding-top: var(--space-s); }
+.proto-details > summary { cursor: pointer; list-style: none; font-size: var(--body-small-size);
+  font-weight: var(--font-weight-medium); color: var(--color-primary-600); user-select: none; }
+.proto-details > summary::-webkit-details-marker { display: none; }
+.proto-details > summary::before { content: "▸ "; display: inline-block; transition: transform var(--transition-fast); }
+.proto-details[open] > summary::before { content: "▾ "; }
+.proto-details > summary:hover { text-decoration: underline; }
+.pd-group { margin-top: var(--space-s); font-size: 11px; font-weight: var(--font-weight-medium);
+  letter-spacing: .3px; text-transform: uppercase; color: var(--color-neutral-dark-300); }
+.pd-list { margin: 2px 0 0; padding-left: 18px; }
+.pd-list li { font-size: var(--body-small-size); line-height: var(--body-small-line-height);
+  color: var(--color-neutral-dark-400); margin-bottom: 2px; }
+
 /* ---------- buttons ---------- */
 .open-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px var(--space-m); margin-top: auto;
   background: var(--color-primary-500); color: var(--color-neutral-light-000);

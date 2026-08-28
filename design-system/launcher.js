@@ -202,6 +202,21 @@
           })()
         : protoGrid(list));
   }
+  // Optionale Anforderungsliste (z. B. Stakeholder-Feedback). Eingeklappt, damit
+  // eine Karte mit vielen Punkten die Rasterzeile nicht hochzieht.
+  function detailsBlock(details) {
+    if (!details || !details.length) return '';
+    var count = details.reduce(function (n, g) { return n + (g.items || []).length; }, 0);
+    return '<details class="proto-details">' +
+      '<summary>Offene Anforderungen (' + count + ')</summary>' +
+      details.map(function (g) {
+        return '<p class="pd-group">' + esc(g.group) + '</p>' +
+          '<ul class="pd-list">' + (g.items || []).map(function (i) {
+            return '<li>' + esc(i) + '</li>';
+          }).join('') + '</ul>';
+      }).join('') +
+    '</details>';
+  }
   function protoGrid(list) {
     return '<div class="proto-list">' + list.map(function (x) {
       return '<article class="proto" data-status="' + esc(x.status) + '">' +
@@ -209,6 +224,7 @@
           '<span class="proto-name">' + esc(x.title) + '</span>' + statusChip(x.status) +
         '</div>' +
         '<p class="proto-changes">' + esc(x.changes) + '</p>' +
+        detailsBlock(x.details) +
         (x.links && x.links.length
           ? '<div class="proto-actions">' + x.links.map(function (l) {
               return '<a class="open-btn" href="' + l.file + '">' + esc(l.label) + ' →</a>';

@@ -1,0 +1,139 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e2]:
+    - complementary [ref=f12e3]:
+      - generic [ref=f12e4]:
+        - generic [ref=f12e5]: Fi
+        - text: FinLink
+      - generic [ref=f12e6]:
+        - generic [ref=f12e7]:
+          - generic [ref=f12e8]: check
+          - generic [ref=f12e10]: Machbarkeit prüfen
+        - generic [ref=f12e11]:
+          - generic [ref=f12e12]: "2"
+          - generic [ref=f12e13]: Optionen vergleichen
+        - generic [ref=f12e14]:
+          - generic [ref=f12e15]: "3"
+          - generic [ref=f12e16]: Beratungsgespräch
+        - generic [ref=f12e17]:
+          - generic [ref=f12e18]: "4"
+          - generic [ref=f12e19]: Finanzierung beantragen
+        - generic [ref=f12e20]:
+          - generic [ref=f12e21]: "5"
+          - generic [ref=f12e22]: Bestätigung erhalten
+      - navigation [ref=f12e23]:
+        - link "description Meine Dokumente" [ref=f12e24] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f12e25]: description
+          - text: Meine Dokumente
+        - link "monitoring Finanzierungs-Assistent" [ref=f12e26] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f12e27]: monitoring
+          - text: Finanzierungs-Assistent
+        - link "info Ablauf verstehen" [ref=f12e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f12e29]: info
+          - text: Ablauf verstehen
+      - generic [ref=f12e30]:
+        - link "Termin vereinbaren" [ref=f12e31] [cursor=pointer]:
+          - /url: "#"
+        - paragraph [ref=f12e32]: Beratung vom Finanzierungsexperten
+    - generic [ref=f12e33]:
+      - generic [ref=f12e34]:
+        - generic [ref=f12e35]:
+          - text: Support
+          - generic [ref=f12e36]: call
+        - generic [ref=f12e38]: DE
+        - generic [ref=f12e40]:
+          - text: Frau Hoffmann
+          - generic [ref=f12e41]: expand_more
+      - link "Ihr Profil" [ref=f12e43] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=f12e45]:
+        - heading "Meine Dokumente" [level=1] [ref=f12e46]
+        - paragraph [ref=f12e47]: Hier sehen Sie alle Unterlagen, die wir für Ihre Finanzierung benötigen — vollständig, von Anfang an. Sie können alles auf einmal hochladen; wir ordnen die Dateien automatisch zu.
+        - generic [ref=f12e48]:
+          - button "5 Offen" [ref=f12e49] [cursor=pointer]:
+            - generic [ref=f12e53]: "5"
+            - text: Offen
+          - button "3 Aktion erforderlich" [ref=f12e54] [cursor=pointer]:
+            - generic [ref=f12e58]: "3"
+            - text: Aktion erforderlich
+          - button "13 Erhalten" [ref=f12e59] [cursor=pointer]:
+            - generic [ref=f12e63]: "13"
+            - text: Erhalten
+        - generic [ref=f12e65]:
+          - heading "error Aktion erforderlich (3)" [level=2] [ref=f12e66]:
+            - generic [ref=f12e67]: error
+            - text: Aktion erforderlich (3)
+          - generic [ref=f12e68]:
+            - generic [ref=f12e69]:
+              - generic [ref=f12e70]: Kontoauszug
+              - generic [ref=f12e71]: Auf Ihrer Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte laden Sie einen aktuellen Kontoauszug hoch, damit wir die IBAN bestätigen können.
+            - button "Hochladen" [ref=f12e72] [cursor=pointer]
+          - generic [ref=f12e73]:
+            - generic [ref=f12e74]:
+              - generic [ref=f12e75]: Verlängerung Aufenthaltstitel
+              - generic [ref=f12e76]: Der eingereichte Aufenthaltstitel läuft in weniger als 6 Monaten ab. Bitte reichen Sie die Verlängerung nach.
+            - button "Hochladen" [ref=f12e77] [cursor=pointer]
+          - generic [ref=f12e78]:
+            - generic [ref=f12e79]:
+              - generic [ref=f12e80]: Exposé — neue Fassung
+              - generic [ref=f12e81]: Die eingereichte Fassung ist unleserlich. Bitte scannen Sie das Exposé erneut ein oder fotografieren Sie es bei besserem Licht.
+            - button "Hochladen" [ref=f12e82] [cursor=pointer]
+        - generic [ref=f12e83]:
+          - generic [ref=f12e84]:
+            - generic [ref=f12e85]:
+              - button "person Iva Petrova 2 offen expand_more" [ref=f12e86] [cursor=pointer]:
+                - generic [ref=f12e87]: person
+                - generic [ref=f12e88]: Iva Petrova
+                - generic [ref=f12e89]: 2 offen
+                - generic [ref=f12e90]: expand_more
+              - generic [ref=f12e91]:
+                - generic [ref=f12e92]:
+                  - generic [ref=f12e93]: check_circle
+                  - generic [ref=f12e95]:
+                    - text: Gehaltsabrechnung Juli
+                    - generic [ref=f12e96]: IMG_4821.jpg · Erhalten
+                  - button "Ansehen" [ref=f12e97] [cursor=pointer]
+                - generic [ref=f12e98]:
+                  - generic [ref=f12e99]: check_circle
+                  - generic [ref=f12e101]:
+                    - text: Gehaltsabrechnung August
+                    - generic [ref=f12e102]: IMG_4822.jpg · Erhalten
+                  - button "Ansehen" [ref=f12e103] [cursor=pointer]
+                - generic [ref=f12e104]:
+                  - generic [ref=f12e105]: radio_button_unchecked
+                  - generic [ref=f12e107]: Gehaltsabrechnung September
+                  - button "Hochladen" [ref=f12e108] [cursor=pointer]
+                - generic [ref=f12e109]:
+                  - generic [ref=f12e110]: check_circle
+                  - generic [ref=f12e112]:
+                    - text: Ausweiskopie
+                    - generic [ref=f12e113]: ausweis-iva.pdf · Erhalten
+                  - button "Ansehen" [ref=f12e114] [cursor=pointer]
+                - generic [ref=f12e115]:
+                  - generic [ref=f12e116]: error
+                  - generic [ref=f12e118]:
+                    - text: Kontoauszug
+                    - generic [ref=f12e119]: Aktuell, mit sichtbarer IBAN
+                  - generic [ref=f12e120]: Neu angefordert
+                  - button "Hochladen" [ref=f12e121] [cursor=pointer]
+            - button "person Michael Petrov 3 offen expand_more" [ref=f12e123] [cursor=pointer]:
+              - generic [ref=f12e124]: person
+              - generic [ref=f12e125]: Michael Petrov
+              - generic [ref=f12e126]: 3 offen
+              - generic [ref=f12e127]: expand_more
+            - button "home Immobilie Lindenstraße 14, 50674 Köln 3 offen expand_more" [ref=f12e129] [cursor=pointer]:
+              - generic [ref=f12e130]: home
+              - generic [ref=f12e131]:
+                - text: Immobilie
+                - generic [ref=f12e132]: Lindenstraße 14, 50674 Köln
+              - generic [ref=f12e133]: 3 offen
+              - generic [ref=f12e134]: expand_more
+          - generic [ref=f12e135]:
+            - paragraph [ref=f12e136]: Sie können auch mehrere Dateien gleichzeitig hierher ziehen.
+            - button "Unterlagen hinzufügen" [ref=f12e137] [cursor=pointer]
+  - generic [ref=f12e138]:
+    - generic [ref=f12e139]: Variante
+    - button "A · Gruppiert" [pressed] [ref=f12e140] [cursor=pointer]
+    - button "B · Liste" [ref=f12e141] [cursor=pointer]

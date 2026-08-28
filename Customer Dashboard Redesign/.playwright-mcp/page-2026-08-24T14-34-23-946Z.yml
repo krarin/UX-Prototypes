@@ -1,0 +1,299 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - complementary [ref=f11e3]:
+      - generic [ref=f11e4]:
+        - generic [ref=f11e5]: Fi
+        - text: FinLink
+      - generic [ref=f11e6]:
+        - generic [ref=f11e7]:
+          - generic [ref=f11e8]: check
+          - generic [ref=f11e10]: Machbarkeit prüfen
+        - generic [ref=f11e11]:
+          - generic [ref=f11e12]: "2"
+          - generic [ref=f11e13]: Optionen vergleichen
+        - generic [ref=f11e14]:
+          - generic [ref=f11e15]: "3"
+          - generic [ref=f11e16]: Beratungsgespräch
+        - generic [ref=f11e17]:
+          - generic [ref=f11e18]: "4"
+          - generic [ref=f11e19]: Finanzierung beantragen
+        - generic [ref=f11e20]:
+          - generic [ref=f11e21]: "5"
+          - generic [ref=f11e22]: Bestätigung erhalten
+      - navigation [ref=f11e23]:
+        - link "description Meine Dokumente" [ref=f11e24] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f11e25]: description
+          - text: Meine Dokumente
+        - link "monitoring Finanzierungs-Assistent" [ref=f11e26] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f11e27]: monitoring
+          - text: Finanzierungs-Assistent
+        - link "info Ablauf verstehen" [ref=f11e28] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f11e29]: info
+          - text: Ablauf verstehen
+      - generic [ref=f11e30]:
+        - link "Termin vereinbaren" [ref=f11e31] [cursor=pointer]:
+          - /url: "#"
+        - paragraph [ref=f11e32]: Beratung vom Finanzierungsexperten
+    - generic [ref=f11e33]:
+      - generic [ref=f11e34]:
+        - generic [ref=f11e35]:
+          - text: Support
+          - generic [ref=f11e36]: call
+        - generic [ref=f11e38]: DE
+        - generic [ref=f11e40]:
+          - text: Frau Hoffmann
+          - generic [ref=f11e41]: expand_more
+      - link "Ihr Profil" [ref=f11e43] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=f11e45]:
+        - heading "Meine Dokumente" [level=1] [ref=f11e46]
+        - paragraph [ref=f11e47]: Hier sehen Sie alle Unterlagen, die wir für Ihre Finanzierung benötigen — vollständig, von Anfang an. Sie können alles auf einmal hochladen; wir ordnen die Dateien automatisch zu.
+        - generic [ref=f11e48]:
+          - button "5 Offen" [ref=f11e49] [cursor=pointer]:
+            - generic [ref=f11e53]: "5"
+            - text: Offen
+          - button "3 Aktion erforderlich" [ref=f11e54] [cursor=pointer]:
+            - generic [ref=f11e58]: "3"
+            - text: Aktion erforderlich
+          - button "13 Erhalten" [ref=f11e59] [cursor=pointer]:
+            - generic [ref=f11e63]: "13"
+            - text: Erhalten
+        - generic [ref=f11e65]:
+          - heading "error Aktion erforderlich (3)" [level=2] [ref=f11e66]:
+            - generic [ref=f11e67]: error
+            - text: Aktion erforderlich (3)
+          - generic [ref=f11e68]:
+            - generic [ref=f11e69]:
+              - generic [ref=f11e70]: Kontoauszug
+              - generic [ref=f11e71]: Auf Ihrer Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte laden Sie einen aktuellen Kontoauszug hoch, damit wir die IBAN bestätigen können.
+            - button "Hochladen" [ref=f11e72] [cursor=pointer]
+          - generic [ref=f11e73]:
+            - generic [ref=f11e74]:
+              - generic [ref=f11e75]: Verlängerung Aufenthaltstitel
+              - generic [ref=f11e76]: Der eingereichte Aufenthaltstitel läuft in weniger als 6 Monaten ab. Bitte reichen Sie die Verlängerung nach.
+            - button "Hochladen" [ref=f11e77] [cursor=pointer]
+          - generic [ref=f11e78]:
+            - generic [ref=f11e79]:
+              - generic [ref=f11e80]: Exposé — neue Fassung
+              - generic [ref=f11e81]: Die eingereichte Fassung ist unleserlich. Bitte scannen Sie das Exposé erneut ein oder fotografieren Sie es bei besserem Licht.
+            - button "Hochladen" [ref=f11e82] [cursor=pointer]
+        - generic [ref=f11e83]:
+          - generic [ref=f11e84]:
+            - generic [ref=f11e85]:
+              - button "person Iva Petrova 2 offen expand_more" [ref=f11e86] [cursor=pointer]:
+                - generic [ref=f11e87]: person
+                - generic [ref=f11e88]: Iva Petrova
+                - generic [ref=f11e89]: 2 offen
+                - generic [ref=f11e90]: expand_more
+              - generic [ref=f11e91]:
+                - generic [ref=f11e92]:
+                  - generic "Vorschau öffnen" [ref=f11e93] [cursor=pointer]:
+                    - generic [ref=f11e95]:
+                      - generic [ref=f11e96]:
+                        - generic [ref=f11e97]: KAUFHOF LOGISTIK GmbH
+                        - generic [ref=f11e98]: Personalnummer 44-2019Steuerklasse IV · Kirchensteuer nein
+                      - heading "Entgeltabrechnung Juli 2026" [level=1] [ref=f11e99]
+                      - generic [ref=f11e100]:
+                        - generic [ref=f11e101]: Arbeitnehmer/in
+                        - generic [ref=f11e102]: Iva Petrova
+                        - generic [ref=f11e103]: Eintritt
+                        - generic [ref=f11e104]: 01.03.2019
+                        - generic [ref=f11e105]: Tätigkeit
+                        - generic [ref=f11e106]: Disponentin
+                      - generic [ref=f11e107]: Bezüge
+                      - table [ref=f11e108]:
+                        - rowgroup [ref=f11e109]:
+                          - row [ref=f11e110]:
+                            - columnheader "Bezeichnung" [ref=f11e111]
+                            - columnheader "Betrag" [ref=f11e112]
+                          - row [ref=f11e113]:
+                            - cell "Grundgehalt" [ref=f11e114]
+                            - cell "4.850,00" [ref=f11e115]
+                          - row [ref=f11e116]:
+                            - cell "Funktionszulage" [ref=f11e117]
+                            - cell "320,00" [ref=f11e118]
+                          - row [ref=f11e119]:
+                            - cell "Fahrtkostenzuschuss" [ref=f11e120]
+                            - cell "58,00" [ref=f11e121]
+                          - row [ref=f11e122]:
+                            - cell "Gesamtbrutto" [ref=f11e123]
+                            - cell "5.228,00" [ref=f11e124]
+                      - generic [ref=f11e125]: Abzüge
+                      - table [ref=f11e126]:
+                        - rowgroup [ref=f11e127]:
+                          - row [ref=f11e128]:
+                            - cell "Lohnsteuer" [ref=f11e129]
+                            - cell "−968,41" [ref=f11e130]
+                          - row [ref=f11e131]:
+                            - cell "Solidaritätszuschlag" [ref=f11e132]
+                            - cell "−0,00" [ref=f11e133]
+                          - row [ref=f11e134]:
+                            - cell "Krankenversicherung" [ref=f11e135]
+                            - cell "−424,77" [ref=f11e136]
+                          - row [ref=f11e137]:
+                            - cell "Rentenversicherung" [ref=f11e138]
+                            - cell "−486,20" [ref=f11e139]
+                          - row [ref=f11e140]:
+                            - cell "Arbeitslosenversicherung" [ref=f11e141]
+                            - cell "−68,00" [ref=f11e142]
+                          - row [ref=f11e143]:
+                            - cell "Pflegeversicherung" [ref=f11e144]
+                            - cell "−89,40" [ref=f11e145]
+                          - row [ref=f11e146]:
+                            - cell "Nettoentgelt" [ref=f11e147]
+                            - cell "3.191,22" [ref=f11e148]
+                      - generic [ref=f11e149]: Auszahlung
+                      - generic [ref=f11e150]:
+                        - generic [ref=f11e151]: IBAN
+                        - generic [ref=f11e152]: DE21 3705 0198 0012 3456 78
+                        - generic [ref=f11e153]: Wertstellung
+                        - generic [ref=f11e154]: 28.07.2026
+                      - generic [ref=f11e155]:
+                        - generic [ref=f11e156]: Erstellt maschinell, ohne Unterschrift gültig
+                        - generic [ref=f11e157]: Seite 1 von 1
+                  - generic [ref=f11e158]:
+                    - text: Gehaltsabrechnung Juli
+                    - generic [ref=f11e159]: IMG_4821.jpg · Erhalten
+                  - button "Ansehen" [ref=f11e160] [cursor=pointer]
+                - generic [ref=f11e161]:
+                  - generic "Vorschau öffnen" [ref=f11e162] [cursor=pointer]:
+                    - generic [ref=f11e164]:
+                      - generic [ref=f11e165]:
+                        - generic [ref=f11e166]: KAUFHOF LOGISTIK GmbH
+                        - generic [ref=f11e167]: Personalnummer 44-2019Steuerklasse IV · Kirchensteuer nein
+                      - heading "Entgeltabrechnung August 2026" [level=1] [ref=f11e168]
+                      - generic [ref=f11e169]:
+                        - generic [ref=f11e170]: Arbeitnehmer/in
+                        - generic [ref=f11e171]: Iva Petrova
+                        - generic [ref=f11e172]: Eintritt
+                        - generic [ref=f11e173]: 01.03.2019
+                        - generic [ref=f11e174]: Tätigkeit
+                        - generic [ref=f11e175]: Disponentin
+                      - generic [ref=f11e176]: Bezüge
+                      - table [ref=f11e177]:
+                        - rowgroup [ref=f11e178]:
+                          - row [ref=f11e179]:
+                            - columnheader "Bezeichnung" [ref=f11e180]
+                            - columnheader "Betrag" [ref=f11e181]
+                          - row [ref=f11e182]:
+                            - cell "Grundgehalt" [ref=f11e183]
+                            - cell "4.850,00" [ref=f11e184]
+                          - row [ref=f11e185]:
+                            - cell "Funktionszulage" [ref=f11e186]
+                            - cell "320,00" [ref=f11e187]
+                          - row [ref=f11e188]:
+                            - cell "Fahrtkostenzuschuss" [ref=f11e189]
+                            - cell "58,00" [ref=f11e190]
+                          - row [ref=f11e191]:
+                            - cell "Gesamtbrutto" [ref=f11e192]
+                            - cell "5.228,00" [ref=f11e193]
+                      - generic [ref=f11e194]: Abzüge
+                      - table [ref=f11e195]:
+                        - rowgroup [ref=f11e196]:
+                          - row [ref=f11e197]:
+                            - cell "Lohnsteuer" [ref=f11e198]
+                            - cell "−968,41" [ref=f11e199]
+                          - row [ref=f11e200]:
+                            - cell "Solidaritätszuschlag" [ref=f11e201]
+                            - cell "−0,00" [ref=f11e202]
+                          - row [ref=f11e203]:
+                            - cell "Krankenversicherung" [ref=f11e204]
+                            - cell "−424,77" [ref=f11e205]
+                          - row [ref=f11e206]:
+                            - cell "Rentenversicherung" [ref=f11e207]
+                            - cell "−486,20" [ref=f11e208]
+                          - row [ref=f11e209]:
+                            - cell "Arbeitslosenversicherung" [ref=f11e210]
+                            - cell "−68,00" [ref=f11e211]
+                          - row [ref=f11e212]:
+                            - cell "Pflegeversicherung" [ref=f11e213]
+                            - cell "−89,40" [ref=f11e214]
+                          - row [ref=f11e215]:
+                            - cell "Nettoentgelt" [ref=f11e216]
+                            - cell "3.191,22" [ref=f11e217]
+                      - generic [ref=f11e218]: Auszahlung
+                      - generic [ref=f11e219]:
+                        - generic [ref=f11e220]: IBAN
+                        - generic [ref=f11e221]: DE21 3705 0198 0012 3456 78
+                        - generic [ref=f11e222]: Wertstellung
+                        - generic [ref=f11e223]: 28.08.2026
+                      - generic [ref=f11e224]:
+                        - generic [ref=f11e225]: Erstellt maschinell, ohne Unterschrift gültig
+                        - generic [ref=f11e226]: Seite 1 von 1
+                  - generic [ref=f11e227]:
+                    - text: Gehaltsabrechnung August
+                    - generic [ref=f11e228]: IMG_4822.jpg · Erhalten
+                  - button "Ansehen" [ref=f11e229] [cursor=pointer]
+                - generic [ref=f11e230]:
+                  - generic [ref=f11e231]: radio_button_unchecked
+                  - generic [ref=f11e233]: Gehaltsabrechnung September
+                  - button "Hochladen" [ref=f11e234] [cursor=pointer]
+                - generic [ref=f11e235]:
+                  - generic "Vorschau öffnen" [ref=f11e236] [cursor=pointer]:
+                    - generic [ref=f11e238]:
+                      - generic [ref=f11e239]:
+                        - generic [ref=f11e240]: BUNDESREPUBLIK DEUTSCHLAND
+                        - generic [ref=f11e241]: PersonalausweisBeidseitige Kopie
+                      - heading "Ausweiskopie" [level=1] [ref=f11e242]
+                      - generic [ref=f11e243]:
+                        - generic [ref=f11e244]: Foto
+                        - generic [ref=f11e245]:
+                          - generic [ref=f11e246]: PERSONALAUSWEIS
+                          - generic [ref=f11e247]:
+                            - generic [ref=f11e248]: Name
+                            - generic [ref=f11e249]: Petrova
+                            - generic [ref=f11e250]: Vornamen
+                            - generic [ref=f11e251]: Iva
+                            - generic [ref=f11e252]: Geburtsdatum
+                            - generic [ref=f11e253]: 03.05.1990
+                            - generic [ref=f11e254]: Geburtsort
+                            - generic [ref=f11e255]: Plovdiv
+                            - generic [ref=f11e256]: Gültig bis
+                            - generic [ref=f11e257]: 19.08.2031
+                      - generic [ref=f11e258]: Vorderseite
+                      - generic [ref=f11e259]:
+                        - generic [ref=f11e260]:
+                          - generic [ref=f11e261]: Ausweisnummer
+                          - generic [ref=f11e262]: L01X00T47
+                          - generic [ref=f11e263]: Behörde
+                          - generic [ref=f11e264]: Stadt Köln
+                          - generic [ref=f11e265]: Anschrift
+                          - generic [ref=f11e266]: Lindenstraße 14, 50674 Köln
+                        - generic [ref=f11e267]: IDD<<L01X00T472<<<<<<<<<<<<<<9005037<23108194D<<<<<<<<<<<<<4PETROVA<<IVA<<<<<<<<<<<<<<<<
+                      - generic [ref=f11e268]: Rückseite
+                      - generic [ref=f11e269]:
+                        - generic [ref=f11e270]: Kopie — nur zur Vorlage bei der Finanzierung
+                        - generic [ref=f11e271]: Seite 1 von 1
+                  - generic [ref=f11e272]:
+                    - text: Ausweiskopie
+                    - generic [ref=f11e273]: ausweis-iva.pdf · Erhalten
+                  - button "Ansehen" [ref=f11e274] [cursor=pointer]
+                - generic [ref=f11e275]:
+                  - generic [ref=f11e276]: error
+                  - generic [ref=f11e278]:
+                    - text: Kontoauszug
+                    - generic [ref=f11e279]: Aktuell, mit sichtbarer IBAN
+                  - generic [ref=f11e280]: Neu angefordert
+                  - button "Hochladen" [ref=f11e281] [cursor=pointer]
+            - button "person Michael Petrov 3 offen expand_more" [ref=f11e283] [cursor=pointer]:
+              - generic [ref=f11e284]: person
+              - generic [ref=f11e285]: Michael Petrov
+              - generic [ref=f11e286]: 3 offen
+              - generic [ref=f11e287]: expand_more
+            - button "home Immobilie Lindenstraße 14, 50674 Köln 3 offen expand_more" [ref=f11e289] [cursor=pointer]:
+              - generic [ref=f11e290]: home
+              - generic [ref=f11e291]:
+                - text: Immobilie
+                - generic [ref=f11e292]: Lindenstraße 14, 50674 Köln
+              - generic [ref=f11e293]: 3 offen
+              - generic [ref=f11e294]: expand_more
+          - generic [ref=f11e295]:
+            - paragraph [ref=f11e296]: Sie können auch mehrere Dateien gleichzeitig hierher ziehen.
+            - button "Unterlagen hinzufügen" [ref=f11e297] [cursor=pointer]
+  - generic [ref=f11e298]:
+    - generic [ref=f11e299]: Variante
+    - button "A · Gruppiert" [pressed] [ref=f11e300] [cursor=pointer]
+    - button "B · Liste" [ref=f11e301] [cursor=pointer]

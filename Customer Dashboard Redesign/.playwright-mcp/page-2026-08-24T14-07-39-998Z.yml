@@ -1,0 +1,83 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - banner [ref=f4e3]:
+      - generic [ref=f4e4]: menu
+      - heading "Meine Dokumente" [level=1] [ref=f4e5]
+      - generic [ref=f4e6]: IP
+    - generic [ref=f4e7]:
+      - paragraph [ref=f4e8]: Alle Unterlagen für Ihre Finanzierung — vollständig, von Anfang an. Sie können alles auf einmal hochladen, wir ordnen es automatisch zu.
+      - generic [ref=f4e9]:
+        - button "5 Offen" [ref=f4e10] [cursor=pointer]:
+          - generic [ref=f4e14]: "5"
+          - text: Offen
+        - button "3 Aktion erforderlich" [ref=f4e15] [cursor=pointer]:
+          - generic [ref=f4e19]: "3"
+          - text: Aktion erforderlich
+        - button "13 Erhalten" [ref=f4e20] [cursor=pointer]:
+          - generic [ref=f4e24]: "13"
+          - text: Erhalten
+      - generic [ref=f4e26]:
+        - heading "error Aktion erforderlich (3)" [level=2] [ref=f4e27]:
+          - generic [ref=f4e28]: error
+          - text: Aktion erforderlich (3)
+        - generic [ref=f4e29]:
+          - generic [ref=f4e30]: Kontoauszug
+          - generic [ref=f4e31]: Auf Ihrer Gehaltsabrechnung ist keine IBAN ersichtlich. Bitte laden Sie einen aktuellen Kontoauszug hoch, damit wir die IBAN bestätigen können.
+          - button "Hochladen" [ref=f4e32] [cursor=pointer]
+        - generic [ref=f4e33]:
+          - generic [ref=f4e34]: Verlängerung Aufenthaltstitel
+          - generic [ref=f4e35]: Der eingereichte Aufenthaltstitel läuft in weniger als 6 Monaten ab. Bitte reichen Sie die Verlängerung nach.
+          - button "Hochladen" [ref=f4e36] [cursor=pointer]
+        - generic [ref=f4e37]:
+          - generic [ref=f4e38]: Exposé — neue Fassung
+          - generic [ref=f4e39]: Die eingereichte Fassung ist unleserlich. Bitte scannen Sie das Exposé erneut ein oder fotografieren Sie es bei besserem Licht.
+          - button "Hochladen" [ref=f4e40] [cursor=pointer]
+      - generic [ref=f4e41]:
+        - generic [ref=f4e42]:
+          - button "person Iva Petrova 2 offen expand_more" [ref=f4e43] [cursor=pointer]:
+            - generic [ref=f4e44]: person
+            - generic [ref=f4e45]: Iva Petrova
+            - generic [ref=f4e46]: 2 offen
+            - generic [ref=f4e47]: expand_more
+          - generic [ref=f4e48]:
+            - generic [ref=f4e49]: check_circle
+            - generic [ref=f4e51]:
+              - text: Gehaltsabrechnung Juli
+              - generic [ref=f4e52]: IMG_4821.jpg · Erhalten
+          - generic [ref=f4e53]:
+            - generic [ref=f4e54]: check_circle
+            - generic [ref=f4e56]:
+              - text: Gehaltsabrechnung August
+              - generic [ref=f4e57]: IMG_4822.jpg · Erhalten
+          - generic [ref=f4e58]:
+            - generic [ref=f4e59]: radio_button_unchecked
+            - generic [ref=f4e61]: Gehaltsabrechnung September
+            - button "Hochladen" [ref=f4e62] [cursor=pointer]
+          - generic [ref=f4e63]:
+            - generic [ref=f4e64]: check_circle
+            - generic [ref=f4e66]:
+              - text: Ausweiskopie
+              - generic [ref=f4e67]: ausweis-iva.pdf · Erhalten
+          - generic [ref=f4e68]:
+            - generic [ref=f4e69]: error
+            - generic [ref=f4e71]:
+              - text: Kontoauszug
+              - generic [ref=f4e72]: Aktuell, mit sichtbarer IBAN
+              - generic [ref=f4e73]: Neu angefordert
+            - button "Hochladen" [ref=f4e75] [cursor=pointer]
+        - button "person Michael Petrov 3 offen expand_more" [ref=f4e77] [cursor=pointer]:
+          - generic [ref=f4e78]: person
+          - generic [ref=f4e79]: Michael Petrov
+          - generic [ref=f4e80]: 3 offen
+          - generic [ref=f4e81]: expand_more
+        - button "home Immobilie Lindenstraße 14, 50674 Köln 3 offen expand_more" [ref=f4e83] [cursor=pointer]:
+          - generic [ref=f4e84]: home
+          - generic [ref=f4e85]:
+            - text: Immobilie
+            - generic [ref=f4e86]: Lindenstraße 14, 50674 Köln
+          - generic [ref=f4e87]: 3 offen
+          - generic [ref=f4e88]: expand_more
+    - button "Unterlagen hinzufügen" [ref=f4e90] [cursor=pointer]
+  - generic [ref=f4e91]:
+    - button "A · Gruppiert" [pressed] [ref=f4e92] [cursor=pointer]
+    - button "B · Liste" [ref=f4e93] [cursor=pointer]

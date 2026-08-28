@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Customer Dashboard Mobile V2 — Meine Dokumente</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+<!-- Kundensicht mobil: nur tokens + reset (wie mein-tag-mobile-v4). -->
+<link rel="stylesheet" href="../design-system/tokens.css" />
+<link rel="stylesheet" href="../design-system/styles.css" />
+
+<style>
+  :root { --font-family: 'Plus Jakarta Sans', sans-serif; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font-family); font-size: 15px; line-height: 1.5;
+    color: var(--color-neutral-dark-900); background: var(--color-neutral-light-200);
+    display: flex; justify-content: center;
+  }
+  /* Geraeterahmen — auf breiteren Screens zentriert (mein-tag-mobile-Muster) */
+  .phone {
+    position: relative; width: 100%; max-width: 390px; min-height: 100vh;
+    background: var(--color-neutral-light-100); display: flex; flex-direction: column;
+  }
+  @media (min-width: 391px) {
+    body { padding: var(--space-l) 0; align-items: flex-start; }
+    .phone { min-height: calc(100vh - 48px); border-radius: var(--radius-l);
+             overflow: hidden; box-shadow: var(--shadow-l); }
+  }
+
+  /* ---------- Header ---------- */
+  .mhead {
+    display: flex; align-items: center; gap: var(--space-m);
+    padding: var(--space-m); background: var(--color-neutral-light-000);
+    border-bottom: 1px solid var(--color-neutral-light-500);
+    position: sticky; top: 0; z-index: var(--z-raised);
+  }
+  .mhead .material-symbols-outlined { color: var(--color-neutral-dark-600); }
+  .mhead h1 { flex: 1; font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+  .ava {
+    width: 32px; height: 32px; border-radius: var(--radius-full);
+    background: var(--color-primary-100); color: var(--color-primary-700);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+
+  .scroll { flex: 1; padding: var(--space-m) var(--space-m) 96px; }
+  .lead { margin: 0 0 var(--space-m); font-size: 14px; color: var(--color-neutral-dark-600); }
+
+  /* ---------- Ringe (Filter), horizontal scrollbar ---------- */
+  .rings {
+    display: flex; gap: 5px; margin-bottom: var(--space-m);
+    overflow-x: auto; padding-bottom: var(--space-xs); scrollbar-width: none;
+  }
+  .rings::-webkit-scrollbar { display: none; }
+  .ring {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0; cursor: pointer;
+    background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+    border-radius: var(--radius-full); padding: 4px 10px 4px 4px;
+    font: inherit; font-size: 13px; color: var(--color-neutral-dark-600);
+  }
+  .ring[aria-pressed="true"] { border-color: var(--color-primary-500);
+    background: var(--color-primary-100); color: var(--color-primary-700); font-weight: 600; }
+  .ring b { font-size: 14px; font-weight: 700; }
+
+  /* ---------- Aktionszone ---------- */
+  .action-zone {
+    background: var(--color-warning-high-light); border: 1px solid var(--color-warning-high);
+    border-radius: var(--radius-l); padding: var(--space-m); margin-bottom: var(--space-m);
+  }
+  .action-zone h2 { font-size: 14px; font-weight: 700; margin: 0 0 var(--space-s);
+    display: flex; align-items: center; gap: 6px; }
+  .action-zone h2 .material-symbols-outlined { color: var(--color-warning-high); font-size: 18px; }
+  .action-item { padding: var(--space-m) 0 0; border-top: 1px solid rgba(0,0,0,.07); margin-top: var(--space-m); }
+  .action-item:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+  .action-item .top { display: flex; align-items: flex-start; gap: var(--space-s); }
+  .action-item .t { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; }
+  .action-item .r { font-size: 13px; color: var(--color-neutral-dark-600); margin: 2px 0 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .action-item .r.full { -webkit-line-clamp: unset; }
+  .action-item .more { font: inherit; font-size: 12px; font-weight: 600; background: none;
+    border: 0; padding: 2px 0 0; color: var(--color-primary-600); cursor: pointer; }
+
+  /* ---------- Gruppen / Zeilen ---------- */
+  .group { background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
+    border-radius: var(--radius-l); margin-bottom: var(--space-s); overflow: hidden; }
+  .group-head { display: flex; align-items: center; gap: var(--space-s); width: 100%;
+    padding: var(--space-m); background: none; border: 0; font: inherit; color: inherit;
+    text-align: left; cursor: pointer; }
+  .group-head .avatar { width: 32px; height: 32px; border-radius: var(--radius-full);
+    background: var(--color-primary-100); color: var(--color-primary-700);
+    display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+  .group-title { flex: 1; min-width: 0; }
+  .group-title .n { font-weight: 700; font-size: 15px; }
+  .group-title .s { font-size: 12px; color: var(--color-neutral-dark-300); }
+  .group-count { font-size: 12px; color: var(--color-neutral-dark-600); white-space: nowrap; }
+  .chev { color: var(--color-neutral-dark-300); font-size: 20px; }
+  .group.open .chev { transform: rotate(180deg); }
+
+  .doc { display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px var(--space-m); border-top: 1px solid var(--color-neutral-light-200); }
+  .doc-ico .material-symbols-outlined { font-size: 20px; }
+  .st-erhalten .doc-ico { color: var(--color-success); }
+  .st-offen    .doc-ico { color: var(--color-neutral-light-500); }
+  .doc-txt { flex: 1; min-width: 0; }
+  .doc-name { font-size: 14px; }
+  .st-erhalten .doc-name { color: var(--color-neutral-dark-600); }
+  .doc-sub { font-size: 12px; color: var(--color-neutral-dark-300); }
+  .row-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .badge-new { font-size: 9px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    background: var(--color-warning-high-light); color: #8A5200;
+    border: 1px solid var(--color-warning-high); padding: 2px 6px; border-radius: var(--radius-full); }
+  .chip { font-size: 11px; color: var(--color-neutral-dark-600);
+    background: var(--color-neutral-light-200); border-radius: var(--radius-full); padding: 2px 8px; }
+
+  .btn { font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    border-radius: var(--radius-m); padding: 7px 14px; border: 1px solid transparent; white-space: nowrap; }
+  .btn-primary { background: var(--color-primary-500); color: #fff; }
+  .btn-secondary { background: var(--color-neutral-light-000);
+    color: var(--color-primary-600); border-color: var(--color-primary-500); }
+  .btn-block { display: block; width: 100%; padding: 13px; font-size: 15px; }
+  .btn-ghost { background: none; color: var(--color-neutral-dark-600); padding: 7px 10px; }
+
+  /* ---------- Sticky Primaeraktion ---------- */
+  .sticky {
+    position: sticky; bottom: 0; margin-top: auto;
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    background: linear-gradient(to top, var(--color-neutral-light-100) 72%, transparent);
+  }
+
+  /* ---------- Bottom-Sheet: nur unsichere Dateien ---------- */
+  .sheet-bg { position: fixed; inset: 0; background: rgba(55,71,79,.45);
+    z-index: var(--z-modal); display: flex; align-items: flex-end; justify-content: center; }
+  .sheet { background: #fff; width: 100%; max-width: 390px;
+    border-radius: var(--radius-l) var(--radius-l) 0 0; padding: var(--space-m);
+    max-height: 85vh; overflow-y: auto; }
+  .sheet h2 { font-size: 17px; font-weight: 700; margin: 0 0 var(--space-xs); }
+  .sheet .sub { font-size: 13px; color: var(--color-neutral-dark-600); margin: 0 0 var(--space-m); }
+  .unsure { display: flex; gap: 10px; align-items: center;
+    padding: var(--space-m) 0; border-top: 1px solid var(--color-neutral-light-200); }
+  .thumb { width: 40px; height: 50px; border-radius: var(--radius-s); flex-shrink: 0;
+    background: var(--color-neutral-light-200); display: grid; place-items: center;
+    color: var(--color-neutral-dark-300); }
+  .unsure select { font: inherit; font-size: 13px; padding: 7px 8px; width: 100%;
+    border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); background: #fff; }
+
+  /* ---------- Upload-Sheet ---------- */
+  .up-doc { font-size: 12px; color: var(--color-neutral-dark-300); margin: 0 0 var(--space-m); }
+  .up-pick { display: flex; gap: var(--space-s); }
+  .up-pick label {
+    flex: 1; border: 1.5px dashed var(--color-neutral-light-500); border-radius: var(--radius-m);
+    padding: var(--space-m) var(--space-s); text-align: center; cursor: pointer;
+  }
+  .up-pick label .material-symbols-outlined { font-size: 26px; color: var(--color-primary-500); }
+  .up-pick label div { font-size: 12px; font-weight: 600; margin-top: 4px; }
+  .up-pick input { display: none; }
+  .up-file { display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-m); padding: 12px; }
+  .up-file .material-symbols-outlined { color: var(--color-neutral-dark-300); }
+  .up-file .nm { flex: 1; min-width: 0; font-size: 13px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; }
+  .up-file button { background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--color-neutral-dark-300); display: grid; place-items: center; }
+
+  .up-state { display: flex; align-items: center; gap: 12px; padding: var(--space-l) 0;
+    font-size: 14px; color: var(--color-neutral-dark-600); }
+  .spin { width: 20px; height: 20px; border-radius: var(--radius-full); flex-shrink: 0;
+    border: 2.5px solid var(--color-neutral-light-500);
+    border-top-color: var(--color-primary-500); animation: sp .7s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  .up-result { display: flex; gap: 10px; align-items: flex-start;
+    border-radius: var(--radius-m); padding: var(--space-m); }
+  .up-result .material-symbols-outlined { flex-shrink: 0; font-size: 22px; }
+  .up-result .rt { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .up-result .rd { font-size: 13px; }
+  .up-ok { background: var(--color-success-light); }
+  .up-ok .material-symbols-outlined { color: var(--color-success); }
+  .up-fail { background: var(--color-warning-high-light); border: 1px solid var(--color-warning-high); }
+  .up-fail .material-symbols-outlined { color: var(--color-warning-high); }
+  .up-hint { font-size: 12px; color: var(--color-neutral-dark-600); margin-top: 6px; }
+  .sheet-foot { margin-top: var(--space-m); display: flex; flex-direction: column; gap: var(--space-s); }
+
+  /* ---------- Dokument-Viewer ---------- */
+  .viewer-bg { position: fixed; inset: 0; background: #161e21;
+    z-index: var(--z-modal); display: flex; flex-direction: column; }
+  .viewer-bar { display: flex; align-items: center; gap: var(--space-s);
+    padding: 12px var(--space-m); color: #fff; flex-shrink: 0; background: #141c1f;
+    border-bottom: 1px solid rgba(255,255,255,.14); }
+  .viewer-bar .grow { flex: 1; min-width: 0; }
+  .viewer-bar .vt { font-weight: 700; font-size: 15px; display: block;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .viewer-bar .vf { font-size: 12px; opacity: .7; }
+  .viewer-bar button { font: inherit; background: none; border: 0; color: #fff;
+    padding: 6px; display: grid; place-items: center; cursor: pointer; }
+  .viewer-body { flex: 1; overflow: auto; padding: 0 var(--space-m) var(--space-l); }
+  .viewer-note { margin: 0 auto var(--space-m); max-width: 358px; border-radius: var(--radius-m);
+    padding: 10px 12px; background: var(--color-warning-high-light);
+    border: 1px solid var(--color-warning-high); font-size: 12px; }
+  .viewer-note b { display: block; margin-bottom: 2px; }
+  .viewer-foot { flex-shrink: 0; padding: var(--space-s) var(--space-m) var(--space-m);
+    background: #141c1f; }
+  .confirm { margin: 0 auto var(--space-m); max-width: 358px; border-radius: var(--radius-m);
+    padding: var(--space-m); background: var(--color-error-100);
+    border: 1px solid var(--color-error-500); font-size: 13px; }
+  .confirm b { display: block; margin-bottom: 3px; }
+  .confirm .row { display: flex; gap: var(--space-s); margin-top: var(--space-m); }
+  .confirm .row .btn { flex: 1; }
+  .btn-danger { background: var(--color-error-500); color: #fff; }
+
+  .vswitch { display: flex; align-items: center; gap: 3px; padding: 6px var(--space-m);
+    background: var(--color-neutral-dark-900); }
+  .vswitch em { font-size: 10px; letter-spacing: .6px; text-transform: uppercase;
+    color: #fff; opacity: .55; font-style: normal; margin-right: auto; }
+  .vswitch button { font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    color: #fff; background: none; border: 0; padding: 6px 12px; border-radius: var(--radius-full); }
+  .vswitch button[aria-pressed="true"] { background: var(--color-primary-500); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <header class="mhead">
+    <span class="material-symbols-outlined">menu</span>
+    <h1>Meine Dokumente</h1>
+    <span class="ava">IP</span>
+  </header>
+
+  <div class="vswitch">
+    <em>Prototyp — Variante</em>
+    <button id="vA" aria-pressed="true">A · Gruppiert</button>
+    <button id="vB" aria-pressed="false">B · Liste</button>
+  </div>
+
+  <div class="scroll">
+    <p class="lead">Alle Unterlagen für Ihre Finanzierung — vollständig, von Anfang an.
+       Sie können alles auf einmal hochladen, wir ordnen es automatisch zu.</p>
+    <div class="rings" id="rings"></div>
+    <div id="actionZone"></div>
+    <div id="list"></div>
+  </div>
+
+  <div class="sticky">
+    <button class="btn btn-primary btn-block" id="addBtn">
+      Unterlagen hinzufügen
+    </button>
+  </div>
+</div>
+
+<div id="sheetHost"></div>
+<div id="viewerHost"></div>
+
+<script src="dashboard-data.js"></script>
+<script src="dashboard-previews.js"></script>
+<script>
+(function () {
+  var D = window.DashboardData;
+  var P = window.DashboardPreviews;
+  var variant = 'A', filter = null;
+  var open = { iva:true, michael:false, immobilie:false };
+
+  var ICON = { erhalten:'check_circle', offen:'radio_button_unchecked' };
+  var SHORT = { offen:'Offen', erhalten:'Erhalten' };  // 390px-Fassung
+  var RING = { offen:'var(--color-neutral-dark-200)',
+               erhalten:'var(--color-success)' };
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]; }); }
+
+  function donut(frac, color) {
+    var r = 10, c = 2 * Math.PI * r;
+    return '<svg width="24" height="24" viewBox="0 0 24 24">' +
+      '<circle cx="12" cy="12" r="' + r + '" fill="none" stroke="var(--color-neutral-light-500)" stroke-width="3"/>' +
+      '<circle cx="12" cy="12" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="3"' +
+      ' stroke-dasharray="' + (c * frac).toFixed(1) + ' ' + c.toFixed(1) + '"' +
+      ' stroke-linecap="round" transform="rotate(-90 12 12)"/></svg>';
+  }
+  function renderRings() {
+    var c = D.counts(), total = D.docs.length;
+    document.getElementById('rings').innerHTML = ['offen','erhalten'].map(function (k) {
+      return '<button class="ring" data-f="' + k + '" aria-pressed="' + (filter === k) + '">' +
+        donut(c[k] / total, RING[k]) + '<b>' + c[k] + '</b>' + esc(SHORT[k]) + '</button>';
+    }).join('');
+  }
+
+  function renderAction() {
+    var items = D.actionItems(), host = document.getElementById('actionZone');
+    if (!items.length) { host.innerHTML = ''; return; }
+    host.innerHTML = '<section class="action-zone"><h2>' +
+      '<span class="material-symbols-outlined">error</span>Aktion erforderlich (' + items.length + ')</h2>' +
+      items.map(function (d) {
+        return '<div class="action-item">' +
+          '<div class="top"><span class="t">' + esc(d.label) + '</span>' +
+            '<button class="btn btn-primary" data-up="' + d.id + '">Hochladen</button></div>' +
+          '<div class="r">' + esc(d.reason || '') + '</div>' +
+          '<button class="more" data-more="1">Warum?</button></div>';
+      }).join('') + '</section>';
+  }
+
+  function docRow(d, withChip) {
+    var g = D.groups.filter(function (x) { return x.id === d.group; })[0];
+    var sub = d.status === 'erhalten' && d.file ? esc(d.file) + ' · Erhalten'
+            : d.qualifier ? esc(d.qualifier) : '';
+    var meta = (d.isNew ? '<span class="badge-new">Neu angefordert</span>' : '') +
+               (withChip ? '<span class="chip">' + esc(g.label) + '</span>' : '');
+    return '<div class="doc st-' + d.status + '">' +
+      '<span class="doc-ico"><span class="material-symbols-outlined">' + ICON[d.status] + '</span></span>' +
+      '<span class="doc-txt"><span class="doc-name">' + esc(d.label) + '</span>' +
+        (sub ? '<div class="doc-sub">' + sub + '</div>' : '') +
+        (meta ? '<div class="row-meta">' + meta + '</div>' : '') + '</span>' +
+      (P.has(d)
+        ? '<button class="btn btn-ghost" data-view="' + d.id + '">Ansehen</button>' : '') +
+      (d.status !== 'erhalten'
+        ? '<button class="btn btn-secondary" data-up="' + d.id + '">Hochladen</button>' : '') +
+      '</div>';
+  }
+
+  function visible(l) { return filter ? l.filter(function (d) { return d.status === filter; }) : l; }
+
+  function renderList() {
+    var host = document.getElementById('list');
+    if (variant === 'B') {
+      var rows = visible(D.docs);
+      host.innerHTML = '<div class="group">' +
+        (rows.length ? rows.map(function (d) { return docRow(d, true); }).join('')
+                     : '<div class="doc"><span class="doc-txt">Keine Unterlagen in dieser Ansicht.</span></div>') +
+        '</div>';
+      return;
+    }
+    host.innerHTML = D.groups.map(function (g) {
+      var rows = visible(D.byGroup(g.id));
+      if (filter && !rows.length) return '';
+      var offen = D.groupCount(g.id, 'offen');
+      return '<section class="group ' + (open[g.id] ? 'open' : '') + '">' +
+        '<button class="group-head" data-g="' + g.id + '">' +
+          '<span class="material-symbols-outlined avatar">' +
+            (g.kind === 'person' ? 'person' : 'home') + '</span>' +
+          '<span class="group-title"><span class="n">' + esc(g.label) + '</span>' +
+            (g.hint ? '<div class="s">' + esc(g.hint) + '</div>' : '') + '</span>' +
+          '<span class="group-count">' + (offen ? offen + ' offen' : 'Alles erhalten') + '</span>' +
+          '<span class="material-symbols-outlined chev">expand_more</span></button>' +
+        (open[g.id] ? rows.map(function (d) { return docRow(d, false); }).join('') : '') +
+      '</section>';
+    }).join('');
+  }
+
+  function render() { renderRings(); renderAction(); renderList(); }
+
+  /* Bulk-Upload: nur die unsicheren Dateien werden vorgelegt */
+  function openSheet() {
+    var offen = D.docs.filter(function (d) { return d.status !== 'erhalten'; });
+    var opts = '<option value="">Bitte auswählen …</option>' + offen.map(function (d) {
+      var g = D.groups.filter(function (x) { return x.id === d.group; })[0];
+      return '<option>' + esc(d.label) + ' — ' + esc(g.label) + '</option>';
+    }).join('');
+    document.getElementById('sheetHost').innerHTML =
+      '<div class="sheet-bg"><div class="sheet">' +
+        '<h2>12 Dateien hochgeladen</h2>' +
+        '<p class="sub">10 konnten wir automatisch zuordnen. Bei zwei sind wir uns nicht sicher — ' +
+        'wobei können Sie uns helfen?</p>' +
+        D.unsure.map(function (u) {
+          return '<div class="unsure">' +
+            '<span class="thumb"><span class="material-symbols-outlined">draft</span></span>' +
+            '<span style="flex:1;min-width:0">' +
+              '<div style="font-size:12px;color:var(--color-neutral-dark-300);margin-bottom:5px">' +
+                esc(u.file) + ' · ' + esc(u.size) + '</div>' +
+              '<select>' + opts + '</select></span></div>';
+        }).join('') +
+        '<div style="margin-top:var(--space-m);display:flex;flex-direction:column;gap:var(--space-s)">' +
+          '<button class="btn btn-primary btn-block" data-close="1">Zuordnung bestätigen</button>' +
+          '<button class="btn btn-secondary btn-block" data-close="1">Später zuordnen</button>' +
+        '</div></div></div>';
+  }
+
+  /* ---------- Upload-Sheet fuer EIN Dokument ---------- */
+  var up = { id:null, file:null, state:'pick', result:null };
+
+  function openUpload(docId) {
+    up = { id: docId, file: null, state: 'pick', result: null };
+    renderUpload();
+  }
+
+  function renderUpload() {
+    var d = D.doc(up.id);
+    if (!d) return;
+    var g = D.groups.filter(function (x) { return x.id === d.group; })[0];
+    var body, foot;
+
+    if (up.state === 'pick') {
+      body = (up.file
+        ? '<div class="up-file"><span class="material-symbols-outlined">draft</span>' +
+            '<span class="nm">' + esc(up.file) + '</span>' +
+            '<button data-upclear="1"><span class="material-symbols-outlined">close</span></button></div>'
+        : '<div class="up-pick">' +
+            '<label><span class="material-symbols-outlined">photo_camera</span><div>Foto aufnehmen</div>' +
+              '<input type="file" class="upIn" accept="image/*" capture="environment" /></label>' +
+            '<label><span class="material-symbols-outlined">folder_open</span><div>Datei wählen</div>' +
+              '<input type="file" class="upIn" accept="image/*,application/pdf" /></label>' +
+          '</div>') +
+        (d.qualifier ? '<p class="up-hint">Benötigt: ' + esc(d.qualifier) + '</p>' : '');
+      foot = '<button class="btn btn-primary btn-block" data-upsend="1"' +
+               (up.file ? '' : ' disabled style="opacity:.45"') + '>Hochladen</button>' +
+             '<button class="btn btn-secondary btn-block" data-close="1">Abbrechen</button>';
+    }
+    else if (up.state === 'busy') {
+      body = '<div class="up-state"><span class="spin"></span>' +
+             '<span>Wird hochgeladen und geprüft …</span></div>';
+      foot = '';
+    }
+    else if (up.result.ok) {
+      body = '<div class="up-result up-ok"><span class="material-symbols-outlined">check_circle</span>' +
+             '<span><div class="rt">Erhalten</div><div class="rd">Wir haben Ihre Unterlage erhalten. ' +
+             'Es sieht alles vollständig aus.</div></span></div>';
+      foot = '<button class="btn btn-primary btn-block" data-viewnow="1">Ansehen</button>' +
+             '<button class="btn btn-secondary btn-block" data-close="1">Fertig</button>';
+    }
+    else {
+      body = '<div class="up-result up-fail"><span class="material-symbols-outlined">error</span>' +
+             '<span><div class="rt">Das hat noch nicht geklappt</div>' +
+             '<div class="rd">' + esc(up.result.reason) + '</div>' +
+             '<div class="up-hint">' + esc(up.result.hint) + '</div></span></div>';
+      foot = '<button class="btn btn-primary btn-block" data-upretry="1">Erneut versuchen</button>' +
+             '<button class="btn btn-secondary btn-block" data-close="1">Später</button>';
+    }
+
+    document.getElementById('sheetHost').innerHTML =
+      '<div class="sheet-bg"><div class="sheet">' +
+        '<h2>' + esc(d.label) + '</h2>' +
+        '<p class="up-doc">' + esc(g.label) + '</p>' + body +
+        (foot ? '<div class="sheet-foot">' + foot + '</div>' : '') +
+      '</div></div>';
+
+    [].forEach.call(document.querySelectorAll('.upIn'), function (inp) {
+      inp.addEventListener('change', function () {
+        if (this.files && this.files[0]) { up.file = this.files[0].name; renderUpload(); }
+      });
+    });
+  }
+
+  function sendUpload() {
+    up.state = 'busy'; renderUpload();
+    setTimeout(function () {
+      up.result = D.upload(up.id, up.file);
+      up.state = 'done';
+      render();
+      renderUpload();
+    }, 1100);
+  }
+
+  var confirmDel = null;   // docId, dessen Löschen gerade bestätigt werden soll
+  var viewerId   = null;   // docId, den der Viewer gerade zeigt
+
+  function openViewer(docId) {
+    var d = D.doc(docId);
+    if (!d || !P.has(d)) return;
+    viewerId = docId;
+    var sc = P.scaleFor(window.innerWidth - 32);
+    document.getElementById('viewerHost').innerHTML =
+      '<div class="viewer-bg"><div class="viewer-bar">' +
+        '<span class="grow"><span class="vt">' + esc(d.label) + '</span>' +
+          '<span class="vf">' + esc(d.file) + '</span></span>' +
+        '<button data-vclose="1"><span class="material-symbols-outlined">close</span></button>' +
+      '</div><div class="viewer-body">' +
+        (confirmDel === d.id
+          ? '<div class="confirm"><b>Diese Unterlage wirklich löschen?</b>' +
+            'Die Datei wird entfernt. ' + esc(d.label) + ' steht danach wieder als ' +
+            'offen in Ihrer Liste — angefordert bleibt sie in jedem Fall.' +
+            '<div class="row">' +
+              '<button class="btn btn-danger" data-delyes="' + d.id + '">Ja, löschen</button>' +
+              '<button class="btn btn-secondary" data-delno="1">Abbrechen</button>' +
+            '</div></div>'
+          : '') +
+        (d.reason
+          ? '<div class="viewer-note"><b>Diese Datei müssen wir noch einmal bekommen</b>' +
+            esc(d.reason) + '</div>' : '') +
+        '<div class="pv-wrap"><div class="pv-scaler" style="--pv-scale:' + sc + ';' +
+          'height:' + Math.round(P.PAPER_H * sc) + 'px">' + P.render(d) + '</div></div>' +
+      '</div>' +
+      '<div class="viewer-foot">' +
+        '<button class="btn btn-primary btn-block" data-up="' + d.id + '">Ersetzen</button>' +
+        '<button class="btn btn-danger btn-block" data-del="' + d.id + '"' +
+          ' style="margin-top:8px">Löschen</button>' +
+      '</div>' +
+      '</div>';
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-f],[data-g],[data-up],[data-close],[data-more],[data-upsend],' +
+                             '[data-upretry],[data-upclear],[data-view],[data-vclose],[data-viewnow],' +
+                             '[data-del],[data-delyes],[data-delno],#addBtn,#vA,#vB');
+    if (!t) return;
+    if (t.dataset.more) {
+      var r = t.parentNode.querySelector('.r');
+      r.classList.toggle('full');
+      t.textContent = r.classList.contains('full') ? 'Weniger' : 'Warum?';
+      return;
+    }
+    if (t.id === 'vA' || t.id === 'vB') {
+      variant = t.id === 'vA' ? 'A' : 'B';
+      document.getElementById('vA').setAttribute('aria-pressed', variant === 'A');
+      document.getElementById('vB').setAttribute('aria-pressed', variant === 'B');
+      return renderList();
+    }
+    if (t.dataset.f) { filter = filter === t.dataset.f ? null : t.dataset.f; return render(); }
+    if (t.dataset.g) { open[t.dataset.g] = !open[t.dataset.g]; return renderList(); }
+    if (t.dataset.del)   { confirmDel = t.dataset.del; return openViewer(confirmDel); }
+    if (t.dataset.delno) { confirmDel = null; return openViewer(viewerId); }
+    if (t.dataset.delyes) {
+      D.remove(t.dataset.delyes); confirmDel = null;
+      document.getElementById('viewerHost').innerHTML = '';
+      return render();
+    }
+    if (t.dataset.view)    { confirmDel = null; return openViewer(t.dataset.view); }
+    if (t.dataset.vclose)  { confirmDel = null;
+      return (document.getElementById('viewerHost').innerHTML = ''); }
+    if (t.dataset.viewnow) { var vid = up.id;
+      document.getElementById('sheetHost').innerHTML = ''; return openViewer(vid); }
+    if (t.id === 'addBtn')  return openSheet();             // Bulk mit Auto-Zuordnung
+    if (t.dataset.up) {
+      document.getElementById('viewerHost').innerHTML = '';
+      return openUpload(t.dataset.up);                     // ein Dokument
+    }
+    if (t.dataset.upsend)  return sendUpload();
+    if (t.dataset.upretry) { up.file = null; up.state = 'pick'; return renderUpload(); }
+    if (t.dataset.upclear) { up.file = null; return renderUpload(); }
+    if (t.dataset.close) return (document.getElementById('sheetHost').innerHTML = '');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

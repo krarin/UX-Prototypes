@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replace or Add Document Flow V2</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+<!-- Die Formensprache des heutigen Kundendashboards. Bewusst NICHT
+     design-system/tokens.css — das ist tuerkis und Berater-Chrome. -->
+<link rel="stylesheet" href="customer-skin.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">Fi</span>FinLink</div>
+
+    <div class="stepper">
+      <div class="step done">
+        <span class="step-dot"><span class="material-symbols-outlined">check</span></span>
+        <span class="step-label">Machbarkeit prüfen</span>
+      </div>
+      <div class="step current">
+        <span class="step-dot">2</span><span class="step-label">Optionen vergleichen</span>
+      </div>
+      <div class="step">
+        <span class="step-dot">3</span><span class="step-label">Beratungsgespräch</span>
+      </div>
+      <div class="step">
+        <span class="step-dot">4</span><span class="step-label">Finanzierung beantragen</span>
+      </div>
+      <div class="step">
+        <span class="step-dot">5</span><span class="step-label">Bestätigung erhalten</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#" class="nav-item" aria-current="page">
+        <span class="material-symbols-outlined">import_contacts</span>Meine Dokumente</a>
+      <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">info</span>Ablauf verstehen</a>
+    </nav>
+
+    <div class="side-foot">
+      <a href="#">Termin vereinbaren</a>
+      <p>Beratung vom Finanzierungsexperten</p>
+    </div>
+  </aside>
+
+  <!-- ============ HAUPTSPALTE ============ -->
+  <div class="main">
+
+    <div class="topbar">
+      <span>Support <span class="material-symbols-outlined">call</span></span>
+      <div class="sep"></div>
+      <span>DE</span>
+      <div class="sep"></div>
+      <span id="userName"></span>
+    </div>
+
+    <div class="crumb">
+      <span class="here">Antragsdokumente</span>
+      <a href="#">Zurück zum Dashboard</a>
+    </div>
+
+    <div class="content">
+
+      <h1 class="h-page" id="greeting"></h1>
+      <p class="lead">Laden Sie die Dokumente hier hoch.</p>
+
+      <ul class="blist">
+        <li>Alle Dokumente müssen im PDF-, JPEG- oder PNG-Format vorliegen.</li>
+        <li>Dateigröße muss unter 200 MB liegen.</li>
+        <li>Alle bereitgestellten Dokumente müssen gut lesbar und hochauflösend sein.</li>
+      </ul>
+
+      <!-- FLOW 0 · Fokushilfe: dieselbe Box wie heute, an derselben
+           Stelle — aber mit den drei größten Gründen darin statt
+           mit einem Dank. -->
+      <div id="focus"></div>
+
+      <div class="trust">
+        <div class="trust-item">
+          <span class="material-symbols-outlined">lock</span>
+          <span><b>Hoher Datenschutzstandard</b>
+            <span>Ihre Daten sind bei uns sicher und durch eine 256 Bit Sicherheitstechnologie verschlüsselt.</span>
+          </span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-badge">DE</span>
+          <span><b>Rechenzentrum</b><span>in Europa</span></span>
+        </div>
+      </div>
+
+      <!-- FLOW 3 · Sammel-Upload mit automatischer Zuordnung -->
+      <div class="upload-head">
+        <h2 class="h-block">Laden Sie Ihre Dokumente hoch</h2>
+        <p class="upload-req">Dokumente müssen diesen Anforderungen genügen:<br />
+           Es werden nur die folgenden Dateitypen akzeptiert: pdf, png, jpg</p>
+      </div>
+
+      <div class="drop" id="drop">
+        <div class="drop-mid">
+          <span class="material-symbols-outlined">upload_file</span>
+          <b>Ziehen Sie Ihre Dokumente hierher, sie werden automatisch kategorisiert und unten angezeigt</b>
+          <span>oder laden Sie sie einzeln in die unten stehenden Kategorien hoch.</span>
+          <div style="margin-top:18px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap">
+            <label class="act">
+              <span class="material-symbols-outlined">folder_open</span>Dateien auswählen
+              <input type="file" id="bulkInput" multiple style="display:none" />
+            </label>
+            <!-- Damit ein Test nicht daran haengt, dass gerade passend
+                 benannte Dateien auf dem Rechner liegen. -->
+            <button class="act muted" id="demoBtn">
+              <span class="material-symbols-outlined">science</span>Beispieldateien verwenden</button>
+          </div>
+        </div>
+        <div class="drop-foot">Unkategorisierte Seiten
+          <div id="uncat"></div>
+        </div>
+      </div>
+
+      <!-- Die Anforderungen, gruppiert wie im Produkt -->
+      <div id="sections"></div>
+
+    </div>
+  </div>
+</div>
+
+<div id="modalHost"></div>
+
+<script src="documents-data.js"></script>
+<script>
+(function () {
+  var D = window.AntragsDokumente;
+
+  var TOP_N    = 3;        // die Zahl aus dem Briefing
+  var showWhy  = false;    // „Warum diese drei?" aufgeklappt
+  var showHist = {};       // je Anforderung: frühere Fassungen sichtbar
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]; }); }
+
+  /* ---------- Anrede ---------- */
+  document.getElementById('greeting').textContent =
+    'Verschaffen Sie sich einen Überblick über Ihre Dokumente, ' +
+    D.kunde.anrede + ' ' + D.kunde.nachname + '!';
+  document.getElementById('userName').innerHTML =
+    esc(D.kunde.anrede + ' ' + D.kunde.nachname) +
+    ' <span class="material-symbols-outlined">expand_more</span>';
+
+  /* ===================================================================
+     FLOW 0 — DIE FOKUSHILFE
+
+     Hoechstens drei Zeilen, jede mit dem Grund in einem Satz. Der
+     lange Maschinentext bleibt an der Karte: hier braucht der Kunde
+     zu wissen, WAS dran ist, nicht warum die Pruefsoftware
+     angeschlagen hat.
+     =================================================================== */
+  function focusRow(d, rang) {
+    var u = D.urgency(d);
+    var s = D.sectionOf(d.id);
+
+    return '<div class="frow">' +
+      '<span class="frank">' + rang + '</span>' +
+      '<span class="ftxt">' +
+        '<div class="ftitle">' + esc(d.label) +
+          ' <span class="where">· ' + esc(s.titel) + '</span></div>' +
+        '<div class="fwhy">' + esc(D.kurzgrund(d)) + '</div>' +
+        '<div class="ftags">' +
+          '<span class="tag tag-' + u + '">' + esc(D.urgencyLabel[u]) +
+            (d.frist ? ' bis ' + esc(d.frist) : '') + '</span>' +
+          ((d.soll || 1) > 1
+            ? '<span class="tag">' + d.files.length + ' von ' + d.soll + ' Dateien da</span>'
+            : '') +
+        '</div>' +
+      '</span>' +
+      '<span class="facts">' +
+        '<button class="act" data-up="' + d.id + '">' +
+          '<span class="material-symbols-outlined">upload_file</span>' +
+          esc(D.aktionLabel(d)) + '</button>' +
+      '</span>' +
+    '</div>';
+  }
+
+  function renderFocus() {
+    var top  = D.top(TOP_N);
+    var rest = D.restCount(TOP_N);
+    var host = document.getElementById('focus');
+
+    if (!top.length) {
+      host.innerHTML =
+        '<section class="focus calm"><div class="focus-head">' +
+          '<span class="material-symbols-outlined">task_alt</span>' +
+          '<span><b>Nichts liegt bei Ihnen</b>' +
+            '<p>Alle Unterlagen sind bei uns. Wir melden uns, wenn die Bank noch etwas braucht.</p>' +
+          '</span></div></section>';
+      return;
+    }
+
+    host.innerHTML =
+      '<section class="focus"><div class="focus-head">' +
+        '<span class="material-symbols-outlined">flag</span>' +
+        '<span><b>Das ist als Nächstes dran</b>' +
+          '<p>' + (rest
+            ? (top.length === 1 ? 'Die wichtigste Sache' : 'Die ' + top.length + ' wichtigsten Punkte') +
+              ' von ' + D.offen().length + ' offenen. Der Rest steht unten in der Liste.'
+            : 'Mehr ist gerade nicht offen.') + '</p>' +
+        '</span></div>' +
+        top.map(function (d, i) { return focusRow(d, i + 1); }).join('') +
+        '<div class="focus-foot">' +
+          (rest
+            ? '<button class="linkbtn" data-scroll="1">' + rest +
+              (rest === 1 ? ' weiterer Punkt' : ' weitere Punkte') +
+              '<span class="material-symbols-outlined">arrow_downward</span></button>'
+            : '<span>Alles Weitere ist erledigt.</span>') +
+          '<button class="linkbtn" data-why="1">' +
+            (showWhy ? 'Erklärung schließen' : 'Warum diese drei?') + '</button>' +
+        '</div>' +
+        (showWhy
+          ? '<div class="focus-why">Wir sortieren nach Folgen, nicht nach Eingangsdatum:' +
+            '<ol>' + D.rankExplain.map(function (t) {
+              return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>'
+          : '') +
+      '</section>';
+  }
+
+  /* ===================================================================
+     DIE ANFORDERUNGEN
+     =================================================================== */
+  function fileRow(d, f, alt) {
+    return '<div class="doc-file' + (alt ? ' old' : '') + '">' +
+      '<span class="material-symbols-outlined">' + (alt ? 'history' : 'description') + '</span>' +
+      '<span class="fn">' + esc(f.name) + '</span>' +
+      '<span class="fd">' + (alt ? 'ersetzt am ' + esc(f.ersetztAm) : esc(f.datum)) + '</span>' +
+      (alt
+        ? '<button class="act muted" data-restore="' + d.id + '|' + esc(f.name) + '"' +
+            ' style="font-size:14px">Zurückholen</button>'
+        : '<button class="icon-btn" title="Entfernen" data-rm="' + d.id + '|' + esc(f.name) + '">' +
+            '<span class="material-symbols-outlined">delete</span></button>') +
+    '</div>';
+  }
+
+  function card(d) {
+    var st   = D.status[d.status];
+    var soll = d.soll || 1;
+    var hist = d.history.length;
+
+    return '<div class="doc-card ' + st.klasse + '" id="card-' + d.id + '">' +
+      '<div class="doc-row">' +
+        '<span class="doc-title">' +
+          '<span class="t">' + esc(d.label) + '</span>' +
+          (soll > 1 ? '<span class="count">' + d.files.length + ' von ' + soll + '</span>' : '') +
+          (d.hilfe ? '<button class="help" title="' + esc(d.hilfe) + '">?</button>' : '') +
+        '</span>' +
+        '<span class="doc-status">' +
+          (st.ikon ? '<span class="material-symbols-outlined status-dot">' + st.ikon + '</span>' : '') +
+          esc(st.wort) +
+        '</span>' +
+      '</div>' +
+
+      /* Nur wo der Kunde dran ist. Eine angenommene Unterlage bekommt
+         keinen Aufruf — sonst steht auf der Seite 14-mal dieselbe
+         Aufforderung und keine davon bedeutet etwas. */
+      (d.status === 'angenommen' ? '' :
+        '<div class="doc-actions">' +
+          '<button class="act" data-up="' + d.id + '">' +
+            '<span class="material-symbols-outlined">upload_file</span>' +
+            esc(D.aktionLabel(d)) + '</button>' +
+        '</div>') +
+
+      (d.grund
+        ? '<div class="doc-reason"><b>Ablehnungsgrund:</b> ' + esc(d.grund) + '</div>'
+        : '') +
+
+      d.files.map(function (f) { return fileRow(d, f, false); }).join('') +
+
+      (hist
+        ? '<button class="hist-toggle" data-hist="' + d.id + '">' +
+            '<span class="material-symbols-outlined">' +
+              (showHist[d.id] ? 'expand_less' : 'expand_more') + '</span>' +
+            hist + (hist === 1 ? ' frühere Fassung' : ' frühere Fassungen') + '</button>' +
+          (showHist[d.id]
+            ? d.history.map(function (f) { return fileRow(d, f, true); }).join('')
+            : '')
+        : '') +
+    '</div>';
+  }
+
+  function renderSections() {
+    document.getElementById('sections').innerHTML = D.sections.map(function (s) {
+      return '<section class="doc-section">' +
+        '<h2 class="h-section">' + esc(s.titel) + '</h2>' +
+        '<hr class="rule" />' +
+        s.docs.map(card).join('') +
+      '</section>';
+    }).join('');
+  }
+
+  /* ---------- Unkategorisierte Seiten (Fuss der Dropzone) ---------- */
+  function renderUncat() {
+    var list = D.unkat();
+    var host = document.getElementById('uncat');
+
+    if (!list.length) {
+      host.innerHTML = '<div class="empty">Zurzeit keine.</div>';
+      return;
+    }
+
+    var opts = D.ziele().map(function (z) {
+      return '<option value="' + z.id + '">' + esc(z.label) + '</option>';
+    }).join('');
+
+    host.innerHTML = '<div class="unkat-list">' + list.map(function (t) {
+      return '<div class="unkat">' +
+        '<span class="material-symbols-outlined">draft</span>' +
+        '<span class="nm">' + esc(t.name) + '</span>' +
+        '<select data-sel="' + t.tempId + '">' +
+          '<option value="">Wozu gehört diese Seite?</option>' + opts + '</select>' +
+        '<button class="act" data-assign="' + t.tempId + '">Zuordnen</button>' +
+        '<button class="icon-btn" title="Verwerfen" data-dropunkat="' + t.tempId + '">' +
+          '<span class="material-symbols-outlined">delete</span></button>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function render() { renderFocus(); renderSections(); renderUncat(); }
+
+  /* ===================================================================
+     FLOW 1 + 2 — EINZELNER UPLOAD
+
+     Die Frage „ersetzen oder hinzufuegen?" wird nur gestellt, wenn
+     wir sie nicht beantworten koennen. Bei einer Ablehnung ist es
+     ein Ersetzen, bei einer unvollstaendigen mehrteiligen Unterlage
+     ein Hinzufuegen — beides sagen wir, statt zu fragen. Nur wenn
+     die Unterlage vollstaendig ist und trotzdem etwas kommt, gibt
+     es zwei gleichwertige Ausgaenge — und dann fragen wir ohne
+     Empfehlung, weil eine geratene Empfehlung schlimmer ist als
+     keine.
+     =================================================================== */
+  var up = null;
+
+  function openUpload(id) {
+    var dec = D.decide(id);
+    up = { id:id, file:null, decision:dec,
+           mode: dec ? dec.mode : 'add',       // null, wenn unklar -> Frage
+           state:'pick', result:null };
+    renderUpload();
+  }
+
+  function choiceCard(mode, d) {
+    var soll = d.soll || 1;
+    var titel = mode === 'add' ? 'Hinzufügen' : 'Ersetzen';
+    var text  = mode === 'add'
+      ? 'Die neue Datei kommt zu den vorhandenen dazu. Alles bleibt gültig.'
+      : 'Die neue Datei tritt an die Stelle der bisherigen.';
+    /* Der Satz, auf den es ankommt: nicht wie die Aktion heisst,
+       sondern was danach an der Anforderung haengt. */
+    var danach = mode === 'add'
+      ? 'Danach: ' + (d.files.length + 1) + (soll > 1 ? ' von ' + soll : '') + ' Dateien an dieser Unterlage.'
+      : 'Danach: 1 Datei an dieser Unterlage. ' +
+        (d.files.length === 1
+          ? 'Die bisherige bleibt als frühere Fassung einsehbar'
+          : 'Die bisherigen ' + d.files.length + ' bleiben als frühere Fassungen einsehbar') +
+        ' — gelöscht wird nichts.';
+
+    return '<label><input type="radio" name="mode" value="' + mode + '"' +
+        (up.mode === mode ? ' checked' : '') + ' data-mode="' + mode + '" />' +
+      '<span><span class="ct">' + titel + '</span>' +
+        '<span class="cd">' + text + '</span>' +
+        '<span class="cafter">' + danach + '</span></span></label>';
+  }
+
+  function renderUpload() {
+    var d = D.doc(up.id);
+    if (!d) return;
+    var body = '', foot = '';
+
+    if (up.state === 'pick') {
+
+      /* FLOW 1: bei einer Ablehnung steht der Grund VOR der
+         Dateiwahl. Wer nicht weiss, was kaputt ist, laedt dieselbe
+         Datei noch einmal hoch. */
+      if (d.grund) {
+        body += '<div class="recap"><b>Warum wir die letzte Fassung zurückgewiesen haben</b>' +
+          esc(d.grundKurz || d.grund) +
+          '<details><summary>Vollständige Prüfmeldung anzeigen</summary>' +
+            '<div class="full">' + esc(d.grund) + '</div></details></div>';
+      }
+
+      body += (up.file
+        ? '<div class="picked"><span class="material-symbols-outlined">description</span>' +
+            '<span class="nm">' + esc(up.file) + '</span>' +
+            '<button class="icon-btn" data-upclear="1" title="Entfernen">' +
+              '<span class="material-symbols-outlined">close</span></button></div>'
+        : '<label class="pick"><span class="material-symbols-outlined">upload_file</span>' +
+            (d.grund ? 'Neue Fassung auswählen' : 'Datei auswählen') +
+            '<input type="file" id="upInput" /></label>');
+
+      /* Die Frage stellt sich nur, wenn schon etwas da liegt — und
+         erst, wenn eine Datei gewaehlt ist. Vorher waere sie eine
+         Frage ins Leere. */
+      if (up.decision && up.file) {
+        if (up.decision.sicher) {
+          body += '<div class="why"><span class="material-symbols-outlined">info</span>' +
+                  '<span>' + esc(up.decision.warum) + '</span></div>';
+        } else {
+          body += '<div class="why"><span class="material-symbols-outlined">help</span>' +
+                    '<span>' + esc(up.decision.warum) + '</span></div>' +
+                  '<div class="choice">' + choiceCard('add', d) + choiceCard('replace', d) + '</div>';
+        }
+      }
+
+      var blockiert = up.decision && !up.mode;
+      foot = '<button class="btn btn-ghost" data-close="1">Abbrechen</button>' +
+             '<button class="btn btn-primary" data-send="1"' +
+               (up.file && !blockiert ? '' : ' disabled') + '>' +
+               (up.mode === 'replace' && up.decision ? 'Ersetzen'
+                : up.mode === 'add' && up.decision ? 'Hinzufügen'
+                : 'Hochladen') + '</button>';
+    }
+    else if (up.state === 'busy') {
+      body = '<div class="busy"><span class="spin"></span><span>Datei wird übertragen …</span></div>';
+    }
+    else {
+      var r = up.result;
+      var klasse = r.status === 'pruefung' ? 'r-ok' : 'r-part';
+      var ikon   = r.status === 'pruefung' ? 'check_circle' : 'hourglass_top';
+
+      var titel = !up.decision ? 'Datei erhalten'
+                : r.mode === 'add' ? 'Hinzugefügt' : 'Ersetzt';
+      var text;
+      if (r.mode === 'replace') {
+        text = 'Die neue Fassung zählt ab jetzt und wird geprüft. Die bisherige finden Sie an ' +
+               'derselben Stelle unter „frühere Fassungen" — gelöscht haben wir nichts.';
+      } else if (r.fehlt > 0) {
+        text = 'Die Datei liegt jetzt zusätzlich an dieser Unterlage. ' +
+               (r.fehlt === 1 ? 'Es fehlt noch eine Datei.' : 'Es fehlen noch ' + r.fehlt + ' Dateien.');
+      } else {
+        text = 'Diese Unterlage ist damit vollständig bei uns und wird geprüft.';
+      }
+
+      body = '<div class="result ' + klasse + '">' +
+          '<span class="material-symbols-outlined">' + ikon + '</span>' +
+          '<span><b>' + titel + '</b><p>' + text + '</p></span></div>';
+
+      /* Der Umkehrschalter. Steht gleichwertig neben „Fertig", nicht
+         als Fussnote — er ist der Grund, warum die Entscheidung
+         vorher niemanden erschrecken muss. */
+      if (up.decision) {
+        foot += '<button class="btn btn-ghost left" data-flip="1">' +
+          (r.mode === 'replace' ? 'Doch beide behalten' : 'Doch die alte ersetzen') + '</button>';
+      }
+      foot += '<button class="btn btn-primary" data-close="1">Fertig</button>';
+    }
+
+    document.getElementById('modalHost').innerHTML =
+      '<div class="modal-bg"><div class="modal">' +
+        '<h2>' + esc(d.label) + '</h2>' +
+        '<p class="sub">' + esc(D.sectionOf(d.id).titel) +
+          (d.files.length ? ' · ' + d.files.length +
+            ((d.soll || 1) > 1 ? ' von ' + d.soll : '') + ' Dateien vorhanden' : '') + '</p>' +
+        body +
+        (foot ? '<div class="modal-foot">' + foot + '</div>' : '') +
+      '</div></div>';
+
+    var inp = document.getElementById('upInput');
+    if (inp) inp.addEventListener('change', function () {
+      if (this.files && this.files[0]) { up.file = this.files[0].name; renderUpload(); }
+    });
+  }
+
+  function send() {
+    up.state = 'busy';
+    renderUpload();
+    setTimeout(function () {
+      up.result = D.accept(up.id, up.file, up.mode || 'add');
+      up.state  = 'done';
+      render();
+      renderUpload();
+    }, 850);
+  }
+
+  function flip() {
+    var neu = D.flip(up.id, up.result.mode);
+    var d = D.doc(up.id);
+    up.result = { mode:neu, status:d.status,
+                  fehlt: Math.max(0, (d.soll || 1) - d.files.length) };
+    render();
+    renderUpload();
+  }
+
+  /* ===================================================================
+     FLOW 3 — SAMMEL-UPLOAD
+
+     Die Maschine ordnet zu, was sie erkennt, und sagt offen, was
+     sie nicht erkennt. Sie ueberschreibt dabei nie etwas: eine
+     vollstaendige oder zurueckgewiesene Anforderung nimmt
+     automatisch nichts an — sonst waere „ersetzen" eine
+     Nebenwirkung des Hochladens.
+     =================================================================== */
+  var DEMO = ['gehaltsabrechnung-juli-neu.pdf', 'kontoauszug-august.pdf',
+              'grundbuchauszug.pdf', 'innen-wohnzimmer.jpg',
+              'scan0007.pdf', 'IMG_20260828_112044.jpg'];
+
+  function bulk(namen) {
+    if (!namen.length) return;
+    var r = D.bulk(namen);
+    render();
+
+    document.getElementById('modalHost').innerHTML =
+      '<div class="modal-bg"><div class="modal">' +
+        '<h2>' + namen.length + (namen.length === 1 ? ' Datei' : ' Dateien') + ' hochgeladen</h2>' +
+        '<p class="sub">Wir haben versucht, jede Seite selbst einzuordnen.</p>' +
+
+        '<div class="result ' + (r.unklar.length ? 'r-part' : 'r-ok') + '">' +
+          '<span class="material-symbols-outlined">' +
+            (r.unklar.length ? 'help' : 'check_circle') + '</span>' +
+          '<span><b>' + r.zugeordnet.length +
+            (r.zugeordnet.length === 1 ? ' Datei zugeordnet' : ' Dateien zugeordnet') + '</b>' +
+            '<p>' + (r.unklar.length
+              ? 'Bei ' + r.unklar.length + (r.unklar.length === 1 ? ' Datei' : ' Dateien') +
+                ' wissen wir nicht, wozu sie gehört. Sie liegen unten unter ' +
+                '„Unkategorisierte Seiten“ — bitte ordnen Sie sie dort zu.'
+              : 'Alles ließ sich eindeutig einordnen.') + '</p></span></div>' +
+
+        (r.zugeordnet.length
+          ? '<div style="margin-top:20px">' + r.zugeordnet.map(function (z) {
+              return '<div class="doc-file"><span class="material-symbols-outlined">description</span>' +
+                '<span class="nm" style="flex:1;min-width:0;color:var(--c-ink-900)">' +
+                  esc(z.name) + '</span>' +
+                '<span class="fd" style="max-width:40%;white-space:normal;text-align:right">→ ' +
+                  esc(z.label) + '</span></div>';
+            }).join('') + '</div>'
+          : '') +
+
+        '<div class="modal-foot">' +
+          (r.unklar.length
+            ? '<button class="btn btn-primary" data-close="1" data-toUncat="1">Seiten zuordnen</button>'
+            : '<button class="btn btn-primary" data-close="1">Fertig</button>') +
+        '</div>' +
+      '</div></div>';
+  }
+
+  /* Zuordnen einer unkategorisierten Seite. Ist das Ziel schon voll,
+     ist das ein Ersetzen — dann geht es durch dieselbe Frage wie ein
+     einzelner Upload, nicht still daran vorbei. */
+  function assign(tempId) {
+    var sel = document.querySelector('[data-sel="' + tempId + '"]');
+    if (!sel || !sel.value) { if (sel) sel.focus(); return; }
+    var d = D.doc(sel.value);
+    var t = D.unkat().filter(function (x) { return x.tempId === tempId; })[0];
+    if (!d || !t) return;
+
+    if (d.files.length >= (d.soll || 1) || d.grund) {
+      /* Voll oder zurueckgewiesen: erst fragen, dann zuordnen. */
+      var dec = D.decide(d.id);
+      up = { id:d.id, file:t.name, decision:dec,
+             mode: dec ? dec.mode : 'add', state:'pick', result:null, fromUnkat:tempId };
+      renderUpload();
+      return;
+    }
+
+    D.assign(tempId, d.id, 'add');
+    render();
+    flashCard(d.id);
+  }
+
+  function flashCard(id) {
+    var el = document.getElementById('card-' + id);
+    if (!el) return;
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    el.classList.add('flash');
+    setTimeout(function () { el.classList.remove('flash'); }, 1600);
+  }
+
+  /* ===================================================================
+     EVENTS
+     =================================================================== */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-up],[data-rm],[data-restore],[data-hist],[data-why],' +
+                             '[data-scroll],[data-send],[data-close],[data-upclear],' +
+                             '[data-flip],[data-assign],[data-dropunkat],#demoBtn');
+    if (!t) return;
+    var p;
+
+    if (t.id === 'demoBtn')     return bulk(DEMO);
+    if (t.dataset.up)           return openUpload(t.dataset.up);
+    if (t.dataset.why)          { showWhy = !showWhy; return renderFocus(); }
+    if (t.dataset.hist)         { showHist[t.dataset.hist] = !showHist[t.dataset.hist];
+                                  return renderSections(); }
+    if (t.dataset.scroll)       { document.getElementById('sections')
+                                    .scrollIntoView({ behavior:'smooth', block:'start' }); return; }
+    if (t.dataset.rm)           { p = t.dataset.rm.split('|');
+                                  D.removeFile(p[0], p[1]); return render(); }
+    if (t.dataset.restore)      { p = t.dataset.restore.split('|');
+                                  D.restore(p[0], p[1]); render(); return flashCard(p[0]); }
+    if (t.dataset.assign)       return assign(t.dataset.assign);
+    if (t.dataset.dropunkat)    { D.dropUnkat(t.dataset.dropunkat); return renderUncat(); }
+    if (t.dataset.upclear)      { up.file = null; return renderUpload(); }
+    if (t.dataset.send)         return send();
+    if (t.dataset.flip)         return flip();
+    if (t.dataset.close) {
+      var id = up && up.id;
+      /* Kam der Upload aus den unkategorisierten Seiten, ist die
+         Seite jetzt vergeben — sonst stünde sie doppelt da. */
+      if (up && up.fromUnkat && up.state === 'done') D.dropUnkat(up.fromUnkat);
+      document.getElementById('modalHost').innerHTML = '';
+      up = null;
+      render();
+      if (t.dataset.toUncat) document.getElementById('drop')
+        .scrollIntoView({ behavior:'smooth', block:'center' });
+      else if (id) flashCard(id);
+      return;
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    if (e.target.dataset && e.target.dataset.mode) {
+      up.mode = e.target.dataset.mode;
+      renderUpload();
+    }
+  });
+
+  document.getElementById('bulkInput').addEventListener('change', function () {
+    var namen = Array.prototype.map.call(this.files || [], function (f) { return f.name; });
+    this.value = '';
+    bulk(namen);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.getElementById('modalHost').innerHTML = '';
+      up = null;
+    }
+  });
+
+  /* ---------- Dropzone ---------- */
+  var drop = document.getElementById('drop');
+  ['dragenter','dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+  });
+  drop.addEventListener('dragleave', function (e) {
+    e.preventDefault(); drop.classList.remove('over');
+  });
+  drop.addEventListener('drop', function (e) {
+    e.preventDefault(); drop.classList.remove('over');
+    var namen = Array.prototype.map.call((e.dataTransfer && e.dataTransfer.files) || [],
+                                        function (f) { return f.name; });
+    bulk(namen.length ? namen : DEMO);      /* leerer Drop im Prototyp -> Beispieldateien */
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
