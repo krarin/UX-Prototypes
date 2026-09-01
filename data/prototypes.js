@@ -129,6 +129,12 @@ window.PROTOTYPES = {
     { id:"mein-tag-v5b", project:"mein-tag", version:5, variant:"B", title:"Mein Tag V5-B",
       file:"to-do/mein-tag-v5-b.html", status:"archiv",
       changes:"Gegenüber V5-A (vormals „mein-tag-v5-c.html“): Suche in die Filterzeile verschoben; Spalte „Letzte Aktivität“ entfernt; Berater-Spalte neben Fälligkeit, inkl. eigenem Dropdown im Anlege-Formular; Radiobuttons statt Pills für „Art des ToDos“; Anlege-Formular schließt sich beim Wegklicken automatisch, wenn nichts eingegeben wurde. Klick auf Titel/Fälligkeit öffnet jetzt die ganze Zeile als Formular statt nur ein Einzelfeld, committet automatisch beim Verlassen. Echtes „Gruppierung“-Dropdown (Anruf/Email/Link, ausgewählter Typ zuerst) sowie Rückmeldungs-Toasts bei jeder ToDo-Änderung." },
+    { id:"mein-tag-v5c", project:"mein-tag", version:5, variant:"C", title:"Mein Tag V5-C",
+      file:"to-do/mein-tag-v5-c.html", status:"archiv",
+      changes:"Gegenüber V5-B: Spalten-Filter zum Ein-/Ausblenden von Antragsteller*in/Fälligkeit/Berater; neuer Finanzierungswunsch-Button pro Zeile (Icon + Popover) mit Kv-Details. Enthält außerdem zwei reine Vergleichs-Umschalter, die kein Produkt-Feature sind: einen Finanzierungswunsch-Varianten-Switcher (Drawer/Ausklappen/Icon+Popover) und einen Layout-Switch „Neues Layout“." },
+    { id:"mein-tag-v5d", project:"mein-tag", version:5, variant:"D", title:"Mein Tag V5-D",
+      file:"to-do/mein-tag-v5-d.html", status:"archiv",
+      changes:"Gegenüber V5-C: Radiobuttons „Art des ToDos“ beim Anlegen und Inline-Bearbeiten wieder direkt unter dem Titel-Input statt weit darunter; ToDo-Titel, Antragsteller, Fälligkeit und Berater jetzt in einer Zeile auf gleicher Höhe, Uhrzeit einfach unter dem Datum. Neu: Titel-Autocomplete — schon ab den ersten 3 passenden Buchstaben (z. B. „bes“) wird „Besichtigungstermin erfolgt?“ vorgeschlagen; Auswahl übernimmt den Text und wählt automatisch die Anruf-Quickaction aus." },
 
     /* ---- Advisors · ToDo-Sortierung ---- */
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",
