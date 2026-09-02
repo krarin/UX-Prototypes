@@ -93,7 +93,11 @@
     .sidenav-item:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
 
     /* ---------- MAIN / TOPBAR ---------- */
-    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    /* position:relative dient NUR als Anker für .design-tabs-fullline (siehe dort) — .main
+       spannt bereits exakt "von der Seitennav bis zum Bildschirmrand" (flex:1 in .app),
+       left:0/right:0 relativ zu .main trifft dadurch automatisch genau diese Breite, ganz ohne
+       Breiten-Berechnung oder vw-Tricks. */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
     .topbar {
       height: 56px; min-height: 56px; display: flex; align-items: center; gap: var(--space-s);
       padding: 0 24px; background: var(--color-neutral-light-000); box-shadow: var(--shadow-topbar);
@@ -192,13 +196,13 @@
        ist (der bringt dann selbst schon Rahmen/Fläche mit, siehe .search-input). */
     .search-wrap.open .search-icon-btn { background: none; border-color: transparent; color: var(--color-neutral-dark-200); cursor: text; pointer-events: none; }
     .search-input {
-      position: absolute; inset: 0; width: 100%; height: 100%; border: 1px solid var(--color-neutral-light-500);
+      position: absolute; inset: 0; width: 100%; height: 100%; border: 1.5px solid var(--color-primary-500);
       border-radius: var(--radius-s); padding: 0 8px 0 34px; font-size: 14px; letter-spacing: 0.25px;
       color: var(--color-neutral-dark-900); background: #fff; opacity: 0; pointer-events: none; transition: opacity .12s ease;
     }
     .search-wrap.open .search-input { opacity: 1; pointer-events: auto; }
     .search-input::placeholder { color: var(--color-neutral-dark-200); }
-    .search-input:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    .search-input:focus { outline: none; }
 
     .todos-toolbar-right { display: flex; align-items: center; gap: 20px; }
 
@@ -211,6 +215,9 @@
       padding: 8px 16px 8px 8px; background: #fff; color: var(--color-neutral-dark-800); border-color: var(--color-neutral-dark-200);
     }
     .btn-secondary:hover { background: var(--color-neutral-light-200); }
+    /* Nur Berater/Zeitraum (nicht alle .btn-secondary) — Schrift regulär statt der von .btn
+       geerbten 500er Zwischenstufe, die hier zu fett wirkte. */
+    #btnBerater, #btnRange { font-weight: 400; }
     .btn-primary {
       padding: 8px 16px 8px 8px; background: var(--color-primary-500); color: #fff;
     }
@@ -352,8 +359,8 @@
       --col-w-titel: minmax(240px, 1fr); --col-w-antragsteller: 180px; --col-w-faelligkeit: 180px; --col-w-berater: 130px; --col-w-typ: 72px;
       --cols: var(--col-w-titel) var(--col-w-typ) var(--col-w-faelligkeit) var(--col-w-antragsteller) var(--col-w-berater);
       display: grid; grid-template-columns: var(--cols);
-      column-gap: 16px; align-items: stretch; padding: 10px 12px; background: var(--color-neutral-light-100);
-      border-bottom: 1px solid var(--color-neutral-light-400); font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-900);
+      column-gap: 16px; align-items: stretch; padding: 10px 12px; background: var(--color-neutral-light-200);
+      border-bottom: 1px solid var(--color-neutral-light-500); font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-900);
     }
     .todo-columns-header span { display: flex; align-items: center; }
     .todo-columns-header .col-todos { padding-left: 36px; }
@@ -461,6 +468,13 @@
       max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;
     }
     .todo-applicant-name:hover { text-decoration: underline; }
+    .todo-applicant-empty {
+      font-size: 12px; font-style: italic; color: var(--color-neutral-dark-400);
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* Nimmt exakt die Breite von .todo-info-btn ein, obwohl es hier keinen gibt — dadurch
+       startet "Ohne Antragsteller" auf gleicher Höhe wie die Namen in Zeilen mit Info-Icon. */
+    .todo-applicant-empty-spacer { width: 18px; height: 18px; flex-shrink: 0; }
 
     /* ---------- Berater-Spalte — 1:1 aus mein-tag-v4.html übernommen, dort zusätzlich mit
        Kürzel-Avatar (.avatar/AVATAR_COLORS-Hash) vor dem Namen; hier bewusst nur noch der
@@ -468,30 +482,33 @@
        Aktivität"-Spalte ist Berater die letzte Spalte der Zeile. ---------- */
     .todo-berater { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .berater-name { font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Während des Bearbeitens würde das obige overflow:hidden sonst auch das absolut
+       positionierte .berater-edit-list-Dropdown abschneiden. */
+    .berater-name.editing { overflow: visible; }
     /* Nur noch das dunkle Info-Icon selbst, kein Kreis-Hintergrund/Rahmen mehr dahinter —
        der wirkte neben dem Antragsteller-Namen wie ein zweiter, redundanter Hintergrund. */
     .todo-info-btn {
       width: 18px; height: 18px; border: none; background: none; color: var(--color-neutral-dark-800);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: color .12s ease;
     }
     .todo-info-btn .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 0; }
+    /* Öffnet jetzt per Klick statt Hover (siehe .applicant-info-popover) — die Hover-Farbe
+       signalisiert stattdessen, dass das Icon klickbar ist, in der App-Primärfarbe (Grün),
+       damit es sich wie andere klickbare Icons/Buttons anfühlt. */
+    .todo-info-btn:hover { color: var(--color-primary-500); }
     /* Antragsteller-Info-Popover: macht .todo-info-btn erstmals funktional (vorher rein
-       dekorativ, kein Klick-Handler) — reines CSS-Hover/Fokus-Tooltip statt eigenem Öffnen/
-       Schließen-JS wie bei den Filter-Dropdowns, da hier nur Text anzuzeigen ist, keine
-       Auswahl zu treffen. Wird nur erzeugt (siehe buildApplicantPopover im Script weiter
-       unten), wenn mindestens ein Name der Zelle Status/Email/Telefon trägt — sonst bleibt
-       der Info-Button wie bisher wirkungslos, statt eine leere Karte zu zeigen. */
+       dekorativ, kein Klick-Handler). Öffnet/schließt jetzt per KLICK (auf Info-Icon ODER
+       Namen), nicht mehr per Hover — Hover öffnete die Karte schon bei einem reinen
+       Vorbeibewegen der Maus, ungewollt/zu leicht auslösbar. .popover-open wird per JS
+       gesetzt (siehe Script weiter unten). Wird nur erzeugt (siehe buildApplicantPopover im
+       Script weiter unten), wenn mindestens ein Name der Zelle Status/Email/Telefon trägt —
+       sonst bleibt der Info-Button wie bisher wirkungslos, statt eine leere Karte zu zeigen. */
     .applicant-info-popover {
       display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 2; min-width: 240px;
       background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
       box-shadow: var(--shadow-card); padding: 12px 14px;
     }
-    /* Hover/Fokus auf der GANZEN Zelle (nicht nur dem 18px-Icon selbst) öffnet die Karte —
-       größere, verzeihlichere Trefferfläche, und die 4px-Lücke zwischen Icon und Karte kann
-       die Maus so durchqueren, ohne dass :hover zwischendurch verloren geht und die Karte
-       wieder zuklappt. */
-    .todo-applicant:hover .applicant-info-popover,
-    .todo-applicant:focus-within .applicant-info-popover { display: block; }
+    .todo-applicant.popover-open .applicant-info-popover { display: block; }
     /* Ein Block pro Antragsteller*in (Name+Status + bis zu 2 Kontakt-Zeilen) — bei 2
        Antragsteller*innen trennt eine dünne Linie die beiden Blöcke sichtbar voneinander. */
     /* Dunklerer Ton (dark-200 statt light-400) für bessere Sichtbarkeit — bei hellem 1px/light-400
@@ -569,6 +586,26 @@
        Betrag nach links verschiebt — das Icon wirkt dadurch zwischen den beiden sichtbaren
        Linien wirklich mittig statt mit spürbar mehr Luft links als rechts. */
     .todo-typ { display: flex; align-items: center; justify-content: center; padding-right: 16px; border-right: 1px solid var(--color-neutral-light-400); }
+    /* Macht die Zelle wie .todo-due/.todo-berater per Klick editierbar (siehe .inline-edit,
+       ART-INLINE-EDIT-Script weiter unten) — anders als dort sitzt .inline-edit hier auf einem
+       eigenen, exakt icon-großen .todo-typ-trigger statt auf der ganzen (breiteren) Zelle, sonst
+       zöge das generische .inline-edit-padding/-margin das Icon aus der Mitte UND die
+       gestrichelte Hover-Linie liefe bis an den rechten Zellenrand statt nur unters Icon.
+       position:relative verankert das typ-pop-Dropdown (position:absolute) am Trigger. */
+    .todo-typ-trigger.inline-edit {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; padding: 0; margin: 0; border-bottom: none;
+    }
+    .todo-typ-trigger.inline-edit:hover { background: none; }
+    .todo-typ-trigger.inline-edit:hover .todo-typ-icon {
+      background: var(--color-primary-100); border-color: var(--color-primary-500); color: var(--color-primary-600);
+    }
+    /* Eigene, vom 32px-Icon-Kreis losgelöste gestrichelte Linie (statt border-bottom direkt auf
+       dem Trigger) — so bleibt etwas Luft zwischen Icon und Linie statt dass sie am Kreis klebt. */
+    .todo-typ-trigger.inline-edit::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -5px; border-bottom: 1px dashed transparent;
+    }
+    .todo-typ-trigger.inline-edit:hover::after { border-bottom-color: var(--color-primary-500); }
     /* Art-Icon (Email/Anruf/Link) — dieselbe Figma-Komponente "Icon button + background -
        32px" wie .todo-info-btn (Node 4068-9553), rein anzeigend (kein Button/Hover). */
     .todo-typ-icon {
@@ -931,11 +968,14 @@
        .add-typ/.due-datetime/.add-person-slot weiter unten) über die volle Höhe der Zeile
        laufen, statt nur neben dem kurzen Inhalt jedes Feldes. */
     .add-row-fields { display: grid; grid-template-columns: var(--cols); column-gap: 16px; align-items: stretch; padding: 0 12px; }
+    /* Unfokussiert wie ursprünglich (heller, dünner Rahmen) — NUR bei aktivem Fokus wechselt er
+       auf den überall sonst genutzten Berater-Inline-Edit-Look (1.5px, Primary), anders als die
+       sonst durchgehend blaue .inline-input-Basisregel. */
     .add-row input, .add-row select {
       width: 100%; height: 36px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); padding: 0 10px;
       font-size: 14px; background: #fff; color: var(--color-neutral-dark-900);
     }
-    .add-row input:focus, .add-row select:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    .add-row input:focus, .add-row select:focus { outline: none; border: 1.5px solid var(--color-primary-500); }
     /* Titel-, Antragsteller-, Fälligkeits- und Berater-Feld nehmen die volle Spaltenbreite als
        Zelle ein (kein width:calc(...)-Abzug mehr — der ließ das Feld bündig links in der Spalte
        kleben, mit dem gesamten Frei­raum nur rechts, UND setzte, sobald hier ein border-right
@@ -1033,28 +1073,65 @@
     }
     .add-typ-option:has(input:focus-visible) { outline: 2px solid var(--color-primary-500); outline-offset: 2px; }
 
-    /* ---------- Inline-Editing bestehender ToDos: WIE IN mein-tag-v3.html — ein Klick auf
-       Titel ODER Fälligkeit bearbeitet NUR dieses eine Feld, nicht die ganze Zeile. Der Titel
-       wird an Ort und Stelle zu einem Text-Input; die Fälligkeit öffnet zuerst ein
-       Schnellaktions-Menü (+1 Tag/+1 Woche/Datum wählen …) — erst "Datum wählen …" öffnet das
-       native Datumsfeld samt Kalender (siehe openDuePop/startTitleEdit/startDueEdit im Script
-       weiter unten, 1:1 aus mein-tag-v3.html übernommenes Verhalten). Das Anlege-Formular
-       (.add-row) ist davon unberührt und bleibt weiterhin ein Formular mit allen Feldern
-       gleichzeitig. ---------- */
+    /* ---------- Inline-Editing bestehender ToDos: ein Klick auf Titel ODER Fälligkeit
+       bearbeitet NUR dieses eine Feld, nicht die ganze Zeile. Der Titel wird an Ort und Stelle
+       zu einem Text-Input; die Fälligkeit öffnet ein Schnellaktions-Menü (+1 Tag/+1 Woche) MIT
+       eingebetteten Datum-/Uhrzeit-Feldern zum direkten Ändern (siehe openDuePop/startTitleEdit
+       im Script weiter unten). Das Anlege-Formular (.add-row) ist davon unberührt und bleibt
+       weiterhin ein Formular mit allen Feldern gleichzeitig. ---------- */
     .inline-edit { cursor: text; border-radius: var(--radius-xs); padding: 1px 4px; margin: -1px -4px;
       border-bottom: 1px dashed transparent; min-width: 0; }
     .inline-edit:hover { background: var(--color-primary-100); border-bottom-color: var(--color-primary-500); }
     .inline-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-    /* Berater wird per Dropdown statt Freitext geändert (wie mein-tag-v4.html) — "text"-Cursor
-       wäre hier irreführend, da es kein Freitextfeld ist. */
-    .inline-edit[data-field="berater"] { cursor: pointer; }
+    /* Berater/Art werden per Dropdown statt Freitext geändert (wie mein-tag-v4.html) — "text"-
+       Cursor wäre hier irreführend, da es kein Freitextfeld ist. */
+    .inline-edit[data-field="berater"], .inline-edit[data-field="typ"] { cursor: pointer; }
     .inline-edit.editing { border-bottom-color: transparent; padding: 0; margin: 0; }
+    /* Border-Look für ALLE Inputs im Prototyp vereinheitlicht auf denselben Look wie beim
+       Berater-Inline-Edit (siehe früher .berater-edit-wrap .inline-input): 1.5px statt 1px,
+       durchgehend Primary statt hellem Grau + Focus-Glow — kein separater :focus-Zustand mehr
+       nötig, der Rahmen sieht immer schon "aktiv" aus. */
+    /* Gleiche Größe wie die Inputs beim ToDo-Erstellen (.add-row input: height:36px/padding 0
+       10px/font-size:14px) — statt der vorherigen kompakteren Maße, die extra fürs schmale
+       Inline-Edit in der Tabellenzelle gedacht waren. */
     .inline-input {
-      width: 100%; min-width: 130px; font-family: inherit; font-size: 13px; line-height: 18px;
-      color: var(--color-neutral-dark-900); padding: 3px 6px; background: #fff; box-sizing: border-box;
-      border: 1px solid var(--color-primary-400); border-radius: var(--radius-s); box-shadow: var(--focus-ring);
+      width: 100%; min-width: 130px; height: 36px; font-family: inherit; font-size: 14px;
+      color: var(--color-neutral-dark-900); padding: 0 10px; background: #fff; box-sizing: border-box;
+      border: 1.5px solid var(--color-primary-500); border-radius: var(--radius-s); box-shadow: none;
     }
     .inline-input:focus { outline: none; }
+    /* Berater-Inline-Edit: Such-Input + eigenes Vorschlags-Dropdown statt nativer <select>-Liste
+       (die je nach Betriebssystem aussieht) — gleicher Karten-Look wie #titleSuggestions
+       (.title-suggestions/.title-suggestion-option) im Anlege-Formular, nur eigener Klassenname,
+       da hier zusätzlich eine "highlighted"-Tastatur-Markierung dazukommt. */
+    /* width:100%/min-width:0 statt einer festen Mindestbreite — füllt die Berater-Spalte exakt
+       so aus wie das Feld beim ToDo-Erstellen (dieselbe --col-w-berater-Spaltenbreite, keine
+       eigene Mindestbreite mehr, die die Zelle breiter als ihre Grid-Spalte gezogen hätte). */
+    .berater-edit-wrap { position: relative; display: inline-block; width: 100%; min-width: 0; }
+    /* Eigenes "×" zum schnellen Leeren der Sucheingabe, rechts im Feld — Platz dafür via
+       padding-right (Rahmen selbst kommt jetzt schon aus der vereinheitlichten .inline-input-
+       Basisregel oben, kein eigener Wert mehr nötig). */
+    .berater-edit-wrap .inline-input { padding-right: 26px; min-width: 0; }
+    .berater-edit-clear {
+      position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center; border: none; background: none;
+      color: var(--color-neutral-dark-400); cursor: pointer; border-radius: var(--radius-full);
+    }
+    .berater-edit-clear .material-symbols-outlined { font-size: 16px; }
+    .berater-edit-clear:hover { background: var(--color-neutral-light-400); color: var(--color-neutral-dark-800); }
+    /* Liste: durchgehende helle Fläche statt einzelner weißer Zeilen mit Trennlinien — gleiche
+       Optik wie in der Referenzvorlage, größere Zeilenhöhe für bessere Lesbarkeit/Treffsicherheit. */
+    .berater-edit-list {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: var(--z-overlay, 100);
+      max-height: 220px; overflow-y: auto;
+      background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      box-shadow: var(--shadow-card); padding: 4px 0;
+    }
+    .berater-edit-option {
+      display: block; width: 100%; text-align: left; border: none; background: none; cursor: pointer;
+      padding: 10px 12px; font-size: 12px; color: var(--color-neutral-dark-900);
+    }
+    .berater-edit-option:hover, .berater-edit-option.highlighted { background: var(--color-neutral-light-200); outline: none; }
     /* Schnellaktions-Menü auf der Fälligkeit — dasselbe visuelle Muster wie die übrigen
        Dropdown-Menüs (.menu), aber innerhalb der eigenen Zelle verankert (statt eines
        einzelnen, wiederverwendeten Overlay-Elements), da es pro Zeile mit deren jeweiligem
@@ -1076,6 +1153,37 @@
     .due-pop-item:hover .due-pop-hint, .due-pop-item:focus .due-pop-hint { color: inherit; }
     .due-pop-item .material-symbols-outlined { font-size: 18px; }
     .due-pop-sep { height: 1px; margin: var(--space-xs) 0; background: var(--color-neutral-light-200); }
+    /* Datum + Uhrzeit UNTEREINANDER statt nebeneinander — dasselbe Platzargument wie bei
+       .due-datetime im Anlege-Formular: beide Inputs nebeneinander würden im 220px min-width
+       Dropdown zu eng werden. */
+    .due-pop-fields { display: flex; flex-direction: column; gap: var(--space-xs); padding: 4px 8px 8px; }
+    .due-pop-fields input {
+      width: 100%; box-sizing: border-box; border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-xs); padding: 6px 8px; font-size: 13px; color: var(--color-neutral-dark-900);
+    }
+    /* Wie beim Anlege-Formular (.add-row input:focus): standardmäßig neutraler Rahmen, erst
+       beim Klick/Fokus ins Feld wird er grün — nicht schon von Anfang an, wenn das Dropdown
+       aufgeht. */
+    .due-pop-fields input:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+
+    /* Art-Auswahl-Dropdown (typ-pop) — gleiches Grundgerüst/Karten-Optik wie .due-pop, eigener
+       Klassenname statt Wiederverwendung, damit "Fälligkeit ändern" und "Art ändern" unabhängig
+       voneinander angepasst werden können. */
+    .typ-pop {
+      position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); z-index: var(--z-overlay, 100);
+      min-width: 160px; background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      box-shadow: 0 2px 8px rgba(84,110,122,0.28); padding: var(--space-xs); font-size: 13px;
+    }
+    .typ-pop-item {
+      display: flex; align-items: center; gap: var(--space-m); width: 100%;
+      font: inherit; font-size: 13px; font-weight: 500; text-align: left; color: var(--color-neutral-dark-900);
+      background: none; border: 0; border-radius: var(--radius-xs, 2px); padding: 7px 8px; cursor: pointer;
+    }
+    .typ-pop-item:hover, .typ-pop-item:focus { background: var(--color-primary-100); color: var(--color-primary-600); outline: none; }
+    .typ-pop-item:focus-visible { box-shadow: var(--focus-ring); }
+    .typ-pop-item .material-symbols-outlined { font-size: 18px; }
+    .typ-pop-item.active { color: var(--color-primary-600); }
+    .typ-pop-item.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
 
     @media (max-width: 992px) {
       .todo-group, .todo-columns-header, .add-row-fields {
@@ -1092,6 +1200,28 @@
        "Kalender rechts wie in V4" — siehe prototyping-workflow.md.
        ======================================================================= */
     .workspace { display: block; position: relative; }
+    /* Weißes Hintergrund-BAND für "alles oberhalb der Fälligkeitsfilter-Trennlinie" — kein
+       reines Linien-Element mehr. Kind von .main (siehe Markup), NICHT von .workspace/.content:
+       .content clippt Kinder horizontal (overflow-y:auto erzwingt automatisch auch
+       overflow-x:auto), ein Hintergrund direkt auf .todos-toolbar/#quickSeg/.cal-pane-head
+       würde deshalb nie bis zum echten Bildschirmrand reichen. Als Kind von .main dagegen
+       reicht left:0/right:0 automatisch von der Seitennav bis zum Bildschirmrand, ganz ohne
+       vw-Tricks/negative Margins. top:0, HÖHE wird per JS bis zur Unterkante von #quickSeg
+       gesetzt (siehe Script). Der Schatten (statt eines reinen border-bottom) sitzt jetzt HIER
+       am Band statt (wie zuvor) direkt an #quickSeg — dort deckte er nur die schmale Box von
+       #quickSeg selbst ab (nicht das Stück Zeile links davon, nicht den Kalender-Bereich
+       rechts), wodurch die Linie dort sichtbar schwächer/unpassend wirkte. Am Band ist er über
+       die GESAMTE Breite gleich präsent. z-index:0 + .content bekommt eine eigene, höhere
+       Stacking-Ebene (siehe body.design-tabs .content weiter oben), sonst würde dieses Band
+       den eigentlichen Inhalt überdecken statt dahinter zu liegen. display:none per Default,
+       JS blendet es zusätzlich aus, sobald #quickSeg aus dem sichtbaren Bereich von .content
+       herausgescrollt ist. */
+    .design-tabs-fullline {
+      display: none; position: absolute; top: 0; left: 0; right: 0; height: 0;
+      background: var(--color-neutral-light-000); box-shadow: 0 4px 6px -4px rgba(84, 110, 122, 0.3);
+      pointer-events: none; z-index: 0;
+    }
+    body.design-tabs .design-tabs-fullline { display: block; }
     .pane { display: contents; }
     .pane-body { display: contents; }
     .pane-head { display: none; }
@@ -1121,13 +1251,51 @@
         position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
         border-radius: var(--radius-full); box-shadow: var(--shadow-card);
       }
+      /* Bei geöffnetem Kalender jetzt IN .pane-resizer verschachtelt (siehe Markup) statt
+         eigenes Flex-Item neben ihm zu sein — dadurch sitzt der Auf-/Zu-Knopf sichtbar MITTIG
+         AUF der Ziehgriff-Linie ("eine Linie mit einem Knopf drauf" statt zwei getrennter
+         Bedienelemente nebeneinander, siehe .pane-resizer weiter unten). */
       body.cal-open .cal-edge-handle {
-        position: static; transform: none; align-self: center; border-radius: var(--radius-full);
-        border-right: 1px solid var(--color-neutral-light-500); box-shadow: none;
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        border-radius: var(--radius-full); box-shadow: var(--shadow-card); z-index: 1;
       }
     }
+    /* Ziehgriff zwischen ToDo-Pane und Kalender (siehe PANE-RESIZER-Script weiter unten) —
+       nur relevant/sichtbar bei geöffnetem Kalender (#workspace ist sonst kein flex-row, siehe
+       body.cal-open .workspace). #calEdgeHandle (Auf-/Zu-Knopf) ist jetzt ein Kind davon (siehe
+       Markup) statt ein separates Flex-Item daneben — er sitzt dadurch mittig auf der Linie,
+       beide wirken wie EIN Element statt zwei unabhängiger Bedienelemente. position:relative
+       hier ist der Anker dafür. */
+    /* display:contents (statt none) — #calEdgeHandle steckt jetzt als Kind hier drin (siehe
+       Markup) und muss bei eingeklapptem Kalender trotzdem ganz normal (position:fixed, frei
+       schwebender Button) sichtbar bleiben; ein display:none hier würde die ganze Verschachtelung
+       inkl. Button mitverstecken. .pane-resizer selbst bekommt dadurch nur bei geöffnetem
+       Kalender eine eigene Box (siehe body.cal-open .pane-resizer). Bewusst KEIN Flex-Item mehr
+       von #workspace (position:absolute statt in der Zeile mitzulaufen) — als Flex-Item hätte
+       es den "gap" zwischen ToDo-Pane und Kalender zusätzlich aufgeteilt/verändert; so bleibt
+       der ursprüngliche einzelne Abstand (siehe body.cal-open .workspace gap weiter unten)
+       unangetastet, der Ziehgriff sitzt per JS einfach mittig darin (siehe PANE-RESIZER-Script
+       weiter unten). */
+    .pane-resizer { display: contents; }
+    body.cal-open .pane-resizer {
+      display: block; position: absolute; top: 0; bottom: 0; width: 20px; transform: translateX(-50%);
+      z-index: 4; cursor: col-resize; background: transparent;
+    }
+    /* top per CSS-Variable (JS setzt --resizer-line-top auf den tieferen der beiden Header —
+       Fälligkeitsfilter/ToDo-Tabelle UND Kalender-"+ Termin"-Zeile, siehe Script) statt fest
+       64px: die Linie soll höchstens bis zum Anfang der ToDo-Tabelle reichen, nicht schon auf
+       Höhe von deren eigener (je nach Layout unterschiedlich hoher) Filterzeile mitlaufen. */
+    body.cal-open .pane-resizer::after {
+      content: ''; position: absolute; top: var(--resizer-line-top, 64px); bottom: 0; left: 50%; width: 1px;
+      transform: translateX(-50%); background: var(--color-neutral-light-500); transition: background .12s ease;
+    }
+    body.cal-open .pane-resizer:hover::after, body.cal-open .pane-resizer.resizing::after { background: var(--color-primary-500); }
 
-    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-xs); align-items: stretch; }
+    /* var(--space-l) statt --space-xs — der Ziehgriff (#calEdgeHandle) war ursprünglich SELBST
+       ein ~16px breites Flex-Item zwischen 2×4px gap, macht zusammen ~24px sichtbaren
+       Zwischenraum. Seit er (siehe .pane-resizer weiter oben) kein Flex-Item mehr ist, bliebe
+       ohne diese Anpassung nur noch der nackte 4px-gap übrig — optisch fast kein Abstand mehr. */
+    body.cal-open .workspace { display: flex; flex-direction: row; gap: var(--space-l); align-items: stretch; }
     /* Nur die Kalender-Pane bekommt die Karten-Optik (weiß/Border/Schatten) — die ToDo-Pane
        bleibt unverändert wie ohne Kalender: jede Gruppe hat bereits ihre eigene Karte, ein
        zusätzlicher äußerer Rahmen würde nur eine Karte-in-der-Karte erzeugen. */
@@ -1157,15 +1325,27 @@
        selbst wenn beide Boxen an derselben y-Position starten. */
     .pane-head {
       align-items: center; gap: var(--space-s); flex-shrink: 0; height: 40px; box-sizing: border-box;
-      padding: 0 var(--space-m); border-bottom: 1px solid var(--color-neutral-light-500); background: #fff;
+      padding: 0 var(--space-m); border-bottom: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-200);
     }
     /* Eigene Zeile über dem Kalender-Header, nur für "+ Termin" — gleiche Höhe/Abstand wie
        .todo-pane-head, damit beide "+"-Buttons exakt auf einer Höhe stehen. */
     .cal-pane-head { display: flex; justify-content: flex-end; flex-shrink: 0; margin-bottom: 24px; }
     .cal-pane-head .btn { height: 40px; box-sizing: border-box; }
-    .pane-title { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); white-space: nowrap; }
+    /* "Neues Layout": sitzt rechts auf gleicher Höhe wie #quickSeg, oberhalb der durchgängigen
+       Trennlinie — der weiße Hintergrund dafür kommt jetzt vom .design-tabs-fullline-Band
+       dahinter (siehe dort), kein eigener Hintergrund hier mehr nötig. */
+    /* Höhe wird per JS gesetzt (siehe DESIGN-TABS-VOLLBREITE-TRENNLINIE-Script), damit "+
+       Termin" exakt auf Höhe von "+ ToDo" (jetzt bei den Chips über der Tabelle) landet.
+       align-items:flex-end statt center — der Button soll UNTEN in dieser (jetzt hohen)
+       Kopfzeile sitzen, nicht mittig. */
+    body.design-tabs .cal-pane-head { padding: 0 24px; align-items: flex-end; }
+    /* "Kalender"-Titel sitzt jetzt rechts (siehe Markup, mit dem Datum links getauscht) und
+       trägt dafür den vormaligen Look des Datums (klein/grau statt fett/dunkel) — margin-left:
+       auto schiebt IHN jetzt an den rechten Rand, statt wie zuvor .pane-head-tools. */
+    .pane-title { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-400); white-space: nowrap; margin-left: auto; }
     .pane-title .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
-    .pane-head-tools { display: flex; align-items: center; gap: var(--space-s); margin-left: auto; }
+    .pane-head-tools { display: flex; align-items: center; gap: var(--space-s); }
 
     /* Verkleinertes Grid für die ToDo-Spalten, solange der Kalender offen ist —
        Pendant zu V4s .cols-reduced/.cols-slim (dort auf einer <table>, hier aufs Grid). */
@@ -1202,7 +1382,10 @@
     .cal-nav-btn .material-symbols-outlined { font-size: 18px; }
     .cal-today-btn { padding: 3px 8px; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); background: #fff; font-size: 12px; color: var(--color-neutral-dark-600); cursor: pointer; }
     .cal-today-btn:hover { background: var(--color-neutral-light-200); }
-    .cal-range-label { font-size: 12px; color: var(--color-neutral-dark-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Trägt jetzt den vormaligen Look von "Kalender" (fett/dunkel statt klein/grau), siehe
+       .pane-title-Tausch oben. */
+    .cal-range-label { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cal-range-label .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); }
 
     .cal-toolbar { display: flex; align-items: center; gap: var(--space-s); flex-shrink: 0; padding: 6px var(--space-s); background: var(--color-neutral-light-100); border-bottom: 1px solid var(--color-neutral-light-400); }
     .cal-toolbar .cal-nav { margin-left: auto; }
@@ -1251,8 +1434,8 @@
        .qf-count/.qf-label per "order" umsortierbar (siehe body.design-tabs weiter unten, wo
        die Zahl hinter statt vor das Label rückt) — Reihenfolge bleibt hier im Standard-Layout
        unverändert, da beide Kinder ohne "order" einfach in Quelltext-Reihenfolge liegen. */
-    .segmented--quick button { display: inline-flex; align-items: center; padding: 10px 10px; font-size: 14px; font-weight: 500; color: var(--color-neutral-dark-400); position: relative; white-space: nowrap; }
-    .segmented--quick button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); }
+    .segmented--quick button { display: inline-flex; align-items: center; padding: 10px 10px; font-size: 14px; font-weight: 400; color: var(--color-neutral-dark-400); position: relative; white-space: nowrap; }
+    .segmented--quick button.active { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-900); font-weight: 500; }
     .segmented--quick button:not(.active):hover { background: var(--color-neutral-light-100); }
     .qf-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--qf); opacity: 0; transition: opacity .1s ease; }
     #quickSeg button.active .qf-strip { opacity: 1; }
@@ -1268,55 +1451,163 @@
        Zeitraum/Sortieren/Suche/Kalender) rücken in eine eigene Zeile unter die Schnellfilter,
        statt in derselben Zeile zu stehen. ======================================================================= */
     /* Kein Zwischenraum mehr zwischen "Mein Tag"-Titelzeile und Workspace (sonst nur diese
-       beiden direkten Kinder von .content, siehe .content { gap: 24px } im Standard-Design) —
-       .todos-toolbar und #quickSeg bekommen unten denselben Hintergrund/Schatten wie die
-       FinLink-Topbar und sollen dadurch wie EINE zusammenhängende Fläche wirken, kein
-       sichtbarer Spalt mehr dazwischen. */
-    body.design-tabs .content { gap: 0; }
-    /* Bei offenem Kalender bekommt .todos-toolbar keinen Hintergrund (siehe :not(.cal-open)
-       weiter unten) — dann braucht es den normalen Abstand zur Tab-Leiste zurück, sonst klebt
-       die (jetzt wieder unauffällige) Titelzeile ohne jeden Zwischenraum an der weißen Bar. */
+       beiden direkten Kinder von .content, siehe .content { gap: 24px } im Standard-Design). */
+    /* padding-top: eigener, kleinerer Wert statt der Standard-24px — .todos-toolbar ist in
+       diesem Prototyp immer leer (.todos-heading/.todos-toolbar-right bleiben unbefüllt) und
+       dadurch schon per :has()-Regel komplett ausgeblendet (siehe .todos-toolbar weiter oben),
+       der Abstand zur Topbar kommt hier also rein aus diesem Padding. 0 wirkte zu knapp direkt
+       unter der Topbar — 16px etwas großzügiger, bleibt aber (wie das ganze .design-tabs-
+       fullline-Band dahinter, siehe <style> oben) durchgehend WEISS statt den Seiten-
+       Hintergrund zu zeigen, da das Band diese Höhe automatisch mit abdeckt. */
+    body.design-tabs .content { gap: 0; padding-top: 16px; }
     body.design-tabs.cal-open .content { gap: var(--space-l); }
-    /* Hintergrund/Schatten wie .topbar oben (dieselben Tokens: --color-neutral-light-000 /
-       --shadow-topbar) — deckt den Bereich von der "Mein Tag"-Titelzeile bis zu den
-       Fälligkeitsfiltern ab. Die Filter-Zeile darunter (.todo-pane-filters) UND alles im
-       Tabellenbereich bleiben bewusst auf dem normalen Seiten-Hintergrund — nur "Titel bis
-       Fälligkeitsfilter" bekommt die Bar-Optik, wie beim Nutzer-Wunsch beschrieben. Schatten
-       nur auf #quickSeg (der VISUELLE Abschluss der zusammenhängenden Fläche), nicht zusätzlich
-       auf .todos-toolbar — sonst zwei sich am nahtlosen Übergang leicht überlappende Schatten. */
-    /* NICHT bei offenem Kalender (body.cal-open): .todos-toolbar liegt außerhalb von
-       .workspace und bleibt deshalb immer volle Breite, während #quickSeg (innerhalb der
-       ToDo-Pane) bei offenem Kalender schmaler wird — beide Flächen wären dann unterschiedlich
-       breit und die "eine zusammenhängende Fläche" bräche sichtbar als Stufe ab. Ohne Kalender
-       haben beide dieselbe Breite (siehe Kommentar oben bei .todo-pane-filters), dort passt
-       die durchgehende Bar-Optik sauber. */
-    body.design-tabs:not(.cal-open) .todos-toolbar { background: var(--color-neutral-light-000); padding: 16px 24px; }
-    body.design-tabs .todo-pane-head { flex-direction: column; align-items: stretch; gap: 10px; }
+    /* Eigene Stacking-Ebene ÜBER .design-tabs-fullline (siehe #main im Markup/<style> oben,
+       z-index:0) — dessen weißes Hintergrund-Band würde sonst (absolut positioniert, damit es
+       .content's eigenes overflow-x-Clipping umgeht) über den eigentlichen Inhalt hier
+       gemalt, statt dahinter. position:relative+z-index reicht, der gesamte Inhalt von
+       .content (inkl. verschachtelter .cal-pane-head) malt dadurch als GANZES über dem Band. */
+    body.design-tabs .content { position: relative; z-index: 1; }
+    /* Weißer Hintergrund für "alles oberhalb der Trennlinie" kommt jetzt vom
+       .design-tabs-fullline-Band dahinter (siehe <style> oben) — reicht dadurch bis zum echten
+       Bildschirmrand, was ein Hintergrund direkt hier (innerhalb des von .content geclippten
+       Bereichs) nie könnte. */
+    body.design-tabs:not(.cal-open) .todos-toolbar { padding: 16px 24px; }
+    /* margin-bottom kleiner als die geerbten 8px (.todo-pane-head Basisregel) — der Abstand zur
+       Chip-/"+ ToDo"-Zeile darunter (.todo-table-toolbar) wirkte sonst zu groß neben dem
+       kompakten 10px-gap zwischen den beiden Zeilen HIER (Fälligkeitsfilter/Berater-Zeile). */
+    body.design-tabs .todo-pane-head { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 4px; }
     /* Randloser Tab-Container statt der umschließenden Pillen-Box — die einzelnen Tabs trennt
-       jetzt Abstand (gap) statt eines gemeinsamen Rahmens. */
+       jetzt Abstand (gap) statt eines gemeinsamen Rahmens. Schatten NUR unten sichtbar: die
+       generische --shadow-topbar (0 1px 4px, ungerichtet) streut ihren 4px-Blur auch nach
+       oben/links/rechts — negativer dritter Wert (Spread) statt des Tokens zieht den Schatten
+       zusammen, sodass er nur noch unterhalb der Leiste austritt. padding-left kleiner als
+       rechts (8px statt 24px) — die Leiste soll etwas weiter links als der übrige Content
+       beginnen, padding-right bleibt zur rechten Seite hin unverändert. */
+    /* Kein eigener Hintergrund/Schatten mehr hier — übernimmt jetzt das
+       .design-tabs-fullline-Band dahinter (siehe #main im Markup/<style> oben), das über die
+       volle Breite von .main reicht statt nur über die Breite dieser Box (relevant bei
+       geöffnetem Kalender, wo #quickSeg nur die ToDo-Spalte ausfüllt, und generell bis zum
+       echten Bildschirmrand statt nur bis zum Rand von .content) — ein eigener Schatten NUR
+       hier wirkte links/rechts davon (Kalender-Bereich, kleines Stück links von "Alle")
+       spürbar schwächer. */
     body.design-tabs #quickSeg {
-      display: flex; gap: 28px; border: none; border-radius: 0; overflow: visible;
-      border-bottom: 1px solid var(--color-neutral-light-400);
-      background: var(--color-neutral-light-000); box-shadow: var(--shadow-topbar);
-      padding: 0 24px; position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 4px; border: none; border-radius: 0; overflow: visible;
+      padding: 0 24px 0 8px; position: relative; z-index: 1;
     }
-    /* Vertikales Padding bewusst identisch zum Standard-Design (10px oben/unten) beibehalten,
-       nur horizontal auf 0 (Abstand zwischen Tabs kommt vom "gap" oben) — sonst stimmt die
-       ~40px-Zeilenhöhe nicht mehr mit "+ Termin" (.cal-pane-head .btn, height:40px) überein. */
+    /* Suche: im "Neuen Layout" eine Zeile nach oben, direkt in die Tab-Zeile (rechts von
+       "Diese Woche") verschoben statt in .todo-pane-filters darunter — die tatsächliche
+       Verschiebung im DOM übernimmt moveSearchWrap() im LAYOUT-UMSCHALTER-Script weiter unten
+       (analog zu moveShowDoneSwitch), da #quickSeg und .todo-pane-filters unterschiedliche
+       Flex-Container sind. margin-left:auto schiebt sie an den rechten Rand der Tab-Zeile,
+       #quickSeg selbst füllt (als Flex-Item in der column-Richtung von .todo-pane-head) schon
+       die volle Breite aus. */
+    body.design-tabs #quickSeg .search-wrap { margin-left: auto; }
+    /* Breiter/höher als vorher (14px/16px statt 10px/0) — der Abstand zwischen Tabs kommt
+       jetzt hauptsächlich aus diesem Padding, der "gap" oben ist nur noch ein kleiner
+       Zusatzabstand (siehe Referenz-Screenshot "Übersicht/Antrag/…"). font-size/-weight näher
+       am Screenshot: etwas größer (15px), inaktive Tabs regulär (400), aktiver Tab kräftiger
+       (600) statt alle gleich (500) — genau wie im Bild sticht "Übersicht" dadurch klarer
+       gegen die grauen Tabs daneben hervor. */
     body.design-tabs #quickSeg button {
-      padding: 10px 0; background: none; border-radius: 0;
+      padding: 14px 16px; background: none; border-radius: 0; font-size: 15px; font-weight: 400;
     }
-    body.design-tabs #quickSeg button.active { background: none; color: var(--color-neutral-dark-900); }
+    body.design-tabs #quickSeg button.active { background: none; color: var(--color-neutral-dark-900); font-weight: 700; }
     body.design-tabs #quickSeg button:not(.active):hover { background: none; color: var(--color-neutral-dark-800); }
+    /* Referenz-Screenshot ("Übersicht/Antrag/…") trennt Tabs NUR über den "gap" (siehe
+       #quickSeg display:flex/gap:28px oben), keine sichtbare Linie zwischen ihnen — die
+       geerbte .segmented button + button-Trennlinie (Standard-Pillen-Look) hier deshalb
+       gezielt entfernt. Die aktive Unterstreichung (.qf-strip) ist dank left:0/right:0 relativ
+       zum Button (position:relative) ohnehin schon genau so lang wie der jeweilige Button —
+       hier nur noch dünner (2px statt 3px), näher am Referenzbild. */
+    body.design-tabs #quickSeg button + button { border-left: none; }
+    body.design-tabs .qf-strip { height: 2px; }
     /* Zahl hinter das Label (statt davor, siehe .qf-count/.qf-label-Reihenfolge im Markup) —
        "order" dreht rein die VISUELLE Reihenfolge um, ohne das Markup je Variante duplizieren
        zu müssen. Abstand dafür von margin-right auf margin-left gespiegelt. */
     body.design-tabs #quickSeg .qf-count { order: 1; margin-right: 0; margin-left: 6px; }
+    /* "+ ToDo" (nur "Neues Layout", siehe #btnAddTodoQuick im Markup) — sitzt jetzt NICHT mehr
+       in der Fälligkeitsfilter-Zeile, sondern direkt über der Todo-Tabelle, auf Höhe der
+       aktiven-Filter-Chips (#chipRow, siehe .todo-table-toolbar) — optisch identisch zu
+       "+ Termin" (#btnAddTermin/.btn-primary). margin-left:auto schiebt NUR den Button an den
+       rechten Rand dieser Zeile, #chipRow selbst bleibt links und unangetastet (die Chips
+       werden per JS per innerHTML neu aufgebaut, siehe AKTIVE-FILTER-CHIPS-Script — ein Kind
+       direkt IN #chipRow würde dabei jedes Mal mitgelöscht, deshalb eigener Wrapper daneben
+       statt Verschachtelung). */
+    /* Echte Flex-Zeile in BEIDEN Layouts (früher nur im "Neuen Layout", Standard-Layout nutzte
+       display:contents) — seit der "Erledigte anzeigen"-Toggle im Standard-Layout ganz rechts
+       neben #chipRow sitzen soll, braucht auch dort schon eine echte Zeile statt eines
+       aufgelösten Wrappers. #chipRow bleibt trotzdem unangetastet (Chips werden per JS per
+       innerHTML neu aufgebaut, siehe AKTIVE-FILTER-CHIPS-Script — ein Kind direkt IN #chipRow
+       würde dabei jedes Mal mitgelöscht, deshalb eigener Wrapper daneben statt Verschachtelung). */
+    /* margin-bottom hier statt nur auf .chip-row (deren eigene 8px, siehe .chip-row, reichten
+       kaum — "+ ToDo"/"+ Termin" klebten dadurch fast an Tabelle/Kalender) — ein Wert an EINER
+       Stelle statt zwei sich addierender/verwirrender Abstände. */
+    .todo-table-toolbar { display: flex; align-items: center; gap: var(--space-s); margin-bottom: var(--space-s); }
+    .todo-table-toolbar .chip-row { margin-bottom: 0; }
+    body.design-tabs .todo-table-toolbar { margin-bottom: var(--space-m); }
+    /* "Erledigte anzeigen"-Toggle: im Standard-Layout ganz rechts direkt über der Tabelle
+       (margin-left:auto schiebt es dort an den rechten Rand von .todo-table-toolbar, neben
+       "+ ToDo" fürs "Neue Layout") — im "Neuen Layout" dagegen direkt neben dem Zeitraum-Filter
+       (kein margin-left:auto dort, siehe .todo-pane-filters weiter unten). Die tatsächliche
+       Verschiebung zwischen den beiden Stellen im DOM übernimmt moveShowDoneSwitch() im
+       LAYOUT-UMSCHALTER-Script weiter unten, nicht CSS allein — die beiden Zielorte liegen in
+       unterschiedlichen Flex-Containern, das lässt sich nicht per CSS-Reihenfolge lösen. */
+    .todo-table-toolbar .todo-show-done-switch { margin-left: auto; }
+    .table-add-todo { display: none; }
+    body.design-tabs .table-add-todo {
+      display: inline-flex; margin-left: auto; align-items: center; gap: var(--space-xs);
+      height: 36px; box-sizing: border-box; padding: 6px 14px 6px 6px;
+      background: var(--color-primary-500); font-size: 13px; font-weight: 500; color: #fff;
+      border-radius: var(--radius-s); border: none; cursor: pointer;
+    }
+    body.design-tabs .table-add-todo:hover { background: var(--color-primary-600); }
+    body.design-tabs .table-add-todo .material-symbols-outlined { font-size: 20px; }
+    /* "+ Termin" nur im neuen Layout ebenfalls ganz leicht verkleinert (36px statt 40px,
+       kleinere Schrift/Padding) — im Standard-Layout unverändert (dortige Regel bleibt separat
+       bestehen, siehe .todo-pane-head .btn, #btnAddTermin weiter unten). */
+    body.design-tabs #btnAddTermin {
+      height: 36px; box-sizing: border-box; padding: 6px 14px 6px 6px; font-size: 13px;
+    }
+    /* NICHT ausgewählter Tab: EIN neutraler Zähler-Ton für alle (statt je Tab eine eigene
+       Farbe via --qf/--qf-tint) — die bunten Badges wirkten neben dem sonst sehr reduzierten
+       Tab-Look (nur Text + dünne Unterstreichung) wie ein Stilbruch. */
+    body.design-tabs #quickSeg .qf-count { background: var(--color-neutral-light-400); color: var(--color-neutral-dark-600); font-size: 13px; padding: 2px 8px; min-width: 22px; line-height: 18px; }
+    /* AUSGEWÄHLTER Tab: statt des Volltons (primary-500/#fff, das im Standard-Layout für
+       "aktiv" genutzt wird) hier bewusst derselbe Look wie ein NICHT ausgewählter Filter im
+       Standard-Layout (dort .qf-count Basisregel: background:--qf-tint, color:--qf — die je
+       Kategorie eigene, helle Tönung). So bleibt die Kategorie-Farbe (z. B. Rot bei
+       "Überfällig") beim Auswählen erkennbar, ohne so kräftig/laut wie ein Vollton zu wirken. */
+    body.design-tabs #quickSeg button.active .qf-count { background: var(--qf-tint); color: var(--qf); }
     /* Eigene Zeile für Berater/Zeitraum/Sortieren/Suche/Kalender — display:contents
        oben (Standard-Layout) wird hier wieder zu einer echten Flex-Zeile, #btnCals
        margin-left:auto weiter unten wirkt dadurch jetzt auf DIESE Zeile statt auf die ganze
        .todo-pane-head. */
     body.design-tabs .todo-pane-filters { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
+    /* Randlose "Ghost"-Buttons statt der weißen .btn-secondary-Boxen mit Rahmen — passend zum
+       randlosen Tab-Look der Fälligkeitsfilter darüber, damit beide Zeilen wie EIN
+       zusammenhängendes, leichtes Toolbar-System wirken statt zwei verschiedener UI-Sprachen
+       übereinander. Diese Zeile ist der Sortierung/Verfeinerung der aktuellen Ansicht
+       untergeordnet (nicht der Navigation wie die Tabs) — kleinere Schrift (13px) und ein
+       gedeckteres Grau als die Tabs unterstreichen das zusätzlich. Rahmen komplett weg,
+       Hover-Hintergrund bleibt als einziges Feedback, dass es klickbare Buttons sind. Ein
+       tatsächlich aktiver Filter (.filter-active, siehe dort) hebt sich weiterhin farbig ab —
+       das bleibt unverändert, damit "Filter gesetzt" trotz der sonst zurückhaltenden Optik klar
+       erkennbar bleibt. */
+    body.design-tabs .todo-pane-filters .btn-secondary,
+    body.design-tabs .search-icon-btn {
+      background: var(--color-neutral-light-100); border-color: transparent; color: var(--color-neutral-dark-600); font-size: 13px;
+    }
+    body.design-tabs .todo-pane-filters .btn-secondary:hover,
+    body.design-tabs .search-icon-btn:hover {
+      background: var(--color-neutral-light-200);
+    }
+    /* .filter-active (siehe <style> oben, global für aktive Berater-/Zeitraum-/Art-Filter)
+       hätte gegen die spezifischere Regel oben sonst verloren (mehr Klassen in deren Selektor)
+       — hier explizit zurückgeholt, damit ein gesetzter Filter trotz der sonst randlosen
+       Ghost-Optik weiterhin farbig auffällt. */
+    body.design-tabs .todo-pane-filters .btn-secondary.filter-active .material-symbols-outlined:first-child {
+      color: var(--color-primary-600);
+    }
     /* Keine vertikalen Trennlinien mehr zwischen den Tabellen-Spalten (Todos/Antragsteller*in/
        Fälligkeit im Kopf UND in jeder Zeile) — im Standard-Design border-right auf .todo-title/
        .todo-applicant/.todo-due bzw. den entsprechenden Kopf-Labels (siehe dort), hier bewusst
@@ -1379,7 +1670,7 @@
        Spacing sind die bereits in V5 etablierten Tokens statt V4s eigener Werte. ===== */
     .btn-badge { background: var(--color-primary-500); color: #fff; border-radius: var(--radius-full);
       font-size: 11px; font-weight: 700; padding: 0 6px; line-height: 16px; min-width: 16px; text-align: center; }
-    .btn.filter-active { border-color: var(--color-primary-500); color: var(--color-primary-600); background: var(--color-primary-100); }
+    .btn.filter-active .material-symbols-outlined:first-child { color: var(--color-primary-600); }
 
     .berater-filter { position: relative; flex-shrink: 0; }
     /* .btn-secondary ist für Buttons mit NUR einem führenden Icon gebaut (mehr Luft rechts
@@ -1407,10 +1698,10 @@
     }
     .menu.open { display: block; }
     .menu-search {
-      width: 100%; padding: 7px 10px; border: 1px solid var(--color-neutral-light-500);
+      width: 100%; padding: 7px 10px; border: 1.5px solid var(--color-primary-500);
       border-radius: var(--radius-xs, 2px); font-size: 13px; margin: 2px 0 6px; box-sizing: border-box;
     }
-    .menu-search:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    .menu-search:focus { outline: none; }
 
     .berater-menu { padding: 0; min-width: 288px; max-width: 320px; max-height: 74vh; }
     .berater-menu.open { display: flex; flex-direction: column; }
@@ -1456,16 +1747,16 @@
        damit die ToDo-Liste beim Auswählen/Zurücksetzen eines Filters nicht nach unten springt. */
     .chip-row { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; min-height: 26px; margin-bottom: var(--space-s); }
     .fchip {
-      display: inline-flex; align-items: center; gap: 6px; padding: 3px 6px 3px 10px;
+      display: inline-flex; align-items: center; gap: 5px; padding: 2px 5px 2px 8px;
       background: var(--color-primary-100); color: var(--color-primary-600);
-      border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
+      border-radius: var(--radius-full); font-size: 11px; font-weight: 500;
     }
     .fchip button {
       border: none; background: none; cursor: pointer; color: var(--color-primary-600);
       display: inline-flex; padding: 2px; border-radius: 50%;
     }
     .fchip button:hover { background: var(--color-primary-200); }
-    .fchip button .material-symbols-outlined { font-size: 15px; }
+    .fchip button .material-symbols-outlined { font-size: 14px; }
     .chip-reset {
       border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
       font-size: 12px; font-weight: 500; text-decoration: underline;
@@ -1489,10 +1780,10 @@
        lange Label-Spalte in beiden Zeilen, unabhängig von Buchstabenbreiten im Font. */
     .rmenu-fields label span { width: 24px; flex-shrink: 0; }
     .rmenu-fields input[type="date"] {
-      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-xs); padding: 6px 8px;
+      border: 1.5px solid var(--color-primary-500); border-radius: var(--radius-xs); padding: 6px 8px;
       font-size: 13px; color: var(--color-neutral-dark-900); flex: 1; min-width: 0;
     }
-    .rmenu-fields input[type="date"]:focus { outline: none; border-color: var(--color-primary-500); box-shadow: var(--focus-ring); }
+    .rmenu-fields input[type="date"]:focus { outline: none; }
     /* Anwenden-Button in normaler Button-Größe (wie "+ ToDo"/"+ Termin"), nicht über die
        ganze Breite gestreckt — war vorher per .bmenu-foot .btn{flex:1} viel zu groß. */
     /* Kein negativer Rand mehr: der fraß sich 4px in .range-menus eigenes Padding und ließ
@@ -1510,11 +1801,12 @@
     /* Sortierbare Spalten-Überschriften (Antragsteller*in/Fälligkeit) — ersetzen den
        ehemaligen Gruppierung-Filter durch das gängige Klick-auf-Pfeil-Muster direkt im
        Tabellenkopf. Pfeil zeigt per Default neutral nach oben (unsortiert), wird bei aktivem
-       Sortierstatus in Primary-Farbe eingefärbt und dreht sich für "absteigend" per CSS statt
-       eines zweiten Icons. */
+       Sortierstatus in Primary-Farbe eingefärbt und dreht sich für "aufsteigend" per CSS statt
+       eines zweiten Icons — Pfeil nach UNTEN = aufsteigend/A-Z, nach OBEN = absteigend/Z-A
+       (intuitivere Zuordnung als vorher, wo "unten" fälschlich absteigend bedeutete). */
     .col-sortable { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; border: none; background: none; padding: 0; font: inherit; color: inherit; }
     .col-sortable .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-400); }
-    .col-sortable[data-sort-dir="desc"] .material-symbols-outlined { transform: rotate(180deg); }
+    .col-sortable[data-sort-dir="asc"] .material-symbols-outlined { transform: rotate(180deg); }
     .col-sortable[data-sort-dir="asc"] .material-symbols-outlined, .col-sortable[data-sort-dir="desc"] .material-symbols-outlined { color: var(--color-primary-500); }
     /* #btnTypFilter ist kein Sortier-, sondern ein Filter-Trigger (siehe TYP-FILTER-Script
        weiter unten) — hebt sich bei aktivem Filter genauso hervor wie die Sortier-Pfeile bei
@@ -1731,6 +2023,19 @@
         </button>
       </header>
 
+      <!-- NUR "Neues Layout" (body.design-tabs): weißes Hintergrund-Band für "alles oberhalb
+           der Fälligkeitsfilter" (Titelzeile, #quickSeg, bei geöffnetem Kalender auch die
+           "+ Termin"-Zeile) — über die volle Breite von .main, spannt dadurch von der Seitennav
+           links bis zum Bildschirmrand rechts, statt nur über die Breite von #quickSeg selbst.
+           Als Kind von .main (nicht .content) platziert, weil .content Inhalt horizontal clippt
+           (overflow-y:auto erzwingt automatisch auch overflow-x:auto) — als Kind von .main
+           lässt sich das ganz ohne vw-Tricks/negative Margins umgehen (siehe .main
+           position:relative in <style>). Höhe/Sichtbarkeit wird per JS auf Scroll/Resize
+           aktualisiert (siehe DESIGN-TABS-VOLLBREITE-TRENNLINIE-Script weiter unten), da
+           #quickSeg NICHT sticky ist und mit dem Todo-Inhalt aus dem sichtbaren Bereich von
+           .content scrollen kann. -->
+      <div class="design-tabs-fullline" id="designTabsFullline"></div>
+
       <!-- ================= CONTENT ================= -->
       <div class="content">
         <div class="todos-toolbar">
@@ -1759,8 +2064,7 @@
             <button data-quick="ueberfaellig" style="--qf:var(--color-error-500);--qf-tint:var(--color-error-100)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Überfällig</span></button>
             <button data-quick="heute" style="--qf:var(--color-warning-high);--qf-tint:var(--color-warning-high-light)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Heute</span></button>
             <button data-quick="morgen" style="--qf:var(--color-brand-blue);--qf-tint:#E8F0FC"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Morgen</span></button>
-            <button data-quick="woche" style="--qf:var(--color-notification);--qf-tint:#E5F8FA"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Woche</span></button>
-            <button data-quick="erledigt" style="--qf:var(--color-primary-500);--qf-tint:var(--color-primary-100)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Erledigte</span></button>
+            <button data-quick="woche" style="--qf:var(--color-notification);--qf-tint:#E5F8FA"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Diese Woche</span></button>
           </div>
 
           <!-- Umhüllt Berater/Zeitraum/Sortieren/Suche/Kalender als eine Einheit, die sich (nur
@@ -1822,8 +2126,27 @@
           </button>
           </div>
         </div>
-        <!-- AKTIVE-FILTER-CHIPS: 1:1 aus mein-tag-v4.html, direkt unter der Filterzeile. -->
-        <div class="chip-row" id="chipRow"></div>
+        <!-- Wrapper NUR für "Neues Layout" (body.design-tabs): "+ ToDo" (siehe <style>) direkt
+             über der Todo-Tabelle, auf Höhe der aktiven-Filter-Chips (#chipRow) statt in der
+             Fälligkeitsfilter-Zeile oben. #chipRow bleibt ein eigenständiges Element (nicht als
+             Kind hier drin), da sein Inhalt per JS komplett per innerHTML neu aufgebaut wird
+             (siehe AKTIVE-FILTER-CHIPS-Script) — ein Button als Kind davon würde bei jedem
+             Chip-Update mitgelöscht. -->
+        <div class="todo-table-toolbar">
+          <!-- AKTIVE-FILTER-CHIPS: 1:1 aus mein-tag-v4.html, direkt unter der Filterzeile. -->
+          <div class="chip-row" id="chipRow"></div>
+          <!-- Nur Standard-Layout: blendet erledigte ToDos zusätzlich wieder in die Liste ein
+               (sonst verschwinden sie beim Abhaken komplett, siehe inQuickBucket/state.showDoneExtra
+               im SCHNELLFILTER-Script). -->
+          <label class="design-switch todo-show-done-switch" title="Erledigte Todos zusätzlich in der Liste anzeigen (nur Prototyp-Vergleich)">
+            <input type="checkbox" id="showDoneSwitchInput" />
+            <span class="design-switch-track"><span class="design-switch-knob"></span></span>
+            <span class="design-switch-label">Erledigte anzeigen</span>
+          </label>
+          <button class="table-add-todo" id="btnAddTodoQuick" title="Im Prototyp nicht interaktiv">
+            <span class="material-symbols-outlined">add</span> ToDo
+          </button>
+        </div>
         <div class="pane-body">
 
         <!-- Header + alle Gruppen in EINER Karte (wie .cal-card beim Kalender), damit es
@@ -1900,18 +2223,31 @@
                 <span class="material-symbols-outlined">call</span>
               </label>
             </div>
+            <!-- Antragsteller: dasselbe Such-Input+Dropdown-Muster wie beim Berater-Feld
+                 direkt daneben (siehe .berater-edit-wrap/-list/-option/-clear) statt eines
+                 nativen <select> — hier ohne Default, da "Ohne Antragsteller" ein gültiger
+                 Wert bleibt (siehe commitAddRow). -->
             <span class="add-person-slot">
-              <select class="add-person" id="addPerson" aria-label="Antragsteller"></select>
+              <span class="berater-edit-wrap">
+                <input type="text" class="inline-input" id="addPerson" autocomplete="off" aria-label="Antragsteller" placeholder="Antragsteller" />
+                <button type="button" class="berater-edit-clear" id="addPersonClear" aria-label="Sucheingabe leeren"><span class="material-symbols-outlined">close</span></button>
+                <div class="berater-edit-list" id="addPersonList" hidden></div>
+              </span>
             </span>
             <span class="due-datetime">
               <input type="date" class="add-due" id="addDue" aria-label="Fälligkeitsdatum" />
               <input type="time" class="add-due-time" id="addDueTime" aria-label="Fälligkeitsuhrzeit" />
             </span>
-            <!-- Berater: Dropdown statt Freitext, analog zu #addPerson — vorbelegt mit "Jan
-                 Joisten" (aktuell eingeloggter Berater), da neue ToDos bislang immer diesem
-                 fest zugeordnet wurden; jetzt aber änderbar statt hart codiert. -->
+            <!-- Berater: Such-Input + eigenes Vorschlags-Dropdown statt nativer <select>-Liste,
+                 dasselbe Muster wie beim Berater-Inline-Edit einer bestehenden Zeile (siehe
+                 .berater-edit-wrap/-list/-option/-clear und startBeraterEdit im Script) —
+                 vorbelegt mit "Jan Joisten" (aktuell eingeloggter Berater). -->
             <span class="add-berater-slot">
-              <select class="add-berater" id="addBerater" aria-label="Berater"></select>
+              <span class="berater-edit-wrap">
+                <input type="text" class="inline-input" id="addBerater" autocomplete="off" aria-label="Berater" />
+                <button type="button" class="berater-edit-clear" id="addBeraterClear" aria-label="Sucheingabe leeren"><span class="material-symbols-outlined">close</span></button>
+                <div class="berater-edit-list" id="addBeraterList" hidden></div>
+              </span>
             </span>
           </div>
         </div>
@@ -1925,7 +2261,7 @@
           <div class="no-todos-accent"></div>
           <div class="no-todos-content">
             <span class="material-symbols-outlined">assignment_turned_in</span>
-            <p>Sie haben <b>5 Anträge</b> ohne ToDos</p>
+            <p>Sie haben <b>5 aktive Anträge</b> ohne ToDos</p>
             <button class="no-todos-open" title="Anträge ohne ToDos ansehen">
               <span class="material-symbols-outlined">arrow_forward</span>
             </button>
@@ -1938,7 +2274,7 @@
             <button class="group-headline">
               <span class="material-symbols-outlined">keyboard_arrow_up</span>
               <span class="group-name">Heute fällig</span>
-              <span class="group-count">(5)</span>
+              <span class="group-count">(8)</span>
             </button>
             <div class="group-labels">
               <span class="col-due">Fälligkeit</span>
@@ -1957,7 +2293,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <span class="todo-applicant-names">
@@ -1979,7 +2315,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-icon" title="Anruf"><span class="material-symbols-outlined">call</span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Anruf"><span class="material-symbols-outlined">call</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name" data-beschaeftigung="beamter" data-email="lena.bachmann@web.de" data-telefon="+49 152 3344556">Lena Bachmann</button>
@@ -1998,7 +2334,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name" data-beschaeftigung="rentner" data-email="petra.schulz@gmx.de" data-telefon="+49 170 7766554">Petra Schulz</button>
@@ -2017,7 +2353,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name" data-beschaeftigung="selbststaendig" data-email="sandra.klein@outlook.de" data-telefon="+49 157 8899001">Sandra Klein</button>
@@ -2036,20 +2372,77 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Mehmet Öztürk</button>
                 </div>
                 <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 16:30</span></div>
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
-                
+
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückruf: Unterlagen nachfordern</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Anruf"><span class="material-symbols-outlined">call</span></span></span></div>
+                <div class="todo-applicant">
+                  <span class="todo-applicant-empty-spacer" aria-hidden="true"></span>
+                  <span class="todo-applicant-empty">Ohne Antragsteller</span>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 12:00</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+
+              </div>
+              <div class="todo-row" data-berater="Sandra Wolf" data-created="26.06.2026" data-typ="email">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">E-Mail-Adresse für Vertragsversand bestätigen</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></span></div>
+                <div class="todo-applicant">
+                  <span class="todo-applicant-empty-spacer" aria-hidden="true"></span>
+                  <span class="todo-applicant-empty">Ohne Antragsteller</span>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 13:15</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Sandra Wolf</span></div>
+
+              </div>
+              <div class="todo-row" data-berater="Bernd Krüger" data-created="25.06.2026">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Neuen Lead aus Portal anlegen</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
+                <div class="todo-applicant">
+                  <span class="todo-applicant-empty-spacer" aria-hidden="true"></span>
+                  <span class="todo-applicant-empty">Ohne Antragsteller</span>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 17:00</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
+
               </div>
             </div>
           </div>
           <div class="todo-pagination">
             <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 4 von 4</span>
+            <span class="pg-text">1 – 7 von 7</span>
             <div class="pg-nav">
               <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
               <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
@@ -2082,7 +2475,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Sandra Klein</button>
@@ -2101,7 +2494,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Petra Schulz</button>
@@ -2120,7 +2513,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-icon" title="Anruf"><span class="material-symbols-outlined">call</span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Anruf"><span class="material-symbols-outlined">call</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <span class="todo-applicant-names">
@@ -2142,7 +2535,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-icon" title="Link"><span class="material-symbols-outlined">link</span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Link"><span class="material-symbols-outlined">link</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Julia Hoffmann</button>
@@ -2161,7 +2554,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Andreas Weber</button>
@@ -2179,7 +2572,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Sandra Klein</button>
@@ -2224,7 +2617,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Familie Meier</button>
@@ -2243,7 +2636,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Thomas Berger</button>
@@ -2289,7 +2682,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Thomas Berger</button>
@@ -2308,7 +2701,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Julia Hoffmann</button>
@@ -2327,7 +2720,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name">Petra Schulz</button>
@@ -2353,10 +2746,21 @@
         </div><!-- /pane-body -->
         </section><!-- /todo-pane -->
 
-        <!-- RAND-HANDLE: 1:1 aus mein-tag-v4.html — einziges Control zum Ein-/Ausklappen. -->
-        <button class="cal-edge-handle" id="calEdgeHandle" title="Kalender anzeigen" aria-label="Kalender anzeigen">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
+        <!-- GRÖSSEN-ZIEHGRIFF: manuelle Breitenanpassung zwischen ToDo-Tabelle und Kalender
+             (nur bei geöffnetem Kalender sichtbar/aktiv, siehe PANE-RESIZER-Script weiter
+             unten) — zieht am Kalender-Rand, ToDo-Pane (flex:1) übernimmt automatisch den Rest
+             der Breite, da beide Panes zusammen immer die volle Breite von #workspace füllen.
+             #calEdgeHandle (Auf-/Zu-Knopf, aus mein-tag-v4.html) sitzt bei geöffnetem Kalender
+             jetzt HIER VERSCHACHTELT statt als eigenes Element daneben — dadurch liegt er
+             sichtbar mittig auf der Ziehgriff-Linie ("eine Linie mit Knopf" statt zwei getrennte
+             Bedienelemente, siehe <style>). Bei eingeklapptem Kalender (position:fixed, siehe
+             <style>) ist die Verschachtelung ohne Belang, der Button verhält sich dann wie
+             zuvor als frei schwebender Button am rechten Bildschirmrand. -->
+        <div class="pane-resizer" id="paneResizer" title="Breite anpassen (ziehen)">
+          <button class="cal-edge-handle" id="calEdgeHandle" title="Kalender anzeigen" aria-label="Kalender anzeigen">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+        </div>
 
         <!-- KALENDER-PANE: 1:1 aus mein-tag-v4.html — Tag/3 Tage/Woche, Mock-Termine + Geburtstage. -->
         <section class="pane cal-pane" id="calPane">
@@ -2375,10 +2779,10 @@
                wie .todo-pane auch keine eigene Karte hat. -->
           <div class="cal-card">
           <div class="pane-head">
-            <span class="pane-title"><span class="material-symbols-outlined">calendar_month</span> Kalender</span>
             <div class="pane-head-tools">
-              <span class="cal-range-label" id="calRangeLabel"></span>
+              <span class="cal-range-label"><span class="material-symbols-outlined">calendar_month</span> <span id="calRangeLabel"></span></span>
             </div>
+            <span class="pane-title">Mein Kalender</span>
           </div>
           <div class="pane-body">
             <div class="cal-toolbar">
@@ -2468,7 +2872,8 @@
     // Anlege-Datum.
     function buildHistoryFor(row) {
       var titel = row.querySelector('.todo-text').textContent.trim();
-      var person = row.querySelector('.todo-applicant-name').textContent.trim();
+      var personEl = row.querySelector('.todo-applicant-name');
+      var person = personEl ? personEl.textContent.trim() : 'Ohne Antragsteller';
       var berater = row.dataset.berater || 'Unbekannt';
       var angelegtAm = row.dataset.created;
       var faelligkeitEl = row.querySelector('.due-text');
@@ -2554,7 +2959,8 @@
       var q = e.target.value.trim().toLowerCase();
       document.querySelectorAll('.todo-row').forEach(function (row) {
         if (row.id === 'addRow') return;
-        var text = (row.querySelector('.todo-text').textContent + ' ' + row.querySelector('.todo-applicant-name').textContent).toLowerCase();
+        var applicantEl = row.querySelector('.todo-applicant-name');
+        var text = (row.querySelector('.todo-text').textContent + ' ' + (applicantEl ? applicantEl.textContent : '')).toLowerCase();
         row.style.display = q && text.indexOf(q) === -1 ? 'none' : '';
       });
     });
@@ -2567,15 +2973,76 @@
       return '<option value="' + n + '">' + n + '</option>';
     }).join('');
 
-    // Berater beim Anlegen: dasselbe Dropdown-Pattern wie #addPerson, dieselbe Namensliste
-    // wie im Berater-Filter oben (dort BERATER_ALL, aber in einem eigenen IIFE-Scope — hier
-    // deshalb noch einmal separat gepflegt statt geteilt). Vorbelegt mit "Jan Joisten", dem
-    // aktuell eingeloggten Berater (ME im Berater-Filter-Script) — ändert der Nutzer nichts,
-    // bleibt das Verhalten identisch zum vorherigen hart codierten Default.
+    // Berater beim Anlegen: dasselbe Such-Input+eigenes-Dropdown-Muster wie beim Berater-
+    // Inline-Edit einer bestehenden Zeile (siehe .berater-edit-wrap/-list/-option/-clear und
+    // startBeraterEdit weiter unten im ROW-EVENTS-Script) statt eines nativen <select> — dort
+    // in eigenem IIFE-Scope, deshalb hier dieselbe Namensliste noch einmal separat gepflegt.
+    // Vorbelegt mit "Jan Joisten", dem aktuell eingeloggten Berater (ME im Berater-Filter-
+    // Script) — ändert der Nutzer nichts, bleibt das Verhalten identisch zum Default.
     var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
-    document.getElementById('addBerater').innerHTML = BERATER_ALL.map(function (n) {
-      return '<option value="' + n + '"' + (n === 'Jan Joisten' ? ' selected' : '') + '>' + n + '</option>';
-    }).join('');
+    var addBeraterInput = document.getElementById('addBerater');
+    var addBeraterList = document.getElementById('addBeraterList');
+    var addBeraterClear = document.getElementById('addBeraterClear');
+    addBeraterInput.value = 'Jan Joisten';
+
+    function addBeraterMatches() {
+      var q = addBeraterInput.value.trim().toLowerCase();
+      return BERATER_ALL.filter(function (b) { return !q || b.toLowerCase().indexOf(q) !== -1; });
+    }
+    function addBeraterHighlighted() { return addBeraterList.querySelector('.berater-edit-option.highlighted'); }
+    function addBeraterSetHighlight(opt) {
+      var current = addBeraterHighlighted();
+      if (current) current.classList.remove('highlighted');
+      if (opt) { opt.classList.add('highlighted'); opt.scrollIntoView({ block: 'nearest' }); }
+    }
+    function renderAddBeraterList() {
+      var names = addBeraterMatches();
+      if (!names.length) { addBeraterList.hidden = true; addBeraterList.innerHTML = ''; return; }
+      addBeraterList.innerHTML = names.map(function (b) {
+        return '<button type="button" class="berater-edit-option" data-value="' + b + '">' + b + '</button>';
+      }).join('');
+      addBeraterList.hidden = false;
+      addBeraterSetHighlight(addBeraterList.querySelector('.berater-edit-option'));
+    }
+    function closeAddBeraterList() { addBeraterList.hidden = true; addBeraterList.innerHTML = ''; }
+    addBeraterInput.addEventListener('focus', renderAddBeraterList);
+    addBeraterInput.addEventListener('input', renderAddBeraterList);
+    // Gleicher mousedown-preventDefault-Trick wie beim Inline-Edit: Klick in die Liste/auf "×"
+    // soll dem Input nicht vorher per blur den Fokus entziehen.
+    addBeraterList.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    addBeraterList.addEventListener('click', function (ev) {
+      var opt = ev.target.closest('.berater-edit-option');
+      if (!opt) return;
+      addBeraterInput.value = opt.dataset.value;
+      closeAddBeraterList();
+    });
+    addBeraterInput.addEventListener('keydown', function (ev) {
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        var opts = Array.prototype.slice.call(addBeraterList.querySelectorAll('.berater-edit-option'));
+        if (!opts.length) return;
+        var i = opts.indexOf(addBeraterHighlighted());
+        var next = ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length;
+        addBeraterSetHighlight(opts[next]);
+      } else if (ev.key === 'Enter') {
+        var active = addBeraterHighlighted();
+        if (active) { ev.preventDefault(); addBeraterInput.value = active.dataset.value; closeAddBeraterList(); }
+      } else if (ev.key === 'Escape') {
+        closeAddBeraterList();
+      }
+    });
+    addBeraterInput.addEventListener('blur', function () {
+      // Nur echte Namen aus der Liste bleiben stehen — Freitext ohne Treffer fällt zurück auf
+      // "Jan Joisten", genau wie das ursprüngliche <select> keine Freitext-Werte zuließ.
+      if (BERATER_ALL.indexOf(addBeraterInput.value.trim()) === -1) addBeraterInput.value = 'Jan Joisten';
+      closeAddBeraterList();
+    });
+    addBeraterClear.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    addBeraterClear.addEventListener('click', function () {
+      addBeraterInput.value = '';
+      addBeraterInput.focus();
+      renderAddBeraterList();
+    });
 
     var TODAY_ISO = '2026-08-26';
     function tomorrowIso() {
@@ -2741,9 +3208,9 @@
       var due = document.getElementById('addDue').value || tomorrowIso();
       var dueTime = document.getElementById('addDueTime').value || '09:00';
       var dueLabel = window.relativeDueLabel ? window.relativeDueLabel(due, dueTime) : due;
-      var typIconHtml = '<div class="todo-typ">' + (selectedTyp
+      var typIconHtml = '<div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern">' + (selectedTyp
         ? '<span class="todo-typ-icon" title="' + TYP_LABEL[selectedTyp] + '"><span class="material-symbols-outlined">' + TYP_ICON[selectedTyp] + '</span></span>'
-        : '') + '</div>';
+        : '') + '</span></div>';
       var row = document.createElement('div');
       row.className = 'todo-row';
       row.dataset.berater = berater;
@@ -2826,9 +3293,9 @@
   </script>
 
   <!-- =======================================================================
-       INLINE-EDITING (Einzelfeld, wie mein-tag-v3.html) — Klick auf Titel ODER Fälligkeit
-       bearbeitet nur das jeweils angeklickte Feld (siehe startTitleEdit/openDuePop/startDueEdit
-       weiter unten), per Event-Delegation auf document statt auf einer <tbody> (V5 hat keine
+       INLINE-EDITING (Einzelfeld) — Klick auf Titel ODER Fälligkeit bearbeitet nur das jeweils
+       angeklickte Feld (siehe startTitleEdit/openDuePop weiter unten), per Event-Delegation auf
+       document statt auf einer <tbody> (V5 hat keine
        <table>) — deckt dadurch automatisch auch später per "+ ToDo" neu eingefügte Zeilen ab,
        ohne sie einzeln verkabeln zu müssen.
        ======================================================================= -->
@@ -2909,6 +3376,26 @@
     window.buildApplicantPopover = buildApplicantPopover;
     // Einmalig für alle bestehenden (statischen) Zeilen beim Laden.
     document.querySelectorAll('.todo-applicant').forEach(buildApplicantPopover);
+
+    // Öffnen/Schließen der Popover-Karte per Klick auf Info-Icon ODER Namen (statt Hover, siehe
+    // .applicant-info-popover in <style>) — ein Klick auf den Trigger schaltet NUR die eigene
+    // Zelle um, alle anderen offenen Karten schließen dabei gleichzeitig (immer nur eine offen).
+    // Ein Klick INNERHALB der bereits offenen Karte (z. B. auf einen Kontakt-Chip zum Kopieren)
+    // lässt sie bewusst offen — sonst würde das Kopieren die Karte sofort wieder schließen.
+    document.addEventListener('click', function (e) {
+      var trigger = e.target.closest('.todo-info-btn, .todo-applicant-name');
+      var insidePopover = e.target.closest('.applicant-info-popover');
+      if (!trigger && insidePopover) return;
+      var cell = trigger && trigger.closest('.todo-applicant');
+      document.querySelectorAll('.todo-applicant.popover-open').forEach(function (open) {
+        if (open !== cell) open.classList.remove('popover-open');
+      });
+      if (cell) cell.classList.toggle('popover-open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.todo-applicant.popover-open').forEach(function (c) { c.classList.remove('popover-open'); });
+    });
 
     // E-Mail/Telefon direkt aus der Antragsteller-Info-Popover-Karte ODER dem Ausklapp-Panel
     // kopieren, ohne sie erst markieren zu müssen — die GANZE Zeile ist klickbar/hoverbar (kein
@@ -3130,54 +3617,186 @@
       input.addEventListener('click', function (ev) { ev.stopPropagation(); });
     }
 
-    // ---------- Berater: Dropdown statt Freitext (wie mein-tag-v4.html) — Auswahl im Dropdown
-    // übernimmt sofort per "change", kein zusätzliches Enter nötig. ----------
+    // ---------- Berater: Such-Input + eigenes Dropdown mit Vorschlägen statt nativem <select>
+    // (dessen Liste je nach Betriebssystem gerendert wird und dadurch aus dem sonstigen Design
+    // fällt) — gleiches Karten-/Options-Muster wie #titleSuggestions beim Anlegen-Formular.
+    // Auswahl per Klick ODER Enter auf der markierten Zeile übernimmt sofort. ----------
     var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
     function startBeraterEdit(el) {
       if (activeInlineEl) return;
       var original = el.textContent;
       el.classList.add('editing');
       el.innerHTML = '';
-      var input = document.createElement('select');
+      var wrap = document.createElement('span');
+      wrap.className = 'berater-edit-wrap';
+      var input = document.createElement('input');
+      input.type = 'text';
       input.className = 'inline-input';
-      input.innerHTML = BERATER_ALL.map(function (b) {
-        return '<option value="' + b + '"' + (b === original ? ' selected' : '') + '>' + b + '</option>';
-      }).join('');
+      input.autocomplete = 'off';
+      input.value = original;
       input.setAttribute('aria-label', 'Berater ändern');
-      el.appendChild(input);
+      var clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'berater-edit-clear';
+      clearBtn.setAttribute('aria-label', 'Sucheingabe leeren');
+      clearBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
+      var list = document.createElement('div');
+      list.className = 'berater-edit-list';
+      list.hidden = true;
+      wrap.appendChild(input);
+      wrap.appendChild(clearBtn);
+      wrap.appendChild(list);
+      el.appendChild(wrap);
       activeInlineEl = el;
       input.focus();
+      input.select();
+
+      function matchingBerater() {
+        var q = input.value.trim().toLowerCase();
+        return BERATER_ALL.filter(function (b) { return !q || b.toLowerCase().indexOf(q) !== -1; });
+      }
+      function highlightedOption() { return list.querySelector('.berater-edit-option.highlighted'); }
+      function setHighlight(opt) {
+        var current = highlightedOption();
+        if (current) current.classList.remove('highlighted');
+        if (opt) { opt.classList.add('highlighted'); opt.scrollIntoView({ block: 'nearest' }); }
+      }
+      function renderList() {
+        var names = matchingBerater();
+        if (!names.length) { list.hidden = true; list.innerHTML = ''; return; }
+        list.innerHTML = names.map(function (b) {
+          return '<button type="button" class="berater-edit-option' + (b === original ? ' current' : '') + '" data-value="' + b + '">' + b + '</button>';
+        }).join('');
+        list.hidden = false;
+        setHighlight(list.querySelector('.berater-edit-option.current') || list.querySelector('.berater-edit-option'));
+      }
+      // Verhindert, dass ein Klick in die Liste dem Input erst den Fokus entzieht (blur würde
+      // sonst noch vor dem "click" unten feuern und das Feld per finish(true) schon schließen).
+      list.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      list.addEventListener('click', function (ev) {
+        var opt = ev.target.closest('.berater-edit-option');
+        if (!opt) return;
+        input.value = opt.dataset.value;
+        finish(true);
+      });
+      input.addEventListener('input', renderList);
+      // Gleicher mousedown-preventDefault-Trick wie bei der Liste: Klick auf "×" soll den Input
+      // nicht erst per blur committen, sondern nur die Eingabe leeren und den Fokus behalten.
+      clearBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      clearBtn.addEventListener('click', function () {
+        input.value = '';
+        input.focus();
+        renderList();
+      });
 
       var closed = false;
       function finish(commit) {
         if (closed) return;
         closed = true;
         activeInlineEl = null;
-        var val = input.value;
+        var val = input.value.trim();
+        var valid = BERATER_ALL.indexOf(val) !== -1;
         el.classList.remove('editing');
-        el.textContent = (commit && val) ? val : original;
-        if (commit && val && val !== original) {
+        el.textContent = (commit && valid) ? val : original;
+        if (commit && valid && val !== original) {
           el.closest('.todo-row').dataset.berater = val;
           if (window.showToast) window.showToast('Berater geändert: ' + val);
         }
       }
-      input.addEventListener('change', function () { finish(true); });
       input.addEventListener('keydown', function (ev) {
         ev.stopPropagation();
-        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
-        else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+        if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+          ev.preventDefault();
+          var opts = Array.prototype.slice.call(list.querySelectorAll('.berater-edit-option'));
+          if (!opts.length) return;
+          var i = opts.indexOf(highlightedOption());
+          var next = ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length;
+          setHighlight(opts[next]);
+        } else if (ev.key === 'Enter') {
+          ev.preventDefault();
+          var active = highlightedOption();
+          if (active) input.value = active.dataset.value;
+          finish(true);
+        } else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
         else if (ev.key === 'Tab') { finish(true); }
       });
       input.addEventListener('blur', function () { finish(true); });
       input.addEventListener('click', function (ev) { ev.stopPropagation(); });
+      renderList();
+    }
+
+    // ---------- Art: Dropdown mit Icon+Label statt Freitext (gleiches Werte-/Icon-Set wie der
+    // Art-Filter oben, dort TYP_OPTIONS in eigenem Scope) — Klick auf eine Option übernimmt
+    // sofort, kein zusätzliches Enter/Bestätigen nötig. ----------
+    var TYP_EDIT_OPTIONS = [
+      { value: 'anruf', label: 'Anruf', icon: 'call' },
+      { value: 'email', label: 'Email', icon: 'mail' },
+      { value: 'link', label: 'Link', icon: 'link' },
+      { value: '', label: 'Ohne Art', icon: 'block' }
+    ];
+    function closeTypPop() {
+      var existing = document.querySelector('.typ-pop');
+      if (existing) existing.remove();
+    }
+    function applyTypValue(typCell, value) {
+      var row = typCell.closest('.todo-row');
+      row.dataset.typ = value;
+      var opt = TYP_EDIT_OPTIONS.filter(function (o) { return o.value === value; })[0];
+      typCell.innerHTML = (opt && opt.value)
+        ? '<span class="todo-typ-icon" title="' + opt.label + '"><span class="material-symbols-outlined">' + opt.icon + '</span></span>'
+        : '';
+      if (window.applyTypFilter) window.applyTypFilter();
+      if (window.renderChips) window.renderChips();
+      if (window.showToast) window.showToast('Art geändert: ' + (opt ? opt.label : 'Ohne Art'));
+    }
+    function openTypPop(el) {
+      var alreadyOpenHere = el.querySelector('.typ-pop');
+      closeTypPop();
+      if (alreadyOpenHere) { el.focus({ preventScroll: true }); return; } // zweiter Klick schließt nur, wie beim Fälligkeits-Dropdown
+      var current = el.closest('.todo-row').dataset.typ || '';
+      var pop = document.createElement('div');
+      pop.className = 'typ-pop';
+      pop.setAttribute('role', 'menu');
+      pop.setAttribute('aria-label', 'Art ändern');
+      pop.innerHTML = TYP_EDIT_OPTIONS.map(function (opt) {
+        return '<button type="button" class="typ-pop-item' + (opt.value === current ? ' active' : '') + '" role="menuitem" data-value="' + opt.value + '">' +
+          '<span class="material-symbols-outlined">' + opt.icon + '</span><span>' + opt.label + '</span></button>';
+      }).join('');
+      el.appendChild(pop);
+      var activeItem = pop.querySelector('.typ-pop-item.active') || pop.querySelector('.typ-pop-item');
+      if (activeItem) activeItem.focus({ preventScroll: true });
+      pop.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var item = e.target.closest('.typ-pop-item');
+        if (!item) return;
+        applyTypValue(el, item.dataset.value);
+        closeTypPop();
+        el.focus({ preventScroll: true });
+      });
+      pop.addEventListener('keydown', function (e) {
+        e.stopPropagation();
+        if (e.key === 'Escape') { closeTypPop(); el.focus({ preventScroll: true }); return; }
+        if (e.key === 'Enter' || e.key === ' ') return;
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+        e.preventDefault();
+        var items = Array.prototype.slice.call(pop.querySelectorAll('.typ-pop-item'));
+        var i = items.indexOf(document.activeElement);
+        var next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
+        items[next].focus({ preventScroll: true });
+      });
     }
 
     // ---------- Fälligkeit: Schnellaktions-Menü + Datumsfeld (wie v3 openDuePop/startInline) ----------
     var DUE_SHIFTS = [{ days: 1, label: '+1 Tag' }, { days: 7, label: '+1 Woche' }];
 
+    // Übernahme-Funktion des gerade offenen due-pop (falls vorhanden) — so kann der globale
+    // "Klick außerhalb schließt"-Listener weiter unten offene Datum-/Uhrzeit-Änderungen VOR dem
+    // Schließen noch übernehmen, statt sie kommentarlos zu verwerfen.
+    var duePopApply = null;
     function closeDuePop() {
       var existing = document.querySelector('.due-pop');
       if (existing) existing.remove();
+      duePopApply = null;
     }
     function currentTimePart(dueCell) {
       var text = dueCell.querySelector('.due-text').textContent;
@@ -3201,74 +3820,78 @@
       newEl.focus({ preventScroll: true });
       if (window.showToast) window.showToast('Fällig am ' + fmtAbs(to) + ' – um ' + (days === 1 ? '1 Tag' : days === 7 ? '1 Woche' : days + ' Tage') + ' verschoben');
     }
-    function startDueEdit(el) {
-      if (activeInlineEl) return;
-      var dueCell = el.closest('.todo-due');
-      var original = dueCell.dataset.due;
-      var timePart = currentTimePart(dueCell);
-      el.classList.add('editing');
-      el.innerHTML = '';
-      var input = document.createElement('input');
-      input.type = 'date';
-      input.className = 'inline-input';
-      input.value = original;
-      input.setAttribute('aria-label', 'Fälligkeitsdatum bearbeiten');
-      el.appendChild(input);
-      activeInlineEl = el;
-      input.focus();
-      try { input.showPicker(); } catch (err) { /* nicht überall unterstützt */ }
-
-      var closed = false;
-      function finish(commit) {
-        if (closed) return;
-        closed = true;
-        activeInlineEl = null;
-        var val = input.value;
-        if (commit && val && val !== original) {
-          applyDueValue(dueCell, val, timePart);
-          if (window.showToast) window.showToast('Fälligkeitsdatum auf ' + fmtAbs(val) + ' geändert');
-        } else {
-          applyDueValue(dueCell, original, timePart);
-        }
-      }
-      input.addEventListener('keydown', function (ev) {
-        ev.stopPropagation();
-        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
-        else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
-        else if (ev.key === 'Tab') { finish(true); }
-      });
-      input.addEventListener('blur', function () { finish(true); });
-      input.addEventListener('click', function (ev) { ev.stopPropagation(); });
-    }
     function openDuePop(el) {
       var dueCell = el.closest('.todo-due');
       var alreadyOpenHere = dueCell.querySelector('.due-pop');
       closeDuePop();
       if (alreadyOpenHere) return; // zweiter Klick auf dieselbe Zelle schließt nur, wie in v3
       var iso = dueCell.dataset.due;
+      var timePart = currentTimePart(dueCell);
       var pop = document.createElement('div');
       pop.className = 'due-pop';
       pop.setAttribute('role', 'menu');
       pop.setAttribute('aria-label', 'Fälligkeit ändern');
+      // Datum + Uhrzeit direkt als Felder IM Dropdown (statt ein "Datum wählen …"-Menüpunkt,
+      // der erst die Zelle selbst zum Eingabefeld macht) — beide Werte lassen sich hier ändern,
+      // ohne das Dropdown zu verlassen. Kein separater "Übernehmen"-Button: jede Änderung greift
+      // sofort per change-Event (Datum aus dem Kalender wählen bzw. Uhrzeit-Feld verlassen).
       pop.innerHTML = DUE_SHIFTS.map(function (sh) {
         var to = fmtAbs(isoOf((function () { var d = toDate(iso); d.setDate(d.getDate() + sh.days); return d; })()));
         return '<button type="button" class="due-pop-item" role="menuitem" data-days="' + sh.days + '" title="Fälligkeit um ' + sh.label + ' verschieben – auf ' + to + '">' +
           '<span>' + sh.label + '</span><span class="due-pop-hint">' + to + '</span></button>';
       }).join('') +
         '<div class="due-pop-sep"></div>' +
-        '<button type="button" class="due-pop-item" role="menuitem" data-act="pick" title="Fälligkeitsdatum frei wählen">' +
-        '<span>Datum wählen …</span><span class="material-symbols-outlined">calendar_month</span></button>';
+        '<div class="due-pop-fields">' +
+        '<input type="date" class="due-pop-date" aria-label="Fälligkeitsdatum" value="' + iso + '" />' +
+        '<input type="time" class="due-pop-time" aria-label="Fälligkeitsuhrzeit" value="' + (timePart || '') + '" />' +
+        '</div>';
       dueCell.appendChild(pop);
       pop.querySelector('.due-pop-item').focus({ preventScroll: true });
+      var dateInput = pop.querySelector('.due-pop-date');
+      var timeInput = pop.querySelector('.due-pop-time');
+
+      // Übernimmt die Feldwerte, sofern sich etwas geändert hat — sonst nur schließen, kein
+      // Toast für ein "Ändern" ohne tatsächliche Änderung. Zeigt im Toast explizit alt → neu,
+      // statt nur den neuen Wert, damit sichtbar ist, DASS und WAS sich geändert hat.
+      function applyFields() {
+        duePopApply = null;
+        var newIso = dateInput.value;
+        var newTimePart = timeInput.value || null;
+        if (!newIso || (newIso === iso && newTimePart === timePart)) { closeDuePop(); return; }
+        var oldLabel = fmtAbs(iso) + (timePart ? ' – ' + timePart : '');
+        var newLabel = fmtAbs(newIso) + (newTimePart ? ' – ' + newTimePart : '');
+        applyDueValue(dueCell, newIso, newTimePart);
+        var newEl = dueCell.querySelector('.due-text');
+        if (newEl) newEl.focus({ preventScroll: true });
+        if (window.showToast) window.showToast('Fälligkeit geändert: ' + oldLabel + ' → ' + newLabel);
+      }
+      // Wird vom globalen "Klick außerhalb schließt"-Listener aufgerufen, damit ein Klick
+      // woanders hin offene Datum-/Uhrzeit-Änderungen übernimmt statt sie zu verwerfen.
+      duePopApply = applyFields;
+      // KEIN change-Listener mehr auf den Feldern: type="date"/type="time" feuern "change"
+      // bereits, sobald der Wert vollständig+gültig eingegeben ist (z. B. nach der 3. Ziffer
+      // vom Jahr) — noch während man tippt, nicht erst beim Verlassen des Felds. Damit schloss
+      // sich das Dropdown mitten im Tippen. Übernommen wird jetzt nur noch bei Enter, Klick
+      // außerhalb ODER wenn der Fokus das Feld-Paar per Tab verlässt (siehe focusout unten).
+      pop.addEventListener('focusout', function (e) {
+        if (!pop.contains(e.relatedTarget) && duePopApply) duePopApply();
+      });
 
       pop.addEventListener('click', function (e) {
         var item = e.target.closest('.due-pop-item');
         if (!item) return;
-        if (item.dataset.act === 'pick') { closeDuePop(); startDueEdit(el); return; }
         closeDuePop();
         bumpDue(dueCell, +item.dataset.days);
       });
       pop.addEventListener('keydown', function (e) {
+        // In den Feldern selbst keine Pfeiltasten-Navigation zwischen den Menüpunkten (Datum/
+        // Uhrzeit nutzen Pfeiltasten nativ, um zwischen Tag/Monat/Jahr bzw. Stunde/Minute zu
+        // springen) — nur Enter (übernehmen) und Escape (schließen) behandeln.
+        if (e.target === dateInput || e.target === timeInput) {
+          if (e.key === 'Escape') { e.stopPropagation(); closeDuePop(); el.focus({ preventScroll: true }); }
+          else if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); applyFields(); }
+          return;
+        }
         if (e.key === 'Escape') { e.stopPropagation(); closeDuePop(); el.focus({ preventScroll: true }); return; }
         if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); return; }
         if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
@@ -3285,6 +3908,7 @@
     function openInlineField(el) {
       if (el.dataset.field === 'faelligkeit') openDuePop(el);
       else if (el.dataset.field === 'berater') startBeraterEdit(el);
+      else if (el.dataset.field === 'typ') openTypPop(el);
       else startTitleEdit(el);
     }
     document.addEventListener('click', function (e) {
@@ -3300,9 +3924,16 @@
       e.preventDefault();
       openInlineField(el);
     });
-    // Klick außerhalb des Schnellaktions-Menüs schließt es, ohne etwas zu übernehmen.
+    // Klick außerhalb des Schnellaktions-Menüs übernimmt offene Datum-/Uhrzeit-Änderungen
+    // (siehe duePopApply in openDuePop) und schließt dann erst — Escape dagegen schließt ohne
+    // zu übernehmen (siehe eigener Escape-Handler in openDuePop).
     document.addEventListener('mousedown', function (e) {
-      if (!e.target.closest('.due-pop') && !e.target.closest('.inline-edit[data-field="faelligkeit"]')) closeDuePop();
+      if (e.target.closest('.due-pop') || e.target.closest('.inline-edit[data-field="faelligkeit"]')) return;
+      if (duePopApply) duePopApply();
+      else closeDuePop();
+    });
+    document.addEventListener('mousedown', function (e) {
+      if (!e.target.closest('.typ-pop') && !e.target.closest('.inline-edit[data-field="typ"]')) closeTypPop();
     });
   })();
   </script>
@@ -3479,13 +4110,99 @@
   </script>
 
   <!-- =======================================================================
+       PANE-RESIZER: manuelle Breitenanpassung zwischen ToDo-Tabelle und Kalender per
+       Ziehen (#paneResizer, siehe <style> oben) — nur bei geöffnetem Kalender relevant,
+       .todo-pane (flex:1) übernimmt automatisch den Rest der Breite, da beide Panes
+       zusammen immer #workspace füllen. Setzt eine feste Pixel-Breite (flex:0 0 <px>,
+       max-width:none) direkt auf .cal-pane per Inline-Style — überschreibt damit die
+       CSS-Presets je Kalender-Ansicht (Tag/3 Tage/Woche, siehe body.cal-open .cal-pane.view-*)
+       bewusst dauerhaft — bleibt auch über Ansicht-/Auf-Zu-Wechsel hinweg bestehen (wie eine
+       einmal gesetzte Nutzer-Präferenz), bis die Seite neu geladen wird. Eigener, unabhängiger
+       Scope — reagiert nur zusätzlich auf die bestehende KALENDER-Logik, ändert sie nicht.
+       ======================================================================= -->
+  <script>
+  (function () {
+    var resizer = document.getElementById('paneResizer');
+    var workspace = document.getElementById('workspace');
+    var todoPane = document.getElementById('todoPane');
+    var calPane = document.getElementById('calPane');
+    if (!resizer || !workspace || !todoPane || !calPane) return;
+    var dragging = false;
+
+    // Mindestbreiten für beide Seiten, damit weder Tabelle noch Kalender beim Ziehen auf
+    // unbrauchbar wenig Platz zusammengedrückt werden können.
+    var MIN_CAL_WIDTH = 280;
+    var MIN_TODO_WIDTH = 360;
+
+    function applyWidth(clientX) {
+      var wsRect = workspace.getBoundingClientRect();
+      var maxCalWidth = wsRect.width - MIN_TODO_WIDTH;
+      var newWidth = wsRect.right - clientX;
+      newWidth = Math.max(MIN_CAL_WIDTH, Math.min(maxCalWidth, newWidth));
+      calPane.style.flex = '0 0 ' + newWidth + 'px';
+      calPane.style.maxWidth = 'none';
+    }
+
+    // .pane-resizer ist bewusst KEIN Flex-Item mehr von #workspace (siehe <style>), damit der
+    // ursprüngliche einzelne "gap" zwischen ToDo-Pane und Kalender unangetastet bleibt — muss
+    // sich deshalb per JS selbst mittig in genau diese Lücke setzen (Mitte zwischen ToDo-Panes
+    // rechter und Kalenders linker Kante). Die sichtbare Linie (::after, siehe <style>) beginnt
+    // erst an der Oberkante der jeweils TIEFER liegenden der beiden echten Karten
+    // (.todo-table-card bzw. .cal-card — NICHT deren Kopfzeilen davor, die je nach Layout/
+    // Zustand unterschiedlich hoch ausfallen und sonst zu viel "Vorlauf" nach oben lassen)
+    // relativ zu #workspace, deshalb per CSS-Variable statt fest verdrahtetem Pixelwert.
+    function positionResizer() {
+      if (!document.body.classList.contains('cal-open')) return;
+      var wsRect = workspace.getBoundingClientRect();
+      var todoRect = todoPane.getBoundingClientRect();
+      var calRect = calPane.getBoundingClientRect();
+      var midX = (todoRect.right + calRect.left) / 2;
+      resizer.style.left = (midX - wsRect.left) + 'px';
+
+      var todoCard = todoPane.querySelector('.todo-table-card');
+      var calCard = calPane.querySelector('.cal-card');
+      var todoCardTop = todoCard ? todoCard.getBoundingClientRect().top : wsRect.top;
+      var calCardTop = calCard ? calCard.getBoundingClientRect().top : wsRect.top;
+      var lineTop = Math.max(todoCardTop, calCardTop) - wsRect.top;
+      resizer.style.setProperty('--resizer-line-top', Math.max(0, lineTop) + 'px');
+    }
+    window.addEventListener('resize', positionResizer);
+    new ResizeObserver(positionResizer).observe(workspace);
+    positionResizer();
+
+    resizer.addEventListener('mousedown', function (e) {
+      if (!document.body.classList.contains('cal-open')) return;
+      // Klick auf den verschachtelten Auf-/Zu-Knopf (#calEdgeHandle, siehe Markup) soll ganz
+      // normal togglen, nicht versehentlich einen Resize-Drag auslösen (der Klick bubbelt sonst
+      // bis zu diesem Listener hoch, da der Button ein Kind von .pane-resizer ist).
+      if (e.target.closest('#calEdgeHandle')) return;
+      dragging = true;
+      resizer.classList.add('resizing');
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      applyWidth(e.clientX);
+      positionResizer();
+    });
+    document.addEventListener('mouseup', function () {
+      if (!dragging) return;
+      dragging = false;
+      resizer.classList.remove('resizing');
+      document.body.style.userSelect = '';
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
        SCHNELLFILTER — Verhalten 1:1 aus mein-tag-v4.html (inQuickBucket/
        renderQuickCounts), unabhängiger Scope, rührt die bestehenden Scripts
        (Suche/Abhaken/Kalender) nicht an, reagiert nur zusätzlich auf sie.
        ======================================================================= -->
   <script>
   (function () {
-    var state = { quick: 'alle' };
+    var state = { quick: 'alle', showDoneExtra: false };
 
     function isAddRow(row) { return row.id === 'addRow'; }
     function isDone(row) { return row.classList.contains('done'); }
@@ -3522,7 +4239,10 @@
     // Ansicht und Zähler garantiert dieselbe Regel benutzen — wie in V4.
     function inQuickBucket(row, quick) {
       if (quick === 'erledigt') return isDone(row);
-      if (isDone(row)) return false; // erledigte nur im Erledigte-Filter
+      // Standardmäßig verschwinden erledigte ToDos komplett — außer der "Erledigte anzeigen"-
+      // Toggle (Standard-Layout, ganz rechts über der Tabelle) ist aktiv, dann zählen sie ganz
+      // normal mit in den jeweiligen Fälligkeits-Topf (z. B. unter "Heute", wenn heute fällig).
+      if (isDone(row) && !state.showDoneExtra) return false;
       var tone = toneOf(row);
       if (quick === 'ueberfaellig') return tone === 'overdue';
       if (quick === 'heute') return tone === 'today' || tone === 'overdue'; // "Heute" schließt Überfällige ein, wie in V4
@@ -3698,6 +4418,14 @@
     // (dort synchron nach dem Einfügen), brauchen hier also keinen eigenen Klick-Abfangposten.
     var searchInput = document.getElementById('search');
     if (searchInput) searchInput.addEventListener('input', applyQuickFilter);
+    var showDoneSwitch = document.getElementById('showDoneSwitchInput');
+    if (showDoneSwitch) {
+      showDoneSwitch.addEventListener('change', function (e) {
+        state.showDoneExtra = e.target.checked;
+        applyQuickFilter();
+        if (window.showToast) window.showToast(state.showDoneExtra ? 'Erledigte Todos werden zusätzlich angezeigt' : 'Erledigte Todos wieder ausgeblendet');
+      });
+    }
     document.addEventListener('click', function (e) {
       if (e.target.closest('.todo-check')) {
         setTimeout(applyQuickFilter, 0);
@@ -3718,7 +4446,7 @@
   <script>
   (function () {
     var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
-    var beraterFilter = new Set();   // leer = alle
+    var beraterFilter = new Set(['Jan Joisten']);   // Default: nur der eingeloggte Berater, leer = alle
     var beraterPending = new Set();  // Arbeitsauswahl im offenen Menü, erst "Filter anwenden" übernimmt sie
 
     function esc(s) {
@@ -3746,7 +4474,7 @@
         '<input class="menu-search" id="beraterSearch" placeholder="Suchen" autocomplete="off" />' +
         '<span class="material-symbols-outlined">search</span>' +
         '</div></div>' +
-        '<label class="bmenu-check bmenu-selectall"><input type="checkbox" id="bSelectAll" /> <span>Alle auswählen</span></label>' +
+        '<label class="bmenu-check bmenu-selectall"><input type="checkbox" id="bSelectAll" /> <span>Alle Berater auswählen</span></label>' +
         '<div class="bmenu-list" id="beraterListEl">' + BERATER_ALL.map(function (n) {
           return '<label class="bmenu-check" data-name="' + esc(n) + '"><input type="checkbox" ' + (beraterPending.has(n) ? 'checked' : '') + ' /> <span>' + esc(n) + '</span></label>';
         }).join('') + '</div>' +
@@ -3811,8 +4539,7 @@
       sa.indeterminate = checked.length > 0 && checked.length < visible.length;
     }
     function updateBeraterButton() {
-      var n = beraterFilter.size, badge = document.getElementById('beraterCount');
-      badge.textContent = n; badge.style.display = n ? '' : 'none';
+      var n = beraterFilter.size;
       btnEl.classList.toggle('filter-active', n > 0);
     }
 
@@ -3848,6 +4575,9 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeBeraterMenu();
     });
+
+    updateBeraterButton();
+    applyBeraterFilter();
   })();
   </script>
 
@@ -3923,6 +4653,7 @@
     // Für den globalen "Filter zurücksetzen"-Button (siehe AKTIVE-FILTER-CHIPS weiter unten) —
     // derselbe Ablauf wie der bestehende "Alle löschen"-Klick im Menü selbst.
     window.getTypFilter = function () { return typFilter; };
+    window.applyTypFilter = applyTypFilter;
     window.clearTypFilter = function () {
       typFilter = new Set();
       if (menuEl.classList.contains('open')) buildMenu();
@@ -4270,18 +5001,20 @@
 
     function fmtChipDate(iso) { var p = iso.split('-'); return p[2] + '.' + p[1] + '.'; }
 
+    // Absichtlich OHNE den Schnellfilter (Heute/Morgen/…) — eine reine Fälligkeits-Auswahl ist
+    // kein "Filter" im Sinne dieses Reset-Buttons (der aktive Tab selbst zeigt ja schon, was
+    // gewählt ist), sondern nur Sortierung/Art-Filter/Berater/Zeitraum lösen ihn aus.
     function anyOtherFilterActive() {
       var sortPriority = window.getSortPriority ? window.getSortPriority() : [];
       var typFilter = window.getTypFilter ? window.getTypFilter() : null;
-      var quick = window.getQuickFilter ? window.getQuickFilter() : 'alle';
-      return sortPriority.length > 0 || !!(typFilter && typFilter.size) || quick !== 'alle';
+      return sortPriority.length > 0 || !!(typFilter && typFilter.size);
     }
 
     function renderChips() {
       var chips = [];
       var beraterFilter = window.getBeraterFilter ? window.getBeraterFilter() : null;
       if (beraterFilter && beraterFilter.size) {
-        chips.push('<span class="fchip">Berater: ' + [...beraterFilter].join(', ') + ' <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>');
+        chips.push('<span class="fchip">' + [...beraterFilter].join(', ') + ' <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>');
       }
       var range = window.getRangeFilter ? window.getRangeFilter() : null;
       if (range) {
@@ -4313,6 +5046,7 @@
     });
 
     window.renderChips = renderChips;
+    renderChips();
   })();
   </script>
 
@@ -4367,9 +5101,123 @@
        ======================================================================= -->
   <script>
   (function () {
+    // "Erledigte anzeigen"-Toggle sitzt je Layout an einer anderen Stelle im DOM (Standard:
+    // ganz rechts über der Tabelle in .todo-table-toolbar; Neues Layout: direkt rechts vom
+    // Zeitraum-Filter in .todo-pane-filters) — beides sind unterschiedliche Flex-Container,
+    // daher wird der (einzige) Toggle hier tatsächlich verschoben statt zweimal im Markup zu
+    // stehen (sonst zwei Checkboxen mit derselben ID/demselben Zustand synchron zu halten).
+    function moveShowDoneSwitch() {
+      var sw = document.querySelector('.todo-show-done-switch');
+      if (!sw) return;
+      if (document.body.classList.contains('design-tabs')) {
+        var rangeFilter = document.querySelector('.range-filter');
+        if (rangeFilter) rangeFilter.parentNode.insertBefore(sw, rangeFilter.nextSibling);
+      } else {
+        var chipRow = document.getElementById('chipRow');
+        if (chipRow) chipRow.parentNode.insertBefore(sw, chipRow.nextSibling);
+      }
+    }
+    // Suche sitzt je Layout ebenfalls an unterschiedlicher Stelle (Standard: in
+    // .todo-pane-filters neben Zeitraum/Kalender; Neues Layout: eine Zeile höher, in #quickSeg
+    // rechts von "Diese Woche") — gleiches Verschiebe-Prinzip wie moveShowDoneSwitch oben.
+    function moveSearchWrap() {
+      var wrap = document.getElementById('searchWrap');
+      if (!wrap) return;
+      if (document.body.classList.contains('design-tabs')) {
+        var seg = document.getElementById('quickSeg');
+        if (seg) seg.appendChild(wrap);
+      } else {
+        var btnCal = document.getElementById('btnCal');
+        if (btnCal) btnCal.parentNode.insertBefore(wrap, btnCal);
+      }
+    }
     document.getElementById('designSwitchInput').addEventListener('change', function (e) {
       document.body.classList.toggle('design-tabs', e.target.checked);
+      moveShowDoneSwitch();
+      moveSearchWrap();
+      positionDesignTabsFullline();
     });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       DESIGN-TABS-VOLLBREITE-TRENNLINIE — NUR für diesen Prototyp-Vergleich, kein
+       Produkt-Feature. Setzt die HÖHE von .design-tabs-fullline (Kind von .main, siehe Markup)
+       so, dass sie exakt bis zur Unterkante von #quickSeg reicht (top:0 sitzt fest am oberen
+       Rand von .main) — über die volle Breite von .main (Seitennav bis Bildschirmrand), nicht
+       nur der ToDo-Spalte, reicht damit bei geöffnetem Kalender bis zum "+ Termin"-Bereich
+       rechts UND wirklich bis zum Bildschirmrand (nicht nur bis zum Rand von .content, dessen
+       eigenes Padding sonst noch dazwischen läge). #quickSeg ist NICHT sticky und scrollt mit
+       dem Todo-Inhalt aus dem sichtbaren Bereich von .content heraus — deshalb zusätzlich ein
+       scroll-Listener auf .content (nicht nur resize), und das Band blendet sich aus, sobald
+       #quickSeg oberhalb/unterhalb des sichtbaren .content-Bereichs liegt (sonst würde es bei
+       starkem Scrollen fälschlich über der Topbar oder mitten im Tabelleninhalt erscheinen, da
+       .main selbst nicht clippt). -->
+  <script>
+  (function () {
+    function positionDesignTabsFullline() {
+      var line = document.getElementById('designTabsFullline');
+      var seg = document.getElementById('quickSeg');
+      var main = document.querySelector('.main');
+      var content = document.querySelector('.content');
+      var calHead = document.querySelector('.cal-pane-head');
+      var todoAddBtn = document.getElementById('btnAddTodoQuick');
+      var isDesignTabs = document.body.classList.contains('design-tabs');
+      // "+ ToDo" sitzt jetzt auf Höhe der aktiven-Filter-Chips (#chipRow, siehe
+      // .todo-table-toolbar), direkt über der Todo-Tabelle statt in der Fälligkeitsfilter-
+      // Zeile oben — "+ Termin" soll auf genau derselben Höhe stehen. Da .cal-pane-head links
+      // davor kein Gegenstück zur zusätzlichen Berater/Zeitraum/Suche/Kalender-Zeile UND zur
+      // Chip-Zeile hat, wird .cal-pane-head hier einfach so hoch gemacht, dass sie exakt bis
+      // zur Unterkante von "+ ToDo" reicht — mit align-items:flex-end (siehe <style>) sitzt
+      // "+ Termin" dadurch am unteren Rand dieser (jetzt hohen) Kopfzeile, exakt auf Höhe von
+      // "+ ToDo". margin-bottom von .cal-pane-head wird dafür auf 0 gesetzt (die 24px-CSS-
+      // Regel würde sonst zusätzlich zur berechneten Höhe noch oben drauf kommen). Reset
+      // (leere Strings) außerhalb von "Neues Layout", sonst bliebe der Inline-Wert beim
+      // Zurückschalten fälschlich hängen.
+      if (calHead) {
+        if (isDesignTabs && todoAddBtn) {
+          calHead.style.marginBottom = '0px';
+          calHead.style.height = '0px';
+          var calHeadTop = calHead.getBoundingClientRect().top;
+          var targetBottom = todoAddBtn.getBoundingClientRect().bottom;
+          calHead.style.height = Math.max(0, targetBottom - calHeadTop) + 'px';
+        } else {
+          calHead.style.height = '';
+          calHead.style.marginBottom = '';
+        }
+      }
+      // Kalender-Karte (.cal-card) soll weiterhin auf gleicher Höhe wie die Todo-Tabellen-Karte
+      // (.todo-table-card) beginnen — der kleine Rest-Abstand zwischen "+ ToDo"-Unterkante und
+      // dem tatsächlichen Tabellenanfang (Chip-Zeilen-margin-bottom) wird hier 1:1 auf
+      // .cal-card als margin-top übertragen, damit beide Karten trotz der Button-Ausrichtung
+      // an derselben Y-Position starten.
+      var todoTableCard = document.querySelector('.todo-table-card');
+      var calCard = document.querySelector('.cal-card');
+      if (todoTableCard && calCard) {
+        if (isDesignTabs && todoAddBtn) {
+          var gap = todoTableCard.getBoundingClientRect().top - todoAddBtn.getBoundingClientRect().bottom;
+          calCard.style.marginTop = Math.max(0, gap) + 'px';
+        } else {
+          calCard.style.marginTop = '';
+        }
+      }
+      if (!line || !seg || !main || !content || !isDesignTabs) return;
+      var segRect = seg.getBoundingClientRect();
+      var mainRect = main.getBoundingClientRect();
+      var contentRect = content.getBoundingClientRect();
+      var visible = segRect.bottom >= contentRect.top && segRect.top <= contentRect.bottom;
+      line.style.display = visible ? '' : 'none';
+      if (visible) line.style.height = Math.max(0, segRect.bottom - mainRect.top) + 'px';
+    }
+    window.positionDesignTabsFullline = positionDesignTabsFullline;
+    window.addEventListener('resize', positionDesignTabsFullline);
+    var contentEl = document.querySelector('.content');
+    if (contentEl) contentEl.addEventListener('scroll', positionDesignTabsFullline);
+    // .workspace ändert bei jedem Kalender-Auf-/Zuklappen seine Höhe/Breite (display:block vs.
+    // flex-row, siehe body.cal-open .workspace) — ResizeObserver fängt das automatisch ab, ohne
+    // dass dieses Script die KALENDER-Logik kennen oder extra anfassen müsste.
+    new ResizeObserver(positionDesignTabsFullline).observe(document.getElementById('workspace'));
+    positionDesignTabsFullline();
   })();
   </script>
 
