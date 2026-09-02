@@ -2965,84 +2965,90 @@
       });
     });
 
-    // Antragsteller beim Anlegen: Dropdown statt Freitext, analog zu mein-tag-v4.html
-    // (dortiges CUSTOMERS/#addPerson-Select) — hier als einfache Namensliste, da V5-Trial
-    // (anders als V4) keine Kundennummern/Kontaktdaten pro Antragsteller pflegt.
-    var ANTRAGSTELLER_ALL = ['Andreas Weber', 'Lena Bachmann', 'Sandra Klein', 'Petra Schulz', 'Familie Meier', 'Thomas Berger', 'Michael Braun', 'Julia Hoffmann', 'Mehmet Öztürk'];
-    document.getElementById('addPerson').innerHTML = '<option value="">Antragsteller</option>' + ANTRAGSTELLER_ALL.map(function (n) {
-      return '<option value="' + n + '">' + n + '</option>';
-    }).join('');
+    // Gemeinsamer Aufbau für Antragsteller- UND Berater-Feld beim Anlegen: Such-Input + eigenes
+    // Vorschlags-Dropdown statt nativem <select> (dasselbe Muster wie beim Berater-Inline-Edit
+    // einer bestehenden Zeile, siehe .berater-edit-wrap/-list/-option/-clear und
+    // startBeraterEdit weiter unten im ROW-EVENTS-Script — dort in eigenem IIFE-Scope, deshalb
+    // hier als eigene kleine Factory statt geteilt). fallbackValue ist der Wert, auf den ein
+    // Freitext ohne Listentreffer beim Verlassen des Felds zurückfällt ('' bei Antragsteller,
+    // da leer/"Ohne Antragsteller" dort ein gültiger Wert ist; "Jan Joisten" bei Berater).
+    function setupSearchCombobox(inputId, listId, clearId, names, fallbackValue) {
+      var input = document.getElementById(inputId);
+      var list = document.getElementById(listId);
+      var clearBtn = document.getElementById(clearId);
+      input.value = fallbackValue;
 
-    // Berater beim Anlegen: dasselbe Such-Input+eigenes-Dropdown-Muster wie beim Berater-
-    // Inline-Edit einer bestehenden Zeile (siehe .berater-edit-wrap/-list/-option/-clear und
-    // startBeraterEdit weiter unten im ROW-EVENTS-Script) statt eines nativen <select> — dort
-    // in eigenem IIFE-Scope, deshalb hier dieselbe Namensliste noch einmal separat gepflegt.
-    // Vorbelegt mit "Jan Joisten", dem aktuell eingeloggten Berater (ME im Berater-Filter-
-    // Script) — ändert der Nutzer nichts, bleibt das Verhalten identisch zum Default.
-    var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
-    var addBeraterInput = document.getElementById('addBerater');
-    var addBeraterList = document.getElementById('addBeraterList');
-    var addBeraterClear = document.getElementById('addBeraterClear');
-    addBeraterInput.value = 'Jan Joisten';
-
-    function addBeraterMatches() {
-      var q = addBeraterInput.value.trim().toLowerCase();
-      return BERATER_ALL.filter(function (b) { return !q || b.toLowerCase().indexOf(q) !== -1; });
-    }
-    function addBeraterHighlighted() { return addBeraterList.querySelector('.berater-edit-option.highlighted'); }
-    function addBeraterSetHighlight(opt) {
-      var current = addBeraterHighlighted();
-      if (current) current.classList.remove('highlighted');
-      if (opt) { opt.classList.add('highlighted'); opt.scrollIntoView({ block: 'nearest' }); }
-    }
-    function renderAddBeraterList() {
-      var names = addBeraterMatches();
-      if (!names.length) { addBeraterList.hidden = true; addBeraterList.innerHTML = ''; return; }
-      addBeraterList.innerHTML = names.map(function (b) {
-        return '<button type="button" class="berater-edit-option" data-value="' + b + '">' + b + '</button>';
-      }).join('');
-      addBeraterList.hidden = false;
-      addBeraterSetHighlight(addBeraterList.querySelector('.berater-edit-option'));
-    }
-    function closeAddBeraterList() { addBeraterList.hidden = true; addBeraterList.innerHTML = ''; }
-    addBeraterInput.addEventListener('focus', renderAddBeraterList);
-    addBeraterInput.addEventListener('input', renderAddBeraterList);
-    // Gleicher mousedown-preventDefault-Trick wie beim Inline-Edit: Klick in die Liste/auf "×"
-    // soll dem Input nicht vorher per blur den Fokus entziehen.
-    addBeraterList.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-    addBeraterList.addEventListener('click', function (ev) {
-      var opt = ev.target.closest('.berater-edit-option');
-      if (!opt) return;
-      addBeraterInput.value = opt.dataset.value;
-      closeAddBeraterList();
-    });
-    addBeraterInput.addEventListener('keydown', function (ev) {
-      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
-        ev.preventDefault();
-        var opts = Array.prototype.slice.call(addBeraterList.querySelectorAll('.berater-edit-option'));
-        if (!opts.length) return;
-        var i = opts.indexOf(addBeraterHighlighted());
-        var next = ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length;
-        addBeraterSetHighlight(opts[next]);
-      } else if (ev.key === 'Enter') {
-        var active = addBeraterHighlighted();
-        if (active) { ev.preventDefault(); addBeraterInput.value = active.dataset.value; closeAddBeraterList(); }
-      } else if (ev.key === 'Escape') {
-        closeAddBeraterList();
+      function matches() {
+        var q = input.value.trim().toLowerCase();
+        return names.filter(function (b) { return !q || b.toLowerCase().indexOf(q) !== -1; });
       }
-    });
-    addBeraterInput.addEventListener('blur', function () {
-      // Nur echte Namen aus der Liste bleiben stehen — Freitext ohne Treffer fällt zurück auf
-      // "Jan Joisten", genau wie das ursprüngliche <select> keine Freitext-Werte zuließ.
-      if (BERATER_ALL.indexOf(addBeraterInput.value.trim()) === -1) addBeraterInput.value = 'Jan Joisten';
-      closeAddBeraterList();
-    });
-    addBeraterClear.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-    addBeraterClear.addEventListener('click', function () {
-      addBeraterInput.value = '';
-      addBeraterInput.focus();
-      renderAddBeraterList();
-    });
+      function highlighted() { return list.querySelector('.berater-edit-option.highlighted'); }
+      function setHighlight(opt) {
+        var current = highlighted();
+        if (current) current.classList.remove('highlighted');
+        if (opt) { opt.classList.add('highlighted'); opt.scrollIntoView({ block: 'nearest' }); }
+      }
+      function render() {
+        var found = matches();
+        if (!found.length) { list.hidden = true; list.innerHTML = ''; return; }
+        list.innerHTML = found.map(function (b) {
+          return '<button type="button" class="berater-edit-option" data-value="' + b + '">' + b + '</button>';
+        }).join('');
+        list.hidden = false;
+        setHighlight(list.querySelector('.berater-edit-option'));
+      }
+      function close() { list.hidden = true; list.innerHTML = ''; }
+      input.addEventListener('focus', render);
+      input.addEventListener('input', render);
+      // Verhindert, dass ein Klick in die Liste/auf "×" dem Input erst per blur den Fokus
+      // entzieht, bevor der eigentliche Klick verarbeitet wird.
+      list.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      list.addEventListener('click', function (ev) {
+        var opt = ev.target.closest('.berater-edit-option');
+        if (!opt) return;
+        input.value = opt.dataset.value;
+        close();
+      });
+      input.addEventListener('keydown', function (ev) {
+        if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+          ev.preventDefault();
+          var opts = Array.prototype.slice.call(list.querySelectorAll('.berater-edit-option'));
+          if (!opts.length) return;
+          var i = opts.indexOf(highlighted());
+          var next = ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length;
+          setHighlight(opts[next]);
+        } else if (ev.key === 'Enter') {
+          var active = highlighted();
+          if (active) { ev.preventDefault(); input.value = active.dataset.value; close(); }
+        } else if (ev.key === 'Escape') {
+          close();
+        }
+      });
+      input.addEventListener('blur', function () {
+        // Nur echte Namen aus der Liste bleiben stehen — Freitext ohne Treffer fällt auf
+        // fallbackValue zurück, genau wie ein natives <select> keine Freitext-Werte zuließe.
+        if (names.indexOf(input.value.trim()) === -1) input.value = fallbackValue;
+        close();
+      });
+      clearBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      clearBtn.addEventListener('click', function () {
+        input.value = '';
+        input.focus();
+        render();
+      });
+    }
+
+    // Antragsteller beim Anlegen — leer bleibt ein gültiger Wert ("Ohne Antragsteller", siehe
+    // commitAddRow), deshalb fallbackValue '' statt eines festen Namens.
+    var ANTRAGSTELLER_ALL = ['Andreas Weber', 'Lena Bachmann', 'Sandra Klein', 'Petra Schulz', 'Familie Meier', 'Thomas Berger', 'Michael Braun', 'Julia Hoffmann', 'Mehmet Öztürk'];
+    setupSearchCombobox('addPerson', 'addPersonList', 'addPersonClear', ANTRAGSTELLER_ALL, '');
+
+    // Berater beim Anlegen — dieselbe Namensliste wie im Berater-Filter oben (dort BERATER_ALL,
+    // aber in eigenem IIFE-Scope, deshalb hier separat gepflegt). Vorbelegt mit "Jan Joisten",
+    // dem aktuell eingeloggten Berater (ME im Berater-Filter-Script) — ändert der Nutzer
+    // nichts, bleibt das Verhalten identisch zum Default.
+    var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
+    setupSearchCombobox('addBerater', 'addBeraterList', 'addBeraterClear', BERATER_ALL, 'Jan Joisten');
 
     var TODAY_ISO = '2026-08-26';
     function tomorrowIso() {
