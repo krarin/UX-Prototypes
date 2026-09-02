@@ -261,7 +261,7 @@
        faelligkeit/berater) statt eines festen Werts, damit jede Spaltenbreite einzeln
        angepasst werden kann (siehe z. B. @media (max-width: 992px) weiter unten). */
     .todo-group, .add-row-fields {
-      --col-w-titel: minmax(240px, 1fr); --col-w-antragsteller: 180px; --col-w-faelligkeit: 180px; --col-w-berater: 160px; --col-w-typ: 72px;
+      --col-w-titel: minmax(240px, 1fr); --col-w-antragsteller: 180px; --col-w-faelligkeit: 180px; --col-w-berater: 130px; --col-w-typ: 72px;
       --cols: var(--col-w-titel) var(--col-w-typ) var(--col-w-faelligkeit) var(--col-w-antragsteller) var(--col-w-berater);
     }
     /* Explizite grid-column-Positionen statt impliziter Auto-Platzierung nach DOM-Reihenfolge —
@@ -282,16 +282,15 @@
     .col-applicant, .todo-applicant, .add-person-slot { grid-column: 4; grid-row: 1; }
     .col-berater, .todo-berater, .add-berater-slot { grid-column: 5; grid-row: 1; }
 
-    /* Die Gruppen-Überschrift (Name/Zähler/Einklapp-Pfeil je Kategorie) ist standardmäßig
-       ausgeblendet — bei aktivem Schnellfilter war sie schon vorher redundant (der Tab sagt
-       schon, worum es geht), bei "Alle" soll es EINE durchgehende Liste ohne
-       Zwischen-Überschriften sein. Die Spalten-Labels selbst laufen stattdessen über die eine
-       gemeinsame .todo-columns-header weiter unten. Ausnahme: body.grouping-due (aktive
-       Gruppierung nach Tag/Fälligkeit im Gruppierung-Filter, siehe Script weiter unten) zeigt
-       .group-headline gezielt wieder — genau dafür ist die Info da. .group-labels bleibt auch
-       dann verborgen (die echten Spalten-Header kommen ohnehin von .todo-columns-header). */
+    /* Die alte Gruppen-Überschrift (Name/Zähler/Einklapp-Pfeil je Kategorie, großer 16px-Look)
+       bleibt komplett ausgeblendet — auch der "Gruppierung"-Test-Toggle (#groupingSwitchInput)
+       nutzt sie NICHT mehr. Der Toggle zeigt stattdessen bei "Alle" dieselben kleinen, dezenten
+       .quick-subheading-Überschriften wie bereits unter "Heute"/"Woche" (siehe SCHNELLFILTER-
+       Script/updateSubheadings) — damit sehen gruppierte Überschriften über alle Schnellfilter
+       hinweg optisch identisch aus, statt zwei verschiedene Überschriften-Stile im selben
+       Prototyp zu haben. Die Spalten-Labels selbst laufen weiterhin über die eine gemeinsame
+       .todo-columns-header weiter unten. */
     .group-title-row { display: none; }
-    body.grouping-due .group-title-row { display: block; padding: 10px 12px; border-bottom: 1px solid var(--color-neutral-light-400); }
     .group-headline { display: flex; align-items: center; gap: 8px; border: none; background: none; min-width: 0; }
     .group-headline .group-name { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-900); }
     .group-headline .group-count { font-size: 16px; color: var(--color-neutral-dark-400); }
@@ -320,6 +319,13 @@
       margin-left: 16px; font-size: 13px; font-weight: 600; letter-spacing: 0.2px;
       text-transform: uppercase; color: var(--color-neutral-dark-600);
     }
+    /* Ohne .quick-subheading trennt .todo-columns-header die Überschrift schon per eigenem
+       border-bottom vom ersten Todo — mit Zwischenüberschrift fehlte diese Trennlinie zum
+       jeweils ersten Todo der Gruppe (jede Zeile hat nur border-bottom, keinen border-top).
+       Derselbe Rahmen wie .todo-row's eigener border-bottom, nur oben am ersten Kind. */
+    .quick-subheading + .todo-table-wrap .todo-table-body .todo-row:first-child {
+      border-top: 1px solid var(--color-neutral-light-400);
+    }
 
     /* display:contents löst den Wrapper optisch auf — die drei Labels darin werden direkt zu
        Grid-Items in Spalte 2/3/4 des .group-title-row-Grids, genau wie ihre Pendants in .todo-row. */
@@ -343,7 +349,7 @@
        für die Innenzentrierung, damit die Trennlinien (border-right) über die volle Zeilenhöhe
        laufen, genau wie die Gitternetzlinien im Kalender. */
     .todo-columns-header {
-      --col-w-titel: minmax(240px, 1fr); --col-w-antragsteller: 180px; --col-w-faelligkeit: 180px; --col-w-berater: 160px; --col-w-typ: 72px;
+      --col-w-titel: minmax(240px, 1fr); --col-w-antragsteller: 180px; --col-w-faelligkeit: 180px; --col-w-berater: 130px; --col-w-typ: 72px;
       --cols: var(--col-w-titel) var(--col-w-typ) var(--col-w-faelligkeit) var(--col-w-antragsteller) var(--col-w-berater);
       display: grid; grid-template-columns: var(--cols);
       column-gap: 16px; align-items: stretch; padding: 10px 12px; background: var(--color-neutral-light-100);
@@ -517,17 +523,18 @@
     /* Finanzierungswunsch-Popover (Variante A, siehe .row-act[data-act="finanzierungswunsch"]
        oben) — eigene, inhaltlich neutrale Kategorie (Finanzierungsgrund/Immobilientyp/
        Immobiliennutzung/PLZ betreffen den Finanzierungswunsch des ToDos, nicht eine einzelne
-       Person), deshalb eigene .kv-*-Klassen statt der .applicant-info-*-Klassen — gleicher
-       Karten-Rahmen/Schatten wie .applicant-info-popover für optische Konsistenz. Sichtbar-
+       Person), deshalb eigene .kv-*-Klassen statt der .applicant-info-*-Klassen — Rahmen/
+       Schatten/min-width/Padding bewusst 1:1 wie .applicant-info-popover für optische
+       Konsistenz zwischen beiden Popover-Typen. Sichtbar-
        Trigger über :has() (bereits an anderer Stelle im File etabliert, siehe
        .add-typ-option:has(input:checked)) statt Geschwister-Selektor, da Button UND Karte
        beide direkte Kinder von .todo-title-actions sind. right:0 statt left:0 (anders als bei
        .applicant-info-popover): .todo-title-actions sitzt via margin-left:auto ganz rechts in
        der Titel-Zeile, links ausgerichtet würde die Karte über den Zeilenrand hinausragen. */
     .financing-wish-popover {
-      display: none; position: absolute; top: calc(100% + 4px); right: 0; z-index: 2; min-width: 210px;
+      display: none; position: absolute; top: calc(100% + 4px); right: 0; z-index: 2; min-width: 240px;
       background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
-      box-shadow: var(--shadow-card); padding: 8px 10px;
+      box-shadow: var(--shadow-card); padding: 12px 14px;
     }
     .todo-title-actions:has([data-act="finanzierungswunsch"]:hover) .financing-wish-popover,
     .todo-title-actions:has([data-act="finanzierungswunsch"]:focus-visible) .financing-wish-popover { display: block; }
@@ -617,6 +624,10 @@
        buildFinancingWishPopover im Script weiter unten) — sonst gäbe es ein Icon ohne Inhalt. */
     .row-act[data-act="finanzierungswunsch"] { display: none; }
     body.fw-variant-icon .todo-row.has-financing-wish .row-act[data-act="finanzierungswunsch"] { display: inline-flex; }
+    /* In der Kombi-Variante "both" ist es (Verlauf/Löschen dort ausgeblendet, siehe unten) der
+       einzige sichtbare Button in .todo-title-actions und sitzt dadurch ohne Extra-Abstand
+       direkt am rechten Zeilenrand — etwas mehr Luft dorthin wirkt weniger gequetscht. */
+    .row-act[data-act="finanzierungswunsch"] { margin-right: 4px; }
     /* Verlauf/Löschen direkt neben dem Titel sind in Variante C (Ausklappen) redundant, seit
        beide Buttons oben in .expand-meta-actions im Ausklapp-Panel selbst stecken (siehe
        buildExpandPanel) — dort für JEDE Zeile erreichbar, nicht nur für ausgeklappte. In den
@@ -1685,10 +1696,23 @@
              hier direkt neben dem Layout-Switch, da beide reine Vergleichs-Werkzeuge für
              diesen Prototyp sind (kein Produkt-Feature). -->
         <div class="fw-variant-switcher" id="fwVariantSwitcher">
-          <span class="fw-variant-switcher-label">Finanzierungswunsch-Anzeige (Test):</span>
-          <label><input type="radio" name="fwVariant" value="icon" /> Icon + Popover</label>
+          <span class="fw-variant-switcher-label">Finanzierung:</span>
           <label><input type="radio" name="fwVariant" value="expand" checked /> Ausklappen</label>
+          <label><input type="radio" name="fwVariant" value="both" /> Ausklappen + Icon</label>
         </div>
+        <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: lässt bei "Alle" die
+             Fälligkeits-Gruppen (Überfällig/Heute/Morgen/Später) wieder mit sichtbarer
+             Überschrift erscheinen (reaktiviert body.grouping-due, siehe .group-title-row in
+             <style> — dieselbe, bereits vorhandene Regel, die früher den eigenständigen
+             "Gruppierung"-Filter angezeigt hat, bevor er durch die Sortier-Pfeile in der
+             Spaltenüberschrift ersetzt wurde). Nur bei "Alle" sichtbar wirksam (siehe
+             body.quick-filtered) — bei den übrigen Schnellfiltern zeigt ohnehin schon der
+             aktive Tab bzw. die Zwischenüberschrift (.quick-subheading) das Nötige. -->
+        <label class="design-switch" title="Fälligkeits-Gruppen bei &quot;Alle&quot; mit Überschrift zeigen (nur Prototyp-Vergleich)">
+          <input type="checkbox" id="groupingSwitchInput" />
+          <span class="design-switch-track"><span class="design-switch-knob"></span></span>
+          <span class="design-switch-label">Gruppierung</span>
+        </label>
         <div class="spacer"></div>
         <button class="top-icon" title="Neuer Eintrag"><span class="material-icons">add_box</span></button>
         <button class="top-icon" title="Vollbild"><span class="material-icons">fullscreen</span></button>
@@ -3533,12 +3557,17 @@
       });
 
       // Bei "Alle" sind mehrere Gruppen gleichzeitig sichtbar (alle in derselben .todo-table-card,
-      // siehe CSS) — nur die Pagination der letzten sichtbaren Gruppe zeigen, damit nicht mehrere
-      // "Einträge pro Seite …"-Zeilen mitten in der Liste auftauchen. Bei einem konkreten
-      // Schnellfilter unangetastet lassen (dort ist ohnehin nur eine Gruppe sichtbar).
+      // siehe CSS) — standardmäßig (durchgehende Liste ohne Zwischen-Überschriften) nur die
+      // Pagination der letzten sichtbaren Gruppe zeigen, damit nicht mehrere "Einträge pro
+      // Seite …"-Zeilen mitten in der Liste auftauchen. AUSNAHME: ist der "Gruppierung"-Toggle
+      // aktiv (body.grouping-due, siehe .quick-subheading/updateSubheadings) sieht "Alle"
+      // optisch aus wie "Heute"/"Woche" mit mehreren benannten Abschnitten — dort behält jede
+      // Gruppe konsequenterweise auch ihre EIGENE Pagination, statt sie zu verschmelzen. Bei
+      // einem konkreten Schnellfilter ohnehin unangetastet (dort ist nur eine Gruppe sichtbar).
+      var grouped = document.body.classList.contains('grouping-due');
       groups.forEach(function (g) { g.classList.remove('hide-pagination'); });
       var visible = Array.prototype.filter.call(groups, function (g) { return !g.classList.contains('quick-empty'); });
-      if (state.quick === 'alle') {
+      if (state.quick === 'alle' && !grouped) {
         visible.forEach(function (g, i) {
           if (i < visible.length - 1) g.classList.add('hide-pagination');
         });
@@ -3547,15 +3576,15 @@
       // Jede Pagination zeigt immer die Anzahl ihrer TATSÄCHLICH sichtbaren Zeilen (nicht die
       // statische Gesamtzahl der Gruppe) — sonst weicht z. B. bei "Erledigte" die angezeigte
       // Zahl von den tatsächlich sichtbaren Zeilen ab, wenn eine Gruppe zusätzlich offene ToDos
-      // enthält. Bei "Alle" bekommt nur die letzte sichtbare Gruppe (einzige mit Pagination)
-      // stattdessen die Summe über alle verschmolzenen Gruppen.
+      // enthält. Bei "Alle" OHNE Gruppierung bekommt nur die letzte sichtbare Gruppe (einzige
+      // mit Pagination) stattdessen die Summe über alle verschmolzenen Gruppen.
       groups.forEach(function (g) {
         var countEl = g.querySelector('.todo-pagination .pg-text:nth-of-type(2)');
         if (!countEl) return;
         var n = visibleRowCount(g);
         countEl.textContent = n ? ('1 – ' + n + ' von ' + n) : '0 von 0';
       });
-      if (state.quick === 'alle' && visible.length > 1) {
+      if (state.quick === 'alle' && !grouped && visible.length > 1) {
         var totalRows = visible.reduce(function (sum, g) { return sum + visibleRowCount(g); }, 0);
         var lastCountEl = visible[visible.length - 1].querySelector('.todo-pagination .pg-text:nth-of-type(2)');
         if (lastCountEl) lastCountEl.textContent = '1 – ' + totalRows + ' von ' + totalRows;
@@ -3564,17 +3593,26 @@
 
     // "Heute" und "Woche" bündeln mehrere Fälligkeits-Töne in EINER Ansicht (siehe
     // inQuickBucket) — ohne Hinweis wirkt es dort wie ein Bug, dass z. B. unter "Heute" auch
-    // überfällige Todos auftauchen. Der jeweils NAMENSGEBENDE Ton (today bei "Heute", today bei
-    // "Woche") bekommt bewusst KEINE eigene Überschrift (der aktive Tab sagt ja schon, worum es
-    // geht) — nur die zusätzlich mit hineingemischten Töne werden per kleiner, dezenter
-    // Zwischenüberschrift (.quick-subheading, selber Look wie .expand-section-label) benannt.
+    // überfällige Todos auftauchen. Bei "Heute" bekommt der namensgebende today-Ton bewusst
+    // KEINE eigene Überschrift (der aktive Tab sagt ja schon, worum es geht) — nur der
+    // zusätzlich mit hineingemischte overdue-Ton wird benannt. Bei "Woche" dagegen sind VIER
+    // Töne gemeinsam sichtbar (nicht nur zwei wie bei "Heute"), da wirkt "Heute" ohne
+    // Überschrift zwischen den anderen benannten Gruppen inkonsistent — deshalb dort zusätzlich
+    // "Heute" als eigene Überschrift, obwohl der Tab selbst nur "Woche" heißt.
+    // "Alle" hat hier bewusst KEINEN festen Eintrag: das ist der "Gruppierung"-Test-Toggle
+    // (#groupingSwitchInput, body.grouping-due) — nur wenn er aktiv ist, sollen bei "Alle"
+    // dieselben Töne benannt werden (siehe updateSubheadings), sonst bleibt "Alle" eine
+    // durchgehende Liste ohne Zwischen-Überschriften wie bisher.
     var SUBHEADING_LABEL = {
       heute: { overdue: 'Überfällig' },
-      woche: { overdue: 'Überfällig', morgen: 'Morgen', spaeter: 'Zukünftige' }
+      woche: { overdue: 'Überfällig', today: 'Heute', morgen: 'Morgen', spaeter: 'Zukünftige' },
+      alle: { today: 'Heute', overdue: 'Überfällig', morgen: 'Morgen', spaeter: 'Später' }
     };
 
     function updateSubheadings() {
       document.querySelectorAll('.quick-subheading').forEach(function (el) { el.remove(); });
+      var isGrouped = document.body.classList.contains('grouping-due');
+      if (state.quick === 'alle' && !isGrouped) return;
       var labels = SUBHEADING_LABEL[state.quick];
       if (!labels) return;
       Object.keys(labels).forEach(function (tone) {
@@ -4299,19 +4337,22 @@
   <!-- =======================================================================
        FINANZIERUNGSWUNSCH-VARIANTEN-UMSCHALTER — NUR für diesen Prototyp-Vergleich, kein
        Produkt-Feature (siehe Kommentar bei #fwVariantSwitcher im Markup). Schaltet zwischen
-       Variante A (Icon+Popover, siehe .row-act[data-act="finanzierungswunsch"]/
-       buildFinancingWishPopover) und Variante C (Ausklappen je Zeile, siehe
-       .row-act[data-act="expand"]/buildExpandPanel) um, indem einfach eine body-Klasse gesetzt
-       wird — beide Varianten sind bereits vollständig gebaut, dieses Script wählt nur aus,
-       welche sichtbar ist.
+       Variante C (Ausklappen je Zeile, siehe .row-act[data-act="expand"]/buildExpandPanel) und
+       einer Kombi-Variante "both" (Ausklappen bleibt 1:1 wie gehabt, ZUSÄTZLICH bekommt jede
+       Zeile mit Finanzierungswunsch-Daten das Haus-Icon+Popover — ursprünglich Variante A,
+       siehe .row-act[data-act="finanzierungswunsch"]/buildFinancingWishPopover — daneben) um,
+       indem einfach body-Klassen gesetzt werden. Reine Icon-Popover-Variante (ohne Ausklappen)
+       ist als eigene Auswahl entfernt, die zugrundeliegende CSS-Klasse (fw-variant-icon)
+       bleibt aber bestehen — "both" aktiviert sie einfach zusätzlich zu fw-variant-expand,
+       statt eine eigene dritte Regel-Kopie zu brauchen.
        ======================================================================= -->
   <script>
   (function () {
     document.body.classList.add('fw-variant-expand');
     document.getElementById('fwVariantSwitcher').addEventListener('change', function (e) {
       var variant = e.target.value;
-      document.body.classList.toggle('fw-variant-icon', variant === 'icon');
-      document.body.classList.toggle('fw-variant-expand', variant === 'expand');
+      document.body.classList.toggle('fw-variant-icon', variant === 'both');
+      document.body.classList.toggle('fw-variant-expand', variant === 'expand' || variant === 'both');
     });
   })();
   </script>
@@ -4328,6 +4369,23 @@
   (function () {
     document.getElementById('designSwitchInput').addEventListener('change', function (e) {
       document.body.classList.toggle('design-tabs', e.target.checked);
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       GRUPPIERUNG-UMSCHALTER (neben "Finanzierung") — NUR für diesen Prototyp-Vergleich, kein
+       Produkt-Feature. Setzt body.grouping-due und lässt die SCHNELLFILTER-Engine (siehe
+       window.applyQuickFilter/updateSubheadings dort) danach neu entscheiden, ob bei "Alle"
+       dieselben .quick-subheading-Überschriften wie unter "Heute"/"Woche" gezeigt werden
+       sollen — reiner Trigger, die eigentliche Anzeige-Logik lebt bewusst nur an einer Stelle
+       (SCHNELLFILTER-Script), nicht hier dupliziert.
+       ======================================================================= -->
+  <script>
+  (function () {
+    document.getElementById('groupingSwitchInput').addEventListener('change', function (e) {
+      document.body.classList.toggle('grouping-due', e.target.checked);
+      if (window.applyQuickFilter) window.applyQuickFilter();
     });
   })();
   </script>
