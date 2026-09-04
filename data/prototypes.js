@@ -55,6 +55,8 @@ window.PROTOTYPES = {
       flow: "Der Berater sortiert die Anträge-Liste nach Fälligkeit der zugehörigen To-do's und wechselt bei Bedarf in die Pipeline-Ansicht." },
     { id: "termin-scheduling", team: "advisors", name: "Termin-Scheduling",
       flow: "Der Berater plant, bestätigt, verschiebt oder sagt einen Kundentermin ab — direkt aus dem Antrag heraus." },
+    { id: "antrags-uebersicht", team: "advisors", name: "Antrags Übersicht",
+      flow: "Der Berater sieht innerhalb eines Antrags die zugehörigen To-do's auf einen Blick — inklusive Fälligkeit, Inline-Bearbeitung und Kontextmenü." },
 
     { id: "application-form", team: "mavericks", name: "Application Form",
       flow: "Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld." },
@@ -127,6 +129,18 @@ window.PROTOTYPES = {
         { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v4.html" }
       ],
       changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)." },
+    { id:"mein-tag-v5a", project:"mein-tag", version:5, variant:"A", title:"Mein Tag V5-A",
+      file:"to-do/mein-tag-v5-a.html", status:"archiv",
+      changes:"Gegenüber V4: Kalender-Termine jetzt farbcodiert nach Online/Vor Ort/Privat (mit Legende); Schnellfilter-Tabs + Berater-/Zeitraum-Filter mit Filter-Chips; aufklappbare Suche; Inline-Editing von Titel/Fälligkeit direkt in der Zeile; Antragsteller-Dropdown und Quickaction-Pills (Email/Anruf/Link) beim Anlegen, inkl. Icon neben dem Titel; Gruppentitel nur noch bei Schnellfilter „Alle“ sichtbar. Vormals „mein-tag-v5-trial.html“." },
+    { id:"mein-tag-v5b", project:"mein-tag", version:5, variant:"B", title:"Mein Tag V5-B",
+      file:"to-do/mein-tag-v5-b.html", status:"archiv",
+      changes:"Gegenüber V5-A (vormals „mein-tag-v5-c.html“): Suche in die Filterzeile verschoben; Spalte „Letzte Aktivität“ entfernt; Berater-Spalte neben Fälligkeit, inkl. eigenem Dropdown im Anlege-Formular; Radiobuttons statt Pills für „Art des ToDos“; Anlege-Formular schließt sich beim Wegklicken automatisch, wenn nichts eingegeben wurde. Klick auf Titel/Fälligkeit öffnet jetzt die ganze Zeile als Formular statt nur ein Einzelfeld, committet automatisch beim Verlassen. Echtes „Gruppierung“-Dropdown (Anruf/Email/Link, ausgewählter Typ zuerst) sowie Rückmeldungs-Toasts bei jeder ToDo-Änderung." },
+    { id:"mein-tag-v5c", project:"mein-tag", version:5, variant:"C", title:"Mein Tag V5-C",
+      file:"to-do/mein-tag-v5-c.html", status:"archiv",
+      changes:"Gegenüber V5-B: Spalten-Filter zum Ein-/Ausblenden von Antragsteller*in/Fälligkeit/Berater; neuer Finanzierungswunsch-Button pro Zeile (Icon + Popover) mit Kv-Details. Enthält außerdem zwei reine Vergleichs-Umschalter, die kein Produkt-Feature sind: einen Finanzierungswunsch-Varianten-Switcher (Drawer/Ausklappen/Icon+Popover) und einen Layout-Switch „Neues Layout“." },
+    { id:"mein-tag-v5d", project:"mein-tag", version:5, variant:"D", title:"Mein Tag V5-D",
+      file:"to-do/mein-tag-v5-d.html", status:"archiv",
+      changes:"Gegenüber V5-C: Radiobuttons „Art des ToDos“ beim Anlegen und Inline-Bearbeiten wieder direkt unter dem Titel-Input statt weit darunter; ToDo-Titel, Antragsteller, Fälligkeit und Berater jetzt in einer Zeile auf gleicher Höhe, Uhrzeit einfach unter dem Datum. Neu: Titel-Autocomplete — schon ab den ersten 3 passenden Buchstaben (z. B. „bes“) wird „Besichtigungstermin erfolgt?“ vorgeschlagen; Auswahl übernimmt den Text und wählt automatisch die Anruf-Quickaction aus." },
 
     { id:"mein-tag-v7", project:"mein-tag", version:7, title:"Mein Tag V7",
       file:"to-do/mein-tag-v7.html", status:"aktuell",
@@ -177,6 +191,14 @@ window.PROTOTYPES = {
     { id:"termin-scheduling-v2", project:"termin-scheduling", version:2, title:"Termin-Scheduling V2",
       file:"advisor-dashboard/loan-application/termin-scheduling-flow-v2.html", status:"aktuell",
       changes:"Gegenüber V1: kein iframe mehr — native Verfügbarkeit und Buchung über Nylas, RSVP auf eingehende Einladungen, Two-Way-Sync und „Technik einblenden“-Schalter." },
+
+    /* ---- Advisors · Antrags Übersicht ---- */
+    { id:"todo-v1", project:"antrags-uebersicht", version:1, title:"ToDo V1",
+      file:"application-overview/todo-v1.html", status:"aktuell",
+      changes:"Erste Fassung: To-do-Liste im Antrag mit farbigem Status-Streifen pro Zeile, Fälligkeit, Inline-Bearbeitung und Kontextmenü (Bearbeiten, Neu zuordnen, Löschen)." },
+    { id:"todo-v2", project:"antrags-uebersicht", version:2, title:"ToDo V2",
+      file:"application-overview/todo-v2.html", status:"abgeloest",
+      changes:"Gegenüber V1: Gruppierung nach Fälligkeit (Überfällig/Heute/Morgen/…) mit farbiger Pill im Gruppenkopf statt Status-Streifen pro Zeile — 1:1 aus mein-tag-v4 übernommen; Gruppen einzeln auf- und zuklappbar." },
 
     /* ---- Mavericks · Application Form ---- */
     { id:"application-form-v1", project:"application-form", version:1, title:"Application Form V1",

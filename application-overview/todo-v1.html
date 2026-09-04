@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToDo V1</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <style>
+    /* ---------- Design-Tokens (inline, 1:1 aus design-system/tokens.css) ---------- */
+    :root {
+      --color-primary-700: #00796B;
+      --color-primary-600: #00877A;
+      --color-primary-500: #009688;
+      --color-primary-400: #33ABA0;
+      --color-primary-300: #99D5CF;
+      --color-primary-200: #CCEAE7;
+      --color-primary-100: #E6F5F3;
+
+      --color-neutral-dark-900: #37474F;
+      --color-neutral-dark-800: #4B5961;
+      --color-neutral-dark-600: #546E7A;
+      --color-neutral-dark-400: #607D8B;
+      --color-neutral-dark-300: #78909C;
+      --color-neutral-dark-200: #B0BEC5;
+
+      --color-neutral-light-500: #CFD8DC;
+      --color-neutral-light-400: #ECEFF1;
+      --color-neutral-light-200: #F5F7F8;
+      --color-neutral-light-100: #FAFBFC;
+      --color-neutral-light-000: #FFFFFF;
+
+      --color-success: #20BF6B;
+      --color-success-light: #E9FCF2;
+
+      --color-error-600: #E64D4D;
+      --color-error-500: #FF5656;
+      --color-error-100: #FFEEEE;
+
+      --color-info: #4B7BEC;
+      --color-info-light: #EBF0FB;
+
+      --color-warning-high: #FF9F1A;
+      --color-warning-low: #F5CD79;
+      --color-warning-low-light: #FDF5E4;
+
+      --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --body-regular-size: 14px; --body-regular-line-height: 20px; --body-regular-spacing: 0.25px;
+      --body-small-size: 12px; --body-small-line-height: 16px;
+
+      --space-xs: 4px; --space-s: 8px; --space-m: 16px; --space-l: 24px; --space-xl: 40px; --space-xxl: 64px;
+      --radius-xs: 2px; --radius-s: 4px; --radius-m: 8px; --radius-l: 12px; --radius-full: 9999px;
+      --shadow-xs: 0 1px 2px rgba(84, 110, 122, 0.15);
+      --shadow-s: 0 1px 4px rgba(84, 110, 122, 0.15);
+      --transition-fast: 0.1s ease;
+      --transition-base: 0.15s ease;
+      --focus-ring: 0 0 0 3px rgba(0, 150, 136, 0.30);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--body-regular-size); line-height: var(--body-regular-line-height);
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-100);
+    }
+    button { font-family: var(--font-family); }
+    p { margin: 0; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+
+    /* ---------- PAGE SHELL ---------- */
+    .page { height: 100vh; display: flex; flex-direction: column; }
+
+    /* ---------- TOPBAR (spans full width, above sidenav) ---------- */
+    .topbar {
+      height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+      background: var(--color-neutral-light-000);
+      box-shadow: var(--shadow-xs);
+      padding: 0 var(--space-l);
+      position: relative; z-index: 2;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 700; color: var(--color-neutral-dark-900); }
+    .topbar-logo .material-symbols-outlined { color: var(--color-primary-500); font-size: 22px; }
+    .topbar-right { display: flex; align-items: center; gap: var(--space-s); }
+    .top-icon {
+      display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+      border-radius: var(--radius-s); border: none; background: none; cursor: pointer;
+      color: var(--color-neutral-dark-400); transition: background var(--transition-base), color var(--transition-base);
+    }
+    .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .top-lang { display: inline-flex; align-items: center; gap: 2px; border: none; background: none; cursor: pointer;
+      padding: var(--space-xs) var(--space-s); border-radius: var(--radius-s); color: var(--color-neutral-dark-600); font-size: 14px; }
+    .top-lang:hover { background: var(--color-neutral-light-200); }
+    .top-divider { width: 1px; height: 32px; background: var(--color-neutral-light-500); margin: 0 var(--space-xs); }
+    .top-user { display: inline-flex; align-items: center; gap: var(--space-s); cursor: pointer; padding: var(--space-xs) var(--space-s); border-radius: var(--radius-s); }
+    .top-user:hover { background: var(--color-neutral-light-200); }
+    .top-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-neutral-light-500); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-light-000); flex-shrink: 0; }
+    .top-avatar .material-symbols-outlined { font-size: 18px; }
+    .top-user-info { display: flex; flex-direction: column; line-height: 1.15; }
+    .top-user-name { font-size: 14px; color: var(--color-neutral-dark-800); }
+    .top-user-role { font-size: 11px; color: var(--color-neutral-dark-300); }
+
+    /* ---------- BELOW TOPBAR: sidenav + main ---------- */
+    .below { flex: 1; display: flex; min-height: 0; }
+
+    .sidenav { width: 120px; min-width: 120px; background: var(--color-neutral-dark-900); display: flex; flex-direction: column; overflow-y: auto; }
+    .sidenav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0;
+      color: var(--color-neutral-light-500); text-decoration: none; cursor: pointer; position: relative;
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .sidenav-item .material-symbols-outlined { font-size: 20px; }
+    .sidenav-item span.label { font-size: 12px; }
+    .sidenav-item:hover { background: var(--color-neutral-dark-800); color: var(--color-neutral-light-000); }
+    .sidenav-item.active { background: var(--color-neutral-dark-800); color: var(--color-primary-300); }
+
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
+
+    /* ---------- APPLICATION HEADER ---------- */
+    .app-header { background: var(--color-neutral-light-000); flex-shrink: 0; }
+    .warning-message {
+      background: var(--color-warning-low-light); display: flex; align-items: flex-start; gap: var(--space-s);
+      padding: var(--space-s) var(--space-l); color: var(--color-neutral-dark-800); font-size: var(--body-regular-size);
+    }
+    .warning-message .material-symbols-outlined { color: #E8A33D; font-size: 20px; flex-shrink: 0; }
+
+    .app-header-content { padding: var(--space-m) var(--space-l) var(--space-xs); display: flex; flex-direction: column; gap: var(--space-m); }
+
+    .ah-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); }
+    .ah-name-row { display: flex; align-items: center; gap: var(--space-m); flex-wrap: wrap; }
+    .ah-name { font-size: 20px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .ah-amount { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-600); }
+    .ah-divider-v { width: 1px; height: 16px; background: var(--color-neutral-light-500); }
+    .ah-id { font-size: 12px; color: var(--color-neutral-dark-300); }
+
+    .ah-buttons { display: flex; align-items: center; gap: var(--space-s); }
+    .btn { display: inline-flex; align-items: center; gap: var(--space-xs); padding: 8px var(--space-m); border-radius: var(--radius-s);
+      font-size: var(--body-regular-size); font-weight: 500; cursor: pointer; border: 1px solid transparent; white-space: nowrap;
+      transition: background var(--transition-base), border-color var(--transition-base); }
+    .btn .material-symbols-outlined { font-size: 18px; }
+    .btn-primary { background: var(--color-primary-500); color: #fff; border-color: var(--color-primary-500); }
+    .btn-primary:hover { background: var(--color-primary-600); }
+    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800); border-color: var(--color-neutral-dark-200); }
+    .btn-secondary:hover { background: var(--color-neutral-light-200); }
+    .btn-icon-square { width: 36px; height: 36px; justify-content: center; padding: 0; }
+    .btn-ghost { background: transparent; color: var(--color-neutral-dark-400); border-color: transparent; }
+    .btn-ghost:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .btn-link { background: none; border: none; color: var(--color-primary-500); font-weight: 500; font-size: var(--body-regular-size);
+      display: inline-flex; align-items: center; gap: var(--space-xs); cursor: pointer; padding: 2px 0; }
+    .btn-link .material-symbols-outlined { font-size: 18px; }
+    .btn-link:hover { text-decoration: underline; }
+
+    .ah-tags { display: flex; align-items: center; gap: var(--space-s); flex-wrap: wrap; }
+    .tag { display: inline-flex; align-items: center; gap: var(--space-xs); padding: 2px var(--space-s); border-radius: var(--radius-s);
+      font-size: 12px; font-weight: 500; }
+    .tag .material-symbols-outlined { font-size: 14px; }
+    .tag-blue { background: var(--color-info); color: #fff; }
+    .tag-grey { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-600); }
+    .tag-green { background: var(--color-success); color: #fff; padding-right: 6px; }
+
+    .ah-application { display: flex; align-items: center; gap: var(--space-m); }
+    .application-pill { display: inline-flex; align-items: center; gap: var(--space-m); border: 1px solid var(--color-primary-500);
+      border-radius: 30px; padding: var(--space-s) var(--space-m); box-shadow: var(--shadow-xs); }
+    .application-pill span.name { color: var(--color-primary-500); font-weight: 500; font-size: var(--body-regular-size); }
+    .application-pill .material-symbols-outlined { font-size: 18px; color: var(--color-primary-500); cursor: pointer; }
+
+    .ah-tabs { display: flex; align-items: center; gap: var(--space-xl); border-top: 1px solid transparent; }
+    .ah-tab { padding: var(--space-s) 0 var(--space-s); font-size: var(--body-regular-size); color: var(--color-neutral-dark-600);
+      cursor: pointer; border-bottom: 3px solid transparent; display: inline-flex; align-items: center; gap: var(--space-xs); }
+    .ah-tab.active { color: var(--color-primary-500); font-weight: 500; border-bottom-color: var(--color-primary-500); }
+    .ah-tab .material-symbols-outlined { font-size: 16px; }
+    .ah-tabs-bottom-line { height: 1px; background: var(--color-neutral-light-500); }
+
+    /* ---------- TWO-COLUMN BODY ---------- */
+    .columns { flex: 1; display: flex; gap: var(--space-l); padding: var(--space-l); align-items: flex-start; }
+    .col-left { flex: 0 1 42%; min-width: 380px; display: flex; flex-direction: column; gap: 30px; }
+    .col-right { flex: 1 1 0%; min-width: 0; display: flex; flex-direction: column; gap: var(--space-l); }
+
+    .section-title { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-800); letter-spacing: 0.1px; }
+
+    /* client detail cards */
+    .card { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s); }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-s); }
+    .card-edit-link { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--color-primary-500); font-size: 14px; font-weight: 500; cursor: pointer; }
+    .card-edit-link .material-symbols-outlined { font-size: 16px; }
+
+    .kv-list { display: flex; flex-direction: column; gap: 0; }
+    .kv-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); min-height: 32px; }
+    .kv-label { color: var(--color-neutral-dark-600); font-size: 14px; }
+    .kv-value { color: var(--color-neutral-dark-800); font-size: 14px; font-weight: 500; text-align: right; }
+    .kv-value-with-icon { display: inline-flex; align-items: center; gap: var(--space-s); }
+    .kv-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--color-neutral-light-200); display: inline-flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600); cursor: pointer; flex-shrink: 0; }
+    .kv-icon-btn .material-symbols-outlined { font-size: 16px; }
+    .kv-hr { height: 1px; background: var(--color-neutral-light-500); margin: var(--space-s) 0; }
+
+    .cd-card { padding: var(--space-m); }
+    .kaufkraft-toggle-row { display: flex; align-items: center; gap: var(--space-s); padding: var(--space-s) 0; }
+    .toggle { position: relative; width: 32px; height: 20px; border-radius: 10px; background: var(--color-primary-500); flex-shrink: 0; }
+    .toggle::after { content: ""; position: absolute; top: 2px; left: 14px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-xs); }
+    .cert-link { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--color-primary-500); font-size: 14px; font-weight: 500; cursor: pointer; margin-top: var(--space-s); }
+    .cert-link .material-symbols-outlined { font-size: 16px; }
+
+    /* status bar */
+    .status-bar-head { display: flex; align-items: center; gap: var(--space-s); }
+    .status-tag { display: inline-flex; align-items: center; gap: var(--space-xs); background: var(--color-success-light); color: var(--color-success);
+      font-size: 12px; font-weight: 500; padding: 2px var(--space-s); border-radius: var(--radius-s); }
+    .status-tag .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); }
+    .status-step-card { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s); padding: var(--space-m); margin-top: var(--space-s); }
+    .status-step-label { display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 14px; margin-bottom: 9px; cursor: pointer; }
+    .status-step-label b { color: var(--color-neutral-dark-600); font-weight: 500; }
+    .status-step-label span.step { color: var(--color-primary-500); font-weight: 500; }
+    .status-step-label .material-symbols-outlined { font-size: 20px; color: var(--color-neutral-dark-400); }
+    .step-track { display: flex; gap: 4px; height: 8px; }
+    .step-track i { flex: 1; border-radius: 2px; background: var(--color-neutral-light-500); }
+    .step-track i.filled { background: var(--color-primary-300); }
+
+    /* todo list — echtes CSS-Grid (Zeilen via display:contents durchgereicht), damit Fälligkeit,
+       Kürzel-Badge und "..."-Menü über ALLE Zeilen exakt in einer Spalte bleiben, unabhängig von der
+       Titellänge, und nie durch overflow abgeschnitten werden. Streifen-Radius (4px) entspricht dem
+       Figma-Frame 18095:62779 (rounded-tl/bl auf der Row, passend zur Card-Rundung). */
+    .todo-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 13px; }
+    .todo-head-title { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .todo-head-title .count { color: var(--color-neutral-dark-300); font-weight: 500; }
+    .btn-add-todo { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border: 1px solid var(--color-primary-500);
+      border-radius: var(--radius-s); font-family: var(--font-family); font-size: 13px; font-weight: 500; color: #fff;
+      background: var(--color-primary-500); cursor: pointer; white-space: nowrap; transition: background var(--transition-base); }
+    .btn-add-todo:hover { background: var(--color-primary-600); }
+    .btn-add-todo .material-symbols-outlined { font-size: 18px; }
+    .btn-add-todo:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    /* Karte liegt eng am Inhalt an — kein eigenes Außen-Padding, die Innenabstände kommen
+       schon aus den Zell-Paddings (14px vertikal, 12px/120px horizontal), genau wie im
+       Figma-Frame 18092:48110, wo die Karte fast genauso groß wie ihr Inhalt ist. */
+    .todo-list { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s);
+      display: grid; grid-template-columns: 5px minmax(120px, 1fr) auto auto auto;
+      align-items: center; column-gap: 0; row-gap: 0; }
+    .todo-row, .todo-body, .todo-meta { display: contents; }
+    .todo-strip { align-self: stretch; background: var(--color-neutral-dark-200); }
+    .todo-row.status-overdue .todo-strip { background: var(--color-error-500); }
+    .todo-row.status-today .todo-strip { background: var(--color-warning-high); }
+    .todo-row.status-tomorrow .todo-strip { background: var(--color-info); }
+    .todo-row:first-child .todo-strip { border-top-left-radius: var(--radius-s); }
+    .todo-row:last-child .todo-strip { border-bottom-left-radius: var(--radius-s); }
+    .todo-check-text { display: flex; align-items: center; gap: var(--space-m); min-width: 0; padding: 14px 12px; }
+    .rcheck-wrap { display: inline-flex; cursor: pointer; flex-shrink: 0; }
+    .rcheck-input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .rcheck-visual { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--color-neutral-dark-300);
+      background: #fff; display: flex; align-items: center; justify-content: center; transition: background var(--transition-base), border-color var(--transition-base); }
+    .rcheck-visual img { width: 11.7333px; height: 8.93333px; display: block; }
+    .rcheck-input:checked + .rcheck-visual { background: var(--color-success); border-color: var(--color-success); }
+    .rcheck-input:checked + .rcheck-visual img { filter: brightness(0) invert(1); }
+    .todo-title { font-size: 14px; color: var(--color-neutral-dark-900); flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .todo-row.done .todo-title { text-decoration: line-through; color: var(--color-neutral-dark-300); }
+    .todo-due { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--color-neutral-dark-600);
+      padding: 14px 120px 14px 0; white-space: nowrap; }
+    .todo-due img { width: 16px; height: 16px; display: block; flex-shrink: 0; }
+
+    /* inline edit — Titel + Fälligkeitsdatum, gleiches Muster wie to-do/mein-tag-v4.html */
+    .inline-edit { cursor: text; display: inline-block; border-radius: var(--radius-xs); padding: 1px 4px; margin: -1px -4px;
+      border-bottom: 1px dashed transparent; transition: background var(--transition-base), border-color var(--transition-base); }
+    .inline-edit:hover { background: var(--color-primary-100); border-bottom-color: var(--color-primary-400); }
+    .inline-edit:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .inline-edit.editing { background: none; border-bottom-color: transparent; padding: 0; margin: 0; }
+    .inline-input { font: inherit; color: inherit; min-width: 60px; padding: 3px 6px;
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-primary-400);
+      border-radius: var(--radius-s); box-shadow: var(--focus-ring); }
+    .inline-input:focus { outline: none; }
+
+    /* Fälligkeitsdatum: echter type="date"-Picker + "+1 Tag"-Quick-Action, wie in mein-tag-v4.html */
+    .due-cell { display: inline-flex; align-items: center; gap: var(--space-s); flex-wrap: nowrap; }
+    .due-cell .due-line { flex: 0 0 auto; min-width: max-content; }
+    .due-cell .due-line.editing { flex: 1 1 auto; min-width: 0; }
+    .due-bump {
+      flex-shrink: 0; font-family: var(--font-family); font-size: 11px; font-weight: 500; line-height: 16px;
+      color: var(--color-primary-700); background: var(--color-primary-100);
+      border: 1px solid var(--color-primary-400); border-radius: var(--radius-full);
+      padding: 1px 8px; cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+    .due-bump:hover { background: var(--color-primary-200); border-color: var(--color-primary-500); }
+    .due-bump:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    input.inline-input[type="date"] { min-width: 130px; }
+    .todo-more-wrap { position: relative; padding: 14px 0; }
+    .todo-more { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border: none; background: none; padding: 0; }
+    .todo-more img { width: 13.3333px; height: 3.33333px; display: block; }
+    .row-act { border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-300);
+      width: 26px; height: 26px; margin: 0 12px; border-radius: var(--radius-s); display: inline-flex; align-items: center; justify-content: center;
+      transition: background var(--transition-fast), color var(--transition-fast); }
+    .row-act .material-symbols-outlined { font-size: 18px; }
+    .row-act[data-act="delete"]:hover { background: var(--color-error-100); color: var(--color-error-600); }
+    .todo-menu { display: none; position: absolute; top: 100%; right: 12px; background: var(--color-neutral-light-000);
+      border-radius: var(--radius-m); box-shadow: 0 4px 16px rgba(55, 71, 79, 0.18); min-width: 168px; padding: var(--space-xs); z-index: 50; }
+    .todo-menu.open { display: block; }
+    .todo-menu-item { display: block; width: 100%; text-align: left; background: none; border: none; padding: 10px 12px;
+      font-family: var(--font-family); font-size: 14px; color: var(--color-neutral-dark-900); border-radius: var(--radius-s); cursor: pointer; }
+    .todo-menu-item:hover { background: var(--color-neutral-light-200); }
+    .todo-divider { grid-column: 2 / -1; height: 1px; background: var(--color-neutral-light-400); }
+
+    /* create bar */
+    .create-title { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-900); margin-bottom: var(--space-s); }
+    .create-card { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s); display: flex; align-items: center; gap: var(--space-xl); padding: var(--space-s) var(--space-l); }
+    .create-action { display: flex; align-items: center; gap: var(--space-m); cursor: pointer; color: var(--color-neutral-dark-900); font-size: 14px; font-weight: 500; }
+    .create-action-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--color-neutral-light-200); border: 1px solid var(--color-neutral-light-500);
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .create-action-icon img { display: block; max-width: 16px; max-height: 16px; }
+
+    /* outbound mask */
+    .outbound-card { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s); padding: var(--space-m); display: flex; flex-direction: column; gap: var(--space-m); }
+    .outbound-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-m); }
+    .outbound-field { background: var(--color-neutral-light-100); border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-m);
+      padding: var(--space-m); min-height: 172px; display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-m); }
+    .outbound-field-text { font-size: 14px; color: var(--color-neutral-dark-600); white-space: pre-line; }
+    .outbound-field-date { font-size: 12px; color: var(--color-neutral-dark-600); text-align: right; }
+    .outbound-subhead { display: flex; gap: var(--space-l); }
+    .outbound-subhead span { flex: 1; font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-800); }
+
+    /* duplicates */
+    .dup-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-s); }
+    .dup-title h3 { font-size: 16px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .dup-title h3 span { color: var(--color-neutral-dark-300); font-weight: 400; }
+    .dup-title-right { display: flex; align-items: center; gap: var(--space-xl); }
+    .dup-title-right span { font-size: 14px; color: var(--color-neutral-dark-900); }
+    .dup-card { background: var(--color-neutral-light-000); border-radius: var(--radius-m); box-shadow: var(--shadow-s); overflow: hidden; }
+    .dup-row { display: flex; align-items: center; justify-content: space-between; padding: 12px var(--space-l); border-bottom: 1px solid var(--color-neutral-light-500); }
+    .dup-row:last-of-type { border-bottom: none; }
+    .dup-left { display: flex; align-items: center; gap: var(--space-m); }
+    .dup-number { color: var(--color-primary-500); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; }
+    .dup-number .material-symbols-outlined { font-size: 14px; }
+    .dup-right { display: flex; align-items: center; gap: var(--space-xxl); }
+    .dup-advisor { display: flex; align-items: center; gap: var(--space-s); font-size: 14px; color: var(--color-neutral-dark-900); }
+    .dup-pagination { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-m); padding: 10px var(--space-m); box-shadow: -2px 0 4px rgba(229,229,229,0.6); }
+    .dup-pagination span { font-size: 12px; color: var(--color-neutral-dark-300); }
+    .pager-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--color-neutral-light-200); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-neutral-dark-700); }
+    .pager-btn:last-child { background: transparent; }
+    .pager-btn .material-symbols-outlined { font-size: 16px; }
+
+    /* client history */
+    .history-tabs { display: flex; gap: var(--space-xl); border-bottom: 1px solid var(--color-neutral-light-500); }
+    .history-tab { padding-bottom: var(--space-s); font-size: 12px; color: var(--color-neutral-dark-600); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+    .history-tab.active { color: var(--color-primary-500); font-weight: 500; border-bottom-color: var(--color-primary-500); }
+    .history-timeline { position: relative; display: flex; flex-direction: column; gap: var(--space-m); padding-left: 0; }
+    .hist-entry { display: flex; gap: var(--space-m); position: relative; }
+    .hist-icon { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1px solid var(--color-neutral-light-500);
+      display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600); flex-shrink: 0; z-index: 1; }
+    .hist-icon.no-border { border: none; }
+    .hist-icon .material-symbols-outlined { font-size: 16px; }
+    .hist-icon.success { color: var(--color-success); }
+    .hist-icon.info { color: var(--color-primary-500); }
+    .hist-content { flex: 1; min-width: 0; padding-top: 4px; }
+    .hist-header { display: flex; align-items: baseline; gap: var(--space-s); flex-wrap: wrap; font-size: 12px; }
+    .hist-header .who { color: var(--color-neutral-dark-600); font-weight: 500; }
+    .hist-header .when { color: var(--color-neutral-dark-300); }
+    .hist-line { font-size: 14px; color: var(--color-neutral-dark-800); margin-top: 2px; }
+    .hist-line .highlight { color: var(--color-primary-500); font-weight: 500; }
+    .hist-line .strong { font-weight: 500; color: var(--color-neutral-dark-800); }
+    .hist-line-meta { font-size: 12px; color: var(--color-neutral-dark-300); margin-top: 2px; }
+    .hist-box { background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-m); padding: var(--space-m); margin-top: var(--space-s); font-size: 14px; color: var(--color-neutral-dark-600); }
+    .hist-attachments { display: flex; gap: var(--space-s); margin-top: var(--space-m); flex-wrap: wrap; }
+    .attachment { display: flex; align-items: center; gap: var(--space-s); border: 1px solid var(--color-neutral-light-500); background: var(--color-neutral-light-100);
+      border-radius: var(--radius-m); padding: var(--space-s); font-size: 12px; }
+    .attachment .material-symbols-outlined { color: var(--color-primary-500); font-size: 22px; }
+    .attachment .att-name { color: var(--color-neutral-dark-800); font-weight: 500; }
+    .attachment .att-size { color: var(--color-neutral-dark-300); }
+    .load-more { align-self: flex-start; border: 1px solid var(--color-neutral-dark-200); border-radius: var(--radius-s); background: none; color: var(--color-neutral-dark-800); font-size: 14px; font-weight: 500; padding: var(--space-s) var(--space-m); cursor: pointer; }
+    .load-more:hover { background: var(--color-neutral-light-200); }
+
+    /* ---------- ToDo bearbeiten — Side Panel (wie mein-tag-v4.html: .scrim + .panel) ---------- */
+    .scrim { position: fixed; inset: 0; background: rgba(55, 71, 79, 0.35); z-index: 200; opacity: 0; pointer-events: none; transition: opacity var(--transition-base); }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .panel { position: fixed; top: 0; right: 0; height: 100vh; width: 480px; max-width: 92vw;
+      background: var(--color-neutral-light-000); z-index: 201; box-shadow: -4px 0 24px rgba(55, 71, 79, 0.22);
+      transform: translateX(100%); transition: transform var(--transition-base), width var(--transition-base);
+      display: flex; flex-direction: column; }
+    .panel.open { transform: translateX(0); }
+    .panel.expanded { width: 760px; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-m) var(--space-l);
+      border-bottom: 1px solid var(--color-neutral-light-500); flex-shrink: 0; }
+    .panel-head h2 { margin: 0; font-size: 18px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .panel-head-actions { display: flex; align-items: center; gap: 2px; }
+    .panel-body { flex: 1; overflow-y: auto; padding: var(--space-l); display: flex; flex-direction: column; gap: var(--space-l); }
+    .field { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .field label { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-800); }
+    .field label .req { color: var(--color-error-500); }
+    .field-row { display: flex; gap: var(--space-m); }
+    .field-row .field { flex: 1; min-width: 0; }
+    .field-hint { font-size: 11px; color: var(--color-neutral-dark-300); }
+    .field-input-wrap { position: relative; display: flex; align-items: center; }
+    .field input[type="text"], .field input[type="date"], .field input[type="time"], .field select, .field textarea {
+      width: 100%; padding: var(--space-s) var(--space-m); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-s); font-family: var(--font-family); font-size: 14px; color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-000); outline: none; -webkit-appearance: none; appearance: none;
+    }
+    .field select { cursor: pointer; -webkit-appearance: auto; appearance: auto; }
+    .field textarea { resize: vertical; min-height: 72px; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    .field input:disabled { background: var(--color-neutral-light-100); color: var(--color-neutral-dark-300); cursor: not-allowed; }
+    .field-input-wrap .material-symbols-outlined { position: absolute; right: var(--space-s); color: var(--color-neutral-dark-300); font-size: 20px; pointer-events: none; }
+    .field-input-wrap input { padding-right: var(--space-xl); }
+    .panel-foot { flex-shrink: 0; display: flex; align-items: center; gap: var(--space-m); padding: var(--space-m) var(--space-l);
+      border-top: 1px solid var(--color-neutral-light-500); }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="topbar-logo">
+      <span class="material-symbols-outlined">bolt</span>
+      FinLink
+    </div>
+    <div class="topbar-right">
+      <button class="top-icon" title="Neuer Antrag"><span class="material-symbols-outlined">add_box</span></button>
+      <button class="top-icon" title="Benachrichtigungen"><span class="material-symbols-outlined">notifications</span></button>
+      <button class="top-icon" title="Hilfe"><span class="material-symbols-outlined">help</span></button>
+      <button class="top-icon" title="Vollbild"><span class="material-symbols-outlined">fullscreen</span></button>
+      <button class="top-lang">DE <span class="material-symbols-outlined" style="font-size:16px">expand_more</span></button>
+      <div class="top-divider"></div>
+      <div class="top-user">
+        <div class="top-avatar"><span class="material-symbols-outlined">person</span></div>
+        <div class="top-user-info">
+          <span class="top-user-name">Jan Joisten</span>
+          <span class="top-user-role">Advisor</span>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:16px; color:var(--color-neutral-dark-400)">expand_more</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="below">
+
+    <aside class="sidenav">
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">dashboard</span><span class="label">My Day</span></a>
+      <a class="sidenav-item active" href="#"><span class="material-symbols-outlined">people</span><span class="label">Anträge</span></a>
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">person</span><span class="label">Leads</span></a>
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">contact_mail</span><span class="label">Quellen</span></a>
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">mail</span><span class="label">Email</span></a>
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">assessment</span><span class="label">Reporting</span></a>
+      <a class="sidenav-item" href="#"><span class="material-symbols-outlined">credit_card</span><span class="label">Buchhaltung</span></a>
+    </aside>
+
+    <main class="main">
+
+      <div class="app-header">
+        <div class="warning-message">
+          <span class="material-symbols-outlined">warning</span>
+          <p>Some of the information won&rsquo;t be exported.</p>
+        </div>
+
+        <div class="app-header-content">
+          <div class="ah-top">
+            <div class="ah-name-row">
+              <span class="ah-name">Max Mustermann</span>
+              <span class="ah-amount">440.000 &euro;</span>
+              <div class="ah-divider-v"></div>
+              <span class="ah-id">Antragsnummer: 333 000 000 008 271</span>
+            </div>
+            <div class="ah-buttons">
+              <button class="btn btn-secondary"><span class="material-symbols-outlined">calculate</span>Finanzierungs-Assistent</button>
+              <button class="btn btn-secondary"><span class="material-symbols-outlined">screen_share</span>Kundensicht</button>
+              <button class="btn btn-secondary btn-icon-square"><span class="material-symbols-outlined">more_horiz</span></button>
+              <button class="btn btn-secondary btn-icon-square"><span class="material-symbols-outlined">fullscreen</span></button>
+            </div>
+          </div>
+
+          <div class="ah-tags">
+            <span class="tag tag-blue"><span class="material-symbols-outlined">home</span>Property found</span>
+            <span class="tag tag-grey"><span class="material-symbols-outlined">contact_mail</span>W&uuml;stenrot</span>
+            <span class="tag tag-green">Bestand <span class="material-symbols-outlined">close</span></span>
+            <span class="btn-link"><span class="material-symbols-outlined">add</span>Tag hinzuf&uuml;gen</span>
+          </div>
+
+          <div class="ah-application">
+            <div class="application-pill">
+              <span class="name">Modernisation, Januar 2024</span>
+              <span class="material-symbols-outlined">edit</span>
+              <span class="material-symbols-outlined">visibility_off</span>
+            </div>
+            <span class="btn-link"><span class="material-symbols-outlined">add</span>Antrag kopieren</span>
+          </div>
+
+          <div class="ah-tabs">
+            <span class="ah-tab active">&Uuml;bersicht</span>
+            <span class="ah-tab">Antrag</span>
+            <span class="ah-tab">Dokumente <span class="material-symbols-outlined">open_in_new</span></span>
+            <span class="ah-tab">Angebot</span>
+            <span class="ah-tab">Objektbewertung</span>
+            <span class="ah-tab">Kreditentscheidung</span>
+          </div>
+        </div>
+        <div class="ah-tabs-bottom-line"></div>
+      </div>
+
+      <div class="columns">
+
+        <div class="col-left">
+
+          <div class="card cd-card">
+            <div class="card-head">
+              <span class="section-title">Kundendetails</span>
+              <span class="card-edit-link"><span class="material-symbols-outlined">edit</span>Bearbeiten</span>
+            </div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Email</span><span class="kv-value-with-icon"><span class="kv-value">max@gmail.com</span><span class="kv-icon-btn"><span class="material-symbols-outlined">mail</span></span></span></div>
+              <div class="kv-row"><span class="kv-label">Telefonnummer</span><span class="kv-value-with-icon"><span class="kv-value">+040 093403294</span><span class="kv-icon-btn"><span class="material-symbols-outlined">call</span></span></span></div>
+              <div class="kv-row"><span class="kv-label">Alternative Telefonnummer</span><span class="kv-value-with-icon"><span class="kv-value">+040 093403294</span><span class="kv-icon-btn"><span class="material-symbols-outlined">call</span></span></span></div>
+              <div class="kv-row"><span class="kv-label">Berater</span><span class="kv-value-with-icon"><span class="kv-value">Jan Joisten</span><span class="kv-icon-btn"><span class="material-symbols-outlined">info</span></span></span></div>
+              <div class="kv-row"><span class="kv-label">Bearbeiter</span><span class="kv-value">John Doe</span></div>
+              <div class="kv-row"><span class="kv-label">Team des Bearbeiters</span><span class="kv-value">John Doe</span></div>
+              <div class="kv-row"><span class="kv-label">External ID</span><span class="kv-value">28.03.2022</span></div>
+            </div>
+          </div>
+
+          <div class="card cd-card">
+            <div class="card-head">
+              <span class="section-title">&Uuml;bersicht</span>
+              <span class="card-edit-link"><span class="material-symbols-outlined">edit</span>Bearbeiten</span>
+            </div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Finanzierungsprojekt</span><span class="kv-value">Buy an existing property</span></div>
+              <div class="kv-row"><span class="kv-label">Immobiliennutzung</span><span class="kv-value">Selbst nutzen</span></div>
+              <div class="kv-row"><span class="kv-label">Immobilie gefunden</span><span class="kv-value">Ja</span></div>
+              <div class="kv-row"><span class="kv-label">Objektart</span><span class="kv-value">Wohnung</span></div>
+              <div class="kv-row"><span class="kv-label">Anzahl der Antragsteller</span><span class="kv-value">Alleine</span></div>
+              <div class="kv-row"><span class="kv-label">Beratungsgespr&auml;ch</span><span class="kv-value">Nicht geplant</span></div>
+              <div class="kv-row"><span class="kv-label">Anderer Anruf</span><span class="kv-value-with-icon"><span class="kv-value">Nicht geplant</span><span class="kv-icon-btn"><span class="material-symbols-outlined">phone_callback</span></span></span></div>
+            </div>
+          </div>
+
+          <div class="card cd-card">
+            <div class="card-head">
+              <span class="section-title">Vermittlerinformationen</span>
+              <span class="card-edit-link"><span class="material-symbols-outlined">edit</span>Bearbeiten</span>
+            </div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Vermittlergruppe</span><span class="kv-value">Kooperationspartner</span></div>
+              <div class="kv-row"><span class="kv-label">Quelle</span><span class="kv-value">W&uuml;stenrot</span></div>
+              <div class="kv-row"><span class="kv-label">Untervermittler</span><span class="kv-value">-</span></div>
+              <div class="kv-row"><span class="kv-label">Unter-Untervermittler</span><span class="kv-value">-</span></div>
+              <div class="kv-row"><span class="kv-label">Handelnde Person</span><span class="kv-value">-</span></div>
+            </div>
+          </div>
+
+          <div class="card cd-card">
+            <div class="card-head">
+              <span class="section-title">Plattforminformationen</span>
+              <span class="card-edit-link"><span class="material-symbols-outlined">edit</span>Bearbeiten</span>
+            </div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Plattforminformationen</span><span class="kv-value">-</span></div>
+              <div class="kv-row"><span class="kv-label">Plattform-Antragsnummer</span><span class="kv-value">-</span></div>
+            </div>
+          </div>
+
+          <div class="card cd-card">
+            <div class="card-head">
+              <span class="section-title"><span class="material-symbols-outlined" style="font-size:16px; vertical-align:-3px; color:var(--color-neutral-dark-400)">info</span> Maximale Kaufkraft</span>
+              <span class="card-edit-link"><span class="material-symbols-outlined">edit</span>Bearbeiten</span>
+            </div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Maximale Kreditsumme</span><span class="kv-value">350.000 &euro;</span></div>
+              <div class="kv-row"><span class="kv-label">Maximaler Kaufpreis</span><span class="kv-value">385.000 &euro;</span></div>
+              <div class="kv-row"><span class="kv-label">Gew&uuml;nschter Immobilienpreis</span><span class="kv-value-with-icon"><span class="material-symbols-outlined" style="color:var(--color-success); font-size:16px">check_circle</span><span class="kv-value" style="color:var(--color-success)">400.000 &euro;</span></span></div>
+            </div>
+            <div class="kv-hr"></div>
+            <div class="kaufkraft-toggle-row">
+              <span class="kv-label" style="font-weight:500; color:var(--color-neutral-dark-600)">Show affordability on client portal</span>
+              <div class="toggle"></div>
+            </div>
+            <div class="kv-hr"></div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-label">Monatliches Einkommen</span><span class="kv-value">2.500 &euro;</span></div>
+              <div class="kv-row"><span class="kv-label">Monatliche Ausgaben</span><span class="kv-value">1.100 &euro;</span></div>
+              <div class="kv-row"><span class="kv-label">Nettoverm&ouml;gen</span><span class="kv-value">60.000 &euro;</span></div>
+              <div class="kv-row"><span class="kv-label">Eigenkapital</span><span class="kv-value">50.000 &euro;</span></div>
+            </div>
+            <span class="cert-link"><span class="material-symbols-outlined">description</span>Finanzierungszertifikat erstellen</span>
+          </div>
+
+        </div>
+
+        <div class="col-right">
+
+          <div>
+            <div class="status-bar-head">
+              <span class="section-title">Antragsstatus</span>
+              <span class="status-tag"><span class="dot"></span>Aktiv</span>
+            </div>
+            <div class="status-step-card">
+              <div class="status-step-label"><b>Schritt 1/10:</b> <span class="step">Anfrage erstellt</span> <span class="material-symbols-outlined">arrow_drop_down</span></div>
+              <div class="step-track">
+                <i class="filled"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="todo-head">
+              <span class="todo-head-title">ToDos <span class="count">(4)</span></span>
+              <button class="btn-add-todo"><span class="material-symbols-outlined">add</span> ToDo</button>
+            </div>
+            <div class="todo-list">
+
+              <div class="todo-row status-overdue">
+                <div class="todo-strip"></div>
+                <div class="todo-body">
+                  <div class="todo-check-text">
+                    <label class="rcheck-wrap">
+                      <input type="checkbox" class="rcheck-input" onchange="this.closest('.todo-row').classList.toggle('done', this.checked)" />
+                      <span class="rcheck-visual"><img src="assets/todo-checkmark.svg" alt="" /></span>
+                    </label>
+                    <span class="todo-title inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu &auml;ndern">Kunden zur&uuml;ckrufen</span>
+                  </div>
+                  <div class="todo-meta">
+                    <span class="todo-due"><img src="assets/todo-clock.svg" alt="" /><span class="due-cell"><span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um F&auml;lligkeitsdatum/-uhrzeit zu &auml;ndern">&Uuml;berf&auml;llig - 09:00</span></span></span>
+                    <div class="todo-more-wrap">
+                      <button class="todo-more" onclick="toggleTodoMenu(event, this)"><img src="assets/todo-more.svg" alt="" /></button>
+                      <div class="todo-menu">
+                        <button class="todo-menu-item" onclick="openTodoPanel(this.closest('.todo-row'))">Bearbeiten</button>
+                        <button class="todo-menu-item">Neu zuordnen</button>
+                        <button class="todo-menu-item" onclick="deleteTodo(this)">L&ouml;schen</button>
+                      </div>
+                    </div>
+                    <button class="row-act" data-act="delete" title="L&ouml;schen" aria-label="L&ouml;schen" onclick="deleteTodo(this)"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="todo-divider"></div>
+
+              <div class="todo-row status-today">
+                <div class="todo-strip"></div>
+                <div class="todo-body">
+                  <div class="todo-check-text">
+                    <label class="rcheck-wrap">
+                      <input type="checkbox" class="rcheck-input" onchange="this.closest('.todo-row').classList.toggle('done', this.checked)" />
+                      <span class="rcheck-visual"><img src="assets/todo-checkmark.svg" alt="" /></span>
+                    </label>
+                    <span class="todo-title inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu &auml;ndern">Kunden anrufen</span>
+                  </div>
+                  <div class="todo-meta">
+                    <span class="todo-due"><img src="assets/todo-clock.svg" alt="" /><span class="due-cell"><span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um F&auml;lligkeitsdatum/-uhrzeit zu &auml;ndern">Heute - 10:30</span></span></span>
+                    <div class="todo-more-wrap">
+                      <button class="todo-more" onclick="toggleTodoMenu(event, this)"><img src="assets/todo-more.svg" alt="" /></button>
+                      <div class="todo-menu">
+                        <button class="todo-menu-item" onclick="openTodoPanel(this.closest('.todo-row'))">Bearbeiten</button>
+                        <button class="todo-menu-item">Neu zuordnen</button>
+                        <button class="todo-menu-item" onclick="deleteTodo(this)">L&ouml;schen</button>
+                      </div>
+                    </div>
+                    <button class="row-act" data-act="delete" title="L&ouml;schen" aria-label="L&ouml;schen" onclick="deleteTodo(this)"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="todo-divider"></div>
+
+              <div class="todo-row status-today">
+                <div class="todo-strip"></div>
+                <div class="todo-body">
+                  <div class="todo-check-text">
+                    <label class="rcheck-wrap">
+                      <input type="checkbox" class="rcheck-input" onchange="this.closest('.todo-row').classList.toggle('done', this.checked)" />
+                      <span class="rcheck-visual"><img src="assets/todo-checkmark.svg" alt="" /></span>
+                    </label>
+                    <span class="todo-title inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu &auml;ndern">Antrag pr&uuml;fen, da Kunde ein Angebot angefordert hat</span>
+                  </div>
+                  <div class="todo-meta">
+                    <span class="todo-due"><img src="assets/todo-clock.svg" alt="" /><span class="due-cell"><span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um F&auml;lligkeitsdatum/-uhrzeit zu &auml;ndern">Heute - 10:30</span></span></span>
+                    <div class="todo-more-wrap">
+                      <button class="todo-more" onclick="toggleTodoMenu(event, this)"><img src="assets/todo-more.svg" alt="" /></button>
+                      <div class="todo-menu">
+                        <button class="todo-menu-item" onclick="openTodoPanel(this.closest('.todo-row'))">Bearbeiten</button>
+                        <button class="todo-menu-item">Neu zuordnen</button>
+                        <button class="todo-menu-item" onclick="deleteTodo(this)">L&ouml;schen</button>
+                      </div>
+                    </div>
+                    <button class="row-act" data-act="delete" title="L&ouml;schen" aria-label="L&ouml;schen" onclick="deleteTodo(this)"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="todo-divider"></div>
+
+              <div class="todo-row status-tomorrow">
+                <div class="todo-strip"></div>
+                <div class="todo-body">
+                  <div class="todo-check-text">
+                    <label class="rcheck-wrap">
+                      <input type="checkbox" class="rcheck-input" onchange="this.closest('.todo-row').classList.toggle('done', this.checked)" />
+                      <span class="rcheck-visual"><img src="assets/todo-checkmark.svg" alt="" /></span>
+                    </label>
+                    <span class="todo-title inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu &auml;ndern">R&uuml;ckruf mit Kunden vereinbaren</span>
+                  </div>
+                  <div class="todo-meta">
+                    <span class="todo-due"><img src="assets/todo-clock.svg" alt="" /><span class="due-cell"><span class="due-line inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um F&auml;lligkeitsdatum/-uhrzeit zu &auml;ndern">Morgen - 09:00</span></span></span>
+                    <div class="todo-more-wrap">
+                      <button class="todo-more" onclick="toggleTodoMenu(event, this)"><img src="assets/todo-more.svg" alt="" /></button>
+                      <div class="todo-menu">
+                        <button class="todo-menu-item" onclick="openTodoPanel(this.closest('.todo-row'))">Bearbeiten</button>
+                        <button class="todo-menu-item">Neu zuordnen</button>
+                        <button class="todo-menu-item" onclick="deleteTodo(this)">L&ouml;schen</button>
+                      </div>
+                    </div>
+                    <button class="row-act" data-act="delete" title="L&ouml;schen" aria-label="L&ouml;schen" onclick="deleteTodo(this)"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div>
+            <div class="create-title">Erstellen</div>
+            <div class="create-card">
+              <div class="create-action"><span class="create-action-icon"><img src="assets/create-note.svg" alt="" /></span>Notiz hinzuf&uuml;gen</div>
+              <div class="create-action"><span class="create-action-icon"><img src="assets/create-email.svg" alt="" /></span>E-Mail</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title" style="margin-bottom: var(--space-s)">Kundeninfos</div>
+            <div class="outbound-card">
+              <div class="outbound-subhead"><span>Machbarkeit</span><span>Zeitplan &amp; Verbindlichkeit</span></div>
+              <div class="outbound-grid">
+                <div class="outbound-field"><div></div><div class="outbound-field-date">10.02.2026, 15:51 &ndash; Unbekannt</div></div>
+                <div class="outbound-field">
+                  <div class="outbound-field-text">Zeitplan:
+Besichtigung:
+
+Notartermin:</div>
+                  <div class="outbound-field-date">10.02.2026, 15:51 &ndash; Unbekannt</div>
+                </div>
+              </div>
+              <div class="outbound-subhead"><span>W&uuml;nsche</span><span>Wettbewerb</span></div>
+              <div class="outbound-grid">
+                <div class="outbound-field">
+                  <div class="outbound-field-text">Rate:
+ZiBi:
+Laufzeit/R&uuml;ckzahlung bis:
+SoTi:
+TSW:</div>
+                  <div class="outbound-field-date">10.02.2026, 15:51 &ndash; Unbekannt</div>
+                </div>
+                <div class="outbound-field">
+                  <div class="outbound-field-text">Hausbank/en:
+ANG eingeholt bei:</div>
+                  <div class="outbound-field-date">10.02.2026, 15:51 &ndash; Unbekannt</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="dup-title">
+              <h3>&Auml;hnliche Antr&auml;ge <span>(30)</span></h3>
+              <div class="dup-title-right">
+                <span>Berater/in</span>
+                <span class="btn-link"><span class="material-symbols-outlined">refresh</span>Erneut ausf&uuml;hren</span>
+              </div>
+            </div>
+            <div class="dup-card">
+              <div class="dup-row">
+                <div class="dup-left">
+                  <span class="dup-number">Antragsnummer: 333 000 000 006 890 <span class="material-symbols-outlined">open_in_new</span></span>
+                  <span class="tag tag-blue" style="background:var(--color-info)">Potential duplicate</span>
+                </div>
+                <div class="dup-right"><span class="dup-advisor">John Doe <span class="kv-icon-btn"><span class="material-symbols-outlined">info</span></span></span><span class="material-symbols-outlined" style="color:var(--color-neutral-dark-400)">more_horiz</span></div>
+              </div>
+              <div class="dup-row">
+                <div class="dup-left"><span class="dup-number">Antragsnummer: 333 000 000 006 890 <span class="material-symbols-outlined">open_in_new</span></span></div>
+                <div class="dup-right"><span class="dup-advisor">John Doe <span class="kv-icon-btn"><span class="material-symbols-outlined">info</span></span></span><span class="material-symbols-outlined" style="color:var(--color-neutral-dark-400)">more_horiz</span></div>
+              </div>
+              <div class="dup-row">
+                <div class="dup-left">
+                  <span class="dup-number">Antragsnummer: 333 000 000 006 890 <span class="material-symbols-outlined">open_in_new</span></span>
+                  <span class="tag tag-blue" style="background:var(--color-info)">Potential duplicate</span>
+                </div>
+                <div class="dup-right"><span class="dup-advisor">John Doe <span class="kv-icon-btn"><span class="material-symbols-outlined">info</span></span></span><span class="material-symbols-outlined" style="color:var(--color-neutral-dark-400)">more_horiz</span></div>
+              </div>
+              <div class="dup-pagination">
+                <span>Items per page 10</span>
+                <span>1 - 3 of 30</span>
+                <button class="pager-btn"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+                <button class="pager-btn"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title" style="margin-bottom: var(--space-m)">Kundenhistorie</div>
+            <div class="history-tabs">
+              <span class="history-tab active">Alle (16)</span>
+              <span class="history-tab">ToDos (1)</span>
+              <span class="history-tab">Anrufe (6)</span>
+              <span class="history-tab">Notizen (3)</span>
+              <span class="history-tab">E-Mails (6)</span>
+              <span class="history-tab">Dokumente (8)</span>
+              <span class="history-tab">Aktivit&auml;ten (8)</span>
+            </div>
+
+            <div class="history-timeline" style="margin-top: var(--space-m)">
+
+              <div class="hist-entry">
+                <div class="hist-icon"><span class="material-symbols-outlined">person</span></div>
+                <div class="hist-content">
+                  <div class="hist-header"><span class="who">Kundenhinweis</span><span class="when">January 31, 2024 11:36 &bull; Max Mustermann</span></div>
+                  <div class="hist-box">Ich interessiere mich f&uuml;r eine Neubauwohnung in Berlin zum Kaufpreis von 300.000 &euro;. Um die Finanzierung optimal zu gestalten, plane ich, mindestens 20&ndash;30&nbsp;% des Kaufpreises als Eigenkapital einzubringen. Das w&uuml;rde zwischen 60.000 und 90.000 &euro; liegen und mir helfen, die monatlichen Raten zu senken und bessere Darlehensbedingungen zu erhalten. Der ben&ouml;tigte Kreditbetrag w&uuml;rde somit zwischen 210.000 und 240.000 &euro; liegen.</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon no-border"><span class="material-symbols-outlined">description</span></div>
+                <div class="hist-content">
+                  <div class="hist-line"><span class="highlight">Personalausweis / Reisepass</span> <span class="strong">wurde angefordert</span></div>
+                  <div class="hist-line-meta">Juni 14, 2024 11:36 - System</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon info"><span class="material-symbols-outlined">content_copy</span></div>
+                <div class="hist-content">
+                  <div class="hist-header"><span class="who">Dublettenpr&uuml;fung</span><span class="when">January 31, 2024 11:36 &bull; Max Mustermann</span></div>
+                  <div class="hist-box">Es wurde eine &Uuml;berpr&uuml;fung auf Antragsdubletten durchgef&uuml;hrt, wobei 1 potenzielle(s) Duplikat(e) entdeckt wurde(n).<br />Antragsnummer: 1484706<br />Antragsnummer: 1487563<br />Antragsnummer: 1678463</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon no-border"><span class="material-symbols-outlined">groups</span></div>
+                <div class="hist-content">
+                  <div class="hist-line">Es wurde eine Dublettenpr&uuml;fung durchgef&uuml;hrt. Es wurden keine potenziellen Duplikate entdeckt</div>
+                  <div class="hist-line-meta">Juni 14, 2024 11:36 - Jan Joisten</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon success"><span class="material-symbols-outlined">check_circle</span></div>
+                <div class="hist-content">
+                  <div class="hist-line"><span class="strong">ToDo Completed.</span> Kunde m&ouml;chte Selbstauskunft &auml;ndern</div>
+                  <div class="hist-line-meta">Juni 14, 2024 11:36 - Jan Joisten</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon no-border"><span class="material-symbols-outlined">description</span></div>
+                <div class="hist-content">
+                  <div class="hist-line"><span class="highlight">Kontoauszug &uuml;ber Bank-/Sparguthaben</span> <span class="strong">wurde angefordert</span></div>
+                  <div class="hist-line-meta">Juni 14, 2024 11:36 - System</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon"><span class="material-symbols-outlined">mail</span></div>
+                <div class="hist-content">
+                  <div class="hist-header"><span class="who">Email</span><span class="when">Juni 14, 2024 11:36 &bull; Jan Joisten</span></div>
+                  <div class="hist-box">
+                    <p style="font-weight:500; color:var(--color-neutral-dark-800); margin-bottom: var(--space-s)">Dokumente von Max Mustermann</p>
+                    <p>Hallo Herr Berater,<br />Anbei finden Sie meine Dokumente..</p>
+                    <div class="hist-attachments">
+                      <div class="attachment"><span class="material-symbols-outlined">attach_file</span><div><div class="att-name">Gehaltsabrechnung Max Mustermann M&auml;rz 2025.pdf</div><div class="att-size">8918290 KB</div></div></div>
+                      <div class="attachment"><span class="material-symbols-outlined">attach_file</span><div><div class="att-name">Gehaltsabrechnung Max Mustermann April 2025.pdf</div><div class="att-size">8918290 KB</div></div></div>
+                      <div class="attachment"><span class="material-symbols-outlined">attach_file</span><div><div class="att-name">Personalausweiss.pdf</div><div class="att-size">8918290 KB</div></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon no-border"><span class="material-symbols-outlined">description</span></div>
+                <div class="hist-content">
+                  <div class="hist-line"><span class="highlight">Finanzierungsangebot</span> ge&ouml;ffnet</div>
+                  <div class="hist-line-meta">Mai 19, 2022 10:55</div>
+                </div>
+              </div>
+
+              <div class="hist-entry">
+                <div class="hist-icon no-border"><span class="material-symbols-outlined">description</span></div>
+                <div class="hist-content">
+                  <div class="hist-line">Antrag verschoben von Anfrage erstellt &nbsp;&rarr;&nbsp; Selbstauskunft gestartet</div>
+                  <div class="hist-line-meta">Juni 14, 2024 11:36 - System</div>
+                </div>
+              </div>
+
+              <button class="load-more">Load more</button>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+<div class="scrim" id="todoScrim"></div>
+<aside class="panel" id="todoPanel" role="dialog" aria-label="ToDo bearbeiten" aria-hidden="true">
+  <div class="panel-head">
+    <h2>ToDo bearbeiten</h2>
+    <div class="panel-head-actions">
+      <button class="top-icon" id="todoPanelMinimize" title="Minimieren"><span class="material-symbols-outlined">remove</span></button>
+      <button class="top-icon" id="todoPanelExpand" title="Vergr&ouml;&szlig;ern"><span class="material-symbols-outlined">open_in_full</span></button>
+      <button class="top-icon" id="todoPanelClose" title="Schlie&szlig;en (Esc)"><span class="material-symbols-outlined">close</span></button>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="field">
+      <label for="todoPanelArt">ToDo Art</label>
+      <select id="todoPanelArt">
+        <option>Anruf</option>
+        <option>Aufgabe</option>
+        <option>Termin</option>
+        <option>E-Mail</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="todoPanelBeschreibung">ToDo Beschreibung</label>
+      <textarea id="todoPanelBeschreibung"></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="todoPanelDatum">Datum <span class="req">*</span></label>
+        <div class="field-input-wrap">
+          <input type="date" id="todoPanelDatum" />
+          <span class="material-symbols-outlined">calendar_month</span>
+        </div>
+        <span class="field-hint">TT.MM.JJJJ</span>
+      </div>
+      <div class="field">
+        <label for="todoPanelUhrzeit">Uhrzeit</label>
+        <div class="field-input-wrap">
+          <input type="time" id="todoPanelUhrzeit" />
+          <span class="material-symbols-outlined">search</span>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="todoPanelKunde">Kundenname <span class="req">*</span></label>
+      <div class="field-input-wrap">
+        <input type="text" id="todoPanelKunde" value="Max Mustermann (Buy an existing property)" disabled />
+        <span class="material-symbols-outlined">search</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="todoPanelZuweisen">Zuweisen an <span class="req">*</span></label>
+      <div class="field-input-wrap">
+        <input type="text" id="todoPanelZuweisen" value="Jan Joisten" />
+        <span class="material-symbols-outlined">search</span>
+      </div>
+    </div>
+  </div>
+  <div class="panel-foot">
+    <button class="btn btn-primary" id="todoPanelSave">Sichern</button>
+    <button class="btn btn-ghost" id="todoPanelCancel">Abbrechen</button>
+  </div>
+</aside>
+
+<script>
+  var todoPanelRow = null;
+  function openTodoPanel(row) {
+    todoPanelRow = row;
+    var title = row.querySelector('.todo-title');
+    var due = row.querySelector('.due-line');
+    document.getElementById('todoPanelBeschreibung').value = title ? title.textContent.trim() : '';
+    var dueText = due ? due.textContent.trim() : '';
+    var timeMatch = dueText.match(/(\d{2}):(\d{2})/);
+    document.getElementById('todoPanelUhrzeit').value = timeMatch ? (timeMatch[0]) : '';
+    document.getElementById('todoPanelDatum').value = displayToISO(dueText);
+    document.getElementById('todoScrim').classList.add('open');
+    document.getElementById('todoPanel').classList.add('open');
+    document.getElementById('todoPanel').setAttribute('aria-hidden', 'false');
+  }
+  function closeTodoPanel() {
+    document.getElementById('todoScrim').classList.remove('open');
+    document.getElementById('todoPanel').classList.remove('open');
+    document.getElementById('todoPanel').classList.remove('expanded');
+    document.getElementById('todoPanel').setAttribute('aria-hidden', 'true');
+    todoPanelRow = null;
+  }
+  document.getElementById('todoPanelClose').addEventListener('click', closeTodoPanel);
+  document.getElementById('todoPanelMinimize').addEventListener('click', closeTodoPanel);
+  document.getElementById('todoPanelExpand').addEventListener('click', function () {
+    document.getElementById('todoPanel').classList.toggle('expanded');
+  });
+  document.getElementById('todoPanelCancel').addEventListener('click', closeTodoPanel);
+  document.getElementById('todoScrim').addEventListener('click', closeTodoPanel);
+  document.getElementById('todoPanelSave').addEventListener('click', function () {
+    if (!todoPanelRow) return;
+    var title = todoPanelRow.querySelector('.todo-title');
+    var due = todoPanelRow.querySelector('.due-line');
+    var beschreibung = document.getElementById('todoPanelBeschreibung').value.trim();
+    var iso = document.getElementById('todoPanelDatum').value;
+    var uhrzeit = document.getElementById('todoPanelUhrzeit').value;
+    if (title && beschreibung) title.textContent = beschreibung;
+    if (due && iso) due.textContent = isoToDisplay(iso, uhrzeit);
+    closeTodoPanel();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && document.getElementById('todoPanel').classList.contains('open')) closeTodoPanel();
+  });
+
+  function toggleTodoMenu(event, btn) {
+    event.stopPropagation();
+    var menu = btn.closest('.todo-more-wrap').querySelector('.todo-menu');
+    var wasOpen = menu.classList.contains('open');
+    document.querySelectorAll('.todo-menu.open').forEach(function (m) { m.classList.remove('open'); });
+    if (!wasOpen) menu.classList.add('open');
+  }
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.todo-menu.open').forEach(function (m) { m.classList.remove('open'); });
+  });
+
+  function updateTodoCount() {
+    var list = document.querySelector('.todo-list');
+    var n = list ? list.querySelectorAll('.todo-row').length : 0;
+    var count = document.querySelector('.todo-head-title .count');
+    if (count) count.textContent = '(' + n + ')';
+  }
+  function deleteTodo(el) {
+    var row = el.closest('.todo-row');
+    if (!row) return;
+    var next = row.nextElementSibling;
+    var prev = row.previousElementSibling;
+    if (next && next.classList.contains('todo-divider')) next.remove();
+    else if (prev && prev.classList.contains('todo-divider')) prev.remove();
+    row.remove();
+    updateTodoCount();
+  }
+
+  /* ---------- Inline-Edit: Titel + Fälligkeitsdatum/-uhrzeit (wie to-do/mein-tag-v4.html) ---------- */
+  function toISOInput(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function shiftISO(iso, days) { var d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + days); return toISOInput(d); }
+  function isoToDisplay(iso, timeSuffix) {
+    var d = new Date(iso + 'T00:00:00');
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    var label;
+    if (d.getTime() === today.getTime()) label = 'Heute';
+    else if (d.getTime() === tomorrow.getTime()) label = 'Morgen';
+    else if (d.getTime() < today.getTime()) label = 'Überfällig';
+    else label = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+    return timeSuffix ? (label + ' - ' + timeSuffix) : label;
+  }
+  function displayToISO(text) {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    if (/heute/i.test(text)) return toISOInput(today);
+    if (/morgen/i.test(text)) { var t = new Date(today); t.setDate(t.getDate() + 1); return toISOInput(t); }
+    if (/überfällig/i.test(text)) { var y = new Date(today); y.setDate(y.getDate() - 1); return toISOInput(y); }
+    var m = text.match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    if (m) return m[3] + '-' + m[1] + '-' + m[2];
+    return toISOInput(today);
+  }
+
+  function startInline(el) {
+    if (el.classList.contains('editing')) return;
+    var original = el.textContent.trim();
+    var isDate = el.dataset.field === 'faelligkeit';
+    var timeMatch = original.match(/(\d{2}:\d{2})/);
+    var timeSuffix = timeMatch ? timeMatch[1] : '';
+
+    var input = document.createElement('input');
+    input.className = 'inline-input';
+    if (isDate) {
+      input.type = 'date';
+      input.value = displayToISO(original);
+    } else {
+      input.type = 'text';
+      input.value = original;
+      input.style.width = Math.max(60, original.length * 8 + 20) + 'px';
+    }
+
+    el.classList.add('editing');
+    var cell = el.closest('.due-cell');
+    el.textContent = '';
+    el.appendChild(input);
+
+    var bumpBtn = null;
+    if (isDate && cell) {
+      bumpBtn = document.createElement('button');
+      bumpBtn.type = 'button';
+      bumpBtn.className = 'due-bump';
+      bumpBtn.textContent = '+1 Tag';
+      bumpBtn.title = 'Datum im Feld um 1 Tag verschieben';
+      bumpBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); ev.stopPropagation(); });
+      bumpBtn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        input.value = shiftISO(input.value || displayToISO(original), 1);
+      });
+      cell.appendChild(bumpBtn);
+    }
+
+    input.focus();
+    if (!isDate) input.select();
+    else if (input.showPicker) { try { input.showPicker(); } catch (err) {} }
+
+    var closed = false;
+    function finish(commit) {
+      if (closed) return;
+      closed = true;
+      if (bumpBtn) bumpBtn.remove();
+      el.classList.remove('editing');
+      if (isDate) {
+        el.textContent = (commit && input.value) ? isoToDisplay(input.value, timeSuffix) : original;
+      } else {
+        var val = input.value.trim();
+        el.textContent = (commit && val) ? val : original;
+      }
+    }
+    input.addEventListener('keydown', function (ev) {
+      ev.stopPropagation();
+      if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+      else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', function () { finish(true); });
+    input.addEventListener('click', function (ev) { ev.stopPropagation(); });
+    input.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
+  }
+  document.querySelectorAll('.inline-edit').forEach(function (el) {
+    el.addEventListener('mousedown', function (ev) {
+      if (el.classList.contains('editing')) return;
+      ev.preventDefault(); ev.stopPropagation();
+      startInline(el);
+    });
+    el.addEventListener('keydown', function (ev) {
+      if ((ev.key === 'Enter' || ev.key === ' ') && !el.classList.contains('editing')) {
+        ev.preventDefault();
+        startInline(el);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
