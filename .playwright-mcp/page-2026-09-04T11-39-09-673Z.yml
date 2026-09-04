@@ -1,0 +1,257 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - button "calendar_today Mein Tag" [ref=e4] [cursor=pointer]:
+      - generic [ref=e5]: calendar_today
+      - generic [ref=e6]: Mein Tag
+    - button "group Anträge" [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]: group
+      - generic [ref=e9]: Anträge
+    - button "person Leads" [ref=e10] [cursor=pointer]:
+      - generic [ref=e11]: person
+      - generic [ref=e12]: Leads
+    - button "contact_mail Quellen" [ref=e13] [cursor=pointer]:
+      - generic [ref=e14]: contact_mail
+      - generic [ref=e15]: Quellen
+    - button "account_balance Unternehmen" [ref=e16] [cursor=pointer]:
+      - generic [ref=e17]: account_balance
+      - generic [ref=e18]: Unternehmen
+    - button "credit_card Buchhaltung" [ref=e19] [cursor=pointer]:
+      - generic [ref=e20]: credit_card
+      - generic [ref=e21]: Buchhaltung
+    - button "bar_chart Reporting" [ref=e22] [cursor=pointer]:
+      - generic [ref=e23]: bar_chart
+      - generic [ref=e24]: Reporting
+    - button "storefront Lead-Shop" [ref=e25] [cursor=pointer]:
+      - generic [ref=e26]: storefront
+      - generic [ref=e27]: Lead-Shop
+    - button "mail Email" [ref=e28] [cursor=pointer]:
+      - generic [ref=e29]: mail
+      - generic [ref=e30]: Email
+  - generic [ref=e31]:
+    - banner [ref=e32]:
+      - generic [ref=e33]: FinLink
+      - button "add_box" [ref=e37] [cursor=pointer]
+      - button "notifications" [ref=e39] [cursor=pointer]
+      - button "help" [ref=e41] [cursor=pointer]
+      - button "GS Gernot Schusser Global admin expand_more" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]: GS
+        - generic [ref=e46]:
+          - generic [ref=e47]: Gernot Schusser
+          - generic [ref=e48]: Global admin
+        - generic [ref=e49]: expand_more
+    - generic [ref=e51]:
+      - generic [ref=e52]:
+        - heading "Anträge" [level=1] [ref=e54]
+        - generic [ref=e55]:
+          - button "filter_list Filter" [ref=e56] [cursor=pointer]:
+            - generic [ref=e57]: filter_list
+            - text: Filter
+          - button "download Importieren" [ref=e59] [cursor=pointer]:
+            - generic [ref=e60]: download
+            - text: Importieren
+          - button "person_add Hinzufügen" [ref=e61] [cursor=pointer]:
+            - generic [ref=e62]: person_add
+            - text: Hinzufügen
+      - generic [ref=e63]:
+        - generic [ref=e64]: 30 Anträge · 30 Mio. € Volumen
+        - generic [ref=e65]: "Sichtbarkeit: Meine Anträge"
+      - generic [ref=e66]:
+        - table [ref=e67]:
+          - rowgroup [ref=e68]:
+            - row [ref=e69]:
+              - columnheader "Antragsteller/in unfold_more" [ref=e70]:
+                - generic [ref=e71]:
+                  - text: Antragsteller/in
+                  - generic [ref=e72]: unfold_more
+              - columnheader "Volumen unfold_more" [ref=e73]:
+                - generic [ref=e74]:
+                  - text: Volumen
+                  - generic [ref=e75]: unfold_more
+              - columnheader "Stadt unfold_more" [ref=e76]:
+                - generic [ref=e77]:
+                  - text: Stadt
+                  - generic [ref=e78]: unfold_more
+              - columnheader "Status unfold_more" [ref=e79]:
+                - generic [ref=e80]:
+                  - text: Status
+                  - generic [ref=e81]: unfold_more
+              - columnheader "Berater/in unfold_more" [ref=e82]:
+                - generic [ref=e83]:
+                  - text: Berater/in
+                  - generic [ref=e84]: unfold_more
+              - columnheader "Letzte Aktivität unfold_more" [ref=e85]:
+                - generic [ref=e86]:
+                  - text: Letzte Aktivität
+                  - generic [ref=e87]: unfold_more
+              - columnheader "Quelle unfold_more" [ref=e88]:
+                - generic [ref=e89]:
+                  - text: Quelle
+                  - generic [ref=e90]: unfold_more
+              - columnheader "ToDos unfold_more" [ref=e91]:
+                - generic [ref=e92]:
+                  - text: ToDos
+                  - generic [ref=e93]: unfold_more
+              - columnheader "Tags unfold_more" [ref=e94]:
+                - generic [ref=e95]:
+                  - text: Tags
+                  - generic [ref=e96]: unfold_more
+          - rowgroup [ref=e97]:
+            - row [ref=e98]:
+              - cell "Silvia Moreno home New" [ref=e99]:
+                - text: Silvia Moreno
+                - generic [ref=e100]: home
+                - generic [ref=e101]: New
+              - cell "400.000 €" [ref=e102]
+              - cell "Berlin" [ref=e103]
+              - cell "Finanzierung angefragt" [ref=e104]
+              - cell "Gernot Schusser" [ref=e105]
+              - cell "vor 1 Stunde" [ref=e106]
+              - cell "Immobilienscout24" [ref=e107]
+              - cell [ref=e108]
+              - cell ">100% BLA" [ref=e109]
+            - row [ref=e111]:
+              - cell "Frederick Pask home New" [ref=e112]:
+                - text: Frederick Pask
+                - generic [ref=e113]: home
+                - generic [ref=e114]: New
+              - cell "480.000 €" [ref=e115]
+              - cell "Hamburg" [ref=e116]
+              - cell "Selbstauskunft vollständig" [ref=e117]
+              - cell "Jan Joisten" [ref=e118]
+              - cell "vor 5 Stunden" [ref=e119]
+              - cell "Immobilienscout24" [ref=e120]
+              - cell "check_box Client ToDo" [ref=e121]:
+                - generic [ref=e122]:
+                  - generic [ref=e123]: check_box
+                  - text: Client ToDo
+              - cell "Active" [ref=e124]
+            - row [ref=e126]:
+              - cell "Sebastian Stanjek New" [ref=e127]:
+                - text: Sebastian Stanjek
+                - generic [ref=e128]: New
+              - cell "320.000 €" [ref=e129]
+              - cell "Frankfurt" [ref=e130]
+              - cell "Selbstauskunft vollständig" [ref=e131]
+              - cell "Gernot Schusser" [ref=e132]
+              - cell "vor 2 Tagen" [ref=e133]
+              - cell "Max Mustermann" [ref=e134]
+              - cell [ref=e135]
+              - cell [ref=e136]
+            - row [ref=e137]:
+              - cell "Silvia Moreno Claimed" [ref=e138]:
+                - text: Silvia Moreno
+                - generic [ref=e139]: Claimed
+              - cell "200.000 €" [ref=e140]
+              - cell "Berlin" [ref=e141]
+              - cell "Selbstauskunft vollständig" [ref=e142]
+              - cell "Gernot Schusser" [ref=e143]
+              - cell "vor 1 Stunde" [ref=e144]
+              - cell "Max Mustermann" [ref=e145]
+              - cell [ref=e146]
+              - cell "Uploaded documents" [ref=e147]
+            - row [ref=e149]:
+              - cell "Frederick Pask home" [ref=e150]:
+                - text: Frederick Pask
+                - generic [ref=e151]: home
+              - cell "290.000 €" [ref=e152]
+              - cell "Hamburg" [ref=e153]
+              - cell "Finanzierung angefragt" [ref=e154]
+              - cell "Jan Joisten" [ref=e155]
+              - cell "vor 5 Stunden" [ref=e156]
+              - cell "Immobilienscout24" [ref=e157]
+              - cell "check_box Client ToDo" [ref=e158]:
+                - generic [ref=e159]:
+                  - generic [ref=e160]: check_box
+                  - text: Client ToDo
+              - cell [ref=e161]
+            - row [ref=e162]:
+              - cell "Sebastian Stanjek" [ref=e163]
+              - cell "230.000 €" [ref=e164]
+              - cell "Bamberg" [ref=e165]
+              - cell "Selbstauskunft vollständig" [ref=e166]
+              - cell "Gernot Schusser" [ref=e167]
+              - cell "vor 1 Tag" [ref=e168]
+              - cell "Max Mustermann" [ref=e169]
+              - cell "check_box Heute fällig" [ref=e170]:
+                - generic [ref=e171]:
+                  - generic [ref=e172]: check_box
+                  - text: Heute fällig
+              - cell [ref=e173]
+            - row [ref=e174]:
+              - cell "Silvia Moreno home Claimed" [ref=e175]:
+                - text: Silvia Moreno
+                - generic [ref=e176]: home
+                - generic [ref=e177]: Claimed
+              - cell "370.000 €" [ref=e178]
+              - cell "Rüdnitz" [ref=e179]
+              - cell "Selbstauskunft vollständig" [ref=e180]
+              - cell "Gernot Schusser" [ref=e181]
+              - cell "vor 4 Stunden" [ref=e182]
+              - cell "Max Mustermann" [ref=e183]
+              - cell "check_box Überfällig" [ref=e184]:
+                - generic [ref=e185]:
+                  - generic [ref=e186]: check_box
+                  - text: Überfällig
+              - cell "Important client" [ref=e187]
+            - row [ref=e189]:
+              - cell "Frederick Pask" [ref=e190]
+              - cell "410.000 €" [ref=e191]
+              - cell "Bernau" [ref=e192]
+              - cell "Finanzierung angefragt" [ref=e193]
+              - cell "Jan Joisten" [ref=e194]
+              - cell "vor 2 Tagen" [ref=e195]
+              - cell "Immobilienscout24" [ref=e196]
+              - cell [ref=e197]
+              - cell [ref=e198]
+            - row [ref=e199]:
+              - cell "Sebastian Stanjek" [ref=e200]
+              - cell "550.000 €" [ref=e201]
+              - cell "Potsdam" [ref=e202]
+              - cell "Finanzierung angefragt" [ref=e203]
+              - cell "Gernot Schusser" [ref=e204]
+              - cell "vor 2 Stunden" [ref=e205]
+              - cell "Max Mustermann" [ref=e206]
+              - cell [ref=e207]
+              - cell [ref=e208]
+            - row [ref=e209]:
+              - cell "Silvia Moreno" [ref=e210]
+              - cell "210.000 €" [ref=e211]
+              - cell "Hamburg" [ref=e212]
+              - cell "Selbstauskunft vollständig" [ref=e213]
+              - cell "Gernot Schusser" [ref=e214]
+              - cell "vor 5 Stunden" [ref=e215]
+              - cell "Max Mustermann" [ref=e216]
+              - cell [ref=e217]
+              - cell [ref=e218]
+            - row [ref=e219]:
+              - cell "Frederick Pask home" [ref=e220]:
+                - text: Frederick Pask
+                - generic [ref=e221]: home
+              - cell "355.000 €" [ref=e222]
+              - cell "Bonn" [ref=e223]
+              - cell "Selbstauskunft vollständig" [ref=e224]
+              - cell "Jan Joisten" [ref=e225]
+              - cell "vor 3 Stunden" [ref=e226]
+              - cell "Immobilienscout24" [ref=e227]
+              - cell "check_box Client ToDo" [ref=e228]:
+                - generic [ref=e229]:
+                  - generic [ref=e230]: check_box
+                  - text: Client ToDo
+              - cell "Custom tag" [ref=e231]
+            - row [ref=e233]:
+              - cell "Sebastian Stanjek home" [ref=e234]:
+                - text: Sebastian Stanjek
+                - generic [ref=e235]: home
+              - cell "420.000 €" [ref=e236]
+              - cell "München" [ref=e237]
+              - cell "Finanzierung angefragt" [ref=e238]
+              - cell "Jan Joisten" [ref=e239]
+              - cell "vor 3 Tagen" [ref=e240]
+              - cell "Immobilienscout24" [ref=e241]
+              - cell [ref=e242]
+              - cell [ref=e243]
+        - generic [ref=e244]:
+          - generic [ref=e245]: Zeilen pro Seite 25
+          - generic [ref=e246]: 1 – 12 von 30
+          - button "chevron_left" [ref=e247] [cursor=pointer]
+          - button "chevron_right" [ref=e249] [cursor=pointer]

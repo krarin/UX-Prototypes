@@ -6,8 +6,8 @@ FinLink. Zwei Flows, ein Prototyp:
 1. **Import starten** — Anträge → *Importieren* → *Plattformimport manuell starten*
    → vierstufiger Dialog bis zum Ergebnis.
 2. **Import nachschlagen** — Benutzermenü *Gernot Schusser* → *Mein Unternehmen*
-   (Abschnitt *Plattformen*) → Massenimport-Verlauf → ein Lauf → Detailseite mit
-   der Zusammenfassung.
+   (Abschnitt *Plattformen*) → Massenimport-Verlauf → ein Lauf öffnet sich im
+   selben Dialog, in dem er gestartet wurde.
 
 Die beiden hängen zusammen: Ein im Dialog abgeschlossener Lauf steht danach oben
 im Verlauf und ist dort anklickbar.
@@ -25,7 +25,7 @@ Vorlage: [Figma — Lender Integration · Mass import](https://www.figma.com/des
 
 ---
 
-## Die drei Bildschirme
+## Die zwei Bildschirme
 
 **Anträge** — Einstieg in Flow 1. Der Knopf *Importieren* öffnet ein Menü mit
 *Einzelimport*, *Massenimport* und *Plattformimport manuell starten*. Die letzten
@@ -38,31 +38,58 @@ Darunter steht der Abschnitt **Aktueller Import** — aber nur, solange es einen
 | Import läuft | drehender Ring · *Import läuft* · Quelle und Prozent, live mitzählend |
 | Import fertig | grüner Haken · *Import abgeschlossen* · Quelle und „x von y" |
 
-Ein Klick führt zurück in den Lauf: während er läuft auf den Fortschritt, danach
-auf das Ergebnis mit der Tabelle der nicht importierten Fälle. Sobald der Lauf
-über *Fertig* im Verlauf abgelegt ist, verschwindet der Abschnitt wieder.
+Ist ein Lauf fertig, trägt der Knopf *Importieren* zusätzlich einen **roten
+Zähler**. Meldung und Zähler bleiben stehen, bis der Berater sie **einmal
+geöffnet** hat — *Fertig* räumt sie nicht weg. Genau dann bräuchte man sie ja.
 
-Damit ist der minimierte Import nicht mehr nur an den flüchtigen Hinweis unten
-rechts gebunden — er hat einen festen Platz, zu dem man jederzeit zurückfindet.
+Das Ziel des Klicks wandert mit:
+
+| Lage | Klick führt auf |
+|---|---|
+| Lauf läuft noch | Dialog, Fortschritt |
+| fertig, noch nicht abgelegt | Dialog, Ergebnis mit der Konflikttabelle |
+| fertig und über *Fertig* abgelegt | Detailseite des Laufs im Verlauf |
+
+Danach sind Meldung und Zähler weg — gesehen ist gesehen. Ein neuer Lauf setzt
+beide wieder.
+
+Damit ist der fertige Import nicht mehr nur an den flüchtigen Hinweis unten rechts
+gebunden — er hat einen festen Platz, zu dem man jederzeit zurückfindet.
+
+Ganz unten steht dauerhaft **Import-Verlauf ansehen**. Der Eintrag führt auf
+*Mein Unternehmen → Plattformen* und scrollt dort direkt zum Massenimport-Verlauf —
+auch dann, wenn gerade kein Lauf offen ist.
 
 **Mein Unternehmen** — erreichbar über das Benutzermenü oben rechts und über
 *Unternehmen* in der Seitennavigation. Links die Profilkarte und die
 Abschnittsnavigation, in der *Plattformen* offen steht; rechts die Plattformzugänge
 der Organisation und darunter der **Massenimport-Verlauf** — die Log-Seite mit neun
-Läufen in vier Zuständen. Jede Zeile führt über *Import ansehen* auf die
-Detailseite. Alles außer *Plattformen* ist Kulisse und meldet sich als solche.
+Läufen in vier Zuständen, mit Spalte *Datum* für den Tag des Laufs. Jede Zeile
+führt über *Import ansehen* in den Dialog. Alles außer *Plattformen* ist Kulisse
+und meldet sich als solche.
 
 Der Verlauf hing vorher unter *Quellen*; dort ist er nicht mehr zu finden.
 
-**Detailseite** — links der Status als Abschnittsnavigation, rechts die
-Zusammenfassung. Was gezeigt wird, hängt am Status:
+---
 
-| Status | Detailseite zeigt |
+## Ein Lauf aus dem Verlauf
+
+Keine eigene Seite: der Lauf öffnet sich in demselben Dialog, in dem ein Import
+auch gestartet wird. Oben stehen immer Quelle, Zeitraum, Zeitpunkt und die
+Statuspille — darunter hängt der Inhalt am Status:
+
+| Status | Der Dialog zeigt |
 |---|---|
 | Import abgeschlossen | vier Kennzahlen · Prolongations-Hinweis · grüne Bestätigung |
 | Teilweise importiert | vier Kennzahlen · Prolongations-Hinweis · rotes Band · Konflikttabelle |
-| In Warteschlange | Hinweis „läuft noch" · Fortschritt in Prozent |
-| Fehlgeschlagen | roter Grund (Zugangsdaten, Timeout) · *Erneut versuchen* |
+| In Warteschlange | nur Quelle, Zeitraum und den Satz, dass der Import automatisch startet |
+| Fehlgeschlagen | was schiefging, dazu *Was Sie jetzt tun können* · *Erneut versuchen* |
+
+**Fehlgeschlagen** heißt: kein Fall importiert. Der Dialog sagt genau das, nennt
+den Grund in einem Satz ohne Fehlercode und rät klar zum zweiten Versuch später —
+meist steckt nur eine kurze technische Störung dahinter. *Erneut versuchen* führt
+an den Anfang des Dialogs, Quelle und Zeitraum des gescheiterten Laufs schon
+eingetragen.
 
 ---
 

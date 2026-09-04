@@ -150,7 +150,7 @@
     .pager-btn:hover { background: var(--color-neutral-light-200); }
 
     /* ---------- Mein Unternehmen ---------- */
-    .org-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: var(--space-l); align-items: start; }
+    .org-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--space-l); align-items: start; }
     .org-card {
       background: #fff; border: 1px solid var(--color-neutral-light-500);
       border-radius: var(--radius-m); padding: var(--space-l);
@@ -320,6 +320,17 @@
     .menu-item-title { display: block; font-weight: 500; }
     .menu-item-sub   { display: block; font-size: 12px; line-height: 16px; color: var(--color-neutral-dark-400); }
 
+    /* Roter Zähler am „Importieren"-Knopf, solange ein fertiger Lauf
+       noch nicht abgelegt ist. */
+    .btn-badge { position: relative; }
+    .btn-count {
+      position: absolute; top: -7px; right: -7px;
+      min-width: 20px; height: 20px; padding: 0 5px;
+      border-radius: var(--radius-full); border: 2px solid var(--color-neutral-light-200);
+      background: var(--color-error-500); color: #fff;
+      font-size: 11px; line-height: 16px; font-weight: 500; text-align: center;
+    }
+
     /* ============================================================
        DIALOG
        ============================================================ */
@@ -451,8 +462,9 @@
           <div class="row">
             <button class="btn btn-secondary"><span class="material-symbols-outlined">filter_list</span>Filter</button>
             <div class="menu-wrap">
-              <button class="btn btn-secondary" id="btn-importieren">
+              <button class="btn btn-secondary btn-badge" id="btn-importieren">
                 <span class="material-symbols-outlined">download</span>Importieren
+                <span class="btn-count" id="import-badge" hidden>1</span>
               </button>
               <div class="menu" id="menu-importieren">
                 <button class="menu-item">Einzelimport</button>
@@ -461,6 +473,9 @@
                 <!-- Läuft gerade ein Import oder ist einer fertig, hängt hier
                      der Einstieg zurück in den Lauf. Sonst leer. -->
                 <div id="menu-lauf" hidden></div>
+                <button class="menu-item menu-item-icon menu-sep" id="btn-verlauf-ansehen">
+                  <span class="material-symbols-outlined">history</span>Import-Verlauf ansehen
+                </button>
               </div>
             </div>
             <button class="btn btn-primary"><span class="material-symbols-outlined">person_add</span>Hinzufügen</button>
@@ -734,7 +749,7 @@
           <span class="material-symbols-outlined">block</span>
           <span>
             <strong id="s4-fehl-satz">— Fälle nicht importiert</strong><br />
-            <button class="link-btn" id="s4-zu-den-faellen">zu den Fällen</button>
+            <button class="link-btn" id="s4-verlauf-link">Import-Verlauf</button>
           </span>
         </div>
 
@@ -924,24 +939,39 @@
   /* ---------------------------------------------------------------
      Abschnitt „Aktueller Import" im Menü.
 
-     Der Lauf überlebt das Schließen des Dialogs. Solange er läuft
-     oder sein Ergebnis noch nicht abgeholt ist, steht er hier —
-     ein Klick führt zurück in den Fortschritt bzw. auf das Ergebnis.
+     Die Meldung hängt NICHT am Dialog. Sie entsteht, wenn ein Lauf
+     startet, und bleibt stehen, bis der Berater sie einmal geöffnet
+     hat — auch über „Fertig" hinaus. Sonst wäre sie genau in dem
+     Moment weg, in dem man sie braucht.
+
+     Ziel des Klicks wandert mit:
+       läuft            → Dialog, Fortschritt
+       fertig, im Dialog→ Dialog, Ergebnis
+       fertig, abgelegt → Detailseite des Laufs im Verlauf
      --------------------------------------------------------------- */
   var laufStatus  = null;   /* null · 'laeuft' · 'fertig' */
   var laufProzent = 0;
 
+  /* Eigene Kopie der Eckdaten: `lauf` wird beim nächsten „Fälle suchen"
+     überschrieben, die Meldung soll davon nicht kaputtgehen. */
+  var meldung = null;       /* { quelleKurz, importiert, gesamt, verlaufId } */
+
   function setLaufStatus(status) {
     laufStatus = status;
     renderMenuLauf();
+    renderImportBadge();
+  }
+
+  /** Roter Zähler am Knopf, solange ein fertiger Lauf ungesehen ist. */
+  function renderImportBadge() {
+    document.getElementById('import-badge').hidden = laufStatus !== 'fertig';
   }
 
   function renderMenuLauf() {
     var box = document.getElementById('menu-lauf');
 
-    if (!laufStatus) { box.hidden = true; box.innerHTML = ''; return; }
+    if (!laufStatus || !meldung) { box.hidden = true; box.innerHTML = ''; return; }
 
-    var q = quelleVon(lauf.quelleId);
     var laeuft = laufStatus === 'laeuft';
 
     box.hidden = false;
@@ -954,19 +984,44 @@
         '</span>' +
         '<span>' +
           '<span class="menu-item-title">' + (laeuft ? 'Import läuft' : 'Import abgeschlossen') + '</span>' +
-          '<span class="menu-item-sub">' + q.kurz + ' · ' +
-            (laeuft ? laufProzent + ' %' : lauf.importiert + ' von ' + lauf.gesamt) +
+          '<span class="menu-item-sub">' + meldung.quelleKurz + ' · ' +
+            (laeuft ? laufProzent + ' %' : meldung.importiert + ' von ' + meldung.gesamt) +
           '</span>' +
         '</span>' +
       '</button>';
 
     document.getElementById('menu-lauf-link').addEventListener('click', function () {
       menu.classList.remove('open');
-      overlay.classList.add('open');
-      schritt(laufStatus === 'laeuft' ? 3 : 4);
       document.getElementById('toasts').innerHTML = '';
+
+      /* Titel zurücksetzen — eine zwischendurch geöffnete Verlaufs-
+         Zusammenfassung hat ihn auf „Massenimport · <Datum>" gestellt. */
+      if (laufStatus === 'laeuft') {
+        document.getElementById('dialog-title').textContent = 'Massenimport';
+        overlay.classList.add('open');
+        schritt(3);
+        return;
+      }
+
+      /* Gesehen — Zähler und Meldung sind erledigt. */
+      if (meldung.verlaufId) {
+        laufAnsehen(meldung.verlaufId);     /* schon abgelegt → Zusammenfassung */
+      } else {
+        document.getElementById('dialog-title').textContent = 'Massenimport';
+        overlay.classList.add('open');
+        schritt(4);                          /* noch im Dialog → Ergebnis */
+      }
+      meldung = null;
+      setLaufStatus(null);
     });
   }
+
+  /* Führt auf die Log-Seite: Mein Unternehmen → Plattformen → Massenimport-Verlauf. */
+  document.getElementById('btn-verlauf-ansehen').addEventListener('click', function () {
+    menu.classList.remove('open');
+    show('unternehmen');
+    document.getElementById('card-verlauf').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 
   /** Prozentanzeige im Menü nachziehen, ohne die Zeile neu zu bauen. */
   function updateMenuLaufProzent() {
@@ -1042,9 +1097,7 @@
         '<td>' + imp.gestartet + '</td>' +
         '<td>' + imp.datum + '</td>' +
         '<td style="text-align:right">' +
-          '<button class="btn btn-secondary" data-imp="' + imp.id + '">' +
-            '<span class="material-symbols-outlined">visibility</span>Import ansehen' +
-          '</button>' +
+          '<button class="btn btn-secondary" data-imp="' + imp.id + '">Import ansehen</button>' +
         '</td>' +
       '</tr>';
     }).join('');
@@ -1073,9 +1126,13 @@
     }).join('');
   }
 
+  /** Der Lauf, der gerade im Dialog steht — für „Erneut versuchen". */
+  var gezeigterLauf = null;
+
   function laufAnsehen(id) {
     var imp = D.verlauf.filter(function (i) { return i.id === id; })[0];
     if (!imp) return;
+    gezeigterLauf = imp;
 
     var q = quelleVon(imp.quelle);
     var s = STATUS[imp.status];
@@ -1181,7 +1238,7 @@
 
     document.getElementById('sv-body').innerHTML = blocks.join('');
     document.getElementById('sv-footer').innerHTML = footer;
-    document.getElementById('dialog-title').textContent = 'Massenimport · ' + q.kurz;
+    document.getElementById('dialog-title').textContent = 'Massenimport · ' + imp.datum;
 
     overlay.classList.add('open');
     schritt('verlauf');
@@ -1190,9 +1247,23 @@
   document.getElementById('sv-footer').addEventListener('click', function (e) {
     var btn = e.target.closest('button');
     if (!btn) return;
-    /* „Erneut versuchen" führt in denselben Dialog zurück, nur von vorn. */
-    if (btn.dataset.aktion === 'neu') dialogOeffnen();
-    else dialogSchliessen();
+
+    /* „Erneut versuchen" führt an den Anfang desselben Dialogs — mit
+       der Quelle und dem Zeitraum des gescheiterten Laufs. */
+    if (btn.dataset.aktion === 'neu') {
+      var imp = gezeigterLauf;
+      dialogOeffnen();
+      var radio = document.querySelector('input[name="quelle"][value="' + imp.quelle + '"]');
+      if (radio) radio.checked = true;
+      var zeitraum = document.getElementById('zeitraum');
+      zeitraum.value = 'frei';
+      zeitraum.dispatchEvent(new Event('change'));
+      document.getElementById('von').value = imp.von;
+      document.getElementById('bis').value = imp.bis;
+      pruefeSchritt1();
+    } else {
+      dialogSchliessen();
+    }
   });
 
 
@@ -1321,6 +1392,7 @@
     lauf.importiert     = lauf.gesamt - lauf.uebersprungen - lauf.fehlgeschlagen;
     lauf.prolongationen = lauf.mitAbgeschlossenen ? Math.round(lauf.abgeschlossene * 0.6) : 0;
 
+    meldung = { quelleKurz: quelleVon(lauf.quelleId).kurz };
     setLaufStatus('laeuft');
     schritt(3);
     fortschrittStarten();
@@ -1391,6 +1463,8 @@
       });
     }
 
+    meldung.importiert = lauf.importiert;
+    meldung.gesamt     = lauf.gesamt;
     setLaufStatus('fertig');
     schritt(4);
   }
@@ -1405,8 +1479,10 @@
   /** Schreibt den fertigen Lauf oben in den Verlauf. */
   function laufSpeichern() {
     var status = lauf.fehlgeschlagen > 0 ? 'teilweise' : 'abgeschlossen';
+    var id     = 'imp-neu-' + Date.now();
+
     D.verlauf.unshift({
-      id: 'imp-neu-' + Date.now(),
+      id: id,
       quelle: lauf.quelleId, von: lauf.von, bis: lauf.bis,
       status: status,
       gesamt: lauf.gesamt, importiert: lauf.importiert,
@@ -1416,8 +1492,12 @@
     });
     renderVerlauf();
 
-    /* Der Lauf ist abgelegt — im Menü braucht er keinen Platz mehr. */
-    setLaufStatus(null);
+    /* Die Meldung bleibt stehen — sie zeigt jetzt nur woandershin:
+       nicht mehr auf den Dialog, sondern auf den abgelegten Lauf. */
+    if (meldung) {
+      meldung.verlaufId = id;
+      renderMenuLauf();
+    }
   }
 
   document.getElementById('btn-fertig').addEventListener('click', function () {
@@ -1437,9 +1517,15 @@
     schritt(1);
   });
 
-  document.getElementById('s4-zu-den-faellen').addEventListener('click', function () {
-    document.getElementById('s4-konflikte').closest('.card')
-      .scrollIntoView({ behavior: 'smooth', block: 'center' });
+  /* Der Verweis führt aus dem Ergebnis in den Massenimport-Verlauf unter
+     Mein Unternehmen → Plattformen. Der Lauf wird dabei abgelegt — sonst
+     stünde er in der Tabelle, in die er führt, noch nicht drin. */
+  document.getElementById('s4-verlauf-link').addEventListener('click', function () {
+    laufSpeichern();
+    dialogSchliessen();
+    document.getElementById('toasts').innerHTML = '';
+    show('unternehmen');
+    document.getElementById('card-verlauf').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   /* =====================================================================

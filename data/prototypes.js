@@ -375,7 +375,7 @@ window.PROTOTYPES = {
     /* ---- Lender Integration · Massenimport ---- */
     { id:"mass-import-v1", project:"mass-import", version:1, title:"Massenimport V1",
       file:"lender-integration/mass-import/mass-import-v1.html", status:"aktuell",
-      changes:"Erste Fassung, aus Figma umgesetzt: beide Flows in einem Prototyp — der vierstufige Massenimport-Dialog aus den Anträgen heraus und der Massenimport-Verlauf unter Mein Unternehmen → Plattformen mit Detailseite je Lauf (abgeschlossen, teilweise, fehlgeschlagen, in Warteschlange). Ein abgeschlossener Lauf wandert live in den Verlauf." },
+      changes:"Erste Fassung, aus Figma umgesetzt: beide Flows in einem Prototyp — der vierstufige Massenimport-Dialog aus den Anträgen heraus und der Massenimport-Verlauf unter Mein Unternehmen → Plattformen, aus dem sich jeder Lauf im selben Dialog öffnet (abgeschlossen, teilweise, fehlgeschlagen, in Warteschlange). Ein abgeschlossener Lauf wandert live in den Verlauf." },
 
     /* ---- Product Design · JTBD Mapper ---- */
     { id:"jtbd-mapper-v1", project:"jtbd-mapper", version:1, title:"JTBD Mapper V1",
