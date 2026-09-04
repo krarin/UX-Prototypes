@@ -24,7 +24,7 @@
      'angefordert'  wir warten auf Sie
      'pruefung'     vollstaendig eingegangen, wird geprueft
      'abgelehnt'    Pruefung nicht bestanden, mit Grund
-     'angenommen'   durch
+     'angenommen'   durch — steht an der Karte als „Genehmigt“
 
    RANGFOLGE der Hinweisbox (`urgency`) — drei Stufen, kein Score.
    Im Test muss die Antwort auf „warum diese drei?" ein Satz sein,
@@ -39,7 +39,7 @@
     angefordert: { wort:'angefordert', ikon:null,           klasse:'' },
     pruefung:    { wort:'In Prüfung',  ikon:'schedule',     klasse:'is-review' },
     abgelehnt:   { wort:'Abgelehnt',   ikon:'error',        klasse:'is-rejected' },
-    angenommen:  { wort:'Angenommen',  ikon:'check_circle', klasse:'is-accepted' }
+    angenommen:  { wort:'Genehmigt',   ikon:'check_circle', klasse:'is-accepted' }
   };
 
   /* `match` = Wortstuecke, an denen die automatische Zuordnung eine

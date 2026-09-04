@@ -1,0 +1,261 @@
+- generic [ref=f11e2]:
+  - complementary [ref=f11e3]:
+    - generic [ref=f11e4]:
+      - generic [ref=f11e5]: Fi
+      - text: FinLink
+    - generic [ref=f11e6]:
+      - generic [ref=f11e7]:
+        - generic [ref=f11e8]: check
+        - generic [ref=f11e10]: Machbarkeit prüfen
+      - generic [ref=f11e11]:
+        - generic [ref=f11e12]: "2"
+        - generic [ref=f11e13]: Optionen vergleichen
+      - generic [ref=f11e14]:
+        - generic [ref=f11e15]: "3"
+        - generic [ref=f11e16]: Beratungsgespräch
+      - generic [ref=f11e17]:
+        - generic [ref=f11e18]: "4"
+        - generic [ref=f11e19]: Finanzierung beantragen
+      - generic [ref=f11e20]:
+        - generic [ref=f11e21]: "5"
+        - generic [ref=f11e22]: Bestätigung erhalten
+    - navigation [ref=f11e23]:
+      - link "import_contacts Meine Dokumente" [ref=f11e24] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=f11e25]: import_contacts
+        - text: Meine Dokumente
+      - link "info Ablauf verstehen" [ref=f11e26] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=f11e27]: info
+        - text: Ablauf verstehen
+    - generic [ref=f11e28]:
+      - link "Termin vereinbaren" [ref=f11e29] [cursor=pointer]:
+        - /url: "#"
+      - paragraph [ref=f11e30]: Beratung vom Finanzierungsexperten
+  - generic [ref=f11e31]:
+    - generic [ref=f11e32]:
+      - generic [ref=f11e33]:
+        - text: Support
+        - generic [ref=f11e34]: call
+      - generic [ref=f11e36]: DE
+      - generic [ref=f11e38]:
+        - text: Frau Petrova
+        - generic [ref=f11e39]: expand_more
+    - generic [ref=f11e40]:
+      - generic [ref=f11e41]: Antragsdokumente
+      - link "Zurück zum Dashboard" [ref=f11e42] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f11e43]:
+      - heading "Verschaffen Sie sich einen Überblick über Ihre Dokumente, Frau Petrova!" [level=1] [ref=f11e44]
+      - paragraph [ref=f11e45]: Laden Sie die Dokumente hier hoch.
+      - list [ref=f11e46]:
+        - listitem [ref=f11e47]: Alle Dokumente müssen im PDF-, JPEG- oder PNG-Format vorliegen.
+        - listitem [ref=f11e48]: Dateigröße muss unter 200 MB liegen.
+        - listitem [ref=f11e49]: Alle bereitgestellten Dokumente müssen gut lesbar und hochauflösend sein.
+      - generic [ref=f11e50]:
+        - generic [ref=f11e51]:
+          - generic [ref=f11e52]: lock
+          - generic [ref=f11e53]:
+            - generic [ref=f11e54]: Hoher Datenschutzstandard
+            - text: Ihre Daten sind bei uns sicher und durch eine 256 Bit Sicherheitstechnologie verschlüsselt.
+        - generic [ref=f11e55]:
+          - generic [ref=f11e56]: DE
+          - generic [ref=f11e57]:
+            - generic [ref=f11e58]: Rechenzentrum
+            - text: in Europa
+      - generic [ref=f11e59]:
+        - heading "Laden Sie Ihre Dokumente hoch" [level=2] [ref=f11e60]
+        - paragraph [ref=f11e61]: "Dokumente müssen diesen Anforderungen genügen: Es werden nur die folgenden Dateitypen akzeptiert: pdf, png, jpg"
+      - generic [ref=f11e63]:
+        - generic [ref=f11e64]: upload_file
+        - generic [ref=f11e65]: Ziehen Sie Ihre Dokumente hierher, sie werden automatisch kategorisiert und unten angezeigt
+        - generic [ref=f11e66]: oder laden Sie sie einzeln in die unten stehenden Kategorien hoch.
+        - generic [ref=f11e67]:
+          - generic [ref=f11e68] [cursor=pointer]:
+            - generic [ref=f11e69]: folder_open
+            - text: Dateien auswählen
+          - button "science Beispieldateien verwenden" [ref=f11e70] [cursor=pointer]:
+            - generic [ref=f11e71]: science
+            - text: Beispieldateien verwenden
+      - generic [ref=f11e72]:
+        - generic [ref=f11e73]:
+          - heading "Darlehensantrag" [level=2] [ref=f11e74]
+          - separator [ref=f11e75]
+          - generic [ref=f11e76]:
+            - generic [ref=f11e77]:
+              - generic [ref=f11e78]:
+                - generic [ref=f11e79]: Eigenkapitalnachweis mit Name, Datum und IBAN, nicht älter als ein Monat
+                - button "?" [ref=f11e80]
+              - generic [ref=f11e81]: angefordert
+            - button "upload_file Hochladen" [ref=f11e83] [cursor=pointer]:
+              - generic [ref=f11e84]: upload_file
+              - text: Hochladen
+        - generic [ref=f11e85]:
+          - heading "Antragsteller Iva Petrova" [level=2] [ref=f11e86]
+          - separator [ref=f11e87]
+          - generic [ref=f11e88]:
+            - generic [ref=f11e89]:
+              - generic [ref=f11e90]:
+                - generic [ref=f11e91]: Vollständige Gehaltsabrechnung Juli
+                - button "?" [ref=f11e92]
+              - generic [ref=f11e93]:
+                - generic [ref=f11e94]: error
+                - text: Abgelehnt
+            - button "upload_file Hochladen" [ref=f11e96] [cursor=pointer]:
+              - generic [ref=f11e97]: upload_file
+              - text: Hochladen
+            - generic [ref=f11e98]:
+              - generic [ref=f11e99]: Ablehnungsgrund
+              - list [ref=f11e100]:
+                - listitem [ref=f11e101]: • Das Zahlungsdatum der Abrechnung liegt nicht in der Vergangenheit.
+                - listitem [ref=f11e102]: • Die Sozialversicherungsnummer hat nicht das erwartete Format.
+                - listitem [ref=f11e103]: • Die Steueridentifikationsnummer beginnt nicht mit einem gültigen Bundeslandcode.
+              - group [ref=f11e104]:
+                - generic "Mehr sehen" [ref=f11e105] [cursor=pointer]
+            - generic [ref=f11e106]:
+              - generic [ref=f11e107]: description
+              - generic [ref=f11e108] [cursor=pointer]: gehaltsabrechnung_datev.pdf
+              - generic [ref=f11e109]: 26.08.2026
+              - button "delete" [ref=f11e110] [cursor=pointer]
+          - generic [ref=f11e112]:
+            - generic [ref=f11e113]:
+              - generic [ref=f11e114]:
+                - generic [ref=f11e115]: Vollständige Gehaltsabrechnung Juni
+                - button "?" [ref=f11e116]
+              - generic [ref=f11e117]: angefordert
+            - button "upload_file Hochladen" [ref=f11e119] [cursor=pointer]:
+              - generic [ref=f11e120]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e121]:
+            - generic [ref=f11e122]:
+              - generic [ref=f11e123]: Vollständige Gehaltsabrechnung Mai
+              - generic [ref=f11e125]: angefordert
+            - button "upload_file Hochladen" [ref=f11e127] [cursor=pointer]:
+              - generic [ref=f11e128]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e129]:
+            - generic [ref=f11e130]:
+              - generic [ref=f11e131]:
+                - generic [ref=f11e132]: Gehaltsabrechnung (Dezember, 2025)
+                - button "?" [ref=f11e133]
+              - generic [ref=f11e134]: angefordert
+            - button "upload_file Hochladen" [ref=f11e136] [cursor=pointer]:
+              - generic [ref=f11e137]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e138]:
+            - generic [ref=f11e139]:
+              - generic [ref=f11e140]:
+                - generic [ref=f11e141]: Einkommensteuerbescheid für 2025
+                - button "?" [ref=f11e142]
+              - generic [ref=f11e143]: angefordert
+            - button "upload_file Hochladen" [ref=f11e145] [cursor=pointer]:
+              - generic [ref=f11e146]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e147]:
+            - generic [ref=f11e148]:
+              - generic [ref=f11e149]:
+                - generic [ref=f11e150]: Kontoauszüge der letzten drei Monate
+                - generic [ref=f11e151]: 1 von 3
+                - button "?" [ref=f11e152]
+              - generic [ref=f11e153]: angefordert
+            - button "upload_file Hochladen" [ref=f11e155] [cursor=pointer]:
+              - generic [ref=f11e156]: upload_file
+              - text: Hochladen
+            - generic [ref=f11e157]:
+              - generic [ref=f11e158]: description
+              - generic [ref=f11e159] [cursor=pointer]: kontoauszug-juli.pdf
+              - generic [ref=f11e160]: 12.08.2026
+              - button "delete" [ref=f11e161] [cursor=pointer]
+          - generic [ref=f11e163]:
+            - generic [ref=f11e164]:
+              - generic [ref=f11e165]:
+                - generic [ref=f11e166]: Ausweiskopie
+                - button "?" [ref=f11e167]
+              - generic [ref=f11e168]:
+                - generic [ref=f11e169]: check_circle
+                - text: Angenommen
+            - generic [ref=f11e170]:
+              - generic [ref=f11e171]: description
+              - generic [ref=f11e172] [cursor=pointer]: ausweis-iva.pdf
+              - generic [ref=f11e173]: 02.08.2026
+              - button "delete" [ref=f11e174] [cursor=pointer]
+        - generic [ref=f11e176]:
+          - heading "Antragsteller Michael Petrov" [level=2] [ref=f11e177]
+          - separator [ref=f11e178]
+          - generic [ref=f11e179]:
+            - generic [ref=f11e180]:
+              - generic [ref=f11e181]: Vollständige Gehaltsabrechnung Juli
+              - generic [ref=f11e183]:
+                - generic [ref=f11e184]: check_circle
+                - text: Angenommen
+            - generic [ref=f11e185]:
+              - generic [ref=f11e186]: description
+              - generic [ref=f11e187] [cursor=pointer]: scan_071.pdf
+              - generic [ref=f11e188]: 11.08.2026
+              - button "delete" [ref=f11e189] [cursor=pointer]
+          - generic [ref=f11e191]:
+            - generic [ref=f11e192]:
+              - generic [ref=f11e193]: Vollständige Gehaltsabrechnung Juni
+              - generic [ref=f11e195]: angefordert
+            - button "upload_file Hochladen" [ref=f11e197] [cursor=pointer]:
+              - generic [ref=f11e198]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e199]:
+            - generic [ref=f11e200]:
+              - generic [ref=f11e201]:
+                - generic [ref=f11e202]: Ausweiskopie
+                - button "?" [ref=f11e203]
+              - generic [ref=f11e204]: angefordert
+            - button "upload_file Hochladen" [ref=f11e206] [cursor=pointer]:
+              - generic [ref=f11e207]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e208]:
+            - generic [ref=f11e209]:
+              - generic [ref=f11e210]:
+                - generic [ref=f11e211]: Aufenthaltstitel
+                - button "?" [ref=f11e212]
+              - generic [ref=f11e213]: angefordert
+            - button "upload_file Hochladen" [ref=f11e215] [cursor=pointer]:
+              - generic [ref=f11e216]: upload_file
+              - text: Hochladen
+        - generic [ref=f11e217]:
+          - heading "Immobilie · Lindenstraße 14, 50674 Köln" [level=2] [ref=f11e218]
+          - separator [ref=f11e219]
+          - generic [ref=f11e220]:
+            - generic [ref=f11e221]:
+              - generic [ref=f11e222]:
+                - generic [ref=f11e223]: Objektfotos, mindestens 2 innen und 2 außen, in Farbe
+                - generic [ref=f11e224]: 2 von 4
+                - button "?" [ref=f11e225]
+              - generic [ref=f11e226]: angefordert
+            - button "upload_file Hochladen" [ref=f11e228] [cursor=pointer]:
+              - generic [ref=f11e229]: upload_file
+              - text: Hochladen
+            - generic [ref=f11e230]:
+              - generic [ref=f11e231]: description
+              - generic [ref=f11e232] [cursor=pointer]: aussen-strasse.jpg
+              - generic [ref=f11e233]: 18.08.2026
+              - button "delete" [ref=f11e234] [cursor=pointer]
+            - generic [ref=f11e236]:
+              - generic [ref=f11e237]: description
+              - generic [ref=f11e238] [cursor=pointer]: aussen-garten.jpg
+              - generic [ref=f11e239]: 18.08.2026
+              - button "delete" [ref=f11e240] [cursor=pointer]
+          - generic [ref=f11e242]:
+            - generic [ref=f11e243]:
+              - generic [ref=f11e244]: Grundbuchauszug, vollständig, max. 3 Monate alt
+              - generic [ref=f11e246]: angefordert
+            - button "upload_file Hochladen" [ref=f11e248] [cursor=pointer]:
+              - generic [ref=f11e249]: upload_file
+              - text: Hochladen
+          - generic [ref=f11e250]:
+            - generic [ref=f11e251]:
+              - generic [ref=f11e252]: Exposé
+              - generic [ref=f11e254]:
+                - generic [ref=f11e255]: check_circle
+                - text: Angenommen
+            - generic [ref=f11e256]:
+              - generic [ref=f11e257]: description
+              - generic [ref=f11e258] [cursor=pointer]: expose-scan-2.pdf
+              - generic [ref=f11e259]: 20.08.2026
+              - button "delete" [ref=f11e260] [cursor=pointer]

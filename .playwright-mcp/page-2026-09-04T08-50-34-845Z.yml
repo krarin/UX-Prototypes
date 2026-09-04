@@ -1,0 +1,183 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - button "calendar_today Mein Tag" [ref=e4] [cursor=pointer]:
+      - generic [ref=e5]: calendar_today
+      - generic [ref=e6]: Mein Tag
+    - button "group Anträge" [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]: group
+      - generic [ref=e9]: Anträge
+    - button "person Leads" [ref=e10] [cursor=pointer]:
+      - generic [ref=e11]: person
+      - generic [ref=e12]: Leads
+    - button "contact_mail Quellen" [ref=e13] [cursor=pointer]:
+      - generic [ref=e14]: contact_mail
+      - generic [ref=e15]: Quellen
+    - button "account_balance Unternehmen" [ref=e16] [cursor=pointer]:
+      - generic [ref=e17]: account_balance
+      - generic [ref=e18]: Unternehmen
+    - button "credit_card Buchhaltung" [ref=e19] [cursor=pointer]:
+      - generic [ref=e20]: credit_card
+      - generic [ref=e21]: Buchhaltung
+    - button "bar_chart Reporting" [ref=e22] [cursor=pointer]:
+      - generic [ref=e23]: bar_chart
+      - generic [ref=e24]: Reporting
+    - button "storefront Lead-Shop" [ref=e25] [cursor=pointer]:
+      - generic [ref=e26]: storefront
+      - generic [ref=e27]: Lead-Shop
+    - button "mail Email" [ref=e28] [cursor=pointer]:
+      - generic [ref=e29]: mail
+      - generic [ref=e30]: Email
+  - generic [ref=e31]:
+    - banner [ref=e32]:
+      - generic [ref=e33]: FinLink
+      - button "add_box" [ref=e37] [cursor=pointer]
+      - button "notifications" [ref=e39] [cursor=pointer]
+      - button "help" [ref=e41] [cursor=pointer]
+      - generic [ref=e43]:
+        - generic [ref=e44]: JJ
+        - generic [ref=e45]:
+          - generic [ref=e46]: Jan Joisten
+          - generic [ref=e47]: Advisor
+    - generic [ref=e336]:
+      - generic [ref=e337]:
+        - generic [ref=e338]:
+          - heading "Quellen" [level=1] [ref=e339]
+          - generic [ref=e340]:
+            - textbox "Suchen" [ref=e341]
+            - generic: search
+        - generic [ref=e342]:
+          - button "filter_list Filter" [ref=e343] [cursor=pointer]:
+            - generic [ref=e344]: filter_list
+            - text: Filter
+          - button "add Neue Quelle anlegen" [ref=e345] [cursor=pointer]:
+            - generic [ref=e346]: add
+            - text: Neue Quelle anlegen
+      - generic [ref=e347]:
+        - button "Business Partners" [ref=e348] [cursor=pointer]
+        - button "Lead Platforms" [ref=e349] [cursor=pointer]
+        - button "Weitere" [ref=e350] [cursor=pointer]
+        - button "Massenimport-Verlauf" [ref=e351] [cursor=pointer]
+      - generic [ref=e352]:
+        - table [ref=e353]:
+          - rowgroup [ref=e354]:
+            - row [ref=e355]:
+              - columnheader "Quelle unfold_more" [ref=e356]:
+                - generic [ref=e357]:
+                  - text: Quelle
+                  - generic [ref=e358]: unfold_more
+              - columnheader "Zeitraum unfold_more" [ref=e359]:
+                - generic [ref=e360]:
+                  - text: Zeitraum
+                  - generic [ref=e361]: unfold_more
+              - columnheader "Status" [ref=e362]
+              - columnheader "Ergebnis" [ref=e363]
+              - columnheader "Gestartet von" [ref=e364]
+              - columnheader [ref=e365]
+          - rowgroup [ref=e366]:
+            - row [ref=e367]:
+              - cell "eHyp · Altbestand" [ref=e368]
+              - cell "26.06.2025 – 26.06.2026" [ref=e369]
+              - cell "Teilweise importiert" [ref=e370]
+              - cell "61 von 68 importiert" [ref=e372]
+              - cell "Jan Joisten" [ref=e373]
+              - cell [ref=e374]:
+                - button "visibility Import ansehen" [ref=e375] [cursor=pointer]:
+                  - generic [ref=e376]: visibility
+                  - text: Import ansehen
+            - row [ref=e377]:
+              - cell "Europace · Hauptkonto" [ref=e378]
+              - cell "01.01.2026 – 26.06.2026" [ref=e379]
+              - cell "Teilweise importiert" [ref=e380]
+              - cell "255 von 279 importiert" [ref=e382]
+              - cell "Jan Joisten" [ref=e383]
+              - cell [ref=e384]:
+                - button "visibility Import ansehen" [ref=e385] [cursor=pointer]:
+                  - generic [ref=e386]: visibility
+                  - text: Import ansehen
+            - row [ref=e387]:
+              - cell "eHyp Home · Hauptzugang" [ref=e388]
+              - cell "26.12.2025 – 26.06.2026" [ref=e389]
+              - cell "In Warteschlange" [ref=e390]
+              - cell [ref=e392]:
+                - strong [ref=e393]: 89 von 120 importiert
+              - cell "Gernot Schusser" [ref=e394]
+              - cell [ref=e395]:
+                - button "visibility Import ansehen" [ref=e396] [cursor=pointer]:
+                  - generic [ref=e397]: visibility
+                  - text: Import ansehen
+            - row [ref=e398]:
+              - cell "Europace · Team Nord" [ref=e399]
+              - cell "27.05.2026 – 26.06.2026" [ref=e400]
+              - cell "Teilweise importiert" [ref=e401]
+              - cell "412 von 450 importiert" [ref=e403]
+              - cell "Jan Joisten" [ref=e404]
+              - cell [ref=e405]:
+                - button "visibility Import ansehen" [ref=e406] [cursor=pointer]:
+                  - generic [ref=e407]: visibility
+                  - text: Import ansehen
+            - row [ref=e408]:
+              - cell "eHyp · Altbestand" [ref=e409]
+              - cell "01.01.2025 – 31.12.2025" [ref=e410]
+              - cell "Fehlgeschlagen" [ref=e411]
+              - cell "Nicht gestartet" [ref=e413]
+              - cell "Gernot Schusser" [ref=e414]
+              - cell [ref=e415]:
+                - button "visibility Import ansehen" [ref=e416] [cursor=pointer]:
+                  - generic [ref=e417]: visibility
+                  - text: Import ansehen
+            - row [ref=e418]:
+              - cell "eHyp Home · Hauptzugang" [ref=e419]
+              - cell "26.12.2025 – 26.06.2026" [ref=e420]
+              - cell "Import abgeschlossen" [ref=e421]
+              - cell "178 von 203 importiert" [ref=e423]
+              - cell "Gernot Schusser" [ref=e424]
+              - cell [ref=e425]:
+                - button "visibility Import ansehen" [ref=e426] [cursor=pointer]:
+                  - generic [ref=e427]: visibility
+                  - text: Import ansehen
+            - row [ref=e428]:
+              - cell "Europace · Hauptkonto" [ref=e429]
+              - cell "26.03.2026 – 26.06.2026" [ref=e430]
+              - cell "Import abgeschlossen" [ref=e431]
+              - cell "67 von 95 importiert" [ref=e433]
+              - cell "Gernot Schusser" [ref=e434]
+              - cell [ref=e435]:
+                - button "visibility Import ansehen" [ref=e436] [cursor=pointer]:
+                  - generic [ref=e437]: visibility
+                  - text: Import ansehen
+            - row [ref=e438]:
+              - cell "eHyp Home · Hauptzugang" [ref=e439]
+              - cell "19.06.2026 – 26.06.2026" [ref=e440]
+              - cell "In Warteschlange" [ref=e441]
+              - cell [ref=e443]:
+                - strong [ref=e444]: 523 von 561 importiert
+              - cell "Jan Joisten" [ref=e445]
+              - cell [ref=e446]:
+                - button "visibility Import ansehen" [ref=e447] [cursor=pointer]:
+                  - generic [ref=e448]: visibility
+                  - text: Import ansehen
+            - row [ref=e449]:
+              - cell "Europace · Team Nord" [ref=e450]
+              - cell "15.04.2026 – 26.06.2026" [ref=e451]
+              - cell "Fehlgeschlagen" [ref=e452]
+              - cell "Nicht gestartet" [ref=e454]
+              - cell "Gernot Schusser" [ref=e455]
+              - cell [ref=e456]:
+                - button "visibility Import ansehen" [ref=e457] [cursor=pointer]:
+                  - generic [ref=e458]: visibility
+                  - text: Import ansehen
+            - row [ref=e459]:
+              - cell "eHyp · Altbestand" [ref=e460]
+              - cell "01.02.2026 – 26.06.2026" [ref=e461]
+              - cell "Teilweise importiert" [ref=e462]
+              - cell "302 von 310 importiert" [ref=e464]
+              - cell "Jan Joisten" [ref=e465]
+              - cell [ref=e466]:
+                - button "visibility Import ansehen" [ref=e467] [cursor=pointer]:
+                  - generic [ref=e468]: visibility
+                  - text: Import ansehen
+        - generic [ref=e469]:
+          - generic [ref=e470]: Zeilen pro Seite 25
+          - generic [ref=e471]: 1 – 10 von 10
+          - button "chevron_left" [ref=e472] [cursor=pointer]
+          - button "chevron_right" [ref=e474] [cursor=pointer]

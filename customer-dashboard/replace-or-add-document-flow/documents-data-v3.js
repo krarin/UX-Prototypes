@@ -15,9 +15,15 @@
       ist jeder Upload ein Ersetzen. Und es gaebe den Zustand
       „2 von 4" nicht.
 
-   2) ERSETZEN LOESCHT NICHT.
-      Die alte Datei wandert nach `history`, bleibt sichtbar und
-      laesst sich zurueckholen.
+   2) ERSETZEN LOESCHT WIRKLICH.
+      Wer ersetzt, verliert die alte Datei — endgueltig, ohne
+      „fruehere Fassungen" und ohne Zurueckholen. Deshalb wird die
+      Frage vor dem Upload gestellt und nicht vom System
+      beantwortet — dieses Modul kennt die Antwort gar nicht mehr,
+      es fuehrt sie nur aus. Der Fall, an dem das haengt,
+      steht in CHECKS['mic-ausweis'] — abgelehnt, weil die
+      RUECKSEITE fehlt. Dort ist Hinzufuegen richtig und Ersetzen
+      wirft die Vorderseite weg. Kein Automatismus kann das wissen.
 
    3) NEU IN V3: ES GIBT EINE PRUEFUNG.
       V2 konnte gar keine Ablehnung erzeugen — jeder Upload landete
@@ -38,7 +44,7 @@
      'angefordert'  wir warten auf Sie
      'pruefung'     vollstaendig eingegangen, wird geprueft
      'abgelehnt'    Pruefung nicht bestanden, mit Grund
-     'angenommen'   durch
+     'angenommen'   durch — steht an der Karte als „Genehmigt“
    ============================================================ */
 (function (global) {
 
@@ -46,7 +52,7 @@
     angefordert: { wort:'angefordert', ikon:null,           klasse:'' },
     pruefung:    { wort:'In Prüfung',  ikon:'schedule',     klasse:'is-review' },
     abgelehnt:   { wort:'Abgelehnt',   ikon:'error',        klasse:'is-rejected' },
-    angenommen:  { wort:'Angenommen',  ikon:'check_circle', klasse:'is-accepted' }
+    angenommen:  { wort:'Genehmigt',   ikon:'check_circle', klasse:'is-accepted' }
   };
 
   /* `match` = Wortstuecke, an denen die automatische Zuordnung eine
@@ -62,7 +68,7 @@
           hilfe:'Depotauszug, Sparbuch oder Kontoauszug — Name, Datum und IBAN müssen darauf zu sehen sein.',
           status:'angefordert',
           match:['eigenkapital','depot','sparbuch'],
-          soll:1, files:[], history:[] }
+          soll:1, files:[] }
       ]
     },
     {
@@ -95,23 +101,22 @@
                    'Die Steueridentifikationsnummer beginnt nicht mit einem gültigen Bundeslandcode.'],
           match:['gehalt','lohn','juli'],
           soll:1,
-          files:[ { name:'gehaltsabrechnung_datev.pdf', datum:'26.08.2026' } ],
-          history:[] },
+          files:[ { name:'gehaltsabrechnung_datev.pdf', datum:'26.08.2026' } ] },
 
         { id:'iva-gehalt-juni', label:'Vollständige Gehaltsabrechnung Juni',
           hilfe:'Alle Seiten, Beträge lesbar, mit Name und Abrechnungsmonat.',
-          status:'angefordert', match:['juni'], soll:1, files:[], history:[] },
+          status:'angefordert', match:['juni'], soll:1, files:[] },
 
         { id:'iva-gehalt-mai', label:'Vollständige Gehaltsabrechnung Mai',
-          status:'angefordert', match:['mai'], soll:1, files:[], history:[] },
+          status:'angefordert', match:['mai'], soll:1, files:[] },
 
         { id:'iva-gehalt-dez', label:'Gehaltsabrechnung (Dezember, 2025)',
           hilfe:'Die Dezemberabrechnung zeigt Sonderzahlungen des ganzen Jahres.',
-          status:'angefordert', match:['dezember','dez'], soll:1, files:[], history:[] },
+          status:'angefordert', match:['dezember','dez'], soll:1, files:[] },
 
         { id:'iva-steuer', label:'Einkommensteuerbescheid für 2025',
           hilfe:'Vollständig, alle Seiten des Bescheids.',
-          status:'angefordert', match:['steuer','bescheid'], soll:1, files:[], history:[] },
+          status:'angefordert', match:['steuer','bescheid'], soll:1, files:[] },
 
         /* Mehrteilig und angefangen: eine Datei liegt da, es fehlen
            zwei. Wer hier ersetzt, verliert den Juli-Auszug. */
@@ -120,14 +125,12 @@
           status:'angefordert',
           match:['konto','auszug'],
           soll:3,
-          files:[ { name:'kontoauszug-juli.pdf', datum:'12.08.2026' } ],
-          history:[] },
+          files:[ { name:'kontoauszug-juli.pdf', datum:'12.08.2026' } ] },
 
         { id:'iva-ausweis', label:'Ausweiskopie',
           hilfe:'Vorder- und Rückseite, Personalausweis oder Reisepass.',
           status:'angenommen', match:['ausweis','perso','pass','reisepass'], soll:1,
-          files:[ { name:'ausweis-iva.pdf', datum:'02.08.2026' } ],
-          history:[] }
+          files:[ { name:'ausweis-iva.pdf', datum:'02.08.2026' } ] }
       ]
     },
     {
@@ -135,10 +138,10 @@
       docs: [
         { id:'mic-gehalt-juli', label:'Vollständige Gehaltsabrechnung Juli',
           status:'angenommen', match:[], soll:1,
-          files:[ { name:'scan_071.pdf', datum:'11.08.2026' } ], history:[] },
+          files:[ { name:'scan_071.pdf', datum:'11.08.2026' } ] },
 
         { id:'mic-gehalt-juni', label:'Vollständige Gehaltsabrechnung Juni',
-          status:'angefordert', match:[], soll:1, files:[], history:[] },
+          status:'angefordert', match:[], soll:1, files:[] },
 
         /* Ziel der Beispieldatei „Docs-Reisepass.jpg". Ivas
            Ausweiskopie ist angenommen und damit von der Automatik
@@ -148,11 +151,11 @@
         { id:'mic-ausweis', label:'Ausweiskopie',
           hilfe:'Vorder- und Rückseite, Personalausweis oder Reisepass.',
           status:'angefordert', match:['ausweis','perso','pass','reisepass'],
-          soll:1, files:[], history:[] },
+          soll:1, files:[] },
 
         { id:'mic-aufenthalt', label:'Aufenthaltstitel',
           hilfe:'Beide Seiten, Gültigkeitsdatum muss lesbar sein.',
-          status:'angefordert', match:['aufenthalt','titel'], soll:1, files:[], history:[] }
+          status:'angefordert', match:['aufenthalt','titel'], soll:1, files:[] }
       ]
     },
     {
@@ -164,20 +167,14 @@
           match:['foto','bild','img','aussen','innen'],
           soll:4,
           files:[ { name:'aussen-strasse.jpg', datum:'18.08.2026' },
-                  { name:'aussen-garten.jpg',  datum:'18.08.2026' } ],
-          history:[] },
+                  { name:'aussen-garten.jpg',  datum:'18.08.2026' } ] },
 
         { id:'obj-grundbuch', label:'Grundbuchauszug, vollständig, max. 3 Monate alt',
-          status:'angefordert', match:['grundbuch'], soll:1, files:[], history:[] },
+          status:'angefordert', match:['grundbuch'], soll:1, files:[] },
 
-        /* Schon einmal ersetzt: die History ist von Anfang an
-           gefuellt, damit im Test sichtbar ist, wie eine frühere
-           Fassung aussieht, ohne dass man erst selbst ersetzen muss. */
         { id:'obj-expose', label:'Exposé', status:'angenommen',
           match:['expose','exposé'], soll:1,
-          files:[ { name:'expose-scan-2.pdf', datum:'20.08.2026' } ],
-          history:[ { name:'expose-foto.jpg', datum:'14.08.2026',
-                      ersetztAm:'20.08.2026', grund:'Von Ihnen ersetzt' } ] }
+          files:[ { name:'expose-scan-2.pdf', datum:'20.08.2026' } ] }
       ]
     }
   ];
@@ -293,41 +290,22 @@
       return (d && d.gruende ? d.gruende : []).slice(0, max || 3);
     },
 
-    /* ---- Die Frage: hinzufuegen oder ersetzen? ----
-       Rueckgabe:
-         null                    -> die Anforderung ist leer, keine Frage
-         { mode, sicher, warum } -> `sicher:false` heisst: wir raten
-                                    nicht, wir fragen ohne Empfehlung. */
-    decide: function (id) {
-      var d = find(id);
-      if (!d || !d.files.length) return null;
+    /* Hier stand `decide()`: die Lage vor der Frage, und davor sogar
+       die Antwort darauf (Ablehnung -> ersetzen). Beides ist weg.
+       Die Antwort war im Kernfall dieses Prototyps falsch — die
+       Ausweiskopie faellt durch, WEIL die Rueckseite fehlt, und dort
+       ist Hinzufuegen richtig. Und die Lagebeschreibung braucht der
+       Dialog nicht mehr: er fragt, sobald `files` nicht leer ist,
+       und sagt in den beiden Zeilen selbst, was passiert.
+       Was an der Unterlage liegt, steht in `files` — mehr muss der
+       Dialog nicht wissen. */
 
-      if (d.grund) {
-        return { mode:'replace', sicher:true,
-          warum:'Diese Unterlage haben wir zurückgewiesen. Ihre neue Fassung tritt an die Stelle ' +
-                'der alten — die bisherige bleibt als frühere Fassung einsehbar.' };
-      }
-      if ((d.soll || 1) > 1 && d.files.length < d.soll) {
-        return { mode:'add', sicher:true,
-          warum:'Diese Unterlage besteht aus ' + d.soll + ' Dateien und ist noch nicht vollständig — ' +
-                'die neue kommt zu ' + (d.files.length === 1 ? 'der vorhandenen' :
-                'den ' + d.files.length + ' vorhandenen') + ' dazu.' };
-      }
-      return { mode:null, sicher:false,
-        warum:'An dieser Unterlage liegt schon ' +
-              (d.files.length === 1 ? 'eine Datei' : d.files.length + ' Dateien') +
-              ', und sie ist vollständig. Wir wissen nicht, ob Ihre neue Datei die alte ' +
-              'ersetzen oder ergänzen soll.' };
-    },
-
-    /* Was auf dem Knopf der Karte steht. Sagt die Folge, wenn wir
-       sie kennen — und bleibt neutral, wenn nicht. */
-    aktionLabel: function (d) {
-      if (!d.files.length) return 'Datei hochladen';
-      if (d.grund) return 'Neue Fassung hochladen';
-      if ((d.soll || 1) > 1 && d.files.length < d.soll) return 'Datei hinzufügen';
-      return 'Datei hochladen';
-    },
+    /* Was auf dem Knopf der Karte steht — ueberall dasselbe.
+       Frueher hiess er je nach Lage „Neue Fassung hochladen" oder
+       „Datei hinzufügen" und nahm damit die Entscheidung vorweg,
+       die er gar nicht treffen darf. Die Folge steht jetzt im
+       Dialog, nicht auf dem Knopf. */
+    aktionLabel: function () { return 'Hochladen'; },
 
     /* ---- Datei annehmen, dann pruefen ---- */
     accept: function (id, dateiname, mode) {
@@ -335,12 +313,10 @@
       if (!d) return null;
       var neu = { name: dateiname, datum: this.heute };
 
+      /* Ersetzen loescht. Es gibt keine `history` mehr, in die die
+         alte Datei ausweichen koennte — deshalb steht die Warnung
+         im Dialog VOR der Handlung und nicht die Beruhigung danach. */
       if (mode === 'replace') {
-        d.files.forEach(function (f) {
-          f.ersetztAm = this.heute;
-          f.grund = 'Von Ihnen ersetzt';
-          d.history.unshift(f);
-        }, this);
         d.files = [neu];
       } else {
         d.files.push(neu);
@@ -362,64 +338,16 @@
                gruende: chk && !chk.ok ? chk.gruende : null };
     },
 
-    /* Direkt nach dem Upload umdrehen. Dreht genau den letzten
-       Schritt um, nicht mehr — und pruefen laeuft dabei nicht neu,
-       sonst wuerde ein Klick auf „doch anders" wie ein neuer
-       Einreichungsversuch zaehlen. */
-    flip: function (id, warMode) {
-      var d = find(id);
-      if (!d) return null;
-
-      if (warMode === 'replace') {                  // ersetzt -> doch dazulegen
-        var neu = d.files[0];
-        var zurueck = d.history.filter(function (f) { return f.ersetztAm === this.heute; }, this);
-        zurueck.forEach(function (f) { delete f.ersetztAm; delete f.grund; });
-        d.history = d.history.filter(function (f) { return zurueck.indexOf(f) === -1; });
-        d.files = zurueck.concat(neu ? [neu] : []);
-      } else {                                      // dazugelegt -> doch ersetzen
-        var letzte = d.files[d.files.length - 1];
-        d.files.slice(0, -1).forEach(function (f) {
-          f.ersetztAm = this.heute;
-          f.grund = 'Von Ihnen ersetzt';
-          d.history.unshift(f);
-        }, this);
-        d.files = letzte ? [letzte] : [];
-      }
-      reevaluate(d);
-      return warMode === 'replace' ? 'add' : 'replace';
-    },
+    /* `flip()` gab es hier einmal: „doch beide behalten" direkt
+       nach einem Upload. Nach einer echten Loeschung gibt es nichts
+       zurueckzuholen, und die Gegenrichtung waere ein loeschender
+       Ein-Klick ohne Rueckfrage. Ein Umkehrknopf, der nur in einer
+       Richtung funktioniert, ist schlimmer als keiner. */
 
     removeFile: function (id, name) {
       var d = find(id);
       if (!d) return;
       d.files = d.files.filter(function (f) { return f.name !== name; });
-      reevaluate(d);
-    },
-
-    /* Frühere Fassung zurueckholen — das Gegenstueck zum Ersetzen.
-       In einen einteiligen Platz zurueckholen IST ein Ersetzen, also
-       gilt dieselbe Regel: die aktuelle Datei geht nach history, sie
-       verschwindet nicht. Ohne diesen Zweig wuerde ausgerechnet der
-       Weg, der vor Verlust schuetzt, selbst etwas verlieren. */
-    restore: function (id, name) {
-      var d = find(id);
-      if (!d) return;
-      var f = d.history.filter(function (x) { return x.name === name; })[0];
-      if (!f) return;
-      d.history = d.history.filter(function (x) { return x !== f; });
-      delete f.ersetztAm;
-      delete f.grund;
-
-      if ((d.soll || 1) > 1) {
-        d.files.push(f);
-      } else {
-        d.files.forEach(function (cur) {
-          cur.ersetztAm = this.heute;
-          cur.grund = 'Durch eine frühere Fassung ersetzt';
-          d.history.unshift(cur);
-        }, this);
-        d.files = [f];
-      }
       reevaluate(d);
     },
 

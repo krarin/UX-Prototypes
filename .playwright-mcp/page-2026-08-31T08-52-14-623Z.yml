@@ -1,0 +1,337 @@
+- generic [ref=f13e1]:
+  - generic [ref=f13e2]:
+    - complementary [ref=f13e3]:
+      - generic [ref=f13e4]:
+        - generic [ref=f13e5]: Fi
+        - text: FinLink
+      - generic [ref=f13e6]:
+        - generic [ref=f13e7]:
+          - generic [ref=f13e8]: check
+          - generic [ref=f13e10]: Machbarkeit prüfen
+        - generic [ref=f13e11]:
+          - generic [ref=f13e12]: "2"
+          - generic [ref=f13e13]: Optionen vergleichen
+        - generic [ref=f13e14]:
+          - generic [ref=f13e15]: "3"
+          - generic [ref=f13e16]: Beratungsgespräch
+        - generic [ref=f13e17]:
+          - generic [ref=f13e18]: "4"
+          - generic [ref=f13e19]: Finanzierung beantragen
+        - generic [ref=f13e20]:
+          - generic [ref=f13e21]: "5"
+          - generic [ref=f13e22]: Bestätigung erhalten
+      - navigation [ref=f13e23]:
+        - link "import_contacts Meine Dokumente" [ref=f13e24] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f13e25]: import_contacts
+          - text: Meine Dokumente
+        - link "info Ablauf verstehen" [ref=f13e26] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f13e27]: info
+          - text: Ablauf verstehen
+      - generic [ref=f13e28]:
+        - link "Termin vereinbaren" [ref=f13e29] [cursor=pointer]:
+          - /url: "#"
+        - paragraph [ref=f13e30]: Beratung vom Finanzierungsexperten
+    - generic [ref=f13e31]:
+      - generic [ref=f13e32]:
+        - generic [ref=f13e33]:
+          - text: Support
+          - generic [ref=f13e34]: call
+        - generic [ref=f13e36]: DE
+        - generic [ref=f13e38]:
+          - text: Frau Petrova
+          - generic [ref=f13e39]: expand_more
+      - generic [ref=f13e40]:
+        - generic [ref=f13e41]: Antragsdokumente
+        - link "Zurück zum Dashboard" [ref=f13e42] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f13e43]:
+        - heading "Verschaffen Sie sich einen Überblick über Ihre Dokumente, Frau Petrova!" [level=1] [ref=f13e44]
+        - paragraph [ref=f13e45]: Laden Sie die Dokumente hier hoch.
+        - list [ref=f13e46]:
+          - listitem [ref=f13e47]: Alle Dokumente müssen im PDF-, JPEG- oder PNG-Format vorliegen.
+          - listitem [ref=f13e48]: Dateigröße muss unter 200 MB liegen.
+          - listitem [ref=f13e49]: Alle bereitgestellten Dokumente müssen gut lesbar und hochauflösend sein.
+        - generic [ref=f13e50]:
+          - generic [ref=f13e51]:
+            - generic [ref=f13e52]: lock
+            - generic [ref=f13e53]:
+              - generic [ref=f13e54]: Hoher Datenschutzstandard
+              - text: Ihre Daten sind bei uns sicher und durch eine 256 Bit Sicherheitstechnologie verschlüsselt.
+          - generic [ref=f13e55]:
+            - generic [ref=f13e56]: DE
+            - generic [ref=f13e57]:
+              - generic [ref=f13e58]: Rechenzentrum
+              - text: in Europa
+        - generic [ref=f13e500]:
+          - generic [ref=f13e501]:
+            - generic [ref=f13e502]: warning
+            - generic [ref=f13e503]:
+              - generic [ref=f13e504]: 3 Dokumente erfolgreich kategorisiert.
+              - generic [ref=f13e505]: 2 Dokumente brauchen Ihre Aufmerksamkeit.
+            - button "close" [ref=f13e506] [cursor=pointer]
+          - generic [ref=f13e508]:
+            - generic [ref=f13e509]: error
+            - generic [ref=f13e510]: Abgelehnt
+            - generic "Docs-Reisepass.jpg" [ref=f13e511]
+            - button "arrow_forward Zum Dokument" [ref=f13e512] [cursor=pointer]:
+              - generic [ref=f13e513]: arrow_forward
+              - text: Zum Dokument
+            - list [ref=f13e514]:
+              - listitem [ref=f13e515]: • Es wurde nur eine Seite erkannt — die Rückseite fehlt.
+              - listitem [ref=f13e516]: • Das maschinenlesbare Feld (MRZ) war nicht auswertbar.
+              - listitem [ref=f13e517]: • Teile des Ausweises liegen außerhalb des Bildes.
+          - generic [ref=f13e518]:
+            - generic [ref=f13e519]: help
+            - generic [ref=f13e520]: Nicht zugeordnet
+            - generic "scan0007.pdf" [ref=f13e521]
+            - button "arrow_forward Zuordnen" [ref=f13e522] [cursor=pointer]:
+              - generic [ref=f13e523]: arrow_forward
+              - text: Zuordnen
+            - button "delete" [ref=f13e524] [cursor=pointer]
+        - generic [ref=f13e59]:
+          - heading "Laden Sie Ihre Dokumente hoch" [level=2] [ref=f13e60]
+          - paragraph [ref=f13e61]: "Dokumente müssen diesen Anforderungen genügen: Es werden nur die folgenden Dateitypen akzeptiert: pdf, png, jpg"
+        - generic [ref=f13e63]:
+          - generic [ref=f13e64]: upload_file
+          - generic [ref=f13e65]: Ziehen Sie Ihre Dokumente hierher, sie werden automatisch kategorisiert und unten angezeigt
+          - generic [ref=f13e66]: oder laden Sie sie einzeln in die unten stehenden Kategorien hoch.
+          - generic [ref=f13e67]:
+            - generic [ref=f13e68] [cursor=pointer]:
+              - generic [ref=f13e69]: folder_open
+              - text: Dateien auswählen
+            - button "science Beispieldateien verwenden" [active] [ref=f13e70] [cursor=pointer]:
+              - generic [ref=f13e71]: science
+              - text: Beispieldateien verwenden
+        - generic [ref=f13e72]:
+          - generic [ref=f13e526]:
+            - heading "Darlehensantrag" [level=2] [ref=f13e527]
+            - separator [ref=f13e528]
+            - generic [ref=f13e529]:
+              - generic [ref=f13e530]:
+                - generic [ref=f13e531]:
+                  - generic [ref=f13e532]: Eigenkapitalnachweis mit Name, Datum und IBAN, nicht älter als ein Monat
+                  - button "?" [ref=f13e533]
+                - generic [ref=f13e534]: angefordert
+              - button "upload_file Hochladen" [ref=f13e536] [cursor=pointer]:
+                - generic [ref=f13e537]: upload_file
+                - text: Hochladen
+          - generic [ref=f13e538]:
+            - heading "Antragsteller Iva Petrova" [level=2] [ref=f13e539]
+            - separator [ref=f13e540]
+            - generic [ref=f13e541]:
+              - generic [ref=f13e542]:
+                - generic [ref=f13e543]:
+                  - generic [ref=f13e544]: Vollständige Gehaltsabrechnung Juli
+                  - button "?" [ref=f13e545]
+                - generic [ref=f13e546]:
+                  - generic [ref=f13e547]: error
+                  - text: Abgelehnt
+              - button "upload_file Hochladen" [ref=f13e549] [cursor=pointer]:
+                - generic [ref=f13e550]: upload_file
+                - text: Hochladen
+              - generic [ref=f13e551]:
+                - generic [ref=f13e552]: Ablehnungsgrund
+                - list [ref=f13e553]:
+                  - listitem [ref=f13e554]: • Das Zahlungsdatum der Abrechnung liegt nicht in der Vergangenheit.
+                  - listitem [ref=f13e555]: • Die Sozialversicherungsnummer hat nicht das erwartete Format.
+                  - listitem [ref=f13e556]: • Die Steueridentifikationsnummer beginnt nicht mit einem gültigen Bundeslandcode.
+                - group [ref=f13e557]:
+                  - generic "Mehr sehen" [ref=f13e558] [cursor=pointer]
+              - generic [ref=f13e559]:
+                - generic [ref=f13e560]: description
+                - generic [ref=f13e561] [cursor=pointer]: gehaltsabrechnung_datev.pdf
+                - generic [ref=f13e562]: 26.08.2026
+                - button "delete" [ref=f13e563] [cursor=pointer]
+            - generic [ref=f13e565]:
+              - generic [ref=f13e566]:
+                - generic [ref=f13e567]:
+                  - generic [ref=f13e568]: Vollständige Gehaltsabrechnung Juni
+                  - button "?" [ref=f13e569]
+                - generic [ref=f13e570]: angefordert
+              - button "upload_file Hochladen" [ref=f13e572] [cursor=pointer]:
+                - generic [ref=f13e573]: upload_file
+                - text: Hochladen
+            - generic [ref=f13e574]:
+              - generic [ref=f13e575]:
+                - generic [ref=f13e576]: Vollständige Gehaltsabrechnung Mai
+                - generic [ref=f13e578]: angefordert
+              - button "upload_file Hochladen" [ref=f13e580] [cursor=pointer]:
+                - generic [ref=f13e581]: upload_file
+                - text: Hochladen
+            - generic [ref=f13e582]:
+              - generic [ref=f13e583]:
+                - generic [ref=f13e584]:
+                  - generic [ref=f13e585]: Gehaltsabrechnung (Dezember, 2025)
+                  - button "?" [ref=f13e586]
+                - generic [ref=f13e587]: angefordert
+              - button "upload_file Hochladen" [ref=f13e589] [cursor=pointer]:
+                - generic [ref=f13e590]: upload_file
+                - text: Hochladen
+            - generic [ref=f13e591]:
+              - generic [ref=f13e592]:
+                - generic [ref=f13e593]:
+                  - generic [ref=f13e594]: Einkommensteuerbescheid für 2025
+                  - button "?" [ref=f13e595]
+                - generic [ref=f13e596]: angefordert
+              - button "upload_file Hochladen" [ref=f13e598] [cursor=pointer]:
+                - generic [ref=f13e599]: upload_file
+                - text: Hochladen
+            - generic [ref=f13e600]:
+              - generic [ref=f13e601]:
+                - generic [ref=f13e602]:
+                  - generic [ref=f13e603]: Kontoauszüge der letzten drei Monate
+                  - generic [ref=f13e604]: 3 von 3
+                  - button "?" [ref=f13e605]
+                - generic [ref=f13e606]:
+                  - generic [ref=f13e607]: schedule
+                  - text: In Prüfung
+              - button "upload_file Hochladen" [ref=f13e609] [cursor=pointer]:
+                - generic [ref=f13e610]: upload_file
+                - text: Hochladen
+              - generic [ref=f13e611]:
+                - generic [ref=f13e612]: description
+                - generic [ref=f13e613] [cursor=pointer]: kontoauszug-juli.pdf
+                - generic [ref=f13e614]: 12.08.2026
+                - button "delete" [ref=f13e615] [cursor=pointer]
+              - generic [ref=f13e617]:
+                - generic [ref=f13e618]: description
+                - generic [ref=f13e619] [cursor=pointer]: kontoauszug-august.pdf
+                - generic [ref=f13e620]: 28.08.2026
+                - button "delete" [ref=f13e621] [cursor=pointer]
+              - generic [ref=f13e623]:
+                - generic [ref=f13e624]: description
+                - generic [ref=f13e625] [cursor=pointer]: kontoauszug-august.pdf
+                - generic [ref=f13e626]: 28.08.2026
+                - button "delete" [ref=f13e627] [cursor=pointer]
+            - generic [ref=f13e629]:
+              - generic [ref=f13e630]:
+                - generic [ref=f13e631]:
+                  - generic [ref=f13e632]: Ausweiskopie
+                  - button "?" [ref=f13e633]
+                - generic [ref=f13e634]:
+                  - generic [ref=f13e635]: check_circle
+                  - text: Angenommen
+              - generic [ref=f13e636]:
+                - generic [ref=f13e637]: description
+                - generic [ref=f13e638] [cursor=pointer]: ausweis-iva.pdf
+                - generic [ref=f13e639]: 02.08.2026
+                - button "delete" [ref=f13e640] [cursor=pointer]
+          - generic [ref=f13e642]:
+            - heading "Antragsteller Michael Petrov" [level=2] [ref=f13e643]
+            - separator [ref=f13e644]
+            - generic [ref=f13e645]:
+              - generic [ref=f13e646]:
+                - generic [ref=f13e647]: Vollständige Gehaltsabrechnung Juli
+                - generic [ref=f13e649]:
+                  - generic [ref=f13e650]: check_circle
+                  - text: Angenommen
+              - generic [ref=f13e651]:
+                - generic [ref=f13e652]: description
+                - generic [ref=f13e653] [cursor=pointer]: scan_071.pdf
+                - generic [ref=f13e654]: 11.08.2026
+                - button "delete" [ref=f13e655] [cursor=pointer]
+            - generic [ref=f13e657]:
+              - generic [ref=f13e658]:
+                - generic [ref=f13e659]: Vollständige Gehaltsabrechnung Juni
+                - generic [ref=f13e661]: angefordert
+              - button "upload_file Hochladen" [ref=f13e663] [cursor=pointer]:
+                - generic [ref=f13e664]: upload_file
+                - text: Hochladen
+            - generic [ref=f13e665]:
+              - generic [ref=f13e666]:
+                - generic [ref=f13e667]:
+                  - generic [ref=f13e668]: Ausweiskopie
+                  - button "?" [ref=f13e669]
+                - generic [ref=f13e670]:
+                  - generic [ref=f13e671]: error
+                  - text: Abgelehnt
+              - button "upload_file Hochladen" [ref=f13e673] [cursor=pointer]:
+                - generic [ref=f13e674]: upload_file
+                - text: Hochladen
+              - generic [ref=f13e675]:
+                - generic [ref=f13e676]: Ablehnungsgrund
+                - list [ref=f13e677]:
+                  - listitem [ref=f13e678]: • Es wurde nur eine Seite erkannt — die Rückseite fehlt.
+                  - listitem [ref=f13e679]: • Das maschinenlesbare Feld (MRZ) war nicht auswertbar.
+                  - listitem [ref=f13e680]: • Teile des Ausweises liegen außerhalb des Bildes.
+                - group [ref=f13e681]:
+                  - generic "Mehr sehen" [ref=f13e682] [cursor=pointer]
+              - generic [ref=f13e683]:
+                - generic [ref=f13e684]: description
+                - generic [ref=f13e685] [cursor=pointer]: Docs-Reisepass.jpg
+                - generic [ref=f13e686]: 28.08.2026
+                - button "delete" [ref=f13e687] [cursor=pointer]
+            - generic [ref=f13e689]:
+              - generic [ref=f13e690]:
+                - generic [ref=f13e691]:
+                  - generic [ref=f13e692]: Aufenthaltstitel
+                  - button "?" [ref=f13e693]
+                - generic [ref=f13e694]: angefordert
+              - button "upload_file Hochladen" [ref=f13e696] [cursor=pointer]:
+                - generic [ref=f13e697]: upload_file
+                - text: Hochladen
+          - generic [ref=f13e698]:
+            - heading "Immobilie · Lindenstraße 14, 50674 Köln" [level=2] [ref=f13e699]
+            - separator [ref=f13e700]
+            - generic [ref=f13e701]:
+              - generic [ref=f13e702]:
+                - generic [ref=f13e703]:
+                  - generic [ref=f13e704]: Objektfotos, mindestens 2 innen und 2 außen, in Farbe
+                  - generic [ref=f13e705]: 3 von 4
+                  - button "?" [ref=f13e706]
+                - generic [ref=f13e707]: angefordert
+              - button "upload_file Hochladen" [ref=f13e709] [cursor=pointer]:
+                - generic [ref=f13e710]: upload_file
+                - text: Hochladen
+              - generic [ref=f13e711]:
+                - generic [ref=f13e712]: description
+                - generic [ref=f13e713] [cursor=pointer]: aussen-strasse.jpg
+                - generic [ref=f13e714]: 18.08.2026
+                - button "delete" [ref=f13e715] [cursor=pointer]
+              - generic [ref=f13e717]:
+                - generic [ref=f13e718]: description
+                - generic [ref=f13e719] [cursor=pointer]: aussen-garten.jpg
+                - generic [ref=f13e720]: 18.08.2026
+                - button "delete" [ref=f13e721] [cursor=pointer]
+              - generic [ref=f13e723]:
+                - generic [ref=f13e724]: description
+                - generic [ref=f13e725] [cursor=pointer]: innen-wohnzimmer.jpg
+                - generic [ref=f13e726]: 28.08.2026
+                - button "delete" [ref=f13e727] [cursor=pointer]
+            - generic [ref=f13e729]:
+              - generic [ref=f13e730]:
+                - generic [ref=f13e731]: Grundbuchauszug, vollständig, max. 3 Monate alt
+                - generic [ref=f13e733]:
+                  - generic [ref=f13e734]: schedule
+                  - text: In Prüfung
+              - button "upload_file Hochladen" [ref=f13e736] [cursor=pointer]:
+                - generic [ref=f13e737]: upload_file
+                - text: Hochladen
+              - generic [ref=f13e738]:
+                - generic [ref=f13e739]: description
+                - generic [ref=f13e740] [cursor=pointer]: grundbuchauszug.pdf
+                - generic [ref=f13e741]: 28.08.2026
+                - button "delete" [ref=f13e742] [cursor=pointer]
+            - generic [ref=f13e744]:
+              - generic [ref=f13e745]:
+                - generic [ref=f13e746]: Exposé
+                - generic [ref=f13e748]:
+                  - generic [ref=f13e749]: check_circle
+                  - text: Angenommen
+              - generic [ref=f13e750]:
+                - generic [ref=f13e751]: description
+                - generic [ref=f13e752] [cursor=pointer]: expose-scan-2.pdf
+                - generic [ref=f13e753]: 20.08.2026
+                - button "delete" [ref=f13e754] [cursor=pointer]
+  - generic [ref=f13e262]:
+    - generic [ref=f13e494]: Prototyp · Reihenfolge der Frage
+    - generic [ref=f13e263]:
+      - button "A Frage vorher" [ref=f13e495] [cursor=pointer]:
+        - generic [ref=f13e496]: A
+        - text: Frage vorher
+      - button "B Frage nachher" [ref=f13e497] [cursor=pointer]:
+        - generic [ref=f13e498]: B
+        - text: Frage nachher
+    - paragraph [ref=f13e266]: Hochladen → Datei wählen → Frage

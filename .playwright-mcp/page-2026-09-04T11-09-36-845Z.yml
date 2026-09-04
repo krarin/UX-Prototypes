@@ -1,0 +1,230 @@
+- generic [ref=f4e2]:
+  - navigation [ref=f4e3]:
+    - button "calendar_today Mein Tag" [ref=f4e4] [cursor=pointer]:
+      - generic [ref=f4e5]: calendar_today
+      - generic [ref=f4e6]: Mein Tag
+    - button "group Anträge" [ref=f4e7] [cursor=pointer]:
+      - generic [ref=f4e8]: group
+      - generic [ref=f4e9]: Anträge
+    - button "person Leads" [ref=f4e10] [cursor=pointer]:
+      - generic [ref=f4e11]: person
+      - generic [ref=f4e12]: Leads
+    - button "contact_mail Quellen" [ref=f4e13] [cursor=pointer]:
+      - generic [ref=f4e14]: contact_mail
+      - generic [ref=f4e15]: Quellen
+    - button "account_balance Unternehmen" [active] [ref=f4e16] [cursor=pointer]:
+      - generic [ref=f4e17]: account_balance
+      - generic [ref=f4e18]: Unternehmen
+    - button "credit_card Buchhaltung" [ref=f4e19] [cursor=pointer]:
+      - generic [ref=f4e20]: credit_card
+      - generic [ref=f4e21]: Buchhaltung
+    - button "bar_chart Reporting" [ref=f4e22] [cursor=pointer]:
+      - generic [ref=f4e23]: bar_chart
+      - generic [ref=f4e24]: Reporting
+    - button "storefront Lead-Shop" [ref=f4e25] [cursor=pointer]:
+      - generic [ref=f4e26]: storefront
+      - generic [ref=f4e27]: Lead-Shop
+    - button "mail Email" [ref=f4e28] [cursor=pointer]:
+      - generic [ref=f4e29]: mail
+      - generic [ref=f4e30]: Email
+  - generic [ref=f4e31]:
+    - banner [ref=f4e32]:
+      - generic [ref=f4e33]: FinLink
+      - button "add_box" [ref=f4e37] [cursor=pointer]
+      - button "notifications" [ref=f4e39] [cursor=pointer]
+      - button "help" [ref=f4e41] [cursor=pointer]
+      - button "GS Gernot Schusser Global admin expand_more" [ref=f4e44] [cursor=pointer]:
+        - generic [ref=f4e45]: GS
+        - generic [ref=f4e46]:
+          - generic [ref=f4e47]: Gernot Schusser
+          - generic [ref=f4e48]: Global admin
+        - generic [ref=f4e49]: expand_more
+    - generic [ref=f4e252]:
+      - heading "Mein Unternehmen" [level=1] [ref=f4e254]
+      - generic [ref=f4e255]:
+        - generic [ref=f4e256]:
+          - generic [ref=f4e257]:
+            - generic [ref=f4e258]:
+              - generic [ref=f4e259]: check_circle
+              - strong [ref=f4e260]: Ihr Profil ist vollständig!
+            - generic [ref=f4e263]:
+              - button "Kunden einladen arrow_forward" [ref=f4e264] [cursor=pointer]:
+                - generic [ref=f4e265]: Kunden einladen
+                - generic [ref=f4e266]: arrow_forward
+              - button "Bestandskunden importieren arrow_forward" [ref=f4e267] [cursor=pointer]:
+                - generic [ref=f4e268]: Bestandskunden importieren
+                - generic [ref=f4e269]: arrow_forward
+              - button "Lead-Quellen verbinden arrow_forward" [ref=f4e270] [cursor=pointer]:
+                - generic [ref=f4e271]: Lead-Quellen verbinden
+                - generic [ref=f4e272]: arrow_forward
+              - button "Homepage Einbindungen arrow_forward" [ref=f4e273] [cursor=pointer]:
+                - generic [ref=f4e274]: Homepage Einbindungen
+                - generic [ref=f4e275]: arrow_forward
+              - button "Homepage Einbindungen für Quellen arrow_forward" [ref=f4e276] [cursor=pointer]:
+                - generic [ref=f4e277]: Homepage Einbindungen für Quellen
+                - generic [ref=f4e278]: arrow_forward
+            - button "Ausblenden" [ref=f4e279] [cursor=pointer]
+          - navigation [ref=f4e280]:
+            - button "Unternehmensdetails" [ref=f4e281] [cursor=pointer]
+            - button "Berater-Profile" [ref=f4e283] [cursor=pointer]
+            - button "Plattformen" [ref=f4e285] [cursor=pointer]
+            - button "Zuteilungsregeln expand_more" [ref=f4e287] [cursor=pointer]:
+              - generic [ref=f4e288]: Zuteilungsregeln
+              - generic [ref=f4e289]: expand_more
+            - button "Benutzerdefinierte Tags expand_more" [ref=f4e290] [cursor=pointer]:
+              - generic [ref=f4e291]: Benutzerdefinierte Tags
+              - generic [ref=f4e292]: expand_more
+            - button "Kundenbereich expand_more" [ref=f4e293] [cursor=pointer]:
+              - generic [ref=f4e294]: Kundenbereich
+              - generic [ref=f4e295]: expand_more
+            - button "Widget-Einbindungen expand_more" [ref=f4e296] [cursor=pointer]:
+              - generic [ref=f4e297]: Widget-Einbindungen
+              - generic [ref=f4e298]: expand_more
+            - button "Kundenkommunikation" [ref=f4e299] [cursor=pointer]
+        - generic [ref=f4e301]:
+          - generic [ref=f4e302]:
+            - generic [ref=f4e303]:
+              - heading "Plattformen" [level=2] [ref=f4e304]
+              - generic [ref=f4e305]: Hier legen Sie die Plattformzugänge dieser Organisation an.
+            - table [ref=f4e306]:
+              - rowgroup [ref=f4e307]:
+                - row [ref=f4e308]:
+                  - columnheader "Name unfold_more" [ref=f4e309]:
+                    - generic [ref=f4e310]:
+                      - text: Name
+                      - generic [ref=f4e311]: unfold_more
+                  - columnheader "Plattformen unfold_more" [ref=f4e312]:
+                    - generic [ref=f4e313]:
+                      - text: Plattformen
+                      - generic [ref=f4e314]: unfold_more
+                  - columnheader "Erstellt unfold_more" [ref=f4e315]:
+                    - generic [ref=f4e316]:
+                      - text: Erstellt
+                      - generic [ref=f4e317]: unfold_more
+                  - columnheader [ref=f4e318]
+              - rowgroup [ref=f4e319]:
+                - row [ref=f4e320]:
+                  - cell "eHyp Home Org Connection Aktiv" [ref=f4e321]:
+                    - text: eHyp Home Org Connection
+                    - generic [ref=f4e322]: Aktiv
+                  - cell "Ehyp Home Organization" [ref=f4e323]
+                  - cell "14:04 - 26.02.2026" [ref=f4e324]
+                  - cell [ref=f4e325]:
+                    - button "more_horiz" [ref=f4e326] [cursor=pointer]
+          - generic [ref=f4e328]:
+            - generic [ref=f4e329]:
+              - heading "Massenimport-Verlauf" [level=2] [ref=f4e330]
+              - generic [ref=f4e331]: Jeder Plattformimport dieser Organisation, neuester zuerst.
+            - table [ref=f4e333]:
+              - rowgroup [ref=f4e334]:
+                - row [ref=f4e335]:
+                  - columnheader "Quelle unfold_more" [ref=f4e336]:
+                    - generic [ref=f4e337]:
+                      - text: Quelle
+                      - generic [ref=f4e338]: unfold_more
+                  - columnheader "Zeitraum unfold_more" [ref=f4e339]:
+                    - generic [ref=f4e340]:
+                      - text: Zeitraum
+                      - generic [ref=f4e341]: unfold_more
+                  - columnheader "Status" [ref=f4e342]
+                  - columnheader "Ergebnis" [ref=f4e343]
+                  - columnheader "Gestartet von" [ref=f4e344]
+                  - columnheader [ref=f4e345]
+              - rowgroup [ref=f4e346]:
+                - row [ref=f4e347]:
+                  - cell "Europace · Hauptkonto" [ref=f4e348]
+                  - cell "01.01.2026 – 26.06.2026" [ref=f4e349]
+                  - cell "Teilweise importiert" [ref=f4e350]
+                  - cell "255 von 279 importiert" [ref=f4e352]
+                  - cell "Jan Joisten" [ref=f4e353]
+                  - cell [ref=f4e354]:
+                    - button "visibility Import ansehen" [ref=f4e355] [cursor=pointer]:
+                      - generic [ref=f4e356]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e357]:
+                  - cell "eHyp Home · Hauptzugang" [ref=f4e358]
+                  - cell "26.12.2025 – 26.06.2026" [ref=f4e359]
+                  - cell "In Warteschlange" [ref=f4e360]
+                  - cell [ref=f4e362]:
+                    - strong [ref=f4e363]: 89 von 120 importiert
+                  - cell "Gernot Schusser" [ref=f4e364]
+                  - cell [ref=f4e365]:
+                    - button "visibility Import ansehen" [ref=f4e366] [cursor=pointer]:
+                      - generic [ref=f4e367]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e368]:
+                  - cell "Europace · Team Nord" [ref=f4e369]
+                  - cell "27.05.2026 – 26.06.2026" [ref=f4e370]
+                  - cell "Teilweise importiert" [ref=f4e371]
+                  - cell "412 von 450 importiert" [ref=f4e373]
+                  - cell "Jan Joisten" [ref=f4e374]
+                  - cell [ref=f4e375]:
+                    - button "visibility Import ansehen" [ref=f4e376] [cursor=pointer]:
+                      - generic [ref=f4e377]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e378]:
+                  - cell "eHyp · Altbestand" [ref=f4e379]
+                  - cell "01.01.2025 – 31.12.2025" [ref=f4e380]
+                  - cell "Fehlgeschlagen" [ref=f4e381]
+                  - cell "Nicht gestartet" [ref=f4e383]
+                  - cell "Gernot Schusser" [ref=f4e384]
+                  - cell [ref=f4e385]:
+                    - button "visibility Import ansehen" [ref=f4e386] [cursor=pointer]:
+                      - generic [ref=f4e387]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e388]:
+                  - cell "eHyp Home · Hauptzugang" [ref=f4e389]
+                  - cell "26.12.2025 – 26.06.2026" [ref=f4e390]
+                  - cell "Import abgeschlossen" [ref=f4e391]
+                  - cell "178 von 203 importiert" [ref=f4e393]
+                  - cell "Gernot Schusser" [ref=f4e394]
+                  - cell [ref=f4e395]:
+                    - button "visibility Import ansehen" [ref=f4e396] [cursor=pointer]:
+                      - generic [ref=f4e397]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e398]:
+                  - cell "Europace · Hauptkonto" [ref=f4e399]
+                  - cell "26.03.2026 – 26.06.2026" [ref=f4e400]
+                  - cell "Import abgeschlossen" [ref=f4e401]
+                  - cell "67 von 95 importiert" [ref=f4e403]
+                  - cell "Gernot Schusser" [ref=f4e404]
+                  - cell [ref=f4e405]:
+                    - button "visibility Import ansehen" [ref=f4e406] [cursor=pointer]:
+                      - generic [ref=f4e407]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e408]:
+                  - cell "eHyp Home · Hauptzugang" [ref=f4e409]
+                  - cell "19.06.2026 – 26.06.2026" [ref=f4e410]
+                  - cell "In Warteschlange" [ref=f4e411]
+                  - cell [ref=f4e413]:
+                    - strong [ref=f4e414]: 523 von 561 importiert
+                  - cell "Jan Joisten" [ref=f4e415]
+                  - cell [ref=f4e416]:
+                    - button "visibility Import ansehen" [ref=f4e417] [cursor=pointer]:
+                      - generic [ref=f4e418]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e419]:
+                  - cell "Europace · Team Nord" [ref=f4e420]
+                  - cell "15.04.2026 – 26.06.2026" [ref=f4e421]
+                  - cell "Fehlgeschlagen" [ref=f4e422]
+                  - cell "Nicht gestartet" [ref=f4e424]
+                  - cell "Gernot Schusser" [ref=f4e425]
+                  - cell [ref=f4e426]:
+                    - button "visibility Import ansehen" [ref=f4e427] [cursor=pointer]:
+                      - generic [ref=f4e428]: visibility
+                      - text: Import ansehen
+                - row [ref=f4e429]:
+                  - cell "eHyp · Altbestand" [ref=f4e430]
+                  - cell "01.02.2026 – 26.06.2026" [ref=f4e431]
+                  - cell "Teilweise importiert" [ref=f4e432]
+                  - cell "302 von 310 importiert" [ref=f4e434]
+                  - cell "Jan Joisten" [ref=f4e435]
+                  - cell [ref=f4e436]:
+                    - button "visibility Import ansehen" [ref=f4e437] [cursor=pointer]:
+                      - generic [ref=f4e438]: visibility
+                      - text: Import ansehen
+            - generic [ref=f4e439]:
+              - generic [ref=f4e440]: Zeilen pro Seite 25
+              - generic [ref=f4e441]: 1 – 9 von 9
+              - button "chevron_left" [ref=f4e442] [cursor=pointer]
+              - button "chevron_right" [ref=f4e444] [cursor=pointer]

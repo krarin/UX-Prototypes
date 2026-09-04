@@ -86,6 +86,9 @@ window.PROTOTYPES = {
     { id: "offer-submission", team: "mortgage-hub", name: "Offer Submission",
       flow: "Der Berater sucht Angebote, vergleicht Konditionen und reicht die Finanzierung beim Kreditgeber ein." },
 
+    { id: "mass-import", team: "lender-integration", name: "Massenimport",
+      flow: "Der Berater holt seinen Altbestand von einer Plattform in FinLink: er startet den Massenimport aus den Anträgen, wählt Quelle und Zeitraum, sieht was übernommen wurde — und findet jeden Lauf später unter Mein Unternehmen → Plattformen im Massenimport-Verlauf wieder." },
+
     { id: "jtbd-mapper", team: "product-design", name: "JTBD Mapper",
       flow: "42 Advisor-Jobs nach Wichtigkeit und Zufriedenheit bewerten und die größten Chancen in einer Opportunity-Matrix sichtbar machen." },
 
@@ -346,6 +349,11 @@ window.PROTOTYPES = {
     { id:"offer-submission-v4", project:"offer-submission", version:4, title:"Angebotssuche V4",
       file:"mortgage-hub/offer-submission/offer-submission-v4.html", status:"aktuell",
       changes:"Weiterentwicklung von V3. Beschreibung ergänzen." },
+
+    /* ---- Lender Integration · Massenimport ---- */
+    { id:"mass-import-v1", project:"mass-import", version:1, title:"Massenimport V1",
+      file:"lender-integration/mass-import/mass-import-v1.html", status:"aktuell",
+      changes:"Erste Fassung, aus Figma umgesetzt: beide Flows in einem Prototyp — der vierstufige Massenimport-Dialog aus den Anträgen heraus und der Massenimport-Verlauf unter Mein Unternehmen → Plattformen mit Detailseite je Lauf (abgeschlossen, teilweise, fehlgeschlagen, in Warteschlange). Ein abgeschlossener Lauf wandert live in den Verlauf." },
 
     /* ---- Product Design · JTBD Mapper ---- */
     { id:"jtbd-mapper-v1", project:"jtbd-mapper", version:1, title:"JTBD Mapper V1",

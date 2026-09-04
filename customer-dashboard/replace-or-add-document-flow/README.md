@@ -1,8 +1,9 @@
 # Replace or Add document flow
 
 Der Kunde lädt Unterlagen hoch und erfährt, was daraus geworden ist: was
-zugeordnet wurde, was die Prüfung nicht bestanden hat — und wie er eine
-abgelehnte Datei ersetzt, ohne die alte zu verlieren.
+zugeordnet wurde, was die Prüfung nicht bestanden hat — und ob er die abgelehnte
+Datei ersetzen oder das Fehlende hinzufügen will. Die Frage entscheidet er, nicht
+das System.
 
 ---
 
@@ -11,9 +12,9 @@ abgelehnte Datei ersetzt, ohne die alte zu verlieren.
 | Datei | Wofür |
 |---|---|
 | `replace-or-add-document-flow-v3.html` | **aktuell** — Doppelklick genügt, kein Server nötig |
-| `documents-data-v3.js` | Anforderungen, Dateien, Prüfung, frühere Fassungen |
+| `documents-data-v3.js` | Anforderungen, Dateien, Prüfung, Zuordnung |
 | `customer-skin.css` | die Formensprache des heutigen Kundendashboards (von allen Versionen genutzt) |
-| `replace-or-add-document-flow-v2.html` + `documents-data.js` | abgelöst — mit Top-3-Box am Seitenkopf |
+| `replace-or-add-document-flow-v2.html` + `documents-data.js` | abgelöst — Top-3-Box, Auswahlkarten mit Radios, „frühere Fassungen“ |
 | `replace-or-add-document-flow-v1.html` + `replace-or-add-data.js` | abgelöst — erster Versuch auf dem Design-System (türkis) |
 
 ### Zum Design
@@ -36,8 +37,17 @@ eine eigene Formensprache. Zwei Primärfarben würden gegeneinander laufen.
 sagt, wie viele Dateien die Anforderung braucht. Dadurch gibt es den Zustand
 *2 von 4* und überhaupt etwas zu ersetzen.
 
-**Ersetzen löscht nie.** Die alte Datei wandert in „frühere Fassungen“, bleibt
-sichtbar und lässt sich zurückholen.
+**Ersetzen löscht wirklich.** Es gibt keine „früheren Fassungen“ mehr und kein
+Zurückholen. Genau deshalb wird vor dem Upload gefragt statt danach beruhigt:
+die Warnung steht vor der Handlung, weil es hinterher keine gibt.
+
+**Die Frage beantwortet der Kunde, nicht das System.** Früher entschied
+`decide()` mit: Ablehnung → ersetzen. Das ist im Kernfall dieses Prototyps
+falsch. `Docs-Reisepass.jpg` fällt durch, *weil die Rückseite fehlt* — dort ist
+**Hinzufügen** richtig, und die Automatik hätte die Vorderseite gelöscht. Was in
+der Datei steht, weiß nur der Kunde. `decide()` ist deshalb ganz verschwunden:
+gefragt wird, sobald `files` nicht leer ist, und was die beiden Antworten
+anrichten, sagen die Zeilen des Dialogs selbst.
 
 **Es gibt eine Prüfung.** Eine Anforderung fällt beim ersten vollständigen
 Upload durch und besteht beim zweiten — deterministisch, damit Demo und
@@ -75,6 +85,10 @@ springt alles auf einmal um und niemand sieht, dass etwas passiert ist.
 ?  Nicht zugeordnet   scan0007.pdf              Zuordnen      →
 ```
 
+Dieselben Punkte stehen an der Karte selbst — `topGruende(d, 3)` rendert an
+beiden Stellen, damit sich eine Ablehnung überall gleich liest. Der vollständige
+Maschinentext liegt dort hinter „Mehr sehen“.
+
 **Die Ablehnung nennt ihre Gründe an Ort und Stelle — höchstens drei.**
 `Abgelehnt` allein ist eine Diagnose ohne Befund: wer nicht weiß, was kaputt
 ist, lädt dieselbe Datei noch einmal hoch. Die Prüfung meldet oft fünf oder
@@ -91,17 +105,104 @@ etwas Rotes steht.
 
 Schließen möglich; ein neuer Upload ersetzt die Meldung.
 
-## Flow 2 · Abgelehnte Datei ersetzen
+---
 
-Eingang aus der Meldung („Zum Dokument“) oder von der Karte selbst („Neue
-Fassung hochladen“ — der Knopf trägt die Folge im Namen).
+## Flow 2 · Ersetzen oder hinzufügen
 
-Der Ablehnungsgrund steht im Dialog **vor** der Dateiwahl, die vollständige
-Prüfmeldung als aufklappbares Detail. Wer nicht weiß, was kaputt ist, lädt
-dieselbe Datei noch einmal hoch.
+Eingang aus der Meldung („Zum Dokument"), von der Karte selbst oder aus einer
+nicht zugeordneten Seite. Der Knopf heißt überall nur noch **Hochladen** — ein
+Wort, ein Knopf. Vorher hieß er je nach Lage „Neue Fassung hochladen" oder
+„Datei hinzufügen" und nahm damit eine Entscheidung vorweg, die er nicht treffen
+darf. Die Folge steht jetzt im Dialog, nicht auf dem Knopf.
 
-Die Ersetzung geht nicht automatisch durch — die Prüfung läuft auch auf ihr. Beim
-zweiten Versuch besteht sie, der Weg hat also ein Ende.
+Der Ablauf ist der aus Figma, in drei Dialogen:
+
+```
+Hochladen ─► „Datei hochladen"  ─► Auswahlfenster ─► die Frage ─► „Hinzugefügt"
+             (Dropzone)            des Rechners       (s. u.)      (Bestätigung)
+```
+
+**Gefragt wird, sobald an der Unterlage eine Datei liegt** — ob angenommen oder
+abgelehnt, spielt keine Rolle. Auch eine angenommene Datei kann falsch sein, und
+ein stilles Ersetzen wäre dort genauso ein Verlust. Ist die Unterlage leer, gibt
+es nichts zu ersetzen und damit keine Frage: Dropzone, Datei, fertig. Ein Dialog
+mit nur einer möglichen Antwort ist eine Klickbremse, kein Schutz.
+
+**Die Frage kommt nach der Dateiwahl.** Früher stand hier ein Schalter, der
+beide Reihenfolgen zum Vergleich anbot (A: erst fragen, dann die Datei; B: erst
+die Datei, dann fragen). Entschieden ist jetzt B, und zwar aus einem Grund, den
+man erst am Dialog sieht: mit der Datei in der Hand kann die Zeile *beide* Namen
+nennen — den alten, der gelöscht würde, und den neuen, der ankommt. Ohne
+Dateinamen bleibt von „Ersetzen" nur eine abstrakte Folge.
+
+```
+┌─ Vollständige Gehaltsabrechnung Juli ──────────────────────────┐
+│  Antragsteller Iva Petrova · 1 Datei vorhanden                  │
+│                                                                 │
+│  ┌─ BLAU, sobald markiert ─────────────────────────────────┐   │
+│  │ ◉  Beide Dateien behalten                                │   │
+│  │    Passend, wenn Sie z. B. Vorder- und Rückseite vom     │   │
+│  │    Ausweis hochladen.                                     │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │ ○  Vorhandene Datei ersetzen                              │   │
+│  │    „gehaltsabrechnung_datev.pdf" wird gelöscht und kann   │   │
+│  │    nicht wiederhergestellt werden.                        │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│  📄 Gehaltsabrechnung_IVA_Juli.pdf        ← die neue Datei      │
+│                                                                 │
+│                          [Abbrechen]  [Weiter]                  │
+│                                       blau, inaktiv bis markiert│
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Die neue Datei steht im Dialog.** Entschieden wird über sie, nicht über „eine
+Datei" — deshalb die blau hinterlegte Zeile unter der Frage.
+
+**Bei einer Ablehnung sagt der Dialog nichts über die Ablehnung.** Der Hinweis
+„Diese Unterlage haben wir zurückgewiesen …" stand vorher zwischen dem Kunden
+und der Frage — als dritte Wiederholung derselben Nachricht, nach der roten
+Karte und den Gründen in der Meldung. Der Grund steht an der Karte, von der der
+Kunde gerade kommt.
+
+**Markieren und bestätigen sind zwei Schritte.** Vorher war jede Zeile selbst
+eine Schaltfläche und der Fuß trug zwei Knöpfe mit denselben Namen — dieselbe
+Wahl zweimal, und ein Klick daneben löschte eine Datei. Jetzt: ein Radio je
+Zeile, ein einziger Knopf **Weiter**, inaktiv bis etwas markiert ist.
+
+**Beide Zeilen sehen gleich aus, bis der Kunde antwortet.** Keine rote Fläche
+neben einer weißen: das läse sich als Empfehlung für die weiße, und empfohlen
+ist hier nichts, weil das System nicht weiß, was in der Datei steht. Die einzige
+Warnfarbe im Block sind die zwei Wörter **wird gelöscht** im Satz selbst; die
+einzige Auszeichnung ist die Markierung, und die ist blau.
+
+**Die Bestätigung ist der dritte Dialog.** Grüner Streifen, ein Wort —
+*Hinzugefügt* bzw. *Ersetzt* —, darunter der Stand danach, und ein Knopf
+**Fertig**. Kommt die neue Datei nicht durch die Prüfung, steht an derselben
+Stelle *Wieder nicht durchgekommen* in Rot: eine Ersetzung geht nicht
+automatisch durch, sonst sähe jeder Upload erfolgreich aus und der Kernfall des
+Produkts wäre nur Startzustand, nie Ergebnis einer Handlung.
+
+> **Bewusste Folge:** ein Fehlklick auf „Ersetzen" ist unwiderruflich. Der
+> Warnsatz im Dialog ist das einzige Netz — den Umkehrknopf „Doch beide
+> behalten" gibt es nicht mehr, weil er nur in einer Richtung funktionieren
+> könnte. Im Usability-Test gezielt darauf achten.
+
+### Zur Vorlage
+
+Die drei Dialoge kommen 1:1 aus der Figma-Datei *Upload page prototype — Client
+dashboard* (`File Upload Dialog`, `Document Replace Dialog`, `Radio Option
+Card`). Sie tragen deshalb **nicht** die kantige Formensprache der Seite: Figma
+zeichnet sie runder (12/8/6 px statt 4 px) und in einem dunkleren Blau
+(`#003EB4` statt `#1B4DE0`). Diese Werte stehen als eigener `--fig-*`-Block oben
+in der Dialog-Sektion von `customer-skin.css`. Bis die Seite nachzieht, gilt für
+die Dialoge Figma — sonst wäre die Vorlage nach dem ersten Angleichen nicht mehr
+wiederzuerkennen.
+
+Zwei Stellen weichen bewusst ab, weil Figma nur den Einer-Fall zeigt:
+Liegen mehrere Dateien an der Unterlage, heißen die Zeilen „**Alle** Dateien
+behalten" und „Vorhandene **Dateien** ersetzen" und der Satz zählt mit. Und die
+Bestätigung sagt nach einem Ersetzen *Ersetzt*, nicht *Hinzugefügt*.
 
 ---
 

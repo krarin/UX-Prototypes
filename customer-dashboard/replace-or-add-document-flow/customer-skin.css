@@ -43,9 +43,11 @@
   --c-red-dash:  #E5484D;
   --c-red-050:   #FEF4F4;
   --c-green:     #12A150;     /* Angenommen */
+  --c-green-200: #4FC17A;     /* Balken der Erfolgsmeldung */
   --c-green-050: #EFFAF3;
-  --c-amber:     #B26A00;     /* In Pruefung */
-  --c-amber-050: #FFF8EC;
+  --c-amber:     #B26A00;     /* In Pruefung, Warntext */
+  --c-amber-200: #F0A83C;     /* Balken der Warnmeldung */
+  --c-amber-050: #FDF5EA;
 
   --radius-card: 4px;         /* das Produkt ist kantig, nicht rund */
   --radius-s:    3px;
@@ -220,6 +222,8 @@ body {
 .tag-abgelehnt { background: var(--c-red-050); color: var(--c-red); }
 .tag-frist     { background: var(--c-amber-050); color: var(--c-amber); }
 .tag-offen     { background: var(--c-bg); color: var(--c-ink-500); }
+/* Auf der weissen Zeile traegt #F7F8FA nicht mehr. */
+.ures-row .tag-offen { background: #EDEFF3; }
 
 /* Textlink mit Pfeil, z. B. „Zum Dokument". */
 .linkbtn {
@@ -344,24 +348,40 @@ body {
 /* =====================================================================
    RUECKMELDUNG NACH DEM UPLOAD
 
-   Steht direkt unter der Upload-Box, nicht in einem Dialog: ein
+   Steht direkt ueber der Upload-Box, nicht in einem Dialog: ein
    Modal klickt man weg und findet es nie wieder. Hier bleibt es
    stehen, bis der Kunde es schliesst oder neu hochlaedt.
    ===================================================================== */
 .uresult {
-  border: 1px solid var(--c-line); border-left: 3px solid var(--c-green);
-  border-radius: var(--radius-card); background: var(--c-surface);
-  margin: 18px 0 0; overflow: hidden;
+  border-left: 5px solid var(--c-green-200);
+  border-radius: 6px; background: var(--c-surface);
+  box-shadow: 0 1px 3px rgba(20, 28, 44, .10);
+  margin: 0 0 28px; overflow: hidden;
 }
-.uresult.needs { border-left-color: var(--c-amber); }
+.uresult.needs { border-left-color: var(--c-amber-200); }
+
+/* Getoent ist nur der Kopf: er traegt die Meldung. Die Zeilen darunter
+   sind eine Liste von Dokumenten und stehen auf Weiss — auf ganzer
+   Flaeche getoent laesst der Kasten Dateinamen und Gruende schlechter
+   lesen und macht jede Zeile zur Warnung. */
 .uresult-head {
-  display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px;
+  display: flex; gap: 14px; align-items: flex-start; padding: 20px 22px;
+  background: var(--c-green-050); border-bottom: 1px solid var(--c-line);
 }
+.uresult.needs .uresult-head { background: var(--c-amber-050); }
 .uresult-head .material-symbols-outlined {
   font-size: 22px; color: var(--c-green); flex-shrink: 0;
   font-variation-settings: 'FILL' 1;
 }
 .uresult.needs .uresult-head .material-symbols-outlined { color: var(--c-amber); }
+
+/* Das Kreuz schliesst eine Meldung — es loescht nichts. Deshalb kein
+   rotes Hover wie am Papierkorb. */
+.uresult-head .icon-btn { color: var(--c-ink-700); margin-top: -2px; }
+.uresult-head .icon-btn .material-symbols-outlined { font-size: 24px; }
+.uresult-head .icon-btn:hover {
+  color: var(--c-ink-900); background: rgba(20, 28, 44, .06);
+}
 .uresult-head .txt { flex: 1; min-width: 0; }
 .uresult-head .ok  { color: var(--c-ink-900); font-weight: 600; font-size: 16px; }
 .uresult-head .att { color: var(--c-ink-700); font-size: 16px; margin-top: 2px; }
@@ -370,6 +390,8 @@ body {
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   padding: 14px 22px; border-top: 1px solid var(--c-line);
 }
+/* Der Kopf bringt seine eigene Linie mit — sonst stehen hier zwei. */
+.uresult-head + .ures-row { border-top: 0; }
 .ures-row > .material-symbols-outlined {
   font-size: 20px; flex-shrink: 0; font-variation-settings: 'FILL' 1;
 }
@@ -488,11 +510,33 @@ body {
 
 /* Ablehnungsgrund: durch eine Linie vom Kopf getrennt, damit er
    nicht wie eine Unterzeile des Titels wirkt. */
+/* Der Ablehnungsgrund als Aufzaehlung. Als ein Satz waren es fuenf
+   Befunde am Stueck — den liest niemand zu Ende, und wer nicht
+   weiss, was kaputt ist, laedt dieselbe Datei noch einmal hoch.
+   Drei Punkte, der Rest hinter „Vollstaendige Pruefmeldung". */
 .doc-reason {
   border-top: 1px solid var(--c-line); margin-top: 18px; padding-top: 18px;
   color: var(--c-red); font-size: 16px; line-height: 1.5;
 }
-.doc-reason b { font-weight: 400; }
+.doc-reason > b { display: block; font-weight: 400; margin-bottom: 8px; }
+
+.reason-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.reason-list li {
+  position: relative; padding-left: 18px; line-height: 1.45;
+}
+.reason-list li::before {
+  content: '•'; position: absolute; left: 3px; top: -1px;
+}
+.reason-plain { margin: 0; }
+
+/* Der Maschinentext geht nicht verloren, er hoert nur auf, die Karte
+   zu fuellen. Gleiche Machart wie im Dialog — nicht zwei Sorten
+   Aufklapper auf einer Seite. */
+.doc-reason details { margin-top: 12px; }
+.doc-reason summary { cursor: pointer; color: var(--c-blue-500); font-size: 14px; }
+.doc-reason .full {
+  margin-top: 10px; font-size: 14px; color: var(--c-ink-500); line-height: 1.5;
+}
 
 /* Dateizeile in der Karte */
 .doc-file {
@@ -545,6 +589,12 @@ body {
 .btn-secondary:hover { background: var(--c-blue-050); }
 .btn-ghost { background: none; color: var(--c-ink-700); }
 .btn-ghost:hover { background: var(--c-bg); }
+/* Loeschen traegt die Warnfarbe. Als Umriss, nicht gefuellt: neben
+   einem umrissenen „Hinzufügen" laese sich ein rotes Vollflaechen-
+   „Ersetzen" als die empfohlene Handlung — und empfohlen ist hier
+   nichts. Gleiches Gewicht, unterschiedliche Warnung. */
+.btn-danger { background: var(--c-surface); color: var(--c-red); border-color: var(--c-red); }
+.btn-danger:hover { background: var(--c-red-050); }
 .btn[disabled] { opacity: .4; cursor: not-allowed; }
 
 /* =====================================================================
@@ -580,46 +630,145 @@ body {
 }
 .picked .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Der Ablehnungsgrund im Dialog: der Kunde muss wissen, WAS er
-   reparieren soll, bevor er eine Datei waehlt. */
-.recap {
-  background: var(--c-red-050); border-left: 3px solid var(--c-red);
-  border-radius: var(--radius-s); padding: 16px 18px; margin-bottom: 22px;
-  font-size: 15px; color: var(--c-ink-700);
-}
-.recap b { display: block; color: var(--c-red); margin-bottom: 4px; }
-.recap details { margin-top: 10px; }
-.recap summary { cursor: pointer; color: var(--c-blue-500); font-size: 14px; }
-.recap .full { margin-top: 10px; font-size: 14px; color: var(--c-ink-500); line-height: 1.5; }
-
 /* =====================================================================
-   DIE FRAGE — hinzufuegen oder ersetzen
+   DIE DIALOGE DES UPLOAD-FLOWS
 
-   Zwei Karten, nie ein Dropdown: die beiden Ausgaenge sind nicht
-   gleichwertig, und der Unterschied steckt in der FOLGE, nicht im
-   Wort. Deshalb steht unter jeder Karte, was danach an der
-   Anforderung haengt — nicht, wie die Aktion heisst.
+   Diese drei Dialoge kommen 1:1 aus Figma („Upload page prototype —
+   Client dashboard", File Upload Dialog / Document Replace Dialog):
+
+     1  „Datei hochladen"      — Dropzone, oeffnet die Dateiauswahl
+     2  „Beide behalten / Ersetzen" — die Frage, mit der Datei im Blick
+     3  „Hinzugefuegt"         — die Bestaetigung
+
+   Sie tragen bewusst NICHT die kantige Formensprache der Seite
+   (radius 4px, Blau #1B4DE0): Figma zeichnet sie runder (12/8/6px)
+   und in einem dunkleren Blau. Bis die Seite nachzieht, gilt fuer
+   die Dialoge Figma — sonst waere die Vorlage nach dem ersten
+   Angleichen nicht mehr wiederzuerkennen.
    ===================================================================== */
-.choice { display: grid; gap: 12px; margin-top: 20px; }
-.choice label {
-  display: flex; gap: 14px; align-items: flex-start; cursor: pointer;
-  border: 1.5px solid var(--c-line); border-radius: var(--radius-card); padding: 16px 18px;
+:root {
+  /* aus der Figma-Datei, nicht aus den Screenshots abgeleitet */
+  --fig-blue:      #003EB4;
+  --fig-blue-050:  #F0F5FE;   /* Flaeche Dropzone + Dateizeile */
+  --fig-dash:      #2F70E8;   /* gestrichelter Rahmen der Dropzone */
+  --fig-ink:       #282828;
+  --fig-ink-sub:   #686D78;
+  --fig-line:      #EAEAEA;
+  --fig-del:       #FD6565;   /* „wird geloescht" */
+  --fig-ok-bg:     #E9FCF2;
+  --fig-ok:        #12A150;
 }
-.choice label:hover { border-color: var(--c-blue-500); }
-.choice label:has(input:checked) { border-color: var(--c-blue-500); background: var(--c-blue-050); }
-.choice input { margin: 4px 0 0; accent-color: var(--c-blue-500); flex-shrink: 0; }
-.choice .ct {
-  font-weight: 700; color: var(--c-ink-900); font-size: 16px;
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+
+/* ---------- 1 · Datei hochladen ---------------------------------- */
+.fud {
+  background: #fff; border-radius: 12px; width: 420px; max-width: 100%;
+  padding: 24px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.08);
 }
-.choice .cd { font-size: 14px; color: var(--c-ink-700); margin-top: 2px; }
-.choice .cafter {
-  display: block; margin-top: 8px; font-size: 13px; color: var(--c-ink-700);
-  background: var(--c-bg); border-radius: var(--radius-s); padding: 8px 10px;
+.fud-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.fud-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--fig-ink); }
+.fud-close {
+  border: 0; background: none; padding: 0; cursor: pointer; line-height: 0;
+  color: var(--fig-blue); border-radius: 4px;
 }
-.rec {
-  font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
-  background: var(--c-blue-500); color: #fff; border-radius: 2px; padding: 2px 8px;
+.fud-close .material-symbols-outlined { font-size: 28px; }
+.fud-formats { margin: 0; font-size: 14px; color: var(--fig-ink-sub); }
+
+/* Der ganze Kasten ist das Label des Datei-Inputs — ein Klick
+   irgendwo darin oeffnet das Auswahlfenster des Rechners. */
+.fud-zone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; cursor: pointer; text-align: center;
+  background: var(--fig-blue-050);
+  border: 1.5px dashed var(--fig-dash); border-radius: 8px;
+  padding: 32px 24px;
+}
+.fud-zone:hover { background: #E7EFFD; }
+.fud-zone input { display: none; }
+.fud-zone .material-symbols-outlined { font-size: 36px; color: var(--fig-blue); }
+.fud-zone b { font-size: 14px; font-weight: 500; color: var(--fig-ink); }
+
+/* ---------- 2 + 3 · Frage und Bestaetigung ----------------------- */
+.dlg {
+  background: #fff; border-radius: 12px; width: 480px; max-width: 100%;
+  padding: 28px 28px 24px; display: flex; flex-direction: column; gap: 20px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.04), 0 8px 16px rgba(0,0,0,.1);
+}
+.dlg-head { display: flex; flex-direction: column; gap: 4px; }
+.dlg-title { margin: 0; font-size: 20px; font-weight: 600; color: var(--fig-ink); line-height: 1.25; }
+.dlg-sub   { margin: 0; font-size: 13px; color: var(--fig-ink-sub); }
+
+/* Radio Option Card — Figma-Komponente, zwei Zustaende.
+   Beide Zeilen sehen gleich aus, bis der Kunde antwortet: die
+   einzige Farbe im Block ist die Markierung, und die ist blau.
+   Der Warnsatz steht im Text der Zeile, nicht in ihrer Flaeche. */
+.roc {
+  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+  background: #fff; border: 1px solid var(--fig-line); border-radius: 8px;
+  padding: 16px;
+}
+.roc:hover { border-color: #cfd6e0; }
+.roc.is-selected { border: 1.5px solid var(--fig-blue); padding: 15.5px; }
+.roc:has(input:focus-visible) { outline: 2px solid var(--fig-blue); outline-offset: 2px; }
+
+.roc input[type="radio"] {
+  appearance: none; -webkit-appearance: none; margin: 0; flex-shrink: 0;
+  width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid #9AA0A8; background: #fff;
+}
+.roc input[type="radio"]:checked {
+  border: 1.5px solid var(--fig-blue);
+  background: radial-gradient(var(--fig-blue) 0 5px, #fff 6px);
+}
+.roc-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.roc-t { font-size: 16px; font-weight: 600; color: var(--fig-ink); }
+.roc-d { font-size: 13px; line-height: 18px; color: var(--fig-ink); }
+.roc.is-selected .roc-t { color: var(--fig-blue); }
+/* „wird geloescht" ist der einzige rote Fleck im Dialog — die
+   Warnung sitzt im Satz, wo sie gelesen wird. */
+.roc-del { color: var(--fig-del); font-weight: 600; }
+
+/* Die gerade gewaehlte Datei. Sie steht unter der Frage, damit
+   sichtbar ist, worueber entschieden wird. */
+.dlg-file {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,62,180,.05); border-radius: 8px; padding: 14px 16px;
+}
+.dlg-file .material-symbols-outlined { font-size: 20px; color: var(--fig-blue); flex-shrink: 0; }
+.dlg-file .nm {
+  font-size: 15px; font-weight: 500; color: var(--fig-blue);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Bestaetigung */
+.dlg-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--fig-ok-bg); border-radius: 8px; padding: 8px;
+}
+.dlg-banner .material-symbols-outlined {
+  font-size: 20px; color: var(--fig-ok); flex-shrink: 0;
+  font-variation-settings: 'FILL' 1;
+}
+.dlg-banner .bt { font-size: 14px; font-weight: 500; color: var(--fig-ink); line-height: 16px; }
+.dlg-banner .bd { display: block; font-weight: 400; color: var(--fig-ink-sub); margin-top: 2px; }
+.dlg-banner.bad { background: #FEF4F4; }
+.dlg-banner.bad .material-symbols-outlined { color: var(--c-red); }
+
+.dlg-busy { display: flex; align-items: center; gap: 12px; color: var(--fig-ink-sub); font-size: 14px; }
+
+.dlg-foot { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+.dbtn {
+  font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+  border-radius: 6px; border: 1px solid transparent; padding: 10px 24px; white-space: nowrap;
+}
+.dbtn-ghost   { background: #fff; color: var(--fig-ink); border-color: var(--fig-line); padding: 10px 20px; }
+.dbtn-ghost:hover { background: #FAFBFC; }
+.dbtn-primary { background: var(--fig-blue); color: #fff; }
+.dbtn-primary:hover { background: #002F8A; }
+/* Inaktiv heisst hier weiss mit Rahmen, nicht blau-blass: in Figma
+   ist „Weiter" vor der Antwort nicht als Handlung markiert. */
+.dbtn-primary[disabled] {
+  background: #fff; color: var(--fig-ink); border-color: var(--fig-line); cursor: not-allowed;
 }
 .why {
   display: flex; gap: 12px; align-items: flex-start;
@@ -651,18 +800,6 @@ body {
 @keyframes sp { to { transform: rotate(360deg); } }
 .busy { display: flex; gap: 14px; align-items: center; padding: 24px 0; color: var(--c-ink-700); }
 
-/* Frühere Fassung an der Karte */
-.doc-file.old .material-symbols-outlined { color: var(--c-ink-300); }
-.doc-file.old .fn { color: var(--c-ink-300); text-decoration: line-through; cursor: default; }
-.doc-file.old .fn:hover { text-decoration: line-through; }
-.hist-toggle {
-  font: inherit; font-size: 14px; cursor: pointer; background: none; border: 0;
-  padding: 10px 0 0; color: var(--c-ink-500);
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.hist-toggle:hover { color: var(--c-ink-900); }
-.hist-toggle .material-symbols-outlined { font-size: 18px; }
-
 /* Zaehler „2 von 4" im Kartentitel */
 .count {
   font-size: 13px; font-weight: 600; color: var(--c-ink-500);
@@ -677,3 +814,54 @@ body {
 }
 
 .hidden { display: none !important; }
+
+/* =====================================================================
+   NUR NOCH FUER V2
+
+   V2 liegt im selben Ordner und laedt dieselbe Datei. Diese Regeln
+   sind dort noch in Gebrauch — die Auswahlkarten mit Radios und die
+   „frueheren Fassungen" —, in V3 gibt es beides nicht mehr: dort
+   wird mit zwei gleich schweren Knoepfen geantwortet, und Ersetzen
+   loescht wirklich. Wenn V2 geht, geht dieser Block mit.
+   ===================================================================== */
+/* Der Ablehnungsgrund im Dialog. V3 zeigt ihn dort nicht mehr — er
+   steht an der Karte, von der der Kunde kommt, und waere im Dialog
+   ein zweites Mal dieselbe rote Wand. */
+.recap {
+  background: var(--c-red-050); border-left: 3px solid var(--c-red);
+  border-radius: var(--radius-s); padding: 16px 18px; margin-bottom: 22px;
+  font-size: 15px; color: var(--c-ink-700);
+}
+.recap > b { display: block; color: var(--c-red); margin-bottom: 8px; }
+.recap details { margin-top: 10px; }
+.recap summary { cursor: pointer; color: var(--c-blue-500); font-size: 14px; }
+.recap .full { margin-top: 10px; font-size: 14px; color: var(--c-ink-500); line-height: 1.5; }
+
+.choice { display: grid; gap: 12px; margin-top: 20px; }
+.choice label {
+  display: flex; gap: 14px; align-items: flex-start; cursor: pointer;
+  border: 1.5px solid var(--c-line); border-radius: var(--radius-card); padding: 16px 18px;
+}
+.choice label:hover { border-color: var(--c-blue-500); }
+.choice label:has(input:checked) { border-color: var(--c-blue-500); background: var(--c-blue-050); }
+.choice input { margin: 4px 0 0; accent-color: var(--c-blue-500); flex-shrink: 0; }
+.choice .ct {
+  font-weight: 700; color: var(--c-ink-900); font-size: 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.choice .cd { font-size: 14px; color: var(--c-ink-700); margin-top: 2px; }
+.choice .cafter {
+  display: block; margin-top: 8px; font-size: 13px; color: var(--c-ink-700);
+  background: var(--c-bg); border-radius: var(--radius-s); padding: 8px 10px;
+}
+
+.doc-file.old .material-symbols-outlined { color: var(--c-ink-300); }
+.doc-file.old .fn { color: var(--c-ink-300); text-decoration: line-through; cursor: default; }
+.doc-file.old .fn:hover { text-decoration: line-through; }
+.hist-toggle {
+  font: inherit; font-size: 14px; cursor: pointer; background: none; border: 0;
+  padding: 10px 0 0; color: var(--c-ink-500);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.hist-toggle:hover { color: var(--c-ink-900); }
+.hist-toggle .material-symbols-outlined { font-size: 18px; }

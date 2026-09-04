@@ -1,0 +1,98 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - button "calendar_today Mein Tag" [ref=e4] [cursor=pointer]:
+      - generic [ref=e5]: calendar_today
+      - generic [ref=e6]: Mein Tag
+    - button "group Anträge" [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]: group
+      - generic [ref=e9]: Anträge
+    - button "person Leads" [ref=e10] [cursor=pointer]:
+      - generic [ref=e11]: person
+      - generic [ref=e12]: Leads
+    - button "contact_mail Quellen" [ref=e13] [cursor=pointer]:
+      - generic [ref=e14]: contact_mail
+      - generic [ref=e15]: Quellen
+    - button "account_balance Unternehmen" [ref=e16] [cursor=pointer]:
+      - generic [ref=e17]: account_balance
+      - generic [ref=e18]: Unternehmen
+    - button "credit_card Buchhaltung" [ref=e19] [cursor=pointer]:
+      - generic [ref=e20]: credit_card
+      - generic [ref=e21]: Buchhaltung
+    - button "bar_chart Reporting" [ref=e22] [cursor=pointer]:
+      - generic [ref=e23]: bar_chart
+      - generic [ref=e24]: Reporting
+    - button "storefront Lead-Shop" [ref=e25] [cursor=pointer]:
+      - generic [ref=e26]: storefront
+      - generic [ref=e27]: Lead-Shop
+    - button "mail Email" [ref=e28] [cursor=pointer]:
+      - generic [ref=e29]: mail
+      - generic [ref=e30]: Email
+  - generic [ref=e31]:
+    - banner [ref=e32]:
+      - generic [ref=e33]: FinLink
+      - button "add_box" [ref=e37] [cursor=pointer]
+      - button "notifications" [ref=e39] [cursor=pointer]
+      - button "help" [ref=e41] [cursor=pointer]
+      - generic [ref=e43]:
+        - generic [ref=e44]: JJ
+        - generic [ref=e45]:
+          - generic [ref=e46]: Jan Joisten
+          - generic [ref=e47]: Advisor
+    - generic [ref=e477]:
+      - generic [ref=e478]:
+        - button "arrow_back" [ref=e479] [cursor=pointer]
+        - heading "eHyp – Altbestand" [level=1] [ref=e481]
+      - generic [ref=e482]:
+        - generic [ref=e483]: Teilweise importiert
+        - generic [ref=e485]:
+          - generic [ref=e486]:
+            - generic [ref=e487]:
+              - heading "Teilweise importiert" [level=2] [ref=e488]
+              - generic [ref=e489]: 26.06.2025 – 26.06.2026
+            - generic [ref=e490]: Gestartet von Jan Joisten · gerade eben
+          - separator [ref=e491]
+          - generic [ref=e492]:
+            - generic [ref=e493]:
+              - generic [ref=e494]: Gesamt
+              - generic [ref=e495]: "68"
+            - generic [ref=e496]:
+              - generic [ref=e497]: Importiert
+              - generic [ref=e498]: "61"
+            - generic [ref=e499]:
+              - generic [ref=e500]: Übersprungen
+              - generic [ref=e501]: "5"
+            - generic [ref=e502]:
+              - generic [ref=e503]: Fehlgeschlagen
+              - generic [ref=e504]: "2"
+          - generic [ref=e505]:
+            - generic [ref=e506]: info
+            - generic [ref=e507]:
+              - strong [ref=e508]: 7 Prolongations-To-dos
+              - text: wurden für abgeschlossene Fälle anhand des Zinsbindungsendes automatisch erstellt.
+          - generic [ref=e509]:
+            - generic [ref=e510]: block
+            - strong [ref=e512]: 2 Fälle nicht importiert
+          - generic [ref=e513]:
+            - textbox "Suchen" [ref=e514]
+            - generic: search
+          - generic [ref=e515]:
+            - table [ref=e516]:
+              - rowgroup [ref=e517]:
+                - row [ref=e518]:
+                  - columnheader "Fall unfold_more" [ref=e519]:
+                    - generic [ref=e520]:
+                      - text: Fall
+                      - generic [ref=e521]: unfold_more
+                  - columnheader "Konflikt" [ref=e522]
+              - rowgroup [ref=e523]:
+                - row [ref=e524]:
+                  - 'cell "Familie Berger · #2024-0912" [ref=e525]'
+                  - 'cell "Konflikt: Antrag mit gleicher E-Mail existiert bereits — Zuordnung erforderlich" [ref=e526]'
+                - row [ref=e527]:
+                  - 'cell "M. Albrecht · #2025-0044" [ref=e528]'
+                  - 'cell "Pflichtangabe fehlt: Summe Vorlasten konnte nicht gelesen werden" [ref=e529]'
+            - generic [ref=e530]:
+              - generic [ref=e531]: Zeilen pro Seite 25
+              - generic [ref=e532]: 1 – 2 von 2
+              - button "chevron_left" [ref=e533] [cursor=pointer]
+              - button "chevron_right" [ref=e535] [cursor=pointer]

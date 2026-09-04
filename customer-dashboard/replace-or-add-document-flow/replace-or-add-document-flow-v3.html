@@ -94,6 +94,13 @@
         </div>
       </div>
 
+      <!-- FLOW 1 · Die Rückmeldung. Über der Box, nicht in einem Dialog:
+           ein Modal klickt man weg und findet es nie wieder. Und über
+           statt unter der Box, weil sie sonst beim nächsten Upload
+           hinter der Zeile der laufenden Dateien aus dem Blick rutscht —
+           was Aufmerksamkeit braucht, steht zuerst. -->
+      <div id="uresult"></div>
+
       <!-- FLOW 3 · Sammel-Upload mit automatischer Zuordnung -->
       <div class="upload-head">
         <h2 class="h-block">Laden Sie Ihre Dokumente hoch</h2>
@@ -118,17 +125,13 @@
           </div>
         </div>
         <!-- Nur die laufenden Uploads. Die nicht erkannten Seiten
-             stehen ausschließlich in der Meldung unter der Box — sonst
+             stehen ausschließlich in der Meldung über der Box — sonst
              gäbe es zwei Listen mit denselben Dateien und zwei
              Zuordnen-Knöpfen für dieselbe Handlung. -->
         <div class="drop-foot" id="dropFoot" hidden>
           <div id="uprows"></div>
         </div>
       </div>
-
-      <!-- FLOW 1 · Die Rückmeldung. Direkt unter der Box, nicht in einem
-           Dialog: ein Modal klickt man weg und findet es nie wieder. -->
-      <div id="uresult"></div>
 
       <!-- Die Anforderungen, gruppiert wie im Produkt -->
       <div id="sections"></div>
@@ -143,8 +146,6 @@
 <script>
 (function () {
   var D = window.AntragsDokumenteV3;
-
-  var showHist = {};       // je Anforderung: frühere Fassungen sichtbar
 
   /* Laufender Sammel-Upload und seine Rückmeldung. */
   var running    = [];     // [{ name, state:'busy'|'done'|'fail'|'open' }]
@@ -165,23 +166,43 @@
   /* ===================================================================
      DIE ANFORDERUNGEN
      =================================================================== */
-  function fileRow(d, f, alt) {
-    return '<div class="doc-file' + (alt ? ' old' : '') + '">' +
-      '<span class="material-symbols-outlined">' + (alt ? 'history' : 'description') + '</span>' +
+  function fileRow(d, f) {
+    return '<div class="doc-file">' +
+      '<span class="material-symbols-outlined">description</span>' +
       '<span class="fn">' + esc(f.name) + '</span>' +
-      '<span class="fd">' + (alt ? 'ersetzt am ' + esc(f.ersetztAm) : esc(f.datum)) + '</span>' +
-      (alt
-        ? '<button class="act muted" data-restore="' + d.id + '|' + esc(f.name) + '"' +
-            ' style="font-size:14px">Zurückholen</button>'
-        : '<button class="icon-btn" title="Entfernen" data-rm="' + d.id + '|' + esc(f.name) + '">' +
-            '<span class="material-symbols-outlined">delete</span></button>') +
+      '<span class="fd">' + esc(f.datum) + '</span>' +
+      '<button class="icon-btn" title="Entfernen" data-rm="' + d.id + '|' + esc(f.name) + '">' +
+        '<span class="material-symbols-outlined">delete</span></button>' +
+    '</div>';
+  }
+
+  /* Die Ablehnungsgründe als Aufzählung — höchstens drei.
+     Als Fliesstext waren es fünf Befunde in einem Satz, und ein Satz,
+     den niemand zu Ende liest, ist keine Begruendung. `D.topGruende`
+     ist dieselbe Funktion, die auch das Meldungs-Panel benutzt: eine
+     Ablehnung liest sich an beiden Stellen gleich.
+     Der vollstaendige Maschinentext geht nicht verloren, er hoert nur
+     auf, die Karte zu fuellen. */
+  function gruendeBlock(d) {
+    if (!d.grund) return '';
+    var g = D.topGruende(d, 3);
+    return '<div class="doc-reason">' +
+      '<b>Ablehnungsgrund</b>' +
+      (g.length
+        ? '<ul class="reason-list">' +
+            g.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') +
+          '</ul>'
+        : '<p class="reason-plain">' + esc(d.grund) + '</p>') +
+      (g.length
+        ? '<details><summary>Mehr sehen</summary>' +
+            '<div class="full">' + esc(d.grund) + '</div></details>'
+        : '') +
     '</div>';
   }
 
   function card(d) {
     var st   = D.status[d.status];
     var soll = d.soll || 1;
-    var hist = d.history.length;
 
     return '<div class="doc-card ' + st.klasse + '" id="card-' + d.id + '">' +
       '<div class="doc-row">' +
@@ -203,24 +224,12 @@
         '<div class="doc-actions">' +
           '<button class="act" data-up="' + d.id + '">' +
             '<span class="material-symbols-outlined">upload_file</span>' +
-            esc(D.aktionLabel(d)) + '</button>' +
+            esc(D.aktionLabel()) + '</button>' +
         '</div>') +
 
-      (d.grund
-        ? '<div class="doc-reason"><b>Ablehnungsgrund:</b> ' + esc(d.grund) + '</div>'
-        : '') +
+      gruendeBlock(d) +
 
-      d.files.map(function (f) { return fileRow(d, f, false); }).join('') +
-
-      (hist
-        ? '<button class="hist-toggle" data-hist="' + d.id + '">' +
-            '<span class="material-symbols-outlined">' +
-              (showHist[d.id] ? 'expand_less' : 'expand_more') + '</span>' +
-            hist + (hist === 1 ? ' frühere Fassung' : ' frühere Fassungen') + '</button>' +
-          (showHist[d.id]
-            ? d.history.map(function (f) { return fileRow(d, f, true); }).join('')
-            : '')
-        : '') +
+      d.files.map(function (f) { return fileRow(d, f); }).join('') +
     '</div>';
   }
 
@@ -239,188 +248,235 @@
   /* ===================================================================
      FLOW 1 + 2 — EINZELNER UPLOAD
 
-     Die Frage „ersetzen oder hinzufuegen?" wird nur gestellt, wenn
-     wir sie nicht beantworten koennen. Bei einer Ablehnung ist es
-     ein Ersetzen, bei einer unvollstaendigen mehrteiligen Unterlage
-     ein Hinzufuegen — beides sagen wir, statt zu fragen. Nur wenn
-     die Unterlage vollstaendig ist und trotzdem etwas kommt, gibt
-     es zwei gleichwertige Ausgaenge — und dann fragen wir ohne
-     Empfehlung, weil eine geratene Empfehlung schlimmer ist als
-     keine.
+     Ein einziger Ablauf, so wie er in Figma gezeichnet ist:
+
+       Hochladen  ->  „Datei hochladen"      (Dropzone)
+                  ->  Auswahlfenster des Rechners
+                  ->  „Beide behalten / Ersetzen"   nur wenn schon
+                      etwas an der Unterlage liegt
+                  ->  „Hinzugefuegt"          (Bestaetigung)
+
+     Die Frage kommt NACH der Dateiwahl, mit dem Dateinamen vor
+     Augen — die Zeile „Vorhandene Datei ersetzen" kann so beide
+     Namen nennen, den alten und den neuen, und die Bestaetigung
+     zeigt, worueber gerade entschieden wurde. Frueher gab es dafuer
+     einen A/B-Schalter; die Reihenfolge ist jetzt entschieden.
+
+     Gefragt wird, sobald an der Unterlage EINE Datei liegt — ob sie
+     angenommen oder abgelehnt ist, spielt keine Rolle. Auch eine
+     angenommene Datei kann falsch sein, und ein stilles Ersetzen
+     waere dort genauso ein Verlust.
+
+     Die Frage wird ohne Empfehlung gestellt. Vorher hat das System
+     sie beantwortet: Ablehnung -> ersetzen. Das ist im Kernfall
+     dieses Prototyps falsch. Die Ausweiskopie faellt durch, WEIL
+     die Rueckseite fehlt; richtig ist dort Hinzufuegen, und die
+     Automatik haette die Vorderseite geloescht.
+
+     Zustaende:
+       'upload'  die Dropzone
+       'ask'     die Frage (entfaellt bei leerer Unterlage)
+       'busy' / 'done'
+
+     `accept()` laeuft genau EINMAL pro Upload. Wuerde erst 'add'
+     gebucht und danach auf 'replace' umgestellt, liefe `pruefen()`
+     zweimal und „faellt beim ersten Versuch durch, besteht beim
+     zweiten" waere kaputt.
      =================================================================== */
   var up = null;
 
   function openUpload(id) {
-    var dec = D.decide(id);
-    up = { id:id, file:null, decision:dec,
-           mode: dec ? dec.mode : 'add',       // null, wenn unklar -> Frage
-           state:'pick', result:null };
+    up = { id:id, file:null, mode:null, sel:null,
+           state:'upload', result:null };
     renderUpload();
   }
 
-  function choiceCard(mode, d) {
-    var soll = d.soll || 1;
-    var titel = mode === 'add' ? 'Hinzufügen' : 'Ersetzen';
-    var text  = mode === 'add'
-      ? 'Die neue Datei kommt zu den vorhandenen dazu. Alles bleibt gültig.'
-      : 'Die neue Datei tritt an die Stelle der bisherigen.';
-    /* Der Satz, auf den es ankommt: nicht wie die Aktion heisst,
-       sondern was danach an der Anforderung haengt. */
-    var danach = mode === 'add'
-      ? 'Danach: ' + (d.files.length + 1) + (soll > 1 ? ' von ' + soll : '') + ' Dateien an dieser Unterlage.'
-      : 'Danach: 1 Datei an dieser Unterlage. ' +
-        (d.files.length === 1
-          ? 'Die bisherige bleibt als frühere Fassung einsehbar'
-          : 'Die bisherigen ' + d.files.length + ' bleiben als frühere Fassungen einsehbar') +
-        ' — gelöscht wird nichts.';
+  function closeUpload() {
+    var id = up && up.id;
+    /* Kam der Upload aus den unkategorisierten Seiten, ist die Seite
+       jetzt vergeben — sonst stuende sie doppelt da. */
+    if (up && up.fromUnkat && up.state === 'done') D.dropUnkat(up.fromUnkat);
+    document.getElementById('modalHost').innerHTML = '';
+    up = null;
+    render();
+    if (id) flashCard(id);
+  }
 
-    return '<label><input type="radio" name="mode" value="' + mode + '"' +
-        (up.mode === mode ? ' checked' : '') + ' data-mode="' + mode + '" />' +
-      '<span><span class="ct">' + titel + '</span>' +
-        '<span class="cd">' + text + '</span>' +
-        '<span class="cafter">' + danach + '</span></span></label>';
+  /* Kopfzeile der Frage- und Bestaetigungsdialoge. Sie nennt den
+     Platz und was dort liegt — „dieses Dokument" ist bei *2 von 4
+     Objektfotos* nicht auflösbar, und der Kunde kommt unter
+     Umstaenden aus der Meldung und nicht von der Karte. */
+  function dlgHead(d) {
+    var n    = d.files.length;
+    var soll = d.soll || 1;
+    return '<div class="dlg-head">' +
+      '<p class="dlg-title">' + esc(d.label) + '</p>' +
+      '<p class="dlg-sub">Antragsteller ' +
+        esc(D.kunde.vorname + ' ' + D.kunde.nachname) +
+        (n ? ' · ' + n + (soll > 1 ? ' von ' + soll : '') +
+             (n === 1 && soll === 1 ? ' Datei' : ' Dateien') + ' vorhanden' : '') +
+      '</p></div>';
+  }
+
+  /* Eine Zeile der Frage — die Figma-Komponente „Radio Option Card".
+     Titel, darunter die Folge im Klartext. Beide Zeilen sehen gleich
+     aus; erst die Markierung faerbt eine blau. Kein Rot auf der
+     Flaeche: eine rote Zeile neben einer weissen liest sich als
+     Empfehlung fuer die weisse, und empfohlen ist hier nichts. Die
+     Warnung sitzt im Satz („wird geloescht"). */
+  function askOption(mode, d, sel) {
+    var n = d.files.length;
+
+    /* Figma zeigt den Einer-Fall: eine vorhandene Datei, eine neue.
+       Liegen mehrere da, waeren „beide" und „Datei" schlicht falsch —
+       die Zeile zaehlt dann mit. */
+    var titel = mode === 'add'
+      ? (n === 1 ? 'Beide Dateien behalten' : 'Alle Dateien behalten')
+      : (n === 1 ? 'Vorhandene Datei ersetzen' : 'Vorhandene Dateien ersetzen');
+
+    var text = mode === 'add'
+      ? 'Passend, wenn Sie z. B. Vorder- und Rückseite vom Ausweis hochladen.'
+      : (n === 1
+          ? '„' + esc(d.files[0].name) + '" '
+          : 'Die ' + n + ' vorhandenen Dateien ') +
+        '<b class="roc-del">' + (n === 1 ? 'wird gelöscht' : 'werden gelöscht') + '</b>' +
+        ' und ' + (n === 1 ? 'kann' : 'können') + ' nicht wiederhergestellt werden.';
+
+    return '<label class="roc' + (sel === mode ? ' is-selected' : '') + '" ' +
+             'data-pick="' + mode + '">' +
+      '<input type="radio" name="askmode" value="' + mode + '"' +
+        (sel === mode ? ' checked' : '') + ' />' +
+      '<span class="roc-body">' +
+        '<span class="roc-t">' + titel + '</span>' +
+        '<span class="roc-d">' + text + '</span>' +
+      '</span>' +
+    '</label>';
   }
 
   function renderUpload() {
     var d = D.doc(up.id);
     if (!d) return;
+    var host = document.getElementById('modalHost');
+
+    /* ---- 1 · Datei hochladen ---------------------------------- */
+    if (up.state === 'upload') {
+      host.innerHTML =
+        '<div class="modal-bg"><div class="fud">' +
+          '<div class="fud-head">' +
+            '<p class="fud-title">Datei hochladen</p>' +
+            '<button class="fud-close" data-close="1" title="Schließen" aria-label="Schließen">' +
+              '<span class="material-symbols-outlined">close</span></button>' +
+          '</div>' +
+          '<p class="fud-formats">Mögliche Formate: .pdf, .png, .jpeg</p>' +
+          '<label class="fud-zone">' +
+            '<span class="material-symbols-outlined">file_copy</span>' +
+            '<b>Dateien zum Hochladen auswählen</b>' +
+            '<input type="file" id="upInput" accept=".pdf,.png,.jpg,.jpeg" />' +
+          '</label>' +
+        '</div></div>';
+
+      var inp = document.getElementById('upInput');
+      inp.addEventListener('change', function () {
+        if (!this.files || !this.files[0]) return;
+        up.file = this.files[0].name;
+        /* Ob die Unterlage VOR diesem Upload abgelehnt war, muss
+           jetzt festgehalten werden: `accept()` loescht `grund`, und
+           danach liesse sich „wieder" nicht mehr von „zum ersten
+           Mal" unterscheiden. */
+        up.warAbgelehnt = !!d.grund;
+        /* Liegt an der Unterlage schon etwas, wird gefragt. Ist sie
+           leer, gibt es nichts zu ersetzen und damit keine Frage —
+           ein Dialog mit nur einer moeglichen Antwort ist eine
+           Klickbremse, kein Schutz. */
+        if (d.files.length) { up.state = 'ask'; return renderUpload(); }
+        up.mode = 'add';
+        send();
+      });
+      return;
+    }
+
     var body = '', foot = '';
 
-    if (up.state === 'pick') {
+    /* ---- 2 · Die Frage ---------------------------------------- */
+    if (up.state === 'ask') {
+      body =
+        askOption('add', d, up.sel) +
+        askOption('replace', d, up.sel) +
+        /* Die gerade gewaehlte Datei bleibt sichtbar: entschieden
+           wird ueber sie, nicht ueber „eine Datei". */
+        '<div class="dlg-file">' +
+          '<span class="material-symbols-outlined">description</span>' +
+          '<span class="nm" title="' + esc(up.file) + '">' + esc(up.file) + '</span>' +
+        '</div>';
 
-      /* FLOW 1: bei einer Ablehnung steht der Grund VOR der
-         Dateiwahl. Wer nicht weiss, was kaputt ist, laedt dieselbe
-         Datei noch einmal hoch. */
-      if (d.grund) {
-        body += '<div class="recap"><b>Warum wir die letzte Fassung zurückgewiesen haben</b>' +
-          esc(d.grundKurz || d.grund) +
-          '<details><summary>Vollständige Prüfmeldung anzeigen</summary>' +
-            '<div class="full">' + esc(d.grund) + '</div></details></div>';
-      }
-
-      body += (up.file
-        ? '<div class="picked"><span class="material-symbols-outlined">description</span>' +
-            '<span class="nm">' + esc(up.file) + '</span>' +
-            '<button class="icon-btn" data-upclear="1" title="Entfernen">' +
-              '<span class="material-symbols-outlined">close</span></button></div>'
-        : '<label class="pick"><span class="material-symbols-outlined">upload_file</span>' +
-            (d.grund ? 'Neue Fassung auswählen' : 'Datei auswählen') +
-            '<input type="file" id="upInput" /></label>');
-
-      /* Die Frage stellt sich nur, wenn schon etwas da liegt — und
-         erst, wenn eine Datei gewaehlt ist. Vorher waere sie eine
-         Frage ins Leere. */
-      if (up.decision && up.file) {
-        if (up.decision.sicher) {
-          body += '<div class="why"><span class="material-symbols-outlined">info</span>' +
-                  '<span>' + esc(up.decision.warum) + '</span></div>';
-        } else {
-          body += '<div class="why"><span class="material-symbols-outlined">help</span>' +
-                    '<span>' + esc(up.decision.warum) + '</span></div>' +
-                  '<div class="choice">' + choiceCard('add', d) + choiceCard('replace', d) + '</div>';
-        }
-      }
-
-      var blockiert = up.decision && !up.mode;
-      foot = '<button class="btn btn-ghost" data-close="1">Abbrechen</button>' +
-             '<button class="btn btn-primary" data-send="1"' +
-               (up.file && !blockiert ? '' : ' disabled') + '>' +
-               (up.mode === 'replace' && up.decision ? 'Ersetzen'
-                : up.mode === 'add' && up.decision ? 'Hinzufügen'
-                : 'Hochladen') + '</button>';
+      /* Ein Knopf, und er heisst „Weiter" — die Handlung steht oben
+         in der markierten Zeile, nicht auf dem Knopf. Keine
+         Vorauswahl: das System weiss nicht besser als der Kunde, was
+         in seiner Datei steht. Bis er markiert hat, ist „Weiter"
+         inaktiv. */
+      foot = '<button class="dbtn dbtn-ghost" data-close="1">Abbrechen</button>' +
+             '<button class="dbtn dbtn-primary" data-go="1"' +
+               (up.sel ? '' : ' disabled') + '>Weiter</button>';
     }
     else if (up.state === 'busy') {
-      body = '<div class="busy"><span class="spin"></span><span>Datei wird übertragen …</span></div>';
+      body = '<div class="dlg-busy"><span class="spin"></span>' +
+             '<span>Datei wird übertragen …</span></div>';
     }
+    /* ---- 3 · Die Bestaetigung --------------------------------- */
     else {
       var r = up.result;
-      var klasse, ikon, titel, text;
 
-      /* Neu gegenüber V2: eine Ersetzung geht nicht automatisch durch.
-         In V2 sah jeder Upload erfolgreich aus, weil die Ablehnung
-         bedingungslos gelöscht wurde — damit war der Kernfall des
-         Produkts nur Startzustand und nie Ergebnis einer Handlung. */
+      /* Eine Ersetzung geht nicht automatisch durch: sonst saehe
+         jeder Upload erfolgreich aus und der Kernfall des Produkts
+         waere nur Startzustand, nie Ergebnis einer Handlung. */
       if (!r.ok) {
-        klasse = 'r-fail'; ikon = 'error';
-        titel  = 'Wieder nicht durchgekommen';
-        text   = esc(r.kurz) + ' Die vollständige Rückmeldung steht an der Unterlage. ' +
-                 'Ihre vorige Fassung ist nicht verloren — sie liegt unter „frühere Fassungen".';
-        body = '<div class="result ' + klasse + '">' +
-            '<span class="material-symbols-outlined">' + ikon + '</span>' +
-            '<span><b>' + titel + '</b><p>' + text + '</p></span></div>';
-        foot = '<button class="btn btn-primary" data-close="1">Verstanden</button>';
-        document.getElementById('modalHost').innerHTML =
-          '<div class="modal-bg"><div class="modal">' +
-            '<h2>' + esc(d.label) + '</h2>' +
-            '<p class="sub">' + esc(D.sectionOf(d.id).titel) + '</p>' +
-            body + '<div class="modal-foot">' + foot + '</div>' +
-          '</div></div>';
-        return;
-      }
-
-      klasse = r.status === 'pruefung' ? 'r-ok' : 'r-part';
-      ikon   = r.status === 'pruefung' ? 'check_circle' : 'hourglass_top';
-      titel  = !up.decision ? 'Datei erhalten'
-             : r.mode === 'add' ? 'Hinzugefügt' : 'Ersetzt';
-
-      if (r.mode === 'replace') {
-        text = 'Die neue Fassung ist durch die Prüfung gekommen. Die bisherige finden Sie an ' +
-               'derselben Stelle unter „frühere Fassungen" — gelöscht haben wir nichts.';
-      } else if (r.fehlt > 0) {
-        text = 'Die Datei liegt jetzt zusätzlich an dieser Unterlage. ' +
-               (r.fehlt === 1 ? 'Es fehlt noch eine Datei.' : 'Es fehlen noch ' + r.fehlt + ' Dateien.');
+        body = '<div class="dlg-banner bad">' +
+            '<span class="material-symbols-outlined">error</span>' +
+            '<span class="bt">' +
+              (up.warAbgelehnt ? 'Wieder nicht durchgekommen'
+                               : 'Nicht durchgekommen') +
+              '<span class="bd">' + esc(r.kurz) +
+              ' Die Gründe stehen einzeln an der Unterlage.</span></span></div>';
+        foot = '<button class="dbtn dbtn-primary" data-close="1">Verstanden</button>';
       } else {
-        text = 'Diese Unterlage ist damit vollständig bei uns und wird geprüft.';
+        var titel = r.mode === 'replace' ? 'Ersetzt' : 'Hinzugefügt';
+        var text;
+        if (r.mode === 'replace') {
+          text = 'Die neue Fassung ist durch die Prüfung gekommen. Die bisherige Datei ' +
+                 'wurde dabei gelöscht.';
+        } else if (r.fehlt > 0) {
+          text = r.fehlt === 1 ? 'Es fehlt noch eine Datei.'
+                               : 'Es fehlen noch ' + r.fehlt + ' Dateien.';
+        } else {
+          text = 'Diese Unterlage ist damit vollständig bei uns und wird geprüft.';
+        }
+        body = '<div class="dlg-banner">' +
+            '<span class="material-symbols-outlined">check_circle</span>' +
+            '<span class="bt">' + titel +
+              '<span class="bd">' + text + '</span></span></div>';
+        foot = '<button class="dbtn dbtn-primary" data-close="1">Fertig</button>';
       }
-
-      body = '<div class="result ' + klasse + '">' +
-          '<span class="material-symbols-outlined">' + ikon + '</span>' +
-          '<span><b>' + titel + '</b><p>' + text + '</p></span></div>';
-
-      /* Der Umkehrschalter. Steht gleichwertig neben „Fertig", nicht
-         als Fussnote — er ist der Grund, warum die Entscheidung
-         vorher niemanden erschrecken muss. */
-      if (up.decision) {
-        foot += '<button class="btn btn-ghost left" data-flip="1">' +
-          (r.mode === 'replace' ? 'Doch beide behalten' : 'Doch die alte ersetzen') + '</button>';
-      }
-      foot += '<button class="btn btn-primary" data-close="1">Fertig</button>';
     }
 
-    document.getElementById('modalHost').innerHTML =
-      '<div class="modal-bg"><div class="modal">' +
-        '<h2>' + esc(d.label) + '</h2>' +
-        '<p class="sub">' + esc(D.sectionOf(d.id).titel) +
-          (d.files.length ? ' · ' + d.files.length +
-            ((d.soll || 1) > 1 ? ' von ' + d.soll : '') + ' Dateien vorhanden' : '') + '</p>' +
-        body +
-        (foot ? '<div class="modal-foot">' + foot + '</div>' : '') +
+    host.innerHTML =
+      '<div class="modal-bg"><div class="dlg">' +
+        dlgHead(d) + body +
+        (foot ? '<div class="dlg-foot">' + foot + '</div>' : '') +
       '</div></div>';
+  }
 
-    var inp = document.getElementById('upInput');
-    if (inp) inp.addEventListener('change', function () {
-      if (this.files && this.files[0]) { up.file = this.files[0].name; renderUpload(); }
-    });
+  /* Genau EIN accept() pro Upload. */
+  function commit() {
+    up.result = D.accept(up.id, up.file, up.mode || 'add');
+    up.state  = 'done';
+    render();
+    renderUpload();
   }
 
   function send() {
     up.state = 'busy';
     renderUpload();
-    setTimeout(function () {
-      up.result = D.accept(up.id, up.file, up.mode || 'add');
-      up.state  = 'done';
-      render();
-      renderUpload();
-    }, 850);
-  }
-
-  function flip() {
-    var neu = D.flip(up.id, up.result.mode);
-    var d = D.doc(up.id);
-    up.result = { mode:neu, status:d.status,
-                  fehlt: Math.max(0, (d.soll || 1) - d.files.length) };
-    render();
-    renderUpload();
+    setTimeout(commit, 850);
   }
 
   /* ===================================================================
@@ -543,7 +599,7 @@
         (ures
           ? '<div class="uresult-head">' +
               '<span class="material-symbols-outlined">' +
-                (att.length ? 'error' : 'check_circle') + '</span>' +
+                (att.length ? 'warning' : 'check_circle') + '</span>' +
               '<span class="txt">' +
                 '<div class="ok">' + ok + (ok === 1 ? ' Dokument' : ' Dokumente') +
                   ' erfolgreich kategorisiert.</div>' +
@@ -560,7 +616,7 @@
                 '<span class="material-symbols-outlined">close</span></button>' +
             '</div>'
           : '<div class="uresult-head">' +
-              '<span class="material-symbols-outlined">error</span>' +
+              '<span class="material-symbols-outlined">warning</span>' +
               '<span class="txt"><div class="ok">' + att.length +
                 (att.length === 1 ? ' Dokument braucht' : ' Dokumente brauchen') +
                 ' Ihre Aufmerksamkeit.</div></span>' +
@@ -663,9 +719,12 @@
     assignOpen = null;
 
     if (d.files.length >= (d.soll || 1) || d.grund) {
-      up = { id:d.id, file:t.name, decision:D.decide(d.id),
-             mode:null, state:'pick', result:null, fromUnkat:tempId };
-      up.mode = up.decision ? up.decision.mode : 'add';
+      /* Die Datei steht schon fest, die Frage noch nicht — also
+         direkt in 'ask', die Dropzone waere hier eine leere
+         Station. */
+      up = { id:d.id, file:t.name, mode:null, sel:null,
+             warAbgelehnt: !!d.grund,
+             state:'ask', result:null, fromUnkat:tempId };
       renderUpload();
       return;
     }
@@ -687,9 +746,9 @@
      EVENTS
      =================================================================== */
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('[data-up],[data-rm],[data-restore],[data-hist],[data-goto],' +
-                             '[data-assignopen],[data-ucclose],[data-send],[data-close],' +
-                             '[data-upclear],[data-flip],[data-dropunkat],' +
+    var t = e.target.closest('[data-up],[data-rm],[data-goto],[data-pick],[data-go],' +
+                             '[data-assignopen],[data-ucclose],[data-close],' +
+                             '[data-dropunkat],' +
                              '#demoBtn');
     if (!t) return;
     var p;
@@ -701,34 +760,29 @@
     if (t.dataset.goto)         return flashCard(t.dataset.goto);
     if (t.dataset.ucclose)      { ures = null; return renderUresult(); }
     if (t.dataset.assignopen)   return openAssign(t.dataset.assignopen);
-    if (t.dataset.hist)         { showHist[t.dataset.hist] = !showHist[t.dataset.hist];
-                                  return renderSections(); }
     if (t.dataset.rm)           { p = t.dataset.rm.split('|');
                                   D.removeFile(p[0], p[1]); return render(); }
-    if (t.dataset.restore)      { p = t.dataset.restore.split('|');
-                                  D.restore(p[0], p[1]); render(); return flashCard(p[0]); }
     if (t.dataset.dropunkat)    { D.dropUnkat(t.dataset.dropunkat);
                                   assignOpen = null; return renderUresult(); }
-    if (t.dataset.upclear)      { up.file = null; return renderUpload(); }
-    if (t.dataset.send)         return send();
-    if (t.dataset.flip)         return flip();
-    if (t.dataset.close) {
-      var id = up && up.id;
-      /* Kam der Upload aus den unkategorisierten Seiten, ist die
-         Seite jetzt vergeben — sonst stünde sie doppelt da. */
-      if (up && up.fromUnkat && up.state === 'done') D.dropUnkat(up.fromUnkat);
-      document.getElementById('modalHost').innerHTML = '';
-      up = null;
-      render();
-      if (id) flashCard(id);
-      return;
-    }
+    /* Markieren allein bucht nichts — es faerbt die Zeile und macht
+       „Weiter" scharf. Nach dem Neuzeichnen bekommt das Radio den
+       Fokus zurueck, sonst laufen die Pfeiltasten ins Leere. */
+    if (t.dataset.pick)         { up.sel = t.dataset.pick;
+                                  renderUpload();
+                                  var rb = document.querySelector('.roc.is-selected input');
+                                  if (rb) rb.focus();
+                                  return; }
+    /* „Weiter" ist die Bestaetigung der Markierung — erst hier wird
+       gebucht, und erst hier loescht ein „Ersetzen". */
+    if (t.dataset.go)           { if (!up.sel) return;
+                                  up.mode = up.sel;
+                                  return send(); }
+    if (t.dataset.close)        return closeUpload();
   });
 
   document.addEventListener('change', function (e) {
     var ds = e.target.dataset;
     if (!ds) return;
-    if (ds.mode) { up.mode = ds.mode; return renderUpload(); }
     /* Eine getroffene Wahl ist die Handlung — kein zweiter Klick auf
        „Bestätigen" dahinter. */
     if (ds.selpanel && e.target.value) return assign(ds.selpanel, e.target.value);
@@ -741,10 +795,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      document.getElementById('modalHost').innerHTML = '';
-      up = null;
-    }
+    if (e.key === 'Escape' && up) closeUpload();
   });
 
   /* ---------- Dropzone ---------- */
