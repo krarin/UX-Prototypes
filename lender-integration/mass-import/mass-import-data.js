@@ -84,48 +84,49 @@ window.MASS_IMPORT = {
   /* ---------------------------------------------------------------
      VERLAUF — die Liste unter Mein Unternehmen → Plattformen.
      Neueste zuerst. Ein neuer Lauf wird oben eingefügt.
-     `datum` steht in der Spalte „Datum", `zeit` im Kopf des Dialogs.
+     `datum` steht in der Spalte „Datum", `datum` + `zeit` im Kopf
+     des Dialogs.
      `grund` erscheint nur bei `fehlgeschlagen` — in klarem Deutsch,
      denn im Dialog steht er direkt über dem nächsten Schritt.
      --------------------------------------------------------------- */
   verlauf: [
     { id: "imp-9", quelle: "europace-haupt", von: "01.01.2026", bis: "26.06.2026", status: "teilweise",
       gesamt: 279, importiert: 255, uebersprungen: 20, fehlgeschlagen: 4, prolongationen: 8,
-      gestartet: "Jan Joisten",     datum: "26.06.2026", zeit: "26.06.2026, 09:14" },
+      gestartet: "Jan Joisten",     datum: "26.06.2026", zeit: "09:14" },
 
     { id: "imp-8", quelle: "ehyp-home", von: "26.12.2025", bis: "26.06.2026", status: "warteschlange",
       gesamt: 120, importiert: 89, uebersprungen: 0, fehlgeschlagen: 0, prolongationen: 0,
-      gestartet: "Gernot Schusser", datum: "26.06.2026", zeit: "26.06.2026, 08:52" },
+      gestartet: "Gernot Schusser", datum: "26.06.2026", zeit: "08:52" },
 
     { id: "imp-7", quelle: "europace-nord", von: "27.05.2026", bis: "26.06.2026", status: "teilweise",
       gesamt: 450, importiert: 412, uebersprungen: 32, fehlgeschlagen: 6, prolongationen: 14,
-      gestartet: "Jan Joisten",     datum: "25.06.2026", zeit: "25.06.2026, 17:03" },
+      gestartet: "Jan Joisten",     datum: "25.06.2026", zeit: "17:03" },
 
     { id: "imp-6", quelle: "ehyp-alt", von: "01.01.2025", bis: "31.12.2025", status: "fehlgeschlagen",
       gesamt: 34, importiert: 0, uebersprungen: 0, fehlgeschlagen: 0, prolongationen: 0,
       grund: "Die Zugangsdaten für eHyp (Altbestand) wurden von der Plattform abgelehnt. Deshalb kam keine Verbindung zustande.",
-      gestartet: "Gernot Schusser", datum: "25.06.2026", zeit: "25.06.2026, 14:40" },
+      gestartet: "Gernot Schusser", datum: "25.06.2026", zeit: "14:40" },
 
     { id: "imp-5", quelle: "ehyp-home", von: "26.12.2025", bis: "26.06.2026", status: "abgeschlossen",
       gesamt: 203, importiert: 178, uebersprungen: 25, fehlgeschlagen: 0, prolongationen: 11,
-      gestartet: "Gernot Schusser", datum: "24.06.2026", zeit: "24.06.2026, 11:20" },
+      gestartet: "Gernot Schusser", datum: "24.06.2026", zeit: "11:20" },
 
     { id: "imp-4", quelle: "europace-haupt", von: "26.03.2026", bis: "26.06.2026", status: "abgeschlossen",
       gesamt: 95, importiert: 67, uebersprungen: 28, fehlgeschlagen: 0, prolongationen: 5,
-      gestartet: "Gernot Schusser", datum: "23.06.2026", zeit: "23.06.2026, 16:07" },
+      gestartet: "Gernot Schusser", datum: "23.06.2026", zeit: "16:07" },
 
     { id: "imp-3", quelle: "ehyp-home", von: "19.06.2026", bis: "26.06.2026", status: "warteschlange",
       gesamt: 561, importiert: 523, uebersprungen: 0, fehlgeschlagen: 0, prolongationen: 0,
-      gestartet: "Jan Joisten",     datum: "23.06.2026", zeit: "23.06.2026, 09:31" },
+      gestartet: "Jan Joisten",     datum: "23.06.2026", zeit: "09:31" },
 
     { id: "imp-2", quelle: "europace-nord", von: "15.04.2026", bis: "26.06.2026", status: "fehlgeschlagen",
       gesamt: 42, importiert: 0, uebersprungen: 0, fehlgeschlagen: 0, prolongationen: 0,
       grund: "Europace (Team Nord) hat auf die Anfrage nicht geantwortet. Deshalb kam keine Verbindung zustande.",
-      gestartet: "Gernot Schusser", datum: "22.06.2026", zeit: "22.06.2026, 13:55" },
+      gestartet: "Gernot Schusser", datum: "22.06.2026", zeit: "13:55" },
 
     { id: "imp-1", quelle: "ehyp-alt", von: "01.02.2026", bis: "26.06.2026", status: "teilweise",
       gesamt: 310, importiert: 302, uebersprungen: 5, fehlgeschlagen: 3, prolongationen: 6,
-      gestartet: "Jan Joisten",     datum: "21.06.2026", zeit: "21.06.2026, 10:12" }
+      gestartet: "Jan Joisten",     datum: "21.06.2026", zeit: "10:12" }
   ],
 
   /* ---------------------------------------------------------------

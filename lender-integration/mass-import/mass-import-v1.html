@@ -1084,7 +1084,7 @@
         '<div style="font-size:14px; line-height:22px;">',
           '<div>Fälle aus: <strong>' + q.name + '</strong></div>',
           '<div>Zeitraum: <strong>' + imp.von + ' – ' + imp.bis + '</strong></div>',
-          '<div class="cell-muted">Gestartet von ' + imp.gestartet + ' · ' + imp.zeit + '</div>',
+          '<div class="cell-muted">Gestartet von ' + imp.gestartet + ' · ' + imp.datum + ', ' + imp.zeit + '</div>',
         '</div>',
         '<span class="pill ' + s.pill + '">' + s.label + '</span>',
       '</div>',
@@ -1394,6 +1394,13 @@
     schritt(4);
   }
 
+  /** Uhrzeit für einen gerade beendeten Lauf — das Datum bleibt der
+      26.06.2026, auf den der ganze Prototyp datiert ist. */
+  function uhrzeitJetzt() {
+    var d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+
   /** Schreibt den fertigen Lauf oben in den Verlauf. */
   function laufSpeichern() {
     var status = lauf.fehlgeschlagen > 0 ? 'teilweise' : 'abgeschlossen';
@@ -1404,7 +1411,7 @@
       gesamt: lauf.gesamt, importiert: lauf.importiert,
       uebersprungen: lauf.uebersprungen, fehlgeschlagen: lauf.fehlgeschlagen,
       prolongationen: lauf.prolongationen,
-      gestartet: 'Gernot Schusser', datum: '26.06.2026', zeit: 'gerade eben'
+      gestartet: 'Gernot Schusser', datum: '26.06.2026', zeit: uhrzeitJetzt()
     });
     renderVerlauf();
 
