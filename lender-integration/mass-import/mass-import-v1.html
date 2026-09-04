@@ -385,9 +385,12 @@
       font-family: var(--font-family); font-size: 14px; font-weight: 500;
       color: var(--color-primary-600); text-decoration: underline;
     }
+    /* inline-flex, damit der Knopf in einer rechtsbündigen Tabellenzelle
+       auch rechts steht und nicht die ganze Breite einnimmt. */
     .icon-btn {
       width: 36px; height: 36px; border: 0; background: none; cursor: pointer; border-radius: var(--radius-s);
-      display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600);
+      display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+      color: var(--color-neutral-dark-600);
     }
     .icon-btn:hover { background: var(--color-neutral-light-200); }
 
@@ -584,7 +587,7 @@
                       <th>Ergebnis</th>
                       <th>Gestartet von</th>
                       <th><span class="th-sort">Datum <span class="material-symbols-outlined">unfold_more</span></span></th>
-                      <th style="width: 160px;"></th>
+                      <th style="width: 56px;"></th>
                     </tr>
                   </thead>
                   <tbody id="verlauf-rows"></tbody>
@@ -1097,7 +1100,10 @@
         '<td>' + imp.gestartet + '</td>' +
         '<td>' + imp.datum + '</td>' +
         '<td style="text-align:right">' +
-          '<button class="btn btn-secondary" data-imp="' + imp.id + '">Import ansehen</button>' +
+          '<button class="icon-btn" data-imp="' + imp.id + '"' +
+                  ' title="Import ansehen" aria-label="Import ansehen">' +
+            '<span class="material-symbols-outlined">visibility</span>' +
+          '</button>' +
         '</td>' +
       '</tr>';
     }).join('');

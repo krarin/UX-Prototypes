@@ -141,6 +141,9 @@ window.PROTOTYPES = {
     { id:"mein-tag-v5d", project:"mein-tag", version:5, variant:"D", title:"Mein Tag V5-D",
       file:"to-do/mein-tag-v5-d.html", status:"archiv",
       changes:"Gegenüber V5-C: Radiobuttons „Art des ToDos“ beim Anlegen und Inline-Bearbeiten wieder direkt unter dem Titel-Input statt weit darunter; ToDo-Titel, Antragsteller, Fälligkeit und Berater jetzt in einer Zeile auf gleicher Höhe, Uhrzeit einfach unter dem Datum. Neu: Titel-Autocomplete — schon ab den ersten 3 passenden Buchstaben (z. B. „bes“) wird „Besichtigungstermin erfolgt?“ vorgeschlagen; Auswahl übernimmt den Text und wählt automatisch die Anruf-Quickaction aus." },
+    { id:"mein-tag-v5e", project:"mein-tag", version:5, variant:"E", title:"Mein Tag V5-E",
+      file:"to-do/mein-tag-v5-e.html", status:"archiv",
+      changes:"Gegenüber V5-D: Schnellfilter als einzelne Karten-Buttons statt zusammenhängender Segmented-Leiste — 4px Abstand, farbiges Rechteck links in der Kategoriefarbe (immer sichtbar, statt Unterstreichung nur im ausgewählten Zustand), Anzahl als Heading/Md ohne Zähler-Pille und in Primärtextfarbe wenn ausgewählt bzw. Sekundärtextfarbe im Standard. Ausgewählter Filter trägt den Rahmen in der Kategoriefarbe statt einer grauen Füllung; Buttonhöhe 36px unverändert. Der reine Vergleichs-Umschalter „Neues Layout“ behält bewusst die bisherige Tab-Optik." },
 
     { id:"mein-tag-v7", project:"mein-tag", version:7, title:"Mein Tag V7",
       file:"to-do/mein-tag-v7.html", status:"aktuell",

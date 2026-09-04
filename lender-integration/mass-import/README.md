@@ -64,9 +64,10 @@ auch dann, wenn gerade kein Lauf offen ist.
 *Unternehmen* in der Seitennavigation. Links die Profilkarte und die
 Abschnittsnavigation, in der *Plattformen* offen steht; rechts die Plattformzugänge
 der Organisation und darunter der **Massenimport-Verlauf** — die Log-Seite mit neun
-Läufen in vier Zuständen, mit Spalte *Datum* für den Tag des Laufs. Jede Zeile
-führt über *Import ansehen* in den Dialog. Alles außer *Plattformen* ist Kulisse
-und meldet sich als solche.
+Läufen in vier Zuständen, mit Spalte *Datum* für den Tag des Laufs. In den Lauf
+führen zwei Wege: der **Quellenname** in der ersten Spalte und das **Augensymbol**
+ganz rechts. Beide öffnen dieselbe Zusammenfassung im Dialog. Alles außer
+*Plattformen* ist Kulisse und meldet sich als solche.
 
 Der Verlauf hing vorher unter *Quellen*; dort ist er nicht mehr zu finden.
 
@@ -145,8 +146,9 @@ tatsächlichen Trefferzahl, sodass Gesamt = Importiert + Übersprungen +
 Fehlgeschlagen immer aufgeht.
 
 Kleinere Angleichungen: *In Warteschlange* bekommt in der Figma mal einen
-*Import ansehen*-Knopf und mal nicht — hier hat jede Zeile einen. Die Oberfläche
-ist durchgängig deutsch (Figma mischt „Source name", „Items per page").
+*Import ansehen*-Knopf und mal nicht — hier hat jede Zeile einen, und zwar als
+Augensymbol statt als beschrifteter Knopf; der Knopf sprengte sonst die Zeile.
+Die Oberfläche ist durchgängig deutsch (Figma mischt „Source name", „Items per page").
 
 ---
 
