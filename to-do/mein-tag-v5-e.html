@@ -634,6 +634,11 @@
       display: grid; place-items: center; width: 14px; height: 14px;
       font-size: 14px; line-height: 1; font-variation-settings: 'FILL' 1;
     }
+    /* Geburtstag: nur der Glyph selbst (nicht Kreis-Hintergrund/-Rahmen) fest in der Farbe, die
+       sonst erst bei :hover erscheint (siehe .todo-typ-trigger.inline-edit:hover .todo-typ-icon
+       oben) — title="Geburtstag" ist eindeutig (siehe TYP_LABEL), daher als CSS-Hook ausreichend,
+       ohne eine eigene Modifier-Klasse einführen zu müssen. */
+    .todo-typ-icon[title="Geburtstag"] .material-symbols-outlined { color: var(--color-primary-600); }
 
     /* Tag ÜBER dem Fälligkeits-Text (statt daneben) — nimmt so weniger Breite in der Spalte ein.
        justify-content:center übernimmt bei column die Rolle von align-items:center vorher, damit
@@ -654,6 +659,12 @@
     .due-tag--overdue { background: var(--color-error-100); color: var(--color-error-500); }
     .due-tag--today { background: var(--color-warning-high-light); color: var(--color-warning-high); }
     .due-tag--morgen { background: #E8F0FC; color: var(--color-brand-blue); }
+    /* "Neu"-Label direkt hinter dem Titel (in .todo-text-group, gleiche Zeile) — gleiche
+       Maße/Optik wie .due-tag, nur eigener Klassenname, da es kein Fälligkeits-, sondern ein
+       Status-Tag ist (unabhängig von Fälligkeit anzeigbar). Blau wie .due-tag--morgen, da im
+       Farbset kein separates "Info/Neu"-Blau existiert (siehe design-tokens.md Bug-Hinweis
+       zu fehlenden --color-info-Tokens). */
+    .todo-new-tag { display: inline-flex; align-items: center; height: 16px; padding: 0 8px; border-radius: var(--radius-s); font-size: 10px; font-weight: 500; letter-spacing: 0.2px; white-space: nowrap; flex-shrink: 0; background: #E8F0FC; color: var(--color-brand-blue); }
 
     .row-act {
       border: none; background: none; cursor: pointer; color: var(--color-neutral-dark-400);
@@ -862,6 +873,12 @@
        überlange Namen ellipsieren statt die Spalte zu sprengen. */
     .todo-expand-panel .applicant-info-row { justify-content: flex-start; gap: 12px; }
     .todo-expand-panel .applicant-info-name { flex: 0 0 90px; overflow: hidden; text-overflow: ellipsis; }
+    /* Bei nur 1 Antragsteller*in (.expand-section--wide, siehe applicantSectionClass in
+       buildExpandPanel) gibt es keine zweite Person, mit der die Namensbreite ausgerichtet
+       werden müsste — die feste 90px-Breite oben ist nur für den 2-Personen-Fall gedacht (siehe
+       Kommentar dort) und schneidet hier ohne Not auch kurze/mittellange Namen wie "Stefan
+       Lehmann" ab. Für diesen Fall die feste Breite wieder aufheben, Name zeigt vollständig. */
+    .todo-expand-panel .expand-section--wide .applicant-info-name { flex: 0 0 auto; overflow: visible; text-overflow: clip; }
     /* Bei 2 Antragsteller*innen (z. B. Ehepaar) stehen ihre Blöcke NEBENEINANDER statt
        untereinander — jede Person bleibt eine eigene, in sich geschlossene Spalte (Name+Tag,
        E-Mail, Telefon jeweils darunter, siehe buildExpandPanel), leichter zuzuordnen als eine
@@ -1770,9 +1787,10 @@
 
     .berater-menu { padding: 0; min-width: 288px; max-width: 320px; max-height: 74vh; }
     .berater-menu.open { display: flex; flex-direction: column; }
-    /* Deutlich kompakter als .berater-menu — nur 4 feste Optionen, kein Suchfeld/"Alle
-       auswählen" nötig, dadurch fällt das Menü spürbar kleiner aus. Gleiche .bmenu-check/
-       .bmenu-foot/.bmenu-clear-Bausteine wie beim Berater-Filter für denselben Look. */
+    /* Deutlich kompakter als .berater-menu — nur wenige feste Optionen (Art-Icons plus die
+       "Ausgelöst von"-Checkbox darunter), kein Suchfeld/"Alle auswählen" nötig, dadurch fällt
+       das Menü spürbar kleiner aus. Gleiche .bmenu-check/.bmenu-foot/.bmenu-clear-Bausteine
+       wie beim Berater-Filter für denselben Look. */
     .typ-filter-menu { padding: 0; min-width: 180px; }
     .typ-filter-menu.open { display: flex; flex-direction: column; }
     .typ-filter-menu .bmenu-list { overflow: visible; flex: none; }
@@ -1799,6 +1817,12 @@
       cursor: pointer; font-size: 13px; color: var(--color-neutral-dark-900); }
     .bmenu-check:hover { background: var(--color-neutral-light-200); }
     .bmenu-check input { accent-color: var(--color-primary-500); width: 16px; height: 16px; flex-shrink: 0; }
+    /* Trennt die Art-Optionen (Anruf/Email/…/Ohne Art) von der zusätzlichen, unabhängigen
+       "Ausgelöst von"-Facette im selben Filtermenü (siehe TYP-FILTER-Script) — beide Gruppen
+       filtern gemeinsam (UND-Verknüpfung), sind aber inhaltlich zwei verschiedene Fragen
+       (Art des ToDos vs. wer es ausgelöst hat), daher optisch getrennt statt in einer Liste. */
+    .bmenu-divider { border-top: 1px solid var(--color-neutral-light-400); margin: 4px 6px; }
+    .bmenu-group-label { padding: 6px 8px 2px; font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-400); text-transform: uppercase; letter-spacing: 0.3px; }
     .bmenu-foot { display: flex; align-items: center; gap: var(--space-m); padding: 10px 14px;
       border-top: 1px solid var(--color-neutral-light-400); }
     .bmenu-foot .btn { flex: 1; justify-content: center; }
@@ -2346,7 +2370,7 @@
             <button class="group-headline">
               <span class="material-symbols-outlined">keyboard_arrow_up</span>
               <span class="group-name">Heute fällig</span>
-              <span class="group-count">(8)</span>
+              <span class="group-count">(10)</span>
             </button>
             <div class="group-labels">
               <span class="col-due">Fälligkeit</span>
@@ -2355,7 +2379,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt am Main">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-typ="dokument" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt am Main">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Antrag prüfen – Kunde hat ein Angebot angefragt</span></span>
@@ -2365,7 +2389,7 @@
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <span class="todo-applicant-names">
@@ -2376,6 +2400,44 @@
                 <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 10:30</span></div>
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
+                <div class="todo-applicant">
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                  <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="nadine.fischer@web.de" data-telefon="+49 176 5566778">Nadine Fischer</button>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 07:45</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="geburtstag">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Geburtstag: Stefan Lehmann</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Geburtstag"><span class="material-symbols-outlined">cake</span></span></span></div>
+                <div class="todo-applicant">
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                  <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="stefan.lehmann@gmx.de" data-telefon="+49 157 4433221">Stefan Lehmann</button>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 08:00</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+
               </div>
               <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="anruf" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="10115 Berlin">
                 <div class="todo-title">
@@ -3149,8 +3211,8 @@
     // Art des ToDos (Email/Anruf): optionale Radiobuttons, Einfachauswahl — Klick auf den
     // bereits ausgewählten Radio wählt wieder ab (dann ohne Art, wie bisher bei den Pills).
     // Bestimmt das Icon, das nach dem Speichern neben dem Titel steht (siehe .todo-typ-icon).
-    var TYP_ICON = { email: 'mail', anruf: 'call', link: 'link' };
-    var TYP_LABEL = { email: 'Email', anruf: 'Anruf', link: 'Link' };
+    var TYP_ICON = { email: 'mail', anruf: 'call', link: 'link', geburtstag: 'cake', dokument: 'description' };
+    var TYP_LABEL = { email: 'Email', anruf: 'Anruf', link: 'Link', geburtstag: 'Geburtstag', dokument: 'Dokumente' };
     var selectedTyp = null;
     var typPills = document.getElementById('addTypPills');
     // mousedown VOR dem eigentlichen Klick, um den Radio-Zustand von davor zu kennen — native
@@ -3620,7 +3682,11 @@
       // siehe <style>) — sonst schrumpft sie auf die schmale Inhaltsbreite von Name/Tag und wirkt
       // im Vergleich zur (meist breiteren) Finanzierungswunsch-Karte gequetscht.
       var applicantSectionClass = 'expand-section' + (applicantBlocks.length === 1 ? ' expand-section--wide' : '');
-      var applicantHtml = '<div class="' + applicantSectionClass + '"><span class="expand-section-label">Antragsteller*innen</span>' +
+      // Singular ("Antragsteller*in") nur bei genau 1 Person — ab 2 (z. B. Andreas + Nina
+      // Weber) ist es grammatisch der Plural "Antragsteller*innen", auch wenn "2" sich noch
+      // klein anfühlt.
+      var applicantLabel = applicantBlocks.length > 1 ? 'Antragsteller*innen' : 'Antragsteller*in';
+      var applicantHtml = '<div class="' + applicantSectionClass + '"><span class="expand-section-label">' + applicantLabel + '</span>' +
         '<div class="applicant-info-people">' + applicantBlocks.join('') + '</div></div>';
       var metaHtml =
         '<div class="expand-meta"><span class="material-symbols-outlined">link</span>' +
@@ -3810,6 +3876,8 @@
       { value: 'anruf', label: 'Anruf', icon: 'call' },
       { value: 'email', label: 'Email', icon: 'mail' },
       { value: 'link', label: 'Link', icon: 'link' },
+      { value: 'geburtstag', label: 'Geburtstag', icon: 'cake' },
+      { value: 'dokument', label: 'Dokumente', icon: 'description' },
       { value: '', label: 'Ohne Art', icon: 'block' }
     ];
     function closeTypPop() {
@@ -4675,13 +4743,17 @@
 
   <!-- =======================================================================
        TYP-FILTER — Klick auf die Spaltenüberschrift "Art" öffnet ein Dropdown zum Filtern
-       nach Anruf/Email/Link/Ohne Art (statt eines Sortier-Pfeils wie bei den übrigen Spalten,
-       da "Art" keine sinnvolle Auf-/Absteigend-Ordnung hat). Mehrfachauswahl per Checkbox
-       plus "Alle löschen" unten — bewusst dasselbe Bausteine-Set (.bmenu-check/.bmenu-foot/
-       .bmenu-clear) wie der Berater-Filter, nur ohne dessen Suchfeld/"Alle auswählen"-Zeile
-       (bei nur 4 festen Optionen unnötig) und ohne Pending/Anwenden-Schritt — jede Checkbox
-       wendet sofort an, das ist bei so wenigen, festen Optionen weniger Klickaufwand als
-       Bearbeiten-dann-Anwenden.
+       nach Anruf/Email/Link/Geburtstag/Dokumente/Ohne Art (statt eines Sortier-Pfeils wie bei
+       den übrigen Spalten, da "Art" keine sinnvolle Auf-/Absteigend-Ordnung hat). Mehrfachauswahl
+       per Checkbox plus "Alle löschen" unten — bewusst dasselbe Bausteine-Set (.bmenu-check/
+       .bmenu-foot/.bmenu-clear) wie der Berater-Filter, nur ohne dessen Suchfeld/"Alle
+       auswählen"-Zeile (bei so wenigen festen Optionen unnötig) und ohne Pending/Anwenden-
+       Schritt — jede Checkbox wendet sofort an, das ist bei so wenigen, festen Optionen
+       weniger Klickaufwand als Bearbeiten-dann-Anwenden. Zusätzlich, getrennt durch
+       .bmenu-divider, eine unabhängige zweite Facette "Ausgelöst von" (aktuell nur "Vom Kunden
+       ausgelöst") — filtert UND-verknüpft zusätzlich zur Art, da beides unterschiedliche
+       Fragen zum selben ToDo sind (z. B. "Dokumente" UND "vom Kunden ausgelöst" gemeinsam
+       anwählbar, um genau die kundenseitig hochgeladenen Dokument-ToDos zu finden).
        ======================================================================= -->
   <script>
   (function () {
@@ -4689,11 +4761,18 @@
       { value: 'anruf', label: 'Anruf', icon: 'call' },
       { value: 'email', label: 'Email', icon: 'mail' },
       { value: 'link', label: 'Link', icon: 'link' },
+      { value: 'geburtstag', label: 'Geburtstag', icon: 'cake' },
+      { value: 'dokument', label: 'Dokumente', icon: 'description' },
       { value: '', label: 'Ohne Art', icon: 'block' }
     ];
     var btnEl = document.getElementById('btnTypFilter');
     var menuEl = document.getElementById('menuTypFilter');
     var typFilter = new Set(); // leer = kein Filter aktiv (alle anzeigen), '' ist der gültige Wert für "Ohne Art"
+    // Zweite, unabhängige Facette im selben Menü: "wer hat das ToDo ausgelöst" (aktuell nur
+    // Kunde als Wert, daher eine einzelne Checkbox statt einer eigenen Options-Liste wie bei
+    // TYP_OPTIONS) — filtert zusätzlich zu typFilter (UND-Verknüpfung), nicht als Ersatz dafür,
+    // da "Art" (Anruf/Email/…) und "ausgelöst von" zwei unabhängige Fragen zum selben ToDo sind.
+    var kundeAusgeloestFilter = false;
 
     // Klicks im Menü nie zum document durchreichen — sonst schließt der globale
     // "Klick außerhalb schließt"-Listener das Menü, bevor die Checkbox überhaupt reagiert
@@ -4707,10 +4786,17 @@
             '<input type="checkbox" ' + (typFilter.has(opt.value) ? 'checked' : '') + ' /> ' +
             '<span class="material-symbols-outlined">' + opt.icon + '</span><span>' + opt.label + '</span>' +
             '</label>';
-        }).join('') + '</div>' +
+        }).join('') +
+        '<div class="bmenu-divider"></div>' +
+        '<div class="bmenu-group-label">Ausgelöst von</div>' +
+        '<label class="bmenu-check" data-kunde-ausgeloest-check>' +
+          '<input type="checkbox" ' + (kundeAusgeloestFilter ? 'checked' : '') + ' /> ' +
+          '<span class="material-symbols-outlined">person</span><span>Vom Kunden ausgelöst</span>' +
+        '</label>' +
+        '</div>' +
         '<div class="bmenu-foot"><button class="bmenu-clear" id="typClear">Alle löschen</button></div>';
 
-      menuEl.querySelectorAll('.bmenu-check input').forEach(function (cb) {
+      menuEl.querySelectorAll('.bmenu-check[data-typ-value] input').forEach(function (cb) {
         cb.addEventListener('change', function () {
           var val = cb.closest('.bmenu-check').dataset.typValue;
           if (cb.checked) typFilter.add(val); else typFilter.delete(val);
@@ -4718,8 +4804,14 @@
           applyTypFilter();
         });
       });
+      menuEl.querySelector('[data-kunde-ausgeloest-check] input').addEventListener('change', function (e) {
+        kundeAusgeloestFilter = e.target.checked;
+        updateButton();
+        applyTypFilter();
+      });
       document.getElementById('typClear').addEventListener('click', function () {
         typFilter = new Set();
+        kundeAusgeloestFilter = false;
         buildMenu();
         updateButton();
         applyTypFilter();
@@ -4727,14 +4819,15 @@
     }
 
     function updateButton() {
-      btnEl.classList.toggle('filter-active', typFilter.size > 0);
+      btnEl.classList.toggle('filter-active', typFilter.size > 0 || kundeAusgeloestFilter);
     }
 
     function applyTypFilter() {
       document.querySelectorAll('.todo-row').forEach(function (row) {
         if (row.id === 'addRow') return;
-        var show = typFilter.size === 0 || typFilter.has(row.dataset.typ || '');
-        row.classList.toggle('typ-hidden', !show);
+        var showTyp = typFilter.size === 0 || typFilter.has(row.dataset.typ || '');
+        var showAusgeloest = !kundeAusgeloestFilter || row.dataset.kundeAusgeloest === 'true';
+        row.classList.toggle('typ-hidden', !(showTyp && showAusgeloest));
       });
       if (window.recomputeGroupEmptiness) window.recomputeGroupEmptiness();
       // Damit der globale "Filter zurücksetzen"-Button (AKTIVE-FILTER-CHIPS) erscheint bzw.
@@ -4745,9 +4838,11 @@
     // Für den globalen "Filter zurücksetzen"-Button (siehe AKTIVE-FILTER-CHIPS weiter unten) —
     // derselbe Ablauf wie der bestehende "Alle löschen"-Klick im Menü selbst.
     window.getTypFilter = function () { return typFilter; };
+    window.getKundeAusgeloestFilter = function () { return kundeAusgeloestFilter; };
     window.applyTypFilter = applyTypFilter;
     window.clearTypFilter = function () {
       typFilter = new Set();
+      kundeAusgeloestFilter = false;
       if (menuEl.classList.contains('open')) buildMenu();
       updateButton();
       applyTypFilter();
@@ -4755,14 +4850,38 @@
 
     function closeMenu() { menuEl.classList.remove('open'); }
 
+    // .menu ist normalerweise position:absolute relativ zu #typFilterWrap (position:relative,
+    // siehe .col-typ) — das sitzt aber innerhalb von .todo-table-card, deren overflow:hidden
+    // (nötig für die abgerundeten Kartenecken, siehe Kommentar dort) das Dropdown nach unten
+    // abschneidet, sobald die Karte (wenig ToDos) kürzer ist als Trigger-Position + Menühöhe.
+    // Fix: beim Öffnen das Menü per appendChild nach <body> verschieben (verlässt damit den
+    // clippenden Container) und die Position selbst berechnen (document-relativ, nicht
+    // viewport-relativ, damit es beim Scrollen der Seite am Trigger "kleben" bleibt statt sich
+    // wie ein position:fixed-Element davon zu lösen). Beim Schließen bleibt es in <body> (nur
+    // versteckt) — ein erneutes Öffnen berechnet die Position ohnehin neu, ein Zurückverschieben
+    // wäre unnötiger Aufwand.
+    function positionMenu() {
+      var rect = btnEl.getBoundingClientRect();
+      menuEl.style.position = 'absolute';
+      menuEl.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+      menuEl.style.left = (rect.left + window.scrollX) + 'px';
+    }
+
     btnEl.addEventListener('click', function (e) {
       e.stopPropagation();
       var willOpen = !menuEl.classList.contains('open');
-      if (willOpen) buildMenu();
+      if (willOpen) {
+        buildMenu();
+        if (menuEl.parentElement !== document.body) document.body.appendChild(menuEl);
+        positionMenu();
+      }
       menuEl.classList.toggle('open', willOpen);
     });
+    // e.target.closest('#typFilterWrap') findet das (nach <body> verschobene) Menü nicht mehr,
+    // da es kein Nachfahre von #typFilterWrap mehr ist — deshalb zusätzlich #menuTypFilter
+    // selbst als "innerhalb" zählen, sonst schlösse jeder Klick im Menü es sofort wieder.
     document.addEventListener('click', function (e) {
-      if (!e.target.closest('#typFilterWrap')) closeMenu();
+      if (!e.target.closest('#typFilterWrap') && !e.target.closest('#menuTypFilter')) closeMenu();
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeMenu();
@@ -5124,7 +5243,8 @@
       var sortActive = window.isSortDefault ? !window.isSortDefault()
         : (window.getSortPriority ? window.getSortPriority().length > 0 : false);
       var typFilter = window.getTypFilter ? window.getTypFilter() : null;
-      return sortActive || !!(typFilter && typFilter.size);
+      var kundeAusgeloest = window.getKundeAusgeloestFilter ? window.getKundeAusgeloestFilter() : false;
+      return sortActive || !!(typFilter && typFilter.size) || kundeAusgeloest;
     }
 
     function renderChips() {
