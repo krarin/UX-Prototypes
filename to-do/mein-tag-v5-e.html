@@ -128,6 +128,13 @@
     .design-switch input:checked + .design-switch-track { background: var(--color-primary-500); border-color: var(--color-primary-500); }
     .design-switch input:checked + .design-switch-track .design-switch-knob { transform: translateX(12px); }
     .design-switch input:focus-visible + .design-switch-track { box-shadow: var(--focus-ring); }
+    /* Radiobutton-Paar für den Ausklapp-Panel-Vergleich (siehe #expandVariant-Script weiter
+       unten) — native Radios statt eigener Track/Knob-Optik wie bei .design-switch, weil hier
+       zwei gleichwertige Varianten zur Auswahl stehen statt ein An/Aus. */
+    .expand-variant-group { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; color: var(--color-neutral-dark-600); }
+    .expand-variant-radio { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+    .expand-variant-radio input { accent-color: var(--color-primary-500); margin: 0; cursor: pointer; }
+    .expand-variant-radio:has(input:checked) { color: var(--color-primary-600); font-weight: 500; }
     .top-icon {
       width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
       display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600);
@@ -353,10 +360,7 @@
        inset box-shadow mehr, das war ein Fehlversuch): ein inset-Schatten wird wie normaler
        Inhalt gerendert und liegt damit UNTER jedem Nachfahren mit eigenem undurchsichtigem
        Hintergrund (z. B. .todo-columns-header) — der deckt ihn dadurch überall ab, wo Inhalt
-       bis an den Kartenrand reicht, nicht nur an der gewünschten Stelle beim Ausklappen. Der
-       "Tabelle fehlt links"-Effekt bei ausgeklappten ToDos (siehe .todo-expand-panel::before)
-       bleibt deshalb auf die Akzent-Leiste/den grauen Panel-Übergang beschränkt, statt auch den
-       echten Kartenrahmen zu verdecken. ---------- */
+       bis an den Kartenrand reicht. ---------- */
     .todo-table-card { background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s); box-shadow: var(--shadow-card); overflow: hidden; }
 
     /* Spalten-Überschrift im Tabellenkopf-Look des Kalenders (.cal-toolbar), aber mit weißem
@@ -464,6 +468,12 @@
        OHNE eigenes flex:1, damit das Icon direkt hinter dem Text sitzt statt an den rechten
        Rand der (oft viel breiteren) Grid-Spalte gedrückt zu werden. */
     .todo-text-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    /* Geburtstags-Icon direkt VOR dem Titeltext (statt wie sonst als Art-Icon in der eigenen
+       Spalte, siehe .todo-typ-icon) — die "Art" zeigt bei Geburtstags-ToDos stattdessen "Email"
+       (siehe data-typ="email" + data-geburtstag="true" in der Zeile). Feste Farbe statt neutral,
+       damit der Cake-Glyph auch hier sofort als Geburtstag erkennbar bleibt, nicht nur
+       gedämpft-grau. */
+    .todo-title-icon { font-size: 16px; flex-shrink: 0; color: var(--color-primary-600); }
 
     /* position:relative verankert die Beschäftigungsverhältnis-Popover-Karte weiter unten
        (.applicant-info-popover) — die hängt sonst relativ zum nächsten positionierten
@@ -568,6 +578,10 @@
     .kv-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 12px; }
     .kv-row + .kv-row { margin-top: 5px; }
     .kv-label { color: var(--color-neutral-dark-600); white-space: nowrap; }
+    /* Standardmäßig unsichtbar — nur body.expand-variant-modern blendet das Icon vor dem Label
+       ein (siehe dort), die kompakte Popover-Karte und die "vorher"-Ausklapp-Variante bleiben
+       ohne Icon wie bisher, obwohl das Markup (financingWishKvHtml) jetzt für alle gleich ist. */
+    .kv-label-icon { display: none; }
     .kv-value { color: var(--color-neutral-dark-900); font-weight: 500; text-align: right; }
     /* Gleiches Maß wie .due-tag (Figma "StatusTagNew"), aber EINE einzige neutrale Farbvariante
        für alle Beschäftigungsverhältnisse (statt je einer eigenen Farbe pro Wert) — das
@@ -610,6 +624,31 @@
     .todo-typ-trigger.inline-edit:hover .todo-typ-icon {
       background: var(--color-primary-100); border-color: var(--color-primary-500); color: var(--color-primary-600);
     }
+    /* Chevron unten rechts am Icon-Kreis — erscheint nur bei Hover, signalisiert "hier öffnet
+       sich ein Dropdown" zusätzlich zur gestrichelten Linie (die eher beiläufig wirkt). Echtes
+       Element IM Trigger statt CSS-generiertem Inhalt (siehe addTypChevron im Script, einmalig
+       für bestehende Zeilen beim Laden eingefügt, danach erneut nach jedem innerHTML-Rewrite
+       der Zelle, z. B. nach einer Art-Änderung, da dieses sonst mit weggeschrieben würde) —
+       damit läuft ein Klick darauf über dieselbe Klick-Delegation
+       (e.target.closest('.inline-edit')) wie ein Klick auf das Icon selbst, kein separater
+       Event-Handler nötig, da der Chevron ein Nachfahre des Triggers bleibt. */
+    .todo-typ-chevron {
+      display: none; position: absolute; right: -22px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; align-items: center; justify-content: center; font-size: 18px; line-height: 1;
+      font-variation-settings: 'FILL' 1, 'GRAD' 200; color: var(--color-neutral-dark-600); cursor: pointer;
+    }
+    /* :hover propagiert von einem gehoverten Nachfahren auf seine Vorfahren, auch wenn der
+       Nachfahre (wie hier) visuell außerhalb der Box des Vorfahren liegt — der Chevron bleibt
+       also sichtbar/klickbar, solange die Maus direkt über ihm steht. kein pointer-events:none
+       mehr, damit er (per .inline-edit-Klick-Delegation) auch für sich allein anklickbar ist,
+       nicht nur als Teil des 32px-Icon-Kreises. */
+    .todo-typ-trigger.inline-edit:hover .todo-typ-chevron { display: flex; }
+    .todo-typ-chevron:hover { color: var(--color-primary-600); }
+    /* Bei nicht bearbeitbaren ToDos (Geburtstag: Klick tut nichts; vom Kunden ausgelöst: Klick
+       navigiert statt ein Dropdown zu öffnen) wäre der Chevron irreführend — er verspricht ein
+       Dropdown, das es dort nicht gibt. */
+    .todo-row[data-geburtstag="true"] .todo-typ-chevron,
+    .todo-row[data-kunde-ausgeloest="true"] .todo-typ-chevron { display: none !important; }
     /* Eigene, vom 32px-Icon-Kreis losgelöste gestrichelte Linie (statt border-bottom direkt auf
        dem Trigger) — so bleibt etwas Luft zwischen Icon und Linie statt dass sie am Kreis klebt. */
     .todo-typ-trigger.inline-edit::after {
@@ -634,12 +673,6 @@
       display: grid; place-items: center; width: 14px; height: 14px;
       font-size: 14px; line-height: 1; font-variation-settings: 'FILL' 1;
     }
-    /* Geburtstag: nur der Glyph selbst (nicht Kreis-Hintergrund/-Rahmen) fest in der Farbe, die
-       sonst erst bei :hover erscheint (siehe .todo-typ-trigger.inline-edit:hover .todo-typ-icon
-       oben) — title="Geburtstag" ist eindeutig (siehe TYP_LABEL), daher als CSS-Hook ausreichend,
-       ohne eine eigene Modifier-Klasse einführen zu müssen. */
-    .todo-typ-icon[title="Geburtstag"] .material-symbols-outlined { color: var(--color-primary-600); }
-
     /* Tag ÜBER dem Fälligkeits-Text (statt daneben) — nimmt so weniger Breite in der Spalte ein.
        justify-content:center übernimmt bei column die Rolle von align-items:center vorher, damit
        der Zwei-Zeilen-Block trotz .todo-row's align-items:stretch (Trennlinien) vertikal
@@ -675,34 +708,22 @@
     .row-act[data-act="delete"]:hover { background: var(--color-error-100); color: var(--color-error-600); }
     .row-act[data-act="history"]:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
     .row-act[data-act="finanzierungswunsch"]:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
-    /* Variante A des Finanzierungswunsch-Vergleichs (siehe .fw-variant-switcher weiter unten):
-       Button existiert in jeder Zeile, ist aber per Default unsichtbar. Sichtbar nur, wenn
-       BEIDE Bedingungen gelten: Variante "Icon" ist aktiv (body.fw-variant-icon) UND die Zeile
-       trägt tatsächlich Finanzierungswunsch-Daten (.todo-row.has-financing-wish, gesetzt von
-       buildFinancingWishPopover im Script weiter unten) — sonst gäbe es ein Icon ohne Inhalt. */
+    /* Finanzierungswunsch-Icon-Button war Teil der inzwischen entfernten "Ausklappen + Icon"-
+       Vergleichsvariante (siehe FINANZIERUNGSWUNSCH-DARSTELLUNG-Script weiter unten) — Button
+       existiert weiterhin in jeder Zeile (Markup unverändert), bleibt aber dauerhaft unsichtbar,
+       da "Ausklappen" (mit dem Ausklapp-Panel als einziger Darstellung des Finanzierungswunschs)
+       jetzt die einzige Variante ist. */
     .row-act[data-act="finanzierungswunsch"] { display: none; }
-    body.fw-variant-icon .todo-row.has-financing-wish .row-act[data-act="finanzierungswunsch"] { display: inline-flex; }
-    /* In der Kombi-Variante "both" ist es (Verlauf/Löschen dort ausgeblendet, siehe unten) der
-       einzige sichtbare Button in .todo-title-actions und sitzt dadurch ohne Extra-Abstand
-       direkt am rechten Zeilenrand — etwas mehr Luft dorthin wirkt weniger gequetscht. */
-    .row-act[data-act="finanzierungswunsch"] { margin-right: 4px; }
-    /* Verlauf/Löschen direkt neben dem Titel sind in Variante C (Ausklappen) redundant, seit
-       beide Buttons oben in .expand-meta-actions im Ausklapp-Panel selbst stecken (siehe
-       buildExpandPanel) — dort für JEDE Zeile erreichbar, nicht nur für ausgeklappte. In den
-       anderen Varianten (kein Ausklapp-Panel) bleiben sie hier die einzige Zugriffsmöglichkeit. */
-    body.fw-variant-expand .todo-title-actions [data-act="history"],
-    body.fw-variant-expand .todo-title-actions [data-act="delete"] { display: none; }
-    /* Variante C des Finanzierungswunsch-Vergleichs (siehe .fw-variant-switcher weiter unten):
-       Toggle existiert wie die anderen beiden Varianten in jeder Zeile, ist aber per Default
-       unsichtbar — sichtbar nur, wenn diese Variante aktiv ist (body.fw-variant-expand). Anders
-       als der Finanzierungswunsch-Button (Variante A) NICHT an .has-financing-wish gekoppelt:
-       das Ausklapp-Panel zeigt neben dem Finanzierungswunsch auch das Beschäftigungsverhältnis
-       der Antragsteller*innen, das jede Zeile potenziell hat, auch ohne Finanzierungswunsch-Daten.
-       Sitzt bewusst NICHT in .todo-title-actions (zusammen mit Verlauf/Löschen), sondern als
-       eigene Gruppe direkt links vom Titeltext, zwischen Checkbox und Titel — siehe
-       buildExpandToggle im Script weiter unten, das die Gruppe dort einfügt. */
-    .todo-expand-toggle { display: none; align-items: center; gap: 4px; align-self: stretch; flex-shrink: 0; }
-    body.fw-variant-expand .todo-expand-toggle { display: flex; }
+    /* Verlauf/Löschen direkt neben dem Titel sind bei "Ausklappen" redundant, seit beide
+       Buttons oben in .expand-meta-actions im Ausklapp-Panel selbst stecken (siehe
+       buildExpandPanel) — dort für JEDE Zeile erreichbar, nicht nur für ausgeklappte. */
+    .todo-title-actions [data-act="history"],
+    .todo-title-actions [data-act="delete"] { display: none; }
+    /* Toggle-Pfeil zum Ausklappen — sitzt bewusst NICHT in .todo-title-actions (zusammen mit
+       Verlauf/Löschen), sondern als eigene Gruppe direkt links vom Titeltext, zwischen
+       Checkbox und Titel — siehe buildExpandToggle im Script weiter unten, das die Gruppe
+       dort einfügt. */
+    .todo-expand-toggle { display: flex; align-items: center; gap: 4px; align-self: stretch; flex-shrink: 0; }
     /* Durchgehende, volle Zeilenhöhe füllende Trennlinie zwischen Checkbox und Titel(+Toggle) —
        .todo-title ist selbst ein gestrecktes Grid-Item (.todo-row { align-items: stretch }),
        align-self:stretch hier lässt die Linie dieselbe Höhe annehmen, obwohl .todo-title
@@ -724,68 +745,51 @@
        -value (Finanzierungswunsch, siehe .financing-wish-popover) und .applicant-info-block/
        .employment-tag (Beschäftigungsverhältnis, siehe .applicant-info-popover) statt eigener
        Klassen zu erfinden — nur die äußere Hülle (.expand-section*) ist neu. */
-    /* margin-left rückt den GRAUEN Bereich (Hintergrund + oberer Rahmen) bewusst NICHT bis an
-       den linken Kartenrand heran (das wirkte wie ein Bruch in der Kartenform), sondern erst auf
-       die X-Position der Trennlinie zwischen Checkbox und Ausklapp-Button (.todo-expand-divider):
-       Checkbox (20px) + Gap Checkbox↔Trennlinie (12px, siehe margin-right auf .todo-check) = 32px
-       ab dem normalen (nicht gebleedeten) Zeilen-Innenabstand. Die Checkbox selbst bleibt dadurch
-       immer auf weißem Grund, unabhängig vom Ausklapp-Zustand — nur der Bereich ab der Trennlinie
-       (Ausklapp-Button + Inhalt) liegt auf dem grauen Panel. Rechts/unten bleibt der Bleed bis an
-       die Kartenkante bestehen (margin-right -12px unten), damit Schatten/Eckenrundung dort wie
-       gewohnt bis zum Kartenrand reichen (overflow:hidden auf .todo-table-card rundet das ab).
-       padding-left war früher exakt auf die X-Position des Titeltexts ausgerichtet (47px:
-       Trennlinie + Toggle-Gap + Ausklapp-Button + Gap vor dem Titeltext) — jetzt bewusst knapper
-       (24px), zugunsten von mehr Breite für die beiden Karten (Finanzierungswunsch/
-       Antragsteller*innen): bei 2 Antragstellenden nebeneinander reichte es sonst nicht ohne
-       horizontales Scrollen. padding-right ebenso etwas knapper (16 statt 24px) aus demselben
-       Grund. Die Feinausrichtung mit dem Titeltext ist dadurch etwas lockerer, wiegt aber
-       weniger als das Scrollen, das es vorher brauchte. */
-    /* ZWEI Schatten: der zweite Wert (0 4px, wie zuvor) sitzt an der UNTERSEITE des Panels und
-       hebt die ausgeklappte Zeile dezent von der nächsten (eingeklappten) Zeile darunter ab. Der
-       ERSTE (0 -4px) sitzt an der OBERKANTE des Panels, also direkt unter der ToDo-Zeile selbst
-       (Titel/Fälligkeit/Antragsteller/Berater) — lässt diese Zeile dadurch leicht über dem
-       aufgeklappten Panel darunter schweben, statt nahtlos ineinander überzugehen. Beide mit
-       negativem spread, damit sich die Ausbreitung auf die unmittelbare Kante beschränkt und
-       nicht seitlich über die (dank overflow:hidden ohnehin abgeschnittenen) Kartenkanten
-       hinausragt. */
+    /* margin-left auf .todo-expand-panel-card rückt die getönte Karte bewusst NICHT bis an den
+       linken Kartenrand heran, sondern erst auf die X-Position der Trennlinie zwischen Checkbox
+       und Ausklapp-Button (.todo-expand-divider): Checkbox (20px) + Gap Checkbox↔Trennlinie
+       (12px, siehe margin-right auf .todo-check) = 32px. Die Checkbox bleibt dadurch immer auf
+       weißem Grund, unabhängig vom Ausklapp-Zustand. Rechts/unten jetzt echter Abstand (12px)
+       statt Bleed bis an die Kartenkante — die Karte steht sichtbar frei statt an der Zeile zu
+       "kleben" (siehe Kommentar bei .todo-expand-panel weiter unten). */
+    /* Modernisierte Karte statt "angeklebtem Streifen": das Panel bekommt echten Abstand nach
+       allen Seiten (keine negativen Bleed-Margins mehr bis an die Kartenkante) und wird optisch
+       klar vom Rest der Liste abgesetzt (Primary-Tint statt neutralem Grau) — signalisiert auf
+       den ersten Blick "aufgeklapptes Detail", nicht nur eine weitere Tabellenzeile.
+       Auf-/Zuklappen läuft über den CSS-Grid-Accordion-Trick (grid-template-rows: 0fr → 1fr statt
+       display:none/flex) — reines CSS, keine JS-Höhenmessung nötig. DREI verschachtelte Ebenen
+       statt zwei, weil sonst im eingeklappten Zustand trotzdem ein kleiner Rest sichtbar blieb:
+       margin/padding/border zählen für die Grid-"automatische Mindestgröße" eines Items IMMER
+       mit, egal wie klein grid-template-rows/min-height/overflow das Item sonst schrumpfen
+       lassen — nur ein Item OHNE eigenes margin/padding/border kann per overflow:hidden +
+       min-height:0 wirklich auf 0px kollabieren (automatische Mindestgröße ist per Spec 0, sobald
+       overflow nicht "visible" ist). Deshalb: .todo-expand-panel (Grid-Trick, keine eigene Box),
+       .todo-expand-panel-inner (reiner Schrumpf-Wrapper, overflow:hidden + min-height:0, auch
+       ohne eigenes margin/padding/border), .todo-expand-panel-card (trägt die eigentliche Optik:
+       Hintergrund/Rahmen/Schatten/Padding/Margin — darf das, weil sie nicht selbst das
+       kollabierende Grid-Item ist). */
     .todo-expand-panel {
-      display: none; position: relative; grid-column: 1 / -1; grid-row: 2; margin: 10px -12px 0 32px;
-      padding: 12px 16px 20px 24px; background: var(--color-neutral-light-200);
-      border-top: 1px solid var(--color-neutral-light-400);
-      box-shadow: 0 -4px 6px -4px rgba(0, 0, 0, 0.15), 0 4px 6px -4px rgba(0, 0, 0, 0.15);
+      display: grid; grid-template-rows: 0fr; grid-column: 1 / -1; grid-row: 2;
+      transition: grid-template-rows 0.2s ease; overflow: hidden; min-height: 0;
     }
-    /* Der durchgehende Gruppen-Farbstreifen (.todo-table-accent) ist ein einzelnes Flex-Element,
-       das über die GESAMTE Höhe von .todo-table-body (inkl. der Höhe ausgeklappter Panels)
-       gestreckt wird (align-items:stretch von .todo-table-wrap) — er lässt sich pro Zeile nicht
-       einfach "unterbrechen". Neben dem ausgeklappten Panel soll er aber NICHT weiterlaufen (der
-       farbige Streifen gehört zur Zeile, nicht zum Detail-Bereich darunter, und wirkte im Panel
-       wie ein zweiter Tabellenrand). Deshalb deckt dieses Pseudo-Element den kompletten Bereich
-       vom Original-Streifen (Kartenkante) bis zur linken Panel-Kante ab (49px, siehe margin-left
-       oben: 17px Zeilen-Innenabstand + 32px Versatz) — negative left/top wie beim ursprünglichen
-       Bleed-Trick, reicht bis über den 10px-Abstand vor dem Panel hinaus, damit auch dort kein
-       Rest des Streifens sichtbar bleibt. Das Panel selbst hat bewusst KEINEN eigenen farbigen
-       border-left mehr (früher 3px var(--tone-color)).
-       Hintergrundfarbe ist die SEITEN-Hintergrundfarbe (nicht die graue Panel-Fläche) — links vom
-       Panel soll die Tabelle (weiße Karte + durchgehender Gruppen-Akzent) optisch "fehlen", statt
-       wie ein Teil des grauen Panels zu wirken. Reicht bewusst NICHT bis an den echten Kartenrahmen
-       (.todo-table-card) heran — der bleibt überall (auch bei ausgeklappten ToDos) ein normaler
-       border und wird hier nicht verdeckt, siehe Kommentar bei .todo-table-card. Kein eigener
-       Rahmen hier — nur die Fläche wird abgedeckt. */
-    .todo-expand-panel::before {
-      content: ''; position: absolute; left: -49px; width: 49px; top: -10px; bottom: 0;
-      background: var(--color-neutral-light-100);
+    .todo-row.todo-row-expanded .todo-expand-panel { grid-template-rows: 1fr; }
+    .todo-expand-panel-inner { overflow: hidden; min-height: 0; }
+    .todo-expand-panel-card {
+      display: flex; flex-direction: column; gap: 14px;
+      margin: 10px 12px 12px 32px; padding: 16px 20px;
+      background: rgba(0, 150, 136, 0.06); border: 1px solid var(--color-primary-200);
+      border-radius: var(--radius-s); box-shadow: 0 4px 12px rgba(84, 110, 122, 0.2);
     }
-    /* Eigene Zeile (.expand-meta) über den 2 Spalten statt Teil davon — betrifft das ganze
-       ToDo, nicht Finanzierungswunsch ODER Beschäftigungsverhältnis speziell, siehe
-       flex-direction:column hier + .expand-columns weiter unten für die eigentlichen Spalten. */
-    body.fw-variant-expand .todo-row.todo-row-expanded .todo-expand-panel { display: flex; flex-direction: column; gap: 14px; }
-    /* "Verknüpfter Antrag" — NUR ein Platzhalter-Beispiel (siehe mockLoanApplicationId im
-       Script), es gibt in diesem Prototyp keine echte ToDo↔Antrag-Verknüpfung. */
-    .expand-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-    .expand-meta .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-400); }
+    /* "Antrag öffnen" — NUR ein Platzhalter-Beispiel, es gibt in diesem Prototyp keine echte
+       ToDo↔Antrag-Verknüpfung/Navigation. Trennlinie darunter macht die Zeile zum "Panel-
+       Header", abgesetzt von den beiden Karten darunter. Icon-Größen kommen hier bewusst aus
+       den jeweiligen Komponenten selbst (.no-todos-open, .row-act), kein eigener Override mehr
+       — der gehörte nur zum inzwischen entfernten Link-Icon. */
+    .expand-meta {
+      display: flex; align-items: center; gap: 8px; font-size: 12px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--color-primary-200);
+    }
     .expand-meta-label { color: var(--color-neutral-dark-600); }
-    .expand-meta-link { color: var(--color-primary-600); font-weight: 500; text-decoration: none; }
-    .expand-meta-link:hover { text-decoration: underline; }
     /* Verlauf/Löschen dupliziert aus .todo-title-actions (row-act wiederverwendet, siehe
        buildExpandPanel) — ganz rechts in der obersten Panel-Zeile, damit sie beim Ausklappen
        sofort erreichbar sind, ohne die Zeile selbst wieder einzuklappen. margin-left:auto
@@ -809,9 +813,9 @@
     /* Jede Sektion (Finanzierungswunsch / Antragsteller*innen) bekommt eine eigene, sichtbar
        abgegrenzte Karte — derselbe Karten-Look wie an anderen Stellen im Prototyp
        (.todo-table-card, Add-Person-Dropdown: weißer Hintergrund + heller Rahmen + kleiner
-       Radius). Der Panel-Hintergrund (.todo-expand-panel, etwas dunkler) bleibt dahinter
-       sichtbar und lässt die weißen Karten optisch hervortreten, statt dass beide Themen im
-       selben Untergrund verschwimmen. flex:0 0 auto (kein flex-shrink mehr) verhindert sowohl,
+       Radius). Der getönte Panel-Hintergrund (.todo-expand-panel-card) bleibt dahinter sichtbar
+       und lässt die weißen Karten optisch hervortreten, statt dass beide Themen im selben
+       Untergrund verschwimmen. flex:0 0 auto (kein flex-shrink mehr) verhindert sowohl,
        dass eine einzelne Karte (Zeile ganz ohne Finanzierungswunsch-Daten) unschön über die
        volle Breite gestreckt wird, ALS AUCH, dass eine Karte unter ihre Inhaltsbreite
        zusammengedrückt wird — Letzteres ließ z. B. "60486 Frankfurt am Main" umbrechen und den
@@ -822,117 +826,549 @@
        das ab, ohne dass die Karten wieder horizontal scrollen müssen; overflow-x:auto auf
        .expand-columns bleibt trotzdem als Sicherheitsnetz bestehen. */
     .expand-section {
-      background: #fff; border: 1px solid var(--color-neutral-light-500);
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-neutral-light-500);
       border-radius: var(--radius-s); padding: 16px 20px; flex: 0 0 auto;
     }
-    /* Dezente Sektionsbeschriftung ("Finanzierungswunsch"/"Antragsteller*innen") — ohne Icon,
-       klein und grau statt einer lauten Überschrift, nur damit z. B. "Andreas Weber / Nina
-       Weber" ohne Kontext-Ratespiel eindeutig als Antragsteller*innen erkennbar bleibt. Kostet
-       durch die geringe Größe/margin kaum Platz. */
+    /* Dezente Sektionsbeschriftung ("Finanzierungswunsch"/"Antragsteller*innen") — klein/grau
+       mit kleinem Icon davor statt einer lauten Überschrift, nur damit z. B. "Andreas Weber /
+       Nina Weber" ohne Kontext-Ratespiel eindeutig als Antragsteller*innen erkennbar bleibt (ein
+       zuvor probierter farbiger Akzentstrich links wirkte zu unruhig/beliebig, ein Icon ordnet
+       sich klarer als "Kategorie-Symbol" ein). Trennlinie darunter macht die Grenze zwischen
+       Label und Inhalt klar, statt dass beide optisch zusammenrutschen. */
     .expand-section-label {
-      display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
-      text-transform: uppercase; color: var(--color-neutral-dark-600); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+      text-transform: uppercase; color: var(--color-neutral-dark-600);
+      margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--color-neutral-light-400);
     }
+    .expand-section-label .material-symbols-outlined { font-size: 14px; color: var(--color-neutral-dark-400); }
     /* Nur bei genau 1 Antragsteller*in UND vorhandener Finanzierungswunsch-Karte daneben (siehe
        applicantSectionClass in buildExpandPanel) — beide Karten teilen sich dann die verfügbare
        Breite exakt gleich (flex:1 1 0 statt des sonstigen flex:0 0 auto), damit sie WIRKLICH
-       gleich breit sind statt nur ungefähr per Schätzwert (die vorherige feste min-width:320px
-       passte nur zufällig zur Finanzierungswunsch-Breite mancher Zeilen, nicht aller). Der
-       :has()-Doppel-Check stellt sicher, dass NUR dieser Fall (2 Karten, 1 davon --wide) betroffen
-       ist — bei nur 1 Karte (keine Finanzierungswunsch-Daten) bleibt flex:0 0 auto unangetastet,
-       sonst würde diese einzelne Karte unerwünscht auf die volle Panel-Breite gestreckt. */
+       gleich breit sind statt nur ungefähr per Schätzwert. Der :has()-Doppel-Check stellt sicher,
+       dass NUR dieser Fall (2 Karten, 1 davon --wide) betroffen ist — bei nur 1 Karte (keine
+       Finanzierungswunsch-Daten) bleibt flex:0 0 auto unangetastet, sonst würde diese einzelne
+       Karte unerwünscht auf die volle Panel-Breite gestreckt. */
     .expand-columns:has(.expand-section--wide):has(.expand-section:not(.expand-section--wide)) .expand-section {
       flex: 1 1 0; min-width: 0;
     }
-    /* Die feste 110px-Namensbreite (.todo-expand-panel .applicant-info-name weiter unten) ist
-       nur nötig, damit bei 2 Antragstellenden nebeneinander beide Beschäftigungs-Tags auf
-       gleicher Höhe starten (siehe Kommentar dort) — bei nur 1 Person gibt es dieses
-       Ausrichtungsproblem nicht, die feste Breite lässt den Namen dann nur unnötig eng neben
-       dem jetzt breiteren Kartenrand wirken. flex:0 1 auto lässt den Namen seine natürliche
-       Breite einnehmen, justify-content:space-between schiebt das Tag stattdessen ganz an den
-       rechten Kartenrand statt direkt neben den Namen zu kleben. */
-    .expand-section--wide .applicant-info-row { justify-content: space-between; }
-    .expand-section--wide .applicant-info-name { flex: 0 1 auto; }
-    .expand-section .applicant-info-block + .applicant-info-block { margin-top: 6px; padding-top: 6px; }
-    /* .kv-row/.applicant-info-row sind für die schmale Popover-Karte gebaut (space-between,
-       siehe .applicant-info-popover/.financing-wish-popover) — die schmale Karte sorgt dort
-       für den engen Abstand zwischen Label/Wert bzw. Name/Tag. Im Ausklapp-Panel ist der
-       Container die volle Zeilenbreite; space-between würde sie unabhängig von der Container-
-       Breite quer über die ganze Zeile auseinanderziehen (bei langen Werten wie "PLZ" sogar
-       noch mehr als bei kurzen). flex-start + fester Gap hält beide hier unabhängig von
-       Label-/Namenslänge eng beieinander. Zusätzlich eine feste kv-label-Breite, damit alle
-       Werte sauber in einer Spalte untereinanderstehen (Namen variieren zu stark in der
-       Länge, dort reicht der feste Gap ohne feste Breite). */
-    .todo-expand-panel .kv-row { justify-content: flex-start; gap: 12px; }
-    .todo-expand-panel .kv-label { flex: 0 0 130px; }
-    /* Feste Namens-Breite aus demselben Grund wie .kv-label oben: bei 2 Antragsteller*innen
-       nebeneinander (z. B. "Andreas Weber" / "Nina Weber", siehe .applicant-info-people) sitzt
-       das Beschäftigungs-Tag sonst je nach Namenslänge unterschiedlich weit rechts — wirkt dann
-       wie ein uneinheitliches Raster, obwohl beide Namen an derselben X-Position (Kartenrand)
-       beginnen. Mit fester Breite startet das Tag bei jeder Person an derselben Stelle;
-       überlange Namen ellipsieren statt die Spalte zu sprengen. */
-    .todo-expand-panel .applicant-info-row { justify-content: flex-start; gap: 12px; }
-    .todo-expand-panel .applicant-info-name { flex: 0 0 90px; overflow: hidden; text-overflow: ellipsis; }
-    /* Bei nur 1 Antragsteller*in (.expand-section--wide, siehe applicantSectionClass in
-       buildExpandPanel) gibt es keine zweite Person, mit der die Namensbreite ausgerichtet
-       werden müsste — die feste 90px-Breite oben ist nur für den 2-Personen-Fall gedacht (siehe
-       Kommentar dort) und schneidet hier ohne Not auch kurze/mittellange Namen wie "Stefan
-       Lehmann" ab. Für diesen Fall die feste Breite wieder aufheben, Name zeigt vollständig. */
-    .todo-expand-panel .expand-section--wide .applicant-info-name { flex: 0 0 auto; overflow: visible; text-overflow: clip; }
-    /* Bei 2 Antragsteller*innen (z. B. Ehepaar) stehen ihre Blöcke NEBENEINANDER statt
-       untereinander — jede Person bleibt eine eigene, in sich geschlossene Spalte (Name+Tag,
-       E-Mail, Telefon jeweils darunter, siehe buildExpandPanel), leichter zuzuordnen als eine
-       lange gemeinsame Liste. align-items:flex-start, damit die zweite Person nicht auf die
-       Höhe der (meist längeren) ersten gestreckt wird. */
-    /* flex-wrap:nowrap statt wrap — 2 Antragstellende sollen IMMER nebeneinander stehen, nicht
-       je nach verfügbarer Breite mal so, mal so (wrap ließ z. B. "Andreas Weber"/"Nina Weber"
-       trotz reichlich Platz gestapelt erscheinen, sobald .expand-section irgendwo schrumpfte,
-       siehe flex:0 0 auto dort). Falls es doch mal eng wird, scrollt stattdessen .expand-columns
-       horizontal (siehe dort) statt den zweiten Block umzubrechen oder abzuschneiden. */
-    .applicant-info-people { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 10px 20px; }
-    /* .applicant-info-block + .applicant-info-block (siehe <style> weiter oben) trennt gestapelte
-       Blöcke normalerweise per Trennlinie/margin-top — hier stehen die Blöcke nebeneinander, eine
-       Linie OBEN (border-top) wäre daher falsch platziert. Innerhalb der jetzt umschließenden
-       Karte (.expand-section) passt stattdessen eine vertikale Trennlinie LINKS neben der
-       zweiten Person besser zur Karten-Metapher, als die Personen nur per Gap zu trennen. */
-    /* Präsenter als die sonstigen 1px/hell-Trennlinien im Prototyp (z. B. .applicant-info-block +
-       .applicant-info-block oben) — hier trennt die Linie zwei komplette Personen nebeneinander
-       in derselben Karte, ein dünnes helles 1px ging dabei optisch fast unter. 2px + dunklerer
-       Grauton (neutral-light-500 statt -400) macht die Trennung auf den ersten Blick sichtbar. */
-    .applicant-info-people .applicant-info-block + .applicant-info-block {
+    /* Finanzierungswunsch als klare Label/Wert-Liste statt enger Zeilen: mehr Zeilenabstand
+       (padding statt nur margin, siehe kv-row + kv-row), dezente Trennlinien zwischen den
+       Zeilen (Zebra-Effekt ohne Hintergrundfarbe) und ein deutlicherer Kontrast Label (klein/
+       grau) vs. Wert (größer/kräftig) für schnelleres Scannen als vorher (beide fast gleich
+       laut). flex-start + feste Label-Breite statt der Basisregel (space-between, für die
+       schmale Popover-Karte gedacht) hält Label/Wert unabhängig von der Panel-Breite eng
+       beieinander statt sie quer über die Zeile zu verteilen. */
+    .todo-expand-panel .kv-row { justify-content: flex-start; gap: 12px; padding: 5px 0; margin-top: 0 !important; }
+    .todo-expand-panel .kv-row + .kv-row { border-top: 1px solid var(--color-neutral-light-200); }
+    .todo-expand-panel .kv-label { flex: 0 0 130px; font-size: 11px; color: var(--color-neutral-dark-400); }
+    .todo-expand-panel .kv-value {
+      flex: 1; font-size: 13px; font-weight: 600; text-align: left; white-space: nowrap;
+      color: var(--color-neutral-dark-900);
+    }
+    /* buildExpandPanel baut IMMER beide Darstellungen der Finanzierungswunsch-Felder
+       (.fw-kv-list = alte Label/Wert-Zeilen, .fw-fields = neue Icon-Kacheln) — welche sichtbar
+       ist, entscheidet rein CSS je nach Ausklapp-Panel-Variante (siehe .expand-variant-group),
+       damit "vorher"/"Modern" weiterhin ihre eigene Darstellung zeigen können, ohne dass
+       buildExpandPanel dafür verzweigen müsste. Default: Icon-Kacheln, .fw-kv-list bleibt
+       verborgen (sonst stünde hier alles doppelt in der Karte). */
+    .todo-expand-panel .fw-kv-list { display: none; }
+    /* Feste 2 Spalten statt auto-fit/minmax: bei variabler Kartenbreite riss auto-fit die 4
+       Felder je nach verfügbarem Platz unregelmäßig um (mal 4, mal 3+1, mal 2+2) — wirkte
+       dadurch unruhig/zufällig statt aufgeräumt. Feste 2x2 ist vorhersehbar unabhängig von der
+       Kartenbreite. row-gap größer als column-gap, damit die beiden Zeilen klar getrennt bleiben. */
+    .todo-expand-panel .fw-fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 16px; position: relative; }
+    /* Dünne Trennlinien zwischen den 4 Kacheln (Plus-Form: 1 vertikale + 1 horizontale Linie
+       genau in der Mitte des jeweiligen Gaps zwischen den Spalten/Zeilen) statt Rahmen auf den
+       einzelnen Kacheln — so bleibt die Trennung dezent und läuft nicht bis an den Kartenrand
+       (top/bottom bzw. left/right-Insets halten Abstand zu den Kartenkanten). */
+    .todo-expand-panel .fw-fields::before {
+      content: ''; position: absolute; top: 6px; bottom: 6px; left: 50%; width: 1px;
+      background: var(--color-neutral-light-400);
+    }
+    .todo-expand-panel .fw-fields::after {
+      content: ''; position: absolute; left: 6px; right: 6px; top: 50%; height: 1px;
+      background: var(--color-neutral-light-400);
+    }
+    /* Bei 2 Antragsteller*innen (.expand-section--pair, siehe buildExpandPanel) wird die
+       Antragsteller-Karte breiter (2 Personen nebeneinander) — die Finanzierungswunsch-Kacheln
+       daneben stehen dann untereinander statt im 2x2-Raster, damit sie in der jetzt schmaleren
+       Karte nicht gequetscht wirken. :has() greift auf den gemeinsamen .expand-columns-
+       Container zu, da beide Karten Geschwister sind. */
+    .expand-columns:has(.expand-section--pair) .fw-fields { grid-template-columns: 1fr; }
+    /* Die Plus-Trennlinien (.fw-fields::before/::after, siehe oben) sind fürs 2x2-Raster gebaut
+       — bei 1 Spalte (mehr als 2 Zeilen) würden sie nicht mehr zu den Kachel-Grenzen passen,
+       deshalb hier ausgeblendet (v2.1 stellt sein eigenes 2x2 samt Linien weiter unten wieder her). */
+    .expand-columns:has(.expand-section--pair) .fw-fields::before,
+    .expand-columns:has(.expand-section--pair) .fw-fields::after { display: none; }
+    /* Ein fester min-width-Floor allein reichte nicht — die Karte blieb trotzdem an der knappen
+       Inhaltsbreite der 1-spaltigen Kachel-Zeile "kleben" (flex:0 0 auto). flex:1 1 statt 0 0
+       lässt sie stattdessen aktiv Platz einnehmen, min-/max-width geben eine sinnvolle Unter-/
+       Obergrenze. Beide Karten (Finanzierungswunsch UND die 2-Personen-Antragsteller-Karte)
+       bekommen dieselbe Behandlung, damit sie nebeneinander gleichmäßig breit wirken statt eine
+       schmal und die andere unbegrenzt breit. */
+    .expand-columns:has(.expand-section--pair) .expand-section {
+      flex: 1 1 260px; min-width: 260px; max-width: 400px; padding: 16px 24px;
+    }
+    /* Die Antragsteller-Karte ist bei 2 Personen (untereinander gestapelt) höher als die
+       Finanzierungswunsch-Karte daneben — .expand-columns' align-items:stretch zieht die
+       Finanzierungswunsch-Karte zwar schon auf dieselbe Höhe, ihr INHALT (die Kacheln) blieb
+       bisher aber oben "kleben" und ließ darunter ungenutzten Leerraum. display:flex+flex:1 auf
+       .fw-fields lässt die Kachel-Zeilen den ganzen verfügbaren Platz einnehmen. align-content:
+       space-evenly statt space-between — space-between zog die untere Zeile bis exakt an die
+       Kartenunterkante (wirkte, als würde sie am Rahmen kleben) UND konzentrierte den gesamten
+       Leerraum in EINEM großen Gap zwischen den Zeilen. space-evenly verteilt denselben
+       Leerraum stattdessen auf 3 gleich große Abstände (oben/zwischen/unten) — dadurch bleibt
+       automatisch Luft zur unteren Kante UND der Abstand zwischen den beiden Zeilen wird
+       kleiner statt weiter zu wachsen. Nur die Finanzierungswunsch-Karte (:has(.fw-fields)),
+       nicht die Antragsteller-Karte daneben. */
+    .expand-columns:has(.expand-section--pair) .expand-section:has(.fw-fields) {
+      display: flex; flex-direction: column;
+    }
+    .expand-columns:has(.expand-section--pair) .expand-section:has(.fw-fields) .fw-fields {
+      flex: 1; align-content: space-evenly;
+    }
+    .fw-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    /* Icon LINKS neben dem Feldnamen (Kopfzeile), die gewählte Antwort darunter. Runder,
+       hellgrüner Hintergrund (Primary-Tint) statt reinem Text-Icon — hebt die Kategorie-Icons
+       innerhalb der Karte etwas mehr hervor, ohne so laut wie ein volltoniges Icon zu wirken.
+       Feste width/height statt nur padding, da Material-Symbols-Glyphen sonst je nach Zeichen
+       leicht unterschiedliche Boxgrößen hätten — so ist der Kreis immer exakt rund. */
+    .fw-field-head { display: flex; align-items: center; gap: 6px; }
+    .fw-field-head .material-symbols-outlined {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--color-primary-100); color: var(--color-primary-600); font-size: 13px;
+    }
+    .fw-field-label { font-size: 11px; color: var(--color-neutral-dark-400); }
+    /* white-space:normal + line-height statt nowrap — lange Werte wie "60486 Frankfurt am Main"
+       sollen sauber umbrechen können, statt die Karte in die Breite zu drücken oder (bei
+       text-overflow:ellipsis) abgeschnitten zu werden. font-weight:400 statt 600 — die Antwort
+       (z. B. "Vermietet") muss sich hier nicht fett vom Rest abheben. */
+    .fw-field-value { font-size: 13px; font-weight: 400; line-height: 1.3; color: var(--color-neutral-dark-900); white-space: normal; }
+    /* Gleicher Stil wie bei Finanzierungswunsch (.fw-fields): flache Fläche statt eigener
+       grauer Mini-Karte pro Person, Trennung über eine dünne, mittig im Gap sitzende Linie
+       (nicht bis zum Kartenrand) statt über einen Hintergrund-Block. */
+    .applicant-info-people {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: stretch;
+      gap: var(--space-m); position: relative;
+    }
+    /* Bei genau 2 Antragsteller*innen (.expand-section--pair) jetzt bewusst EINE Spalte
+       (untereinander) statt nebeneinander — seit die Karte per max-width:400px begrenzt ist
+       (siehe .expand-columns:has(.expand-section--pair) .expand-section), würden 2 Spalten dort
+       zu eng werden. */
+    /* Größerer Gap als der sonstige var(--space-m) — gibt der Trennlinie (mittig im Gap, siehe
+       ::before oben) mehr Luft zur 2. Person darunter statt beide fast direkt an der Linie
+       kleben zu lassen. */
+    .expand-section--pair .applicant-info-people { grid-template-columns: 1fr; gap: 28px; }
+    /* Linie nur, wenn es überhaupt eine 2. Person gibt (:has(:nth-child(2))) — bei nur 1
+       Antragsteller*in wäre sonst eine Linie ohne erkennbaren Zweck sichtbar. Insets links/
+       rechts halten sie von den Kartenrändern fern, genau wie bei .fw-fields::after. */
+    .applicant-info-people:has(.applicant-info-block:nth-child(2))::before {
+      content: ''; position: absolute; left: 6px; right: 6px; top: 50%; height: 1px;
+      background: var(--color-neutral-light-400);
+    }
+    .todo-expand-panel .applicant-info-block {
+      display: flex; flex-direction: column; gap: 2px;
+      background: none; border-radius: 0; padding: 0;
+    }
+    .todo-expand-panel .applicant-info-block + .applicant-info-block { margin-top: 0; padding-top: 0; border-top: none; }
+    .todo-expand-panel .applicant-info-row { justify-content: space-between; gap: 10px; }
+    /* Icon+Name als eine Einheit, damit .applicant-info-row weiterhin nur 2 Elemente hat
+       (diese Gruppe + Tag) statt 3 einzelne, die space-between sonst falsch verteilen würde.
+       min-width:0 lässt den Namen trotzdem ellipsieren können. */
+    .applicant-info-name-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    /* Gleiche runde, hellgrüne Icon-Optik wie bei den Kontaktzeilen darunter (siehe
+       .todo-expand-panel .applicant-info-contact .material-symbols-outlined) — sonst begann
+       der Name sichtbar weiter links als E-Mail/Telefon, die durch ihr Icon eingerückt sind. */
+    .todo-expand-panel .applicant-info-icon {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--color-primary-100); color: var(--color-primary-600); font-size: 12px;
+    }
+    .todo-expand-panel .applicant-info-name {
+      font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* Klarere Hierarchie statt "alles gleich dunkel/fett": der Name bleibt die einzige fette,
+       dunkle Zeile pro Person — E-Mail/Telefon und das Beschäftigungsverhältnis sind
+       Zusatzinfo, keine gleichrangigen Fakten, und bekommen deshalb bewusst die gedämpfte
+       Basisfarbe (dark-600, wie in der kompakten Popover-Karte) statt dark-900/fett. margin
+       bleibt -6px links/rechts (Basisregel), damit Icon+Text trotz des eigenen Innenabstands
+       (padding:3px 6px) bündig mit der Namenszeile darüber anfangen. */
+    .todo-expand-panel .applicant-info-contact { font-size: 12px; margin: 6px -6px 0; max-width: none; }
+    /* Weniger Abstand zwischen E-Mail- und Telefonzeile als zwischen Name und der ersten
+       Kontaktzeile (6px, siehe oben) — beide Kontaktzeilen gehören enger zusammen. */
+    .todo-expand-panel .applicant-info-contact + .applicant-info-contact { margin-top: -2px; }
+    /* Ohne Kreis-Hintergrund — wirkte bei E-Mail/Telefon (anders als beim Namens-Icon darüber)
+       zu laut für reine Zusatzinfo. width/height bleiben erhalten, damit Icon+Text weiterhin
+       auf derselben X-Position wie Name/Icon darüber beginnen (siehe .applicant-info-icon). */
+    .todo-expand-panel .applicant-info-contact .material-symbols-outlined {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 20px; height: 20px; font-size: 13px; color: var(--color-neutral-dark-400);
+    }
+    /* Weicher grauer Pill statt grauem, umrandetem Kasten (Grün wirkte zu sehr wie ein
+       Status-/Erfolgs-Label für reine Sachinfo). */
+    .todo-expand-panel .employment-tag {
+      background: var(--color-neutral-light-400); color: var(--color-neutral-dark-800); border: none;
+      border-radius: var(--radius-full); font-weight: 600; letter-spacing: 0.2px;
+    }
+    .expand-no-data { font-size: 11px; color: var(--color-neutral-dark-400); }
+
+    /* ---------- Ausklapp-Panel "vorher" (Prototyp-Vergleich, siehe .expand-variant-group oben)
+       — die Optik VOR der Modernisierung: angeklebter grauer Streifen (Bleed bis an die
+       Kartenkante, doppelter harter Schatten), instant display:none/flex statt Grid-Animation,
+       feste 90px-Namensbreite bei 2 Antragsteller*innen nebeneinander. .todo-expand-panel-inner
+       wird per display:contents komplett aufgelöst, damit die alte Optik wieder direkt auf
+       .todo-expand-panel selbst sitzen kann, statt eine zusätzliche verschachtelte Box zu
+       erzeugen — die JS-Struktur (buildExpandPanel) ist für beide Varianten identisch, nur CSS
+       unterscheidet sie. ---------- */
+    body.expand-variant-old .todo-expand-panel {
+      display: none; grid-template-rows: none; transition: none; position: relative;
+      overflow: visible; min-height: auto;
+      margin: 10px -12px 0 32px; padding: 12px 16px 20px 24px;
+      background: var(--color-neutral-light-200); border: none; border-top: 1px solid var(--color-neutral-light-400);
+      border-radius: 0; box-shadow: 0 -4px 6px -4px rgba(0, 0, 0, 0.15), 0 4px 6px -4px rgba(0, 0, 0, 0.15);
+    }
+    body.expand-variant-old .todo-row.todo-row-expanded .todo-expand-panel { display: flex; flex-direction: column; gap: 14px; }
+    body.expand-variant-old .todo-expand-panel::before {
+      content: ''; position: absolute; left: -49px; width: 49px; top: -10px; bottom: 0;
+      background: var(--color-neutral-light-100);
+    }
+    body.expand-variant-old .todo-expand-panel-inner,
+    body.expand-variant-old .todo-expand-panel-card { display: contents; }
+    body.expand-variant-old .expand-meta { border-bottom: none; padding-bottom: 0; }
+    body.expand-variant-old .expand-section-label { display: block; margin-bottom: 6px; padding-bottom: 0; border-bottom: none; }
+    body.expand-variant-old .expand-section-label .material-symbols-outlined { display: none; }
+    body.expand-variant-old .applicant-info-people { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: 10px 20px; }
+    /* Die neue Plus-Trennlinie (siehe .applicant-info-people::before, Default-Regel) ist fürs
+       gestapelte 1-Spalten-Layout gebaut — "vorher" trennt 2 Personen stattdessen über einen
+       linken Rahmen (padding-left/border-left weiter unten), deshalb hier ausgeblendet. */
+    body.expand-variant-old .applicant-info-people::before { display: none; }
+    body.expand-variant-old .todo-expand-panel .applicant-info-block {
+      display: block; background: none; border-radius: 0; padding: 0;
+    }
+    body.expand-variant-old .todo-expand-panel .applicant-info-block + .applicant-info-block {
       margin-top: 0; padding-top: 0; border-top: none;
       padding-left: 20px; border-left: 2px solid var(--color-neutral-light-500);
     }
-    /* WERT normal statt fett (nur dunkel/schwarz, siehe geerbte Basisfarbe var(--color-neutral-
-       dark-900) von .kv-value) — komplett fette Werte wie "Modernisierung"/"Mehrfamilienhaus"
-       wirkten neben dem ebenfalls dunklen Label zu laut für eine ruhige 2-spaltige Liste. Das
-       LABEL bleibt grau wie eine Spaltenüberschrift (.kv-label erbt Farbe/Gewicht bereits von
-       der Basisregel weiter oben, hier also keine Overrides mehr nötig). Ebenso der
-       Antragsteller-Name (.applicant-info-name): im Popover fett als einziger Fokus, hier neben
-       dem Beschäftigungs-Tag nur noch normal statt zusätzlich zum Tag laut. */
-    /* text-align:left + white-space:nowrap überschreiben die Basisregel (dort rechtsbündig für
-       die schmale Popover-Karte gedacht, siehe .kv-value) — im Panel sitzt der Wert direkt
-       hinter dem festbreiten Label (siehe .kv-label flex:0 0 130px oben), soll also linksbündig
-       UND einzeilig bleiben, statt bei wenig Platz umzubrechen und durch text-align:right
-       sichtbar nach rechts eingerückt zu wirken. */
-    .todo-expand-panel .kv-value { font-weight: 400; text-align: left; white-space: nowrap; }
-    .todo-expand-panel .applicant-info-name { font-weight: 400; }
-    /* .applicant-info-contact ist für die kompakte Popover-Karte auf 11px ausgelegt (siehe
-       <style> weiter oben) — im Ausklapp-Panel soll E-Mail/Telefon aber genauso groß wirken wie
-       die Finanzierungswunsch-Werte (.kv-value, 12px von .kv-row geerbt), da beides gleichwertige
-       Fakten-Zeilen in derselben Karten-Reihe sind. */
-    /* Farbe wie der Name (.applicant-info-name, dark-900/schwarz) statt der grauen Basisfarbe
-       (var(--color-neutral-dark-600), für die kompakte Popover-Karte gedacht) — E-Mail/Telefon
-       sind hier gleichwertige Fakten neben Name/Beruf, sollen also nicht blasser wirken, siehe
-       z. B. "Sandra Klein" ohne Beschäftigungs-Tag. */
-    /* Hover/Fokus-Grün (siehe Basisregel .applicant-info-contact:hover weiter oben) gilt hier
-       unverändert mit; nur Ruhezustand-Farbe/-Größe weichen vom Popover ab. max-width verhindert
-       zusätzlich, dass eine lange E-Mail-Adresse die Person breiter macht als ihre Name+Tag-Zeile
-       (.applicant-info-row, ohne eigene Breitenbegrenzung) — sonst wurde die Antragsteller-Karte
-       bei 2 Personen deutlich breiter als die Finanzierungswunsch-Karte daneben. Email/Telefon
-       ellipsieren stattdessen (siehe .applicant-info-contact-text), Name+Tag bleiben unangetastet. */
-    .todo-expand-panel .applicant-info-contact { font-size: 12px; color: var(--color-neutral-dark-900); max-width: 180px; }
-    .expand-no-data { font-size: 11px; color: var(--color-neutral-dark-400); }
+    body.expand-variant-old .todo-expand-panel .applicant-info-row { justify-content: flex-start; gap: 12px; }
+    body.expand-variant-old .todo-expand-panel .applicant-info-name { flex: 0 0 90px; font-size: 12px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+    /* Kein Icon vor dem Namen in "vorher" — gehört zur "jetzt"-Modernisierung (Default-Regel). */
+    body.expand-variant-old .todo-expand-panel .applicant-info-icon { display: none; }
+    body.expand-variant-old .todo-expand-panel .expand-section--wide .applicant-info-name { flex: 0 0 auto; overflow: visible; text-overflow: clip; }
+    body.expand-variant-old .todo-expand-panel .applicant-info-contact { margin: 8px -6px 0; max-width: 180px; }
+    /* Zurück zum reinen Text-Icon ohne Kreis-Hintergrund (Default-Regel gibt es jetzt einen
+       runden hellgrünen Hintergrund, siehe .todo-expand-panel .applicant-info-contact
+       .material-symbols-outlined) — das gehört zur "jetzt"-Modernisierung, nicht zu "vorher". */
+    body.expand-variant-old .todo-expand-panel .applicant-info-contact .material-symbols-outlined {
+      display: inline; width: auto; height: auto; border-radius: 0; background: none;
+      color: var(--color-neutral-dark-400); font-size: 13px;
+    }
+    /* Ursprünglicher grauer, umrandeter Tag statt des neuen grünen Pills (Default-Regel) —
+       gehört zur "jetzt"-Modernisierung, nicht zu "vorher". */
+    body.expand-variant-old .todo-expand-panel .employment-tag {
+      background: var(--color-neutral-light-400); color: var(--color-neutral-dark-800);
+      border: 1px solid var(--color-neutral-dark-200); border-radius: var(--radius-s); font-weight: 700;
+    }
+    body.expand-variant-old .todo-expand-panel .fw-kv-list { display: block; }
+    body.expand-variant-old .todo-expand-panel .fw-fields { display: none; }
+    body.expand-variant-old .todo-expand-panel .kv-row { padding: 0; margin-top: 5px !important; }
+    body.expand-variant-old .todo-expand-panel .kv-row:first-of-type { margin-top: 0 !important; }
+    body.expand-variant-old .todo-expand-panel .kv-row + .kv-row { border-top: none; }
+    body.expand-variant-old .todo-expand-panel .kv-label { font-size: 12px; color: var(--color-neutral-dark-600); }
+    body.expand-variant-old .todo-expand-panel .kv-value { font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-900); }
+
+    /* ---------- Ausklapp-Panel "v2.1" (Variante von "v2", siehe .expand-variant-group oben) —
+       Icon deutlich größer und mittig, der Feldname (fw-field-label) steht hier klein DARUNTER
+       statt wie in "v2" daneben, dann erst die gewählte Antwort. Das 2x2-Raster (.fw-fields,
+       siehe Default-Regel) bleibt unverändert. */
+    body.expand-variant-v21 .fw-field-head .material-symbols-outlined {
+      width: 36px; height: 36px; font-size: 19px;
+    }
+    /* flex-direction:column macht aus der Kopfzeile (sonst Icon+Label nebeneinander) einen
+       gestapelten Block: Icon oben, Label klein direkt darunter — die gewählte Antwort
+       (.fw-field-value) folgt als dritte Zeile danach. */
+    body.expand-variant-v21 .fw-field-head { flex-direction: column; justify-content: center; gap: 4px; }
+    body.expand-variant-v21 .fw-field-label { font-size: 10px; }
+    /* Icon/Label mittig über der jeweiligen Auswahl statt linksbündig — wirkt als zentrierte
+       Kachel aufgeräumter als eine linksbündige Spalte. */
+    body.expand-variant-v21 .fw-field { gap: 1px; align-items: center; text-align: center; }
+    /* Bei 2 Antragsteller*innen (.expand-section--pair) erzwingt die Default-Regel weiter oben
+       (.expand-columns:has(.expand-section--pair) .fw-fields/.expand-section) eigentlich 1
+       Spalte + eine schmalere max-width, damit die Finanzierungswunsch-Karte neben der jetzt
+       breiteren Antragsteller-Karte nicht zu breit wird (siehe Kommentar dort). Für v2.1 mit
+       den größeren, reinen Icon-Kacheln wirkt das aber zu gequetscht — hier bleibt das 2x2-Raster
+       erhalten, dafür etwas mehr Breite, damit 2 Kacheln pro Zeile bequem nebeneinander passen. */
+    body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .fw-fields {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .fw-fields::before,
+    body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .fw-fields::after { display: block; }
+    body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .expand-section {
+      max-width: 480px;
+    }
+    /* Auf Wunsch: v2.1 bekommt keine eigene Kartenoptik mehr — weder die getönte Panel-Fläche
+       (.todo-expand-panel-card) noch die weißen Sektionskarten (.expand-section) — sondern nur
+       schlichten weißen Hintergrund. Trennung zwischen den beiden Themen übernimmt allein der Gap
+       zwischen den Spalten (.expand-columns) bzw. die Trennlinie unter .expand-section-label.
+       Die grüne border-top übernimmt stattdessen die Trennung zwischen der Todo-Zeile selbst und
+       dem ausgeklappten Bereich, da die getönte Fläche das vorher übernommen hat. */
+    body.expand-variant-v21 .todo-expand-panel-card {
+      background: var(--color-neutral-light-000); border: none;
+      border-top: 1px solid var(--color-primary-200); padding-top: 14px;
+      box-shadow: 0 4px 8px -4px rgba(0, 0, 0, 0.15);
+    }
+    /* KEIN eigener Hintergrund auf .todo-expand-panel-inner: .todo-expand-panel-card deckt sich
+       selbst opak ab (siehe oben), der schmale Rand drumherum (margin auf der Karte) darf
+       bewusst weiterhin das Grau der Todo-Zeile durchscheinen lassen — genau das lässt das Grau
+       bündig bis zur grünen border-top-Linie der Karte reichen, statt vorher schon am Rand der
+       zweiten Grid-Zeile zu enden. */
+    body.expand-variant-v21 .expand-section {
+      background: none; border: none; padding: 0;
+    }
+    /* Statt horizontal zu scrollen (siehe overflow-x:auto auf .expand-columns weiter oben, als
+       Sicherheitsnetz für die Default-Variante gedacht) sollen sich die beiden Sektionen in v2.1
+       bei zu wenig Platz untereinander stapeln — analog zum Vorgehen in "Modern" weiter unten
+       (dort per grid/auto-fit gelöst, hier reicht flex-wrap, da v2.1 weiterhin flex nutzt). */
+    body.expand-variant-v21 .expand-columns { flex-wrap: wrap; overflow: visible; gap: 32px; }
+    /* Ohne Kartenrahmen (siehe .expand-section-Override oben) braucht es zwischen Finanzierungs-
+       wunsch und Antragsteller*in(nen) eine eigene vertikale Trennlinie, analog zu "Modern"
+       weiter unten — dezent (heller Grauton, 1px) statt der kräftigeren Variante dort. */
+    body.expand-variant-v21 .expand-section + .expand-section {
+      border-left: 1px solid var(--color-neutral-light-400); padding-left: 32px;
+    }
+    /* Auf Wunsch ohne die Sektions-Überschriften ("Finanzierungswunsch"/"Antragsteller*in(nen)")
+       — die Icon-Kacheln bzw. Namen der Antragsteller*innen sind hier selbsterklärend genug. */
+    body.expand-variant-v21 .expand-section-label { display: none; }
+    body.expand-variant-v21 .expand-meta { border-bottom-color: var(--color-neutral-light-400); }
+    /* Auf Wunsch: nicht der ausgeklappte Bereich, sondern das Todo selbst bekommt beim Ausklappen
+       einen leichten Farbton — signalisiert "diese Zeile ist gerade offen", ohne dass der
+       ausgeklappte Bereich (bewusst schlicht weiß, siehe oben) selbst eingefärbt wird. */
+    /* margin-top:-10px (negativ um genau den .todo-table-body-Gap, siehe dort) + kompensierendes
+       padding-top:10px lässt den Hintergrund bis zur border-bottom-Linie der Zeile darüber
+       "bluten", statt dass der Flex-Gap als ungefärbte Lücke sichtbar bleibt — Inhalt bleibt an
+       derselben Position, nur die Box (und damit der Hintergrund) wird nach oben größer. */
+    body.expand-variant-v21 .todo-row.todo-row-expanded {
+      background: var(--color-neutral-light-200); margin-top: -10px; padding-top: 10px;
+    }
+
+    /* ---------- Ausklapp-Panel "Modern" (4. Vergleichsvariante, siehe .expand-variant-group
+       oben) — bewusst KOMPLETT ohne Karten/getönte Fläche INNERHALB des Panels, anders als
+       "jetzt": Weißraum + Typografie übernehmen die Gliederung statt Rahmen/Schatten/Kachel-
+       Hintergründen für Finanzierungswunsch/Antragsteller*innen. Finanzierungswunsch steht als
+       2-spaltiges Fakten-Raster (Label klein/grau ÜBER dem Wert, nicht davor) statt der
+       Formular-artigen Label-links/Wert-rechts-Zeile; Antragsteller*innen stehen untereinander,
+       nur durch eine dünne Linie getrennt, statt in eigenen grauen Kacheln nebeneinander.
+       buildExpandPanel/-Toggle bleiben unverändert — wie bei "vorher" ist auch das hier ein
+       reiner CSS-Klassen-Toggle.
+       Abgrenzung zur Zeile — 2 verworfene Versuche zuerst: (1) ein einzelner farbiger
+       Akzentstreifen NUR am Panel wirkte als isolierte grüne Linie neben einer sonst
+       unveränderten Zeile; (2) ein flächiger Primary-Tint über Zeile+Panel wirkte "als wäre
+       plötzlich alles grün", weil Farbe hier die GESAMTE Fläche trägt statt nur ein Signal zu
+       geben. Jetzt stattdessen ein Tiefen-/Elevation-Ansatz OHNE Farbe: die ausgeklappte Zeile
+       hebt sich als eigene abgerundete, weiße Karte mit dezentem Schlagschatten (Material-/
+       Linear-artiges "Popover einer Listenzeile") von der ansonsten flachen Liste ab — Kontrast
+       kommt aus Tiefe/Radius/Weißraum, nicht aus Farbfläche. Der einzige verbleibende Farbakzent
+       ist der bereits bestehende teal Ausklapp-Pfeil (siehe .todo-row.todo-row-expanded
+       .row-act[data-act="expand"] weiter oben) — ein kleines Signal statt einer großen Fläche.
+       KEIN margin-top/border-top/oberer Radius: die obere Trennlinie zur Zeile darüber ist
+       weiterhin deren eigene .todo-row { border-bottom }, unverändert an derselben Stelle wie im
+       eingeklappten Zustand — nur unten (wo das Panel neuen Inhalt hinzufügt) wächst/rundet sich
+       etwas, oben bleibt exakt auf gleicher Höhe, kein Sprung beim Auf-/Zuklappen. */
+    /* KEIN border-left/-right mehr (erster Versuch): die begannen direkt an der oberen Kante,
+       ohne eigenen border-top — dort trafen sie ohne Übergang auf die (andersfarbige,
+       hellere) border-bottom-Linie der Zeile darüber und ergaben eine sichtbar unsaubere
+       Ecke/"gebrochene" obere Trennlinie. Jetzt trägt allein der Schlagschatten (+ die
+       abgerundeten unteren Ecken + border-bottom unten) die Abgrenzung, oben bleibt exakt die
+       normale .todo-row-Trennlinie von vorher, ganz ohne eigene Kante. */
+    /* Negativer "spread" (4. Wert) statt eines reinen Blur-Radius — ein simpler
+       "box-shadow: 0 8px 24px" streut auch nach OBEN über die Boxkante hinaus (Blur wirkt in
+       alle Richtungen), das legte sich sichtbar über die Trennlinie der Zeile darüber und ließ
+       es aussehen, als würde sich beim Ausklappen doch noch etwas an der oberen Kante
+       verschieben. Negativer Spread zieht den Schatten enger an die Box heran, wirkt dadurch
+       fast nur noch unten/seitlich sichtbar, nicht mehr über die obere Kante hinaus. */
+    body.expand-variant-modern .todo-row.todo-row-expanded {
+      position: relative; z-index: 1; margin: 0 0 8px; border-radius: 0 0 var(--radius-m, 10px) var(--radius-m, 10px);
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      box-shadow: 0 6px 12px -4px rgba(55, 71, 79, 0.18);
+    }
+    /* Eigener, dezent getönter Block statt nur Weißraum: macht auf einen Blick klar, dass dieser
+       Bereich zur Zeile darüber gehört, aber ihr UNTERGEORDNET ist ("ausgeklappte Zusatzinfo"),
+       nicht einfach eine Fortsetzung derselben weißen Fläche. Bewusst EIN einzelner, ruhiger
+       Rahmen um den GESAMTEN Panel-Inhalt statt einzelner Kacheln je Sektion (siehe
+       .expand-section weiter unten, die bleiben kartenlos) — die Verschachtelung "Zeile → ein
+       eingerückter Zusatz-Block" reicht als Hierarchie-Signal, ohne wieder in "Karten-in-Karte"
+       zurückzufallen. */
+    /* Statt getöntem Grau-Block: weißer Hintergrund + eine feine grüne border-top-Linie als
+       einziges Trennsignal zur Zeile darüber — analog zum selben Muster in v2.1 (siehe
+       body.expand-variant-v21 .todo-expand-panel-card weiter oben). */
+    body.expand-variant-modern .todo-expand-panel-card {
+      background: var(--color-neutral-light-000); box-shadow: none; border-radius: var(--radius-s);
+      border: none; border-top: 1px solid var(--color-primary-200);
+      margin: 4px 12px 12px; padding: 16px 20px;
+      opacity: 0; transition: opacity .18s ease .05s;
+    }
+    body.expand-variant-modern .todo-row.todo-row-expanded .todo-expand-panel-card { opacity: 1; }
+    body.expand-variant-modern .expand-meta {
+      border-bottom: none; padding-bottom: 0; margin-bottom: 4px; color: var(--color-neutral-dark-400);
+    }
+    /* align-items:stretch (statt start) — die Trennlinie (.expand-section + .expand-section
+       { border-left }) sitzt auf dem Section-Container selbst; bei "start" ist dieser nur so
+       hoch wie sein eigener Inhalt, die Linie hörte deshalb auf Höhe der KÜRZEREN Spalte
+       einfach auf statt bis zum unteren Rand der längeren durchzulaufen. Mit stretch werden
+       beide Spalten-Container gleich hoch (wie die längere), die Linie geht dadurch komplett
+       durch. */
+    body.expand-variant-modern .expand-columns {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 8px 40px;
+      align-items: stretch; overflow: visible;
+    }
+    body.expand-variant-modern .expand-section {
+      background: none; border: none; border-radius: 0; padding: 0; min-width: 0;
+    }
+    /* Ohne Finanzierungswunsch ist die Antragsteller-Sektion das einzige Kind von
+       .expand-columns und würde per auto-fit/1fr sonst die volle Panel-Breite ausfüllen — die
+       grüne Karte wirkt dann unnötig gestreckt/leer auf der rechten Seite. max-width deckelt sie
+       auf eine sinnvolle Inhaltsbreite, egal ob sie allein oder neben Finanzierungswunsch steht. */
+    body.expand-variant-modern .expand-columns .expand-section:only-child { max-width: 420px; }
+    /* Kräftiger als der Standard-Grau-Ton (500 statt 400 + etwas breiter, 2px statt 1px) — die
+       Trennung zwischen Finanzierungswunsch und Antragsteller*in(nen) ist die einzige VERTIKALE
+       Linie im Panel und soll dadurch bewusst deutlicher wahrnehmbar sein als die dünnen
+       horizontalen Linien unter den Sektions-Überschriften. */
+    body.expand-variant-modern .expand-section + .expand-section {
+      border-left: 1px solid var(--color-neutral-light-500); padding-left: 40px;
+    }
+    body.expand-variant-modern .expand-section-label {
+      border-bottom: 1px solid var(--color-neutral-light-400); margin-bottom: 8px; padding-bottom: 8px;
+      font-weight: 600; letter-spacing: 0.6px; color: var(--color-neutral-dark-400);
+    }
+    body.expand-variant-modern .expand-section-label .material-symbols-outlined { color: var(--color-primary-500); }
+    /* Fakten-Raster statt Icon-Kacheln (siehe .fw-fields, Default) ODER Label/Wert-Zeile
+       (siehe .fw-kv-list, "vorher"): buildExpandPanel baut die kv-rows jetzt immer in einen
+       eigenen .fw-kv-list-Wrapper (siehe <style> weiter oben) statt sie direkt in .expand-section
+       zu hängen — das Grid sitzt deshalb HIER auf .fw-kv-list, nicht mehr auf .expand-section
+       selbst, sonst würden nur Label + die beiden Wrapper-Divs (statt der einzelnen kv-rows) zu
+       Grid-Items. Die Sektionsüberschrift bleibt dadurch automatisch ein normaler Block darüber,
+       braucht kein grid-column-Span mehr. */
+    body.expand-variant-modern .todo-expand-panel .fw-kv-list {
+      display: grid; grid-template-columns: repeat(2, minmax(190px, 1fr)); gap: 12px 20px; align-items: start;
+    }
+    body.expand-variant-modern .todo-expand-panel .fw-fields { display: none; }
+    /* justify-content:flex-start überschreibt die Basisregel (.kv-row { justify-content:
+       space-between }, siehe <style> weiter oben) — sonst reißt space-between Label und Wert im
+       jetzt vertikalen (flex-direction:column) kv-row auseinander: Label klebt oben, Wert sackt
+       an den unteren Rand der (durch align-items:stretch im Grid gleich hohen) Zelle, mit einer
+       großen Lücke dazwischen statt der beabsichtigten engen Label-über-Wert-Gruppierung. */
+    /* Fakten-Tile: Icon OBEN, darunter das Label, darunter der Wert — statt Icon+Label
+       nebeneinander vor dem Wert. justify-content:flex-start überschreibt weiterhin die
+       Basisregel (.kv-row { justify-content: space-between }, siehe <style> weiter oben), sonst
+       reißt space-between die 3 gestapelten Teile im jetzt vertikalen (flex-direction:column)
+       kv-row auseinander statt sie eng zu gruppieren. */
+    /* Jedes Feld als eigene kleine Karte (heller Primary-Tint, dieselbe Farbe wie z. B. der
+       "Verknüpfter Antrag"-Chip oben) statt nur freistehendem Text — grenzt die einzelnen
+       Finanzierungswunsch-Fakten sichtbar voneinander ab, näher an modernen Info-/Stat-Kacheln. */
+    body.expand-variant-modern .todo-expand-panel .kv-row {
+      flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px;
+      background: rgba(0, 150, 136, 0.06); border-radius: var(--radius-s); padding: 14px 16px;
+    }
+    body.expand-variant-modern .todo-expand-panel .kv-row + .kv-row { border-top: none; }
+    /* flex:none auf ALLEN DREIEN überschreibt die Basisregeln (.todo-expand-panel .kv-label {
+       flex: 0 0 130px } / .kv-value { flex: 1 }, siehe <style> weiter oben, für die horizontale
+       Label/Wert-Zeile der anderen Varianten gedacht) — kv-row ist hier flex-direction:column,
+       "flex-basis" wirkt dadurch auf der jetzt VERTIKALEN Hauptachse: die geerbten 130px
+       machten aus dem Label einen 130px HOHEN Block statt einer einzelnen Textzeile. */
+    /* align-self:stretch überschreibt hier gezielt das align-items:flex-start des kv-row-Eltern
+       (siehe oben) — sonst sizen Label/Wert als Cross-Axis-"flex-start"-Kinder auf ihre reine
+       Inhaltsbreite (wie inline-block) statt auf die volle Kartenbreite, wodurch lange
+       zusammengeschriebene Wörter (z. B. "Anschlussfinanzierung") NIE umbrechen, sondern die
+       Karte einfach in die Breite sprengen bzw. über den Rand hinaus in die Nachbarkarte laufen. */
+    body.expand-variant-modern .todo-expand-panel .kv-label {
+      flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase;
+      color: var(--color-neutral-dark-400); white-space: normal;
+    }
+    /* Icon in einem sanften Kreis-Chip statt reinem Glyph — wirkt als eigenständiges kleines
+       "Icon-Tile" über dem Text, statt wie ein Aufzählungszeichen davor zu kleben (modernes
+       Stat-Karten-Muster, z. B. Dashboard-Kennzahlen mit Icon-Badge über der Zahl). Dieselbe
+       Icon-Zuordnung wie bei den Icon-Kacheln der "jetzt"-Variante (siehe FINANCING_WISH_ICONS). */
+    body.expand-variant-modern .todo-expand-panel .kv-label-icon {
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--color-neutral-light-000); color: var(--color-primary-600); font-size: 15px;
+    }
+    body.expand-variant-modern .todo-expand-panel .kv-label-text { line-height: 1.3; }
+    /* Wert bewusst NICHT fett (font-weight: 400 statt 700) — auf der jetzt farbig hinterlegten
+       Karte wirkt Fettschrift zusätzlich zur Fläche schnell zu laut/plakativ; normale Schriftstärke
+       reicht als Kontrast zum kleineren, grauen Label darüber. */
+    /* overflow-wrap: lange, unzertrennliche deutsche Komposita (z. B. "Anschlussfinanzierung",
+       ein einzelnes Wort ohne Leerzeichen) brechen sonst trotz white-space:normal NICHT um,
+       sondern laufen über den rechten Kartenrand hinaus in die Nachbarkarte hinein. */
+    body.expand-variant-modern .todo-expand-panel .kv-value {
+      flex: none; align-self: stretch; font-size: 14px; font-weight: 400; text-align: left;
+      white-space: normal; overflow-wrap: break-word;
+      color: var(--color-neutral-dark-900);
+    }
+    /* Antragsteller*innen untereinander (statt nebeneinander), jetzt jede Person als eigene
+       Karte im selben hellen Primary-Tint wie die Finanzierungswunsch-Fakten — Abstand zwischen
+       mehreren Personen kommt aus dem Grid-"gap", nicht mehr aus margin/border-top. */
+    body.expand-variant-modern .applicant-info-people { display: flex; flex-direction: column; gap: 12px; }
+    /* Trennung kommt hier allein aus dem Grid-"gap" zwischen den Karten (siehe Kommentar
+       unten) — die neue Plus-Trennlinie (Default-Regel) wäre zusätzlich zur Karten-Fläche
+       redundant. */
+    body.expand-variant-modern .applicant-info-people::before { display: none; }
+    body.expand-variant-modern .todo-expand-panel .applicant-info-block {
+      background: rgba(0, 150, 136, 0.06); border-radius: var(--radius-s); padding: 14px 16px;
+    }
+    /* justify-content:flex-start überschreibt die Basisregel (.applicant-info-row {
+       justify-content: space-between }) — sonst reißt es Name und Beschäftigungstag/"Keine
+       Angabe" auseinander bis an den rechten Panelrand, statt sie erkennbar als ein
+       zusammengehöriges Namens-Häppchen nebeneinander zu zeigen. */
+    /* space-between statt flex-start: Name/Kein-Angabe-Text stehen jetzt in einer eigenen
+       begrenzten Karte (siehe .applicant-info-block weiter unten), das Badge darf dadurch
+       gefahrlos an den rechten Kartenrand rutschen statt bis zum Panelrand (frührer, als die
+       Karte noch nicht existierte, riss space-between beides bis zum Panelrand auseinander). */
+    body.expand-variant-modern .todo-expand-panel .applicant-info-row { justify-content: space-between; gap: 10px; }
+    body.expand-variant-modern .todo-expand-panel .applicant-info-name { font-size: 14px; font-weight: 700; }
+    /* Kein Icon vor dem Namen in "Modern" — passt nicht zum bewusst kartenlosen/icon-losen
+       Namens-Look dieser Variante. */
+    body.expand-variant-modern .todo-expand-panel .applicant-info-icon { display: none; }
+    body.expand-variant-modern .employment-tag {
+      background: var(--color-neutral-light-000); border: none;
+      color: var(--color-neutral-dark-600); font-weight: 600;
+    }
+    /* Weißer Kreis-Chip + Primary-Icon — dasselbe Muster wie .kv-label-icon bei den
+       Finanzierungswunsch-Fakten (weißer Hintergrund hebt sich von der primary-getönten Karte
+       ab, Icon in Markenfarbe statt neutralem Grau). */
+    body.expand-variant-modern .todo-expand-panel .applicant-info-contact .material-symbols-outlined {
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--color-neutral-light-000); color: var(--color-primary-600); font-size: 12px;
+    }
+
+    /* ---------- Ausklapp-Panel "v4" (5. Vergleichsvariante, siehe .expand-variant-group oben)
+       — dasselbe Layout wie "v3" (Icon-über-Label-über-Wert-Fakten, Elevation-Karte, Trennlinien
+       unter den Sektionsüberschriften …), NUR mit WEISSEN statt grün getönten Karten je Feld/
+       Person. Technisch: body trägt bei "v4" ZUSÄTZLICH die Klasse expand-variant-modern (siehe
+       LAYOUT-UMSCHALTER-Script weiter unten), "v4" selbst überschreibt danach nur die
+       Kartenfarbe — alle sonstigen v3-Regeln (Grid/Abstände/Typografie/Card-Shadow der Zeile/
+       Icon-Zuordnung) gelten dadurch unverändert mit, ohne jede einzelne Regel zu duplizieren.
+       Die Karten selbst sitzen auf der (dezent grauen) Panel-Fläche — ein dünner Rahmen statt
+       Schatten grenzt sie sichtbar ab, sonst verschwimmen Weiß-auf-Hellgrau fast unsichtbar
+       ineinander. Icon-Kreise/Badge/Kontakt-Icons bekommen statt Weiß (Kontrast zur grünen
+       Fläche in v3) ein helles Grau, sonst verschwänden sie auf der jetzt ebenfalls weißen
+       Kartenfläche. */
+    body.expand-variant-v4 .todo-expand-panel .kv-row {
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-primary-200);
+      box-shadow: 0 2px 6px rgba(55, 71, 79, 0.1);
+    }
+    body.expand-variant-v4 .todo-expand-panel .kv-label-icon { background: var(--color-neutral-light-200); }
+    body.expand-variant-v4 .todo-expand-panel .applicant-info-block {
+      background: var(--color-neutral-light-000); border: 1px solid var(--color-primary-200);
+      box-shadow: 0 2px 6px rgba(55, 71, 79, 0.1);
+    }
+    body.expand-variant-v4 .employment-tag { background: var(--color-neutral-light-200); }
+    body.expand-variant-v4 .todo-expand-panel .applicant-info-contact .material-symbols-outlined {
+      background: var(--color-neutral-light-200);
+    }
 
     .todo-pagination {
       background: #fff; border-top: 1px solid var(--color-neutral-light-400);
@@ -1067,7 +1503,10 @@
        sonst würde entweder der rechte Kreis die Trennlinie berühren oder die Spaltenbreite
        (die auch von der Spalten-Überschrift und den .todo-typ-Zellen bestehender Zeilen genutzt
        wird) müsste dafür verbreitert werden. */
-    .add-typ { display: flex; align-items: flex-start; justify-content: center; gap: 4px; padding: 0 2px; }
+    /* grid statt flex: 2 Icons pro Zeile, damit die 4 Optionen (Email/Anruf/Termin/
+       Benutzerdefiniert) als 2×2-Raster untereinander stehen statt in einer Reihe nebeneinander
+       zu wachsen — passt so weiterhin in die schmale "Art"-Spalte. */
+    .add-typ { display: grid; grid-template-columns: repeat(2, 32px); justify-content: center; gap: 4px; padding: 0 2px; }
     .add-typ-option {
       position: relative;
       width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-neutral-light-500);
@@ -1076,6 +1515,13 @@
       transition: background var(--transition-fast, .1s ease), border-color .1s ease, color .1s ease;
     }
     .add-typ-option:hover { background: var(--color-neutral-light-400); }
+    /* Ohne gewählte/n Antragsteller*in ergibt eine "Art" (Anruf/Email) inhaltlich nichts, an wen
+       sich das ToDo richtet — Kreise bleiben deshalb bis dahin disabled (siehe
+       updateTypPillsDisabled im Script), title wechselt auf einen Hinweistext, den man auch im
+       disabled-Zustand per Hover sieht (title sitzt auf dem <label>, nicht dem <input>, das
+       native disabled-Inputs oft ganz von Tooltips ausschließt). */
+    .add-typ-option:has(input:disabled) { cursor: not-allowed; opacity: 0.5; }
+    .add-typ-option:has(input:disabled):hover { background: var(--color-neutral-light-200); }
     /* Radio bleibt für Semantik/Tastatur erhalten, aber unsichtbar (kein eigener Anzeige-Kreis
        mehr nötig) — das Icon UND sein Kreis-Hintergrund übernehmen die Anzeige. inset:0 statt
        eines 1x1px-Punkts: der Radio selbst ist der komplette 32px-Klickbereich, damit ein Klick
@@ -1108,6 +1554,28 @@
        Cursor wäre hier irreführend, da es kein Freitextfeld ist. */
     .inline-edit[data-field="berater"], .inline-edit[data-field="typ"] { cursor: pointer; }
     .inline-edit.editing { border-bottom-color: transparent; padding: 0; margin: 0; }
+    /* ToDos, die sich nicht bearbeiten lassen (Geburtstag — erkennbar an data-geburtstag, nicht
+       mehr an data-typ, seit die Art bei Geburtstag "Email" zeigt statt eines eigenen Icons;
+       plus vom Kunden ausgelöste ToDos) — siehe openInlineField-Guard im Script. .inline-edit
+       bleibt aus Layout-Gründen auf denselben Feldern (Größen/Abstände unverändert), die
+       Hover-/Cursor-Hinweise auf "hier klicken zum Ändern" wären aber irreführend. */
+    .todo-row[data-geburtstag="true"] .inline-edit,
+    .todo-row[data-kunde-ausgeloest="true"] .inline-edit { cursor: default; }
+    .todo-row[data-geburtstag="true"] .inline-edit:hover,
+    .todo-row[data-kunde-ausgeloest="true"] .inline-edit:hover { background: none; border-bottom-color: transparent; }
+    /* Der Art-Icon-Kreis selbst bleibt bei beiden bewusst normal gefärbt beim Hover (wie bei
+       jeder bearbeitbaren Zeile) — nur die gestrichelte Linie darunter (eigenes ::after-Element,
+       siehe .todo-typ-trigger.inline-edit::after weiter unten, daher hier extra Regel nötig)
+       wird unterdrückt, da sie "hier klicken zum Ändern" andeutet, was hier nie stimmt. */
+    .todo-row[data-geburtstag="true"] .todo-typ-trigger:hover::after,
+    .todo-row[data-kunde-ausgeloest="true"] .todo-typ-trigger:hover::after { border-bottom-color: transparent; }
+    /* Ausnahme von der Cursor-Regel oben: das Art-Icon bleibt bei kundenausgelösten Dokumente-
+       ToDos klickbar (öffnet das verknüpfte Dokument statt die Art zu ändern, siehe
+       openLinkedDocument im Script), braucht daher seinen normalen Pointer-Cursor zurück.
+       Die gestrichelte "hier klicken, um die Art zu ändern"-Linie bleibt aber bewusst
+       unterdrückt (siehe Regel oben) — sie stimmt hier inhaltlich nicht, da ein Klick nicht die
+       Art ändert, sondern navigiert. Höhere Spezifität (Feld-Selektor zusätzlich) nötig. */
+    .todo-row[data-kunde-ausgeloest="true"][data-typ="dokument"] .inline-edit[data-field="typ"] { cursor: pointer; }
     /* Border-Look für ALLE Inputs im Prototyp vereinheitlicht auf denselben Look wie beim
        Berater-Inline-Edit (siehe früher .berater-edit-wrap .inline-input): 1.5px statt 1px,
        durchgehend Primary statt hellem Grau + Focus-Glow — kein separater :focus-Zustand mehr
@@ -1197,14 +1665,29 @@
     }
     .typ-pop-item {
       display: flex; align-items: center; gap: var(--space-m); width: 100%;
-      font: inherit; font-size: 13px; font-weight: 500; text-align: left; color: var(--color-neutral-dark-900);
+      font: inherit; font-size: 13px; font-weight: 400; text-align: left; color: var(--color-neutral-dark-900);
       background: none; border: 0; border-radius: var(--radius-xs, 2px); padding: 7px 8px; cursor: pointer;
+      text-decoration: none; box-sizing: border-box;
     }
     .typ-pop-item:hover, .typ-pop-item:focus { background: var(--color-primary-100); color: var(--color-primary-600); outline: none; }
     .typ-pop-item:focus-visible { box-shadow: var(--focus-ring); }
-    .typ-pop-item .material-symbols-outlined { font-size: 18px; }
-    .typ-pop-item.active { color: var(--color-primary-600); }
-    .typ-pop-item.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+    /* Schnellaktionen (Dokument öffnen/E-Mail schreiben/Anrufen, siehe openTypPop) fett, damit
+       sie sich von der schlichten Art-Liste darunter abheben — echte Aktionen statt reiner
+       Auswahloptionen. Erkennbar an data-action (Button) bzw. dem <a>-Tag (mailto:/tel:), da
+       beide keinen data-value tragen wie die Art-Optionen. */
+    .typ-pop-item[data-action], a.typ-pop-item { font-weight: 700; }
+    /* Etwas mehr Abstand links vom Aktionstext, da hier (anders als bei den Art-Optionen
+       darunter) kein Icon mehr davor steht. */
+    .typ-pop-item[data-action] > span:first-child, a.typ-pop-item > span:first-child { padding-left: 4px; }
+    /* Deutlichere Trennung zwischen Schnellaktion und der Art-Liste darunter als die
+       normale .due-pop-sep (dort nur ein dezenter Rhythmus-Trenner zwischen Datum/Uhrzeit). */
+    .typ-pop .due-pop-sep { height: 1px; margin: var(--space-xs) -4px; background: var(--color-neutral-light-500); }
+    /* Gleiche Icon-Optik wie im Art-Spalten-Filter (.typ-filter-menu .bmenu-check
+       .material-symbols-outlined) — durchgehend gedämpftes Grau statt der Text-/Hover-Farbe zu
+       folgen, damit beide Art-Dropdowns (Filter oben, Ändern hier) gleich aussehen. Die aktive
+       Auswahl bleibt trotzdem erkennbar über font-variation-settings (gefüllter Glyph) statt
+       über eine Farbänderung. */
+    .typ-pop-item .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); flex-shrink: 0; }
 
     @media (max-width: 992px) {
       .todo-group, .todo-columns-header, .add-row-fields {
@@ -1729,16 +2212,6 @@
        So bleibt immer alles auf einer Zeile; kein eigenes Scrollen mehr nötig, da keines der
        Elemente mehr schrumpft (siehe .segmented--quick weiter unten) — die ToDo-Pane wird
        stattdessen bei Bedarf einfach breiter, bis an den Kalender heran. */
-    /* Prototyp-Vergleichs-Werkzeug (siehe Kommentar bei #fwVariantSwitcher im Markup) —
-       bewusst unauffällig/klein, damit es nicht wie ein echter Teil der Topbar wirkt. Sitzt in
-       der .topbar direkt neben dem Layout-Switch (#designSwitchInput), da beide reine
-       Vergleichs-Werkzeuge für diesen Prototyp sind. */
-    .fw-variant-switcher {
-      display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--color-neutral-dark-600);
-    }
-    .fw-variant-switcher-label { font-style: italic; }
-    .fw-variant-switcher label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
-    .fw-variant-switcher input[type="radio"] { margin: 0; cursor: pointer; }
     .todo-pane-head { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; flex-shrink: 0; margin-bottom: var(--space-s); }
     /* display:contents "entfernt" den Wrapper aus dem Flexbox-Baum — Berater/Zeitraum/
        Sortieren/Suche/Kalender bleiben dadurch im Standard-Layout exakt direkte Flex-Items
@@ -2066,26 +2539,14 @@
         <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: schaltet das gesamte
              ToDo-Pane-Head-Layout um (Schnellfilter als Tabs statt Segmented-Buttons + eigene
              Filter-Zeile darunter, siehe body.design-tabs weiter unten in Style/Script).
-             Sitzt hier direkt neben "FinLink", zusammen mit dem anderen Test-Schalter
-             (#fwVariantSwitcher) daneben. -->
+             Sitzt hier direkt neben "FinLink" (der frühere zweite Test-Schalter daneben,
+             #fwVariantSwitcher, ist entfernt — "Ausklappen" ist jetzt die feste, einzige
+             Variante, siehe FINANZIERUNGSWUNSCH-VARIANTEN-Script weiter unten). -->
         <label class="design-switch" title="Layout umschalten (nur Prototyp-Vergleich)">
           <input type="checkbox" id="designSwitchInput" />
           <span class="design-switch-track"><span class="design-switch-knob"></span></span>
           <span class="design-switch-label">Neues Layout</span>
         </label>
-        <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: schaltet um, wie die
-             Finanzierungswunsch-Details (Finanzierungsgrund/Immobilientyp/Immobiliennutzung/
-             PLZ) pro ToDo dargestellt werden, damit beide Varianten live nebeneinander
-             getestet werden können, statt sich vorab auf eine festzulegen (siehe
-             fw-variant-switcher-Script weiter unten). Bewusst schlicht gehalten (native
-             Radios, kein Chip-Look), damit es klar als Test-Werkzeug erkennbar bleibt. Sitzt
-             hier direkt neben dem Layout-Switch, da beide reine Vergleichs-Werkzeuge für
-             diesen Prototyp sind (kein Produkt-Feature). -->
-        <div class="fw-variant-switcher" id="fwVariantSwitcher">
-          <span class="fw-variant-switcher-label">Finanzierung:</span>
-          <label><input type="radio" name="fwVariant" value="expand" checked /> Ausklappen</label>
-          <label><input type="radio" name="fwVariant" value="both" /> Ausklappen + Icon</label>
-        </div>
         <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: lässt bei "Alle" die
              Fälligkeits-Gruppen (Überfällig/Heute/Morgen/Später) wieder mit sichtbarer
              Überschrift erscheinen (reaktiviert body.grouping-due, siehe .group-title-row in
@@ -2099,6 +2560,37 @@
           <span class="design-switch-track"><span class="design-switch-knob"></span></span>
           <span class="design-switch-label">Gruppierung</span>
         </label>
+        <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: schaltet die Optik des
+             Ausklapp-Panels (siehe .todo-expand-panel/.todo-expand-panel-inner in <style>)
+             zwischen der bisherigen ("v1"), der modernisierten Version ("v2"), einer Variante
+             mit reinen Icon-Kacheln ohne Feldname bei Finanzierungswunsch ("v2.1", siehe
+             body.expand-variant-v21 in <style>) und einer komplett kartenlosen Variante ("v3",
+             siehe body.expand-variant-modern) um, ohne dass mehrere getrennte Prototyp-Dateien
+             gepflegt werden müssen. Radiobuttons statt Toggle-Switch, da es hier (anders als
+             "Neues Layout"/"Gruppierung" oben) mehrere gleichwertige Varianten sind, nicht ein
+             An/Aus. -->
+        <div class="expand-variant-group" role="radiogroup" aria-label="Ausklapp-Panel-Design (nur Prototyp-Vergleich)">
+          <label class="expand-variant-radio">
+            <input type="radio" name="expandPanelVariant" value="old" />
+            <span>Ausklappen v1</span>
+          </label>
+          <label class="expand-variant-radio">
+            <input type="radio" name="expandPanelVariant" value="new" checked />
+            <span>Ausklappen v2</span>
+          </label>
+          <label class="expand-variant-radio">
+            <input type="radio" name="expandPanelVariant" value="v21" />
+            <span>Ausklappen v2.1</span>
+          </label>
+          <label class="expand-variant-radio">
+            <input type="radio" name="expandPanelVariant" value="modern" />
+            <span>Ausklappen v3</span>
+          </label>
+          <label class="expand-variant-radio">
+            <input type="radio" name="expandPanelVariant" value="v4" />
+            <span>Ausklappen v4</span>
+          </label>
+        </div>
         <div class="spacer"></div>
         <button class="top-icon" title="Neuer Eintrag"><span class="material-icons">add_box</span></button>
         <button class="top-icon" title="Vollbild"><span class="material-icons">fullscreen</span></button>
@@ -2310,13 +2802,21 @@
                  zwischen Email/Anruf wählen kann. Radio-Semantik + "nochmal klicken = abwählen"
                  unverändert, siehe TYP-Script weiter unten. -->
             <div class="add-typ" id="addTypPills" role="radiogroup" aria-label="Art des ToDos">
-              <label class="add-typ-option" title="Email">
-                <input type="radio" name="addTyp" value="email" aria-label="Email" />
+              <label class="add-typ-option" title="Email" data-label="Email">
+                <input type="radio" name="addTyp" value="email" aria-label="Email" disabled />
                 <span class="material-symbols-outlined">mail</span>
               </label>
-              <label class="add-typ-option" title="Anruf">
-                <input type="radio" name="addTyp" value="anruf" aria-label="Anruf" />
+              <label class="add-typ-option" title="Anruf" data-label="Anruf">
+                <input type="radio" name="addTyp" value="anruf" aria-label="Anruf" disabled />
                 <span class="material-symbols-outlined">call</span>
+              </label>
+              <label class="add-typ-option" title="Termin" data-label="Termin">
+                <input type="radio" name="addTyp" value="termin" aria-label="Termin" disabled />
+                <span class="material-symbols-outlined">event</span>
+              </label>
+              <label class="add-typ-option" title="Benutzerdefiniert" data-label="Benutzerdefiniert">
+                <input type="radio" name="addTyp" value="benutzerdefiniert" aria-label="Benutzerdefiniert" disabled />
+                <span class="material-symbols-outlined">edit_note</span>
               </label>
             </div>
             <!-- Antragsteller: dasselbe Such-Input+Dropdown-Muster wie beim Berater-Feld
@@ -2379,7 +2879,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-typ="dokument" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt am Main">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-typ="dokument" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Antrag prüfen – Kunde hat ein Angebot angefragt</span></span>
@@ -2401,42 +2901,42 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="20095 Hamburg">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
-                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
                 <span class="todo-title-actions">
                   <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
                   <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um das Dokument zu öffnen"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="nadine.fischer@web.de" data-telefon="+49 176 5566778">Nadine Fischer</button>
                 </div>
-                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 07:45</span></div>
-                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit">26.08.2026 – 07:45</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater">Jan Joisten</span></div>
 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="geburtstag">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email" data-geburtstag="true">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
-                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Geburtstag: Stefan Lehmann</span></span>
+                <span class="todo-text-group"><span class="material-symbols-outlined todo-title-icon" title="Geburtstag">cake</span><span class="todo-text inline-edit" data-field="titel">Geburtstag: Stefan Lehmann</span></span>
                 <span class="todo-title-actions">
                   <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
                   <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
                   <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
                 </span>
                 </div>
-                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Geburtstag"><span class="material-symbols-outlined">cake</span></span></span></div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></span></div>
                 <div class="todo-applicant">
                   <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
                   <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="stefan.lehmann@gmx.de" data-telefon="+49 157 4433221">Stefan Lehmann</button>
                 </div>
-                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 08:00</span></div>
-                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit">26.08.2026</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater">Jan Joisten</span></div>
 
               </div>
               <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="anruf" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="10115 Berlin">
@@ -2496,7 +2996,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="22.06.2026">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="22.06.2026" data-finanzierungsgrund="Erstfinanzierung" data-immobilientyp="Doppelhaushälfte" data-immobiliennutzung="Selbst bewohnt" data-plz="40213 Düsseldorf">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Angebot finalisieren</span></span>
@@ -2618,7 +3118,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="23.06.2026">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="23.06.2026" data-finanzierungsgrund="Modernisierung" data-immobilientyp="Mehrfamilienhaus" data-immobiliennutzung="Vermietet" data-plz="04109 Leipzig">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Dokumente von Kunde prüfen</span></span>
@@ -2732,7 +3232,7 @@
             <button class="group-headline">
               <span class="material-symbols-outlined">keyboard_arrow_up</span>
               <span class="group-name">Morgen fällig</span>
-              <span class="group-count">(2)</span>
+              <span class="group-count">(3)</span>
             </button>
             <div class="group-labels">
               <span class="col-due">Fälligkeit</span>
@@ -2759,6 +3259,25 @@
                 <div class="todo-due" data-due="2026-08-27"><span class="due-tag due-tag--morgen">Morgen</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">27.08.2026 – 09:00</span></div>
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Sandra Wolf</span></div>
                 
+              </div>
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückfrage zum Finanzierungswunsch klären</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern"><span class="todo-typ-icon" title="Email"><span class="material-symbols-outlined">mail</span></span></span></div>
+                <div class="todo-applicant">
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                  <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="michael.braun@web.de" data-telefon="+49 151 6677889">Michael Braun</button>
+                </div>
+                <div class="todo-due" data-due="2026-08-27"><span class="due-tag due-tag--morgen">Morgen</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">27.08.2026 – 09:30</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
+
               </div>
               <div class="todo-row" data-berater="Andrea Lindner" data-created="21.06.2026">
                 <div class="todo-title">
@@ -2806,7 +3325,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Jan Joisten" data-created="25.06.2026">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="25.06.2026" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Reihenhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="30159 Hannover">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Konditionen final abstimmen</span></span>
@@ -2825,7 +3344,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="24.06.2026">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="24.06.2026" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="90402 Nürnberg">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Vertragsunterlagen an Notar übermitteln</span></span>
@@ -3106,7 +3625,7 @@
     // hier als eigene kleine Factory statt geteilt). fallbackValue ist der Wert, auf den ein
     // Freitext ohne Listentreffer beim Verlassen des Felds zurückfällt ('' bei Antragsteller,
     // da leer/"Ohne Antragsteller" dort ein gültiger Wert ist; "Jan Joisten" bei Berater).
-    function setupSearchCombobox(inputId, listId, clearId, names, fallbackValue) {
+    function setupSearchCombobox(inputId, listId, clearId, names, fallbackValue, onChange) {
       var input = document.getElementById(inputId);
       var list = document.getElementById(listId);
       var clearBtn = document.getElementById(clearId);
@@ -3133,7 +3652,10 @@
       }
       function close() { list.hidden = true; list.innerHTML = ''; }
       input.addEventListener('focus', render);
-      input.addEventListener('input', render);
+      // onChange (aktuell nur von addPerson genutzt, siehe updateTypPillsDisabled) reagiert
+      // schon auf jeden Tastenanschlag, nicht erst auf eine bestätigte Auswahl — das Aktivieren
+      // der Art-Pills soll so früh wie möglich passieren, sobald erkennbar Text im Feld steht.
+      input.addEventListener('input', function () { render(); if (onChange) onChange(); });
       // Verhindert, dass ein Klick in die Liste/auf "×" dem Input erst per blur den Fokus
       // entzieht, bevor der eigentliche Klick verarbeitet wird.
       list.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
@@ -3142,6 +3664,7 @@
         if (!opt) return;
         input.value = opt.dataset.value;
         close();
+        if (onChange) onChange();
       });
       input.addEventListener('keydown', function (ev) {
         if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
@@ -3163,19 +3686,37 @@
         // fallbackValue zurück, genau wie ein natives <select> keine Freitext-Werte zuließe.
         if (names.indexOf(input.value.trim()) === -1) input.value = fallbackValue;
         close();
+        if (onChange) onChange();
       });
       clearBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
       clearBtn.addEventListener('click', function () {
         input.value = '';
         input.focus();
         render();
+        if (onChange) onChange();
       });
+    }
+
+    // Ohne Antragsteller*in ergibt eine "Art" (Anruf/Email) inhaltlich nichts — die Pills
+    // bleiben deshalb disabled, bis das Antragsteller-Feld einen Wert trägt (siehe CSS
+    // .add-typ-option:has(input:disabled)). Reagiert auf jede Änderung des Feldes (Tippen,
+    // Auswahl aus der Liste, "×"-Button, Blur-Revert bei ungültigem Freitext — siehe onChange
+    // in setupSearchCombobox). Wird eine bereits gewählte Art durchs Leeren des Feldes wieder
+    // ungültig, setzt resetTypPills() sie zurück statt eine "Art ohne Antragsteller" stehen zu
+    // lassen.
+    function updateTypPillsDisabled() {
+      var hasPerson = !!document.getElementById('addPerson').value.trim();
+      typPills.querySelectorAll('.add-typ-option').forEach(function (opt) {
+        opt.querySelector('input[type="radio"]').disabled = !hasPerson;
+        opt.title = hasPerson ? opt.dataset.label : 'Bitte zuerst einen Antragsteller auswählen';
+      });
+      if (!hasPerson) resetTypPills();
     }
 
     // Antragsteller beim Anlegen — leer bleibt ein gültiger Wert ("Ohne Antragsteller", siehe
     // commitAddRow), deshalb fallbackValue '' statt eines festen Namens.
     var ANTRAGSTELLER_ALL = ['Andreas Weber', 'Lena Bachmann', 'Sandra Klein', 'Petra Schulz', 'Familie Meier', 'Thomas Berger', 'Michael Braun', 'Julia Hoffmann', 'Mehmet Öztürk'];
-    setupSearchCombobox('addPerson', 'addPersonList', 'addPersonClear', ANTRAGSTELLER_ALL, '');
+    setupSearchCombobox('addPerson', 'addPersonList', 'addPersonClear', ANTRAGSTELLER_ALL, '', updateTypPillsDisabled);
 
     // Berater beim Anlegen — dieselbe Namensliste wie im Berater-Filter oben (dort BERATER_ALL,
     // aber in eigenem IIFE-Scope, deshalb hier separat gepflegt). Vorbelegt mit "Jan Joisten",
@@ -3211,8 +3752,8 @@
     // Art des ToDos (Email/Anruf): optionale Radiobuttons, Einfachauswahl — Klick auf den
     // bereits ausgewählten Radio wählt wieder ab (dann ohne Art, wie bisher bei den Pills).
     // Bestimmt das Icon, das nach dem Speichern neben dem Titel steht (siehe .todo-typ-icon).
-    var TYP_ICON = { email: 'mail', anruf: 'call', link: 'link', geburtstag: 'cake', dokument: 'description' };
-    var TYP_LABEL = { email: 'Email', anruf: 'Anruf', link: 'Link', geburtstag: 'Geburtstag', dokument: 'Dokumente' };
+    var TYP_ICON = { email: 'mail', anruf: 'call', termin: 'event', benutzerdefiniert: 'edit_note', link: 'link', dokument: 'description' };
+    var TYP_LABEL = { email: 'Email', anruf: 'Anruf', termin: 'Termin', benutzerdefiniert: 'Benutzerdefiniert', link: 'Link', dokument: 'Dokumente' };
     var selectedTyp = null;
     var typPills = document.getElementById('addTypPills');
     // mousedown VOR dem eigentlichen Klick, um den Radio-Zustand von davor zu kennen — native
@@ -3319,6 +3860,7 @@
       document.getElementById('addDue').value = tomorrowIso();
       document.getElementById('addDueTime').value = '09:00';
       resetTypPills();
+      updateTypPillsDisabled();
       document.getElementById('addTitle').focus();
     }
     // Kein "Hinzufügen"/"Abbrechen"-Button mehr — Verlassen der Zeile (Klick woandershin,
@@ -3348,9 +3890,13 @@
       var due = document.getElementById('addDue').value || tomorrowIso();
       var dueTime = document.getElementById('addDueTime').value || '09:00';
       var dueLabel = window.relativeDueLabel ? window.relativeDueLabel(due, dueTime) : due;
+      // .todo-typ-chevron hier direkt mit ins Markup (statt wie bei bestehenden Zeilen per
+      // addTypChevron im ART-INLINE-EDIT-Script nachgerüstet, siehe dort) — dieser Scope hat
+      // keinen Zugriff auf jene Funktion (eigene IIFE), eine einzelne zusätzliche Span-Zeile ist
+      // hier weniger Aufwand als eine window-Exportierung nur für diesen einen Aufruf.
       var typIconHtml = '<div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um die Art zu ändern">' + (selectedTyp
         ? '<span class="todo-typ-icon" title="' + TYP_LABEL[selectedTyp] + '"><span class="material-symbols-outlined">' + TYP_ICON[selectedTyp] + '</span></span>'
-        : '') + '</span></div>';
+        : '') + '<span class="material-symbols-outlined todo-typ-chevron" aria-hidden="true">expand_more</span></span></div>';
       var row = document.createElement('div');
       row.className = 'todo-row';
       row.dataset.berater = berater;
@@ -3568,23 +4114,48 @@
     });
 
     // Finanzierungswunsch-Details (Finanzierungsgrund/Immobilientyp/Immobiliennutzung/PLZ) —
-    // Prototyp-Vergleich zweier Darstellungsvarianten, siehe #fwVariantSwitcher weiter unten
-    // im Markup und dessen Script am Dateiende. financingWishKvHtml baut nur die reinen
-    // .kv-row-Zeilen (leerer String, wenn die Zeile keine Daten trägt) — window-exportiert, da
-    // sowohl diese Popover-Variante HIER als auch Variante C (Ausklappen, weiter unten)
-    // dieselben Zeilen brauchen, nur in unterschiedlicher Hülle.
+    // financingWishKvHtml baut nur die reinen .kv-row-Zeilen (leerer String, wenn die Zeile
+    // keine Daten trägt) — window-exportiert, da sowohl diese Popover-Variante HIER als auch
+    // das Ausklapp-Panel (buildExpandPanel, weiter unten) dieselben Zeilen brauchen, nur in
+    // unterschiedlicher Hülle.
     var FINANCING_WISH_FIELDS = [
       ['finanzierungsgrund', 'Finanzierungsgrund'],
       ['immobilientyp', 'Immobilientyp'],
       ['immobiliennutzung', 'Immobiliennutzung'],
       ['plz', 'PLZ/Ort']
     ];
+    // Icon-Span sitzt IMMER im Markup (nicht nur für "Modern" gebaut), ist aber per Default
+    // unsichtbar (siehe .kv-label-icon in <style>) — dieselbe kv-row-Liste wird auch von der
+    // kompakten Popover-Karte (buildFinancingWishPopover) und der "vorher"-Ausklapp-Variante
+    // genutzt, die beide ohne Icon auskommen sollen. Nur body.expand-variant-modern blendet es
+    // ein (siehe dort), FINANCING_WISH_ICONS ist dieselbe Zuordnung wie bei den Icon-Kacheln
+    // weiter unten (financingWishTilesHtml), hier nur vorgezogen deklariert.
+    var FINANCING_WISH_ICONS = {
+      finanzierungsgrund: 'payments', immobilientyp: 'home', immobiliennutzung: 'key', plz: 'location_on'
+    };
     function financingWishKvHtml(row) {
       return FINANCING_WISH_FIELDS.filter(function (f) { return row.dataset[f[0]]; }).map(function (f) {
-        return '<div class="kv-row"><span class="kv-label">' + f[1] + '</span><span class="kv-value">' + row.dataset[f[0]] + '</span></div>';
+        return '<div class="kv-row"><span class="kv-label"><span class="material-symbols-outlined kv-label-icon">' +
+          FINANCING_WISH_ICONS[f[0]] + '</span><span class="kv-label-text">' + f[1] + '</span></span>' +
+          '<span class="kv-value">' + row.dataset[f[0]] + '</span></div>';
       }).join('');
     }
     window.financingWishKvHtml = financingWishKvHtml;
+
+    // Nur für das Ausklapp-Panel ("jetzt"-Variante, siehe .fw-fields/.fw-kv-list in
+    // <style>): statt Label/Wert nebeneinander (kv-row, siehe oben) bekommt jedes Feld eine
+    // kleine Kopfzeile aus Icon + Feldname, direkt darunter die gewählte Antwort — kompakter zu
+    // scannen als eine Liste aus Label/Wert-Paaren. Eigene Funktion statt financingWishKvHtml zu
+    // erweitern, da die kompakte Popover-Karte (buildFinancingWishPopover) weiterhin die
+    // schlichte kv-row-Liste braucht. FINANCING_WISH_ICONS ist weiter oben (vor
+    // financingWishKvHtml) deklariert, hier nur weiter verwendet.
+    function financingWishTilesHtml(row) {
+      return FINANCING_WISH_FIELDS.filter(function (f) { return row.dataset[f[0]]; }).map(function (f) {
+        return '<div class="fw-field"><div class="fw-field-head"><span class="material-symbols-outlined">' +
+          FINANCING_WISH_ICONS[f[0]] + '</span><span class="fw-field-label">' + f[1] + '</span></div>' +
+          '<span class="fw-field-value">' + row.dataset[f[0]] + '</span></div>';
+      }).join('');
+    }
 
     // Baut (Variante A) die Popover-Karte am Finanzierungswunsch-Icon in .todo-title-actions
     // neu auf und setzt/entfernt .has-financing-wish auf der Zeile (steuert dessen Sichtbarkeit,
@@ -3606,10 +4177,8 @@
     window.buildFinancingWishPopover = buildFinancingWishPopover;
     document.querySelectorAll('.todo-row').forEach(buildFinancingWishPopover);
 
-    // Variante C des Finanzierungswunsch-Vergleichs (siehe #fwVariantSwitcher weiter unten
-    // im Markup/Script am Dateiende): zeigt beim Ausklappen einer Zeile Finanzierungswunsch-
-    // Details UND das Beschäftigungsverhältnis jede/r Antragsteller*in direkt inline an, statt
-    // sie hinter Icon+Popover (Variante A) zu verstecken.
+    // Ausklappen einer Zeile zeigt Finanzierungswunsch-Details UND das Beschäftigungsverhältnis
+    // jede/r Antragsteller*in direkt inline an, statt sie hinter Icon+Popover zu verstecken.
     // Fügt Trennlinie+Button (.todo-expand-toggle) direkt NACH der Checkbox und VOR dem
     // Titeltext ein — bewusst nicht in .todo-title-actions (Verlauf/Löschen), da der Button
     // hier zum Titel gehört, nicht zu den Zeilen-Aktionen rechts. Die Idempotenz-Prüfung unten
@@ -3638,67 +4207,76 @@
     window.buildExpandToggle = buildExpandToggle;
     document.querySelectorAll('.todo-row').forEach(buildExpandToggle);
 
-    // "Verknüpfter Antrag" ist NUR ein Platzhalter-Beispiel (siehe Nutzer-Anfrage) — dieser
-    // Prototyp kennt kein echtes Datenmodell, das ToDos mit Finanzierungsanträgen verknüpft.
-    // Deterministisch aus dem 1. Antragsteller-Namen abgeleitet, damit dieselbe Zeile bei
-    // jedem Neuaufbau des Panels (z. B. nach einem Zeilen-Edit) dieselbe Beispiel-ID zeigt,
-    // statt bei jedem Aufruf eine neue zufällige ID zu erzeugen.
-    function mockLoanApplicationId(row) {
-      var nameEl = row.querySelector('.todo-applicant-name');
-      var seed = (nameEl ? nameEl.textContent : row.dataset.created) || 'todo';
-      var hash = 0;
-      for (var i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-      return 'A-' + (10000 + (hash % 90000));
-    }
-
     // Baut die Panel-Inhalte selbst (Finanzierungswunsch-Zeilen aus financingWishKvHtml + ein
     // Beschäftigungsverhältnis-Block je Antragsteller*in, dieselben Bausteine wie
     // buildApplicantPopover, nur ohne Kontaktzeilen — hier geht es nur um den Status). Anzeige
     // läuft rein über CSS (.todo-row.todo-row-expanded + body.fw-variant-expand, siehe <style>),
     // das Panel wird deshalb immer gebaut, auch ohne Finanzierungswunsch-Daten. Beide Karten
-    // tragen eine kleine, dezente Beschriftung (.expand-section-label, ohne Icon) — ganz ohne
-    // Label wäre bei mehreren Namen (z. B. "Andreas Weber / Nina Weber") nicht auf den ersten
-    // Blick klar, dass das die Antragsteller*innen sind statt z. B. Sachbearbeiter*innen.
+    // tragen eine kleine, dezente Beschriftung mit vorangestelltem Kategorie-Icon
+    // (.expand-section-label, siehe <style>) — ganz ohne Label wäre bei mehreren Namen (z. B.
+    // "Andreas Weber / Nina Weber") nicht auf den ersten Blick klar, dass das die
+    // Antragsteller*innen sind statt z. B. Sachbearbeiter*innen.
     function buildExpandPanel(row) {
       if (!row.querySelector('.todo-title-actions')) return;
       var existing = row.querySelector('.todo-expand-panel');
       if (existing) existing.remove();
       var fwKv = financingWishKvHtml(row);
+      // Beide Darstellungen (alte kv-row-Liste UND neue Icon-Kacheln) werden gebaut — welche
+      // sichtbar ist, entscheidet rein CSS je nach Ausklapp-Panel-Variante (siehe .fw-kv-list/
+      // .fw-fields in <style>), damit die "vorher"-Vergleichsvariante weiterhin die
+      // ursprüngliche Liste zeigt, ohne dass buildExpandPanel dafür je nach Variante
+      // unterschiedliches Markup bauen müsste.
       var fwHtml = fwKv
-        ? '<div class="expand-section"><span class="expand-section-label">Finanzierungswunsch</span>' + fwKv + '</div>'
+        ? '<div class="expand-section"><span class="expand-section-label"><span class="material-symbols-outlined">savings</span>Finanzierungswunsch</span>' +
+          '<div class="fw-kv-list">' + fwKv + '</div>' +
+          '<div class="fw-fields">' + financingWishTilesHtml(row) + '</div></div>'
         : '';
       var applicantBlocks = Array.prototype.slice.call(row.querySelectorAll('.todo-applicant-name')).map(function (el) {
         var tagHtml = el.dataset.beschaeftigung
           ? '<span class="employment-tag employment-tag--' + el.dataset.beschaeftigung + '">' + EMPLOYMENT_LABEL[el.dataset.beschaeftigung] + '</span>'
           : '<span class="expand-no-data">Keine Angabe</span>';
-        // Name+Tag in einer Zeile, E-Mail/Telefon jeweils darunter — dieselbe Block-Struktur wie
-        // in buildApplicantPopover (dort werden die Chips ebenfalls unter der Namenszeile
-        // gestapelt, siehe .applicant-info-contact). Bei 2 Antragsteller*innen stehen die Blöcke
-        // hier aber NEBENEINANDER statt untereinander (siehe .applicant-info-people in <style>).
+        // Name+Tag in einer Zeile, Kontaktzeilen darunter. Der Name bekommt ein eigenes
+        // Icon davor (.applicant-info-icon, gleiche runde hellgrüne Optik wie bei den
+        // Kontaktzeilen darunter, siehe <style>) — sonst begann der Name sichtbar weiter
+        // links als E-Mail/Telefon (die durch ihr Icon eingerückt sind), was uneinheitlich
+        // wirkte. .applicant-info-name-group bündelt Icon+Name zu einem Flex-Element, damit
+        // .applicant-info-row (justify-content:space-between) weiterhin nur 2 Kinder hat
+        // (Name-Gruppe links, Tag rechts) statt Icon/Name/Tag einzeln zu verteilen.
         var contactHtml = contactChipHtml('mail', el.dataset.email, 'E-Mail-Adresse') + contactChipHtml('call', el.dataset.telefon, 'Telefonnummer');
-        return '<div class="applicant-info-block"><div class="applicant-info-row"><span class="applicant-info-name">' + el.textContent + '</span>' + tagHtml + '</div>' + contactHtml + '</div>';
+        return '<div class="applicant-info-block"><div class="applicant-info-row">' +
+          '<span class="applicant-info-name-group"><span class="material-symbols-outlined applicant-info-icon">person</span>' +
+          '<span class="applicant-info-name">' + el.textContent + '</span></span>' + tagHtml + '</div>' + contactHtml + '</div>';
       });
       // Bei nur 1 Antragsteller*in bekommt die Karte zusätzlich min-width (.expand-section--wide,
       // siehe <style>) — sonst schrumpft sie auf die schmale Inhaltsbreite von Name/Tag und wirkt
-      // im Vergleich zur (meist breiteren) Finanzierungswunsch-Karte gequetscht.
-      var applicantSectionClass = 'expand-section' + (applicantBlocks.length === 1 ? ' expand-section--wide' : '');
+      // im Vergleich zur (meist breiteren) Finanzierungswunsch-Karte gequetscht. Bei genau 2
+      // Antragsteller*innen (.expand-section--pair) wird die Antragsteller-Karte breiter (2
+      // Personen nebeneinander) — die Finanzierungswunsch-Kacheln daneben sollen dann
+      // untereinander statt in der sonstigen 2x2-Anordnung stehen (siehe .fw-fields-Override
+      // über .expand-columns:has(.expand-section--pair) in <style>), sonst wirken beide Karten
+      // nebeneinander ungleichmäßig breit/gequetscht.
+      var applicantSectionClass = 'expand-section' + (applicantBlocks.length === 1 ? ' expand-section--wide' : applicantBlocks.length === 2 ? ' expand-section--pair' : '');
       // Singular ("Antragsteller*in") nur bei genau 1 Person — ab 2 (z. B. Andreas + Nina
       // Weber) ist es grammatisch der Plural "Antragsteller*innen", auch wenn "2" sich noch
       // klein anfühlt.
       var applicantLabel = applicantBlocks.length > 1 ? 'Antragsteller*innen' : 'Antragsteller*in';
-      var applicantHtml = '<div class="' + applicantSectionClass + '"><span class="expand-section-label">' + applicantLabel + '</span>' +
+      var applicantHtml = '<div class="' + applicantSectionClass + '"><span class="expand-section-label"><span class="material-symbols-outlined">group</span>' + applicantLabel + '</span>' +
         '<div class="applicant-info-people">' + applicantBlocks.join('') + '</div></div>';
       var metaHtml =
-        '<div class="expand-meta"><span class="material-symbols-outlined">link</span>' +
-        '<span class="expand-meta-label">Verknüpfter Antrag</span>' +
-        '<a href="#" class="expand-meta-link" title="Beispielhafte Verknüpfung – kein echter Link">' + mockLoanApplicationId(row) + '</a>' +
+        '<div class="expand-meta">' +
+        '<span class="expand-meta-label">Antrag öffnen</span>' +
+        '<span class="no-todos-open" aria-hidden="true" title="Antrag öffnen"><span class="material-symbols-outlined">arrow_forward</span></span>' +
         '<div class="expand-meta-actions">' +
         '<button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>' +
         '<button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>' +
         '</div></div>';
       var panel = document.createElement('div');
       panel.className = 'todo-expand-panel';
-      panel.innerHTML = metaHtml + '<div class="expand-columns">' + fwHtml + applicantHtml + '</div>';
+      // .todo-expand-panel-inner (reiner Schrumpf-Wrapper) + .todo-expand-panel-card (trägt die
+      // Optik) — siehe ausführlichen Kommentar bei .todo-expand-panel in <style>, warum es beide
+      // Ebenen braucht, damit der eingeklappte Zustand wirklich 0px hoch ist.
+      panel.innerHTML = '<div class="todo-expand-panel-inner"><div class="todo-expand-panel-card">' + metaHtml +
+        '<div class="expand-columns">' + fwHtml + applicantHtml + '</div></div></div>';
       row.appendChild(panel);
     }
     window.buildExpandPanel = buildExpandPanel;
@@ -3707,8 +4285,6 @@
     document.addEventListener('click', function (e) {
       var btn = e.target.closest('.row-act[data-act="expand"]');
       if (btn) { btn.closest('.todo-row').classList.toggle('todo-row-expanded'); return; }
-      // Reiner Platzhalter-Link (siehe mockLoanApplicationId oben) — kein echtes Ziel.
-      if (e.target.closest('.expand-meta-link')) e.preventDefault();
     });
 
     // ===================================================================
@@ -3875,8 +4451,8 @@
     var TYP_EDIT_OPTIONS = [
       { value: 'anruf', label: 'Anruf', icon: 'call' },
       { value: 'email', label: 'Email', icon: 'mail' },
-      { value: 'link', label: 'Link', icon: 'link' },
-      { value: 'geburtstag', label: 'Geburtstag', icon: 'cake' },
+      { value: 'termin', label: 'Termin', icon: 'event' },
+      { value: 'benutzerdefiniert', label: 'Benutzerdefiniert', icon: 'edit_note' },
       { value: 'dokument', label: 'Dokumente', icon: 'description' },
       { value: '', label: 'Ohne Art', icon: 'block' }
     ];
@@ -3884,6 +4460,20 @@
       var existing = document.querySelector('.typ-pop');
       if (existing) existing.remove();
     }
+    // Hover-Chevron am Art-Icon (siehe .todo-typ-chevron in <style>) — ein echtes Element statt
+    // CSS-generiertem Inhalt, damit es exakt dieselbe Klick-Delegation nutzt wie das Icon
+    // selbst. Einmalig für alle bestehenden Zeilen beim Laden eingefügt (Aufruf weiter unten)
+    // UND erneut nach jedem innerHTML-Rewrite von .todo-typ-trigger (siehe applyTypValue
+    // unten), da ein einfaches innerHTML= es sonst mit überschreiben würde.
+    function addTypChevron(trigger) {
+      if (!trigger || trigger.querySelector('.todo-typ-chevron')) return;
+      var chevron = document.createElement('span');
+      chevron.className = 'material-symbols-outlined todo-typ-chevron';
+      chevron.textContent = 'expand_more';
+      chevron.setAttribute('aria-hidden', 'true');
+      trigger.appendChild(chevron);
+    }
+    document.querySelectorAll('.todo-typ-trigger').forEach(addTypChevron);
     function applyTypValue(typCell, value) {
       var row = typCell.closest('.todo-row');
       row.dataset.typ = value;
@@ -3891,6 +4481,7 @@
       typCell.innerHTML = (opt && opt.value)
         ? '<span class="todo-typ-icon" title="' + opt.label + '"><span class="material-symbols-outlined">' + opt.icon + '</span></span>'
         : '';
+      addTypChevron(typCell);
       if (window.applyTypFilter) window.applyTypFilter();
       if (window.renderChips) window.renderChips();
       if (window.showToast) window.showToast('Art geändert: ' + (opt ? opt.label : 'Ohne Art'));
@@ -3899,20 +4490,64 @@
       var alreadyOpenHere = el.querySelector('.typ-pop');
       closeTypPop();
       if (alreadyOpenHere) { el.focus({ preventScroll: true }); return; } // zweiter Klick schließt nur, wie beim Fälligkeits-Dropdown
-      var current = el.closest('.todo-row').dataset.typ || '';
+      var row = el.closest('.todo-row');
+      var current = row.dataset.typ || '';
       var pop = document.createElement('div');
       pop.className = 'typ-pop';
       pop.setAttribute('role', 'menu');
       pop.setAttribute('aria-label', 'Art ändern');
-      pop.innerHTML = TYP_EDIT_OPTIONS.map(function (opt) {
-        return '<button type="button" class="typ-pop-item' + (opt.value === current ? ' active' : '') + '" role="menuitem" data-value="' + opt.value + '">' +
+      // Je nach aktueller Art bietet dasselbe Dropdown zusätzlich oben eine passende
+      // Schnellaktion — Dokument öffnen (Dokumente), E-Mail schreiben (Email) oder Anrufen
+      // (Anruf) —, getrennt durch eine Trennlinie von den eigentlichen Art-Optionen darunter.
+      // Ein Klick auf das Icon reicht so aus, um bei selbst angelegten ToDos (z. B.
+      // "Antrag prüfen …") BEIDES erreichbar zu machen: die zur Art passende Aktion ausführen
+      // ODER die Art ändern, statt zwei getrennte Klickziele zu brauchen. E-Mail/Anruf nutzen
+      // echte mailto:/tel:-Links (öffnen Mail-App/Wählprogramm) statt eines Platzhalter-Toasts
+      // wie beim Dokument — beides ist bei der Kontaktdaten-Info der Antragsteller*in bereits
+      // vorhanden (data-email/data-telefon), eine echte Verlinkung braucht daher keinen Mock.
+      // Fehlt der erste Antragsteller oder dessen Kontaktdatum, bleibt die Schnellaktion einfach
+      // weg (nur die Art-Liste erscheint) statt mit einem funktionslosen Link zu verwirren.
+      // Runder Pfeil-Button ("Icon button + background - 32px", dieselbe Komponente wie
+      // .no-todos-open beim "5 aktive Anträge ohne ToDos"-Hinweis) markiert das Zeilenende jeder
+      // Schnellaktion als "hier geht's weiter" — bewusst ein <span> statt eines zweiten
+      // <button>/<a>, da er innerhalb des bereits klickbaren typ-pop-item liegt (verschachtelte
+      // interaktive Elemente sind ungültiges HTML); margin-left:auto schiebt ihn ans Zeilenende.
+      var actionArrowHtml = '<span class="no-todos-open" aria-hidden="true" style="margin-left:auto"><span class="material-symbols-outlined">arrow_forward</span></span>';
+      var applicantBtn = row.querySelector('.todo-applicant-name');
+      var quickActionHtml = '';
+      if (current === 'dokument') {
+        quickActionHtml = '<button type="button" class="typ-pop-item" role="menuitem" data-action="open-document">' +
+          '<span>Dokument öffnen</span>' + actionArrowHtml + '</button>';
+      } else if (current === 'email' && applicantBtn && applicantBtn.dataset.email) {
+        quickActionHtml = '<a class="typ-pop-item" role="menuitem" href="mailto:' + applicantBtn.dataset.email + '">' +
+          '<span>E-Mail schreiben</span>' + actionArrowHtml + '</a>';
+      } else if (current === 'anruf' && applicantBtn && applicantBtn.dataset.telefon) {
+        quickActionHtml = '<a class="typ-pop-item" role="menuitem" href="tel:' + applicantBtn.dataset.telefon.replace(/\s+/g, '') + '">' +
+          '<span>Anrufen</span>' + actionArrowHtml + '</a>';
+      }
+      var quickActionSectionHtml = quickActionHtml ? quickActionHtml + '<div class="due-pop-sep"></div>' : '';
+      // Gleiche Überschrift/Optik wie "Ausgelöst von" im Art-Spalten-Filter (.bmenu-group-label)
+      // — macht (v. a. bei sichtbarer Schnellaktion darüber) auf den ersten Blick klar, dass die
+      // Optionen darunter zum Ändern der Art gehören, nicht zur Aktion oben.
+      pop.innerHTML = quickActionSectionHtml + '<div class="bmenu-group-label">Ändern zu</div>' + TYP_EDIT_OPTIONS.filter(function (opt) {
+        return opt.value !== current;
+      }).map(function (opt) {
+        return '<button type="button" class="typ-pop-item" role="menuitem" data-value="' + opt.value + '">' +
           '<span class="material-symbols-outlined">' + opt.icon + '</span><span>' + opt.label + '</span></button>';
       }).join('');
       el.appendChild(pop);
-      var activeItem = pop.querySelector('.typ-pop-item.active') || pop.querySelector('.typ-pop-item');
-      if (activeItem) activeItem.focus({ preventScroll: true });
+      var firstItem = pop.querySelector('.typ-pop-item');
+      if (firstItem) firstItem.focus({ preventScroll: true });
       pop.addEventListener('click', function (e) {
         e.stopPropagation();
+        var docBtn = e.target.closest('[data-action="open-document"]');
+        if (docBtn) { closeTypPop(); el.focus({ preventScroll: true }); openLinkedDocument(row); return; }
+        // mailto:/tel:-Links navigieren von selbst (kein preventDefault) — das Dropdown aber
+        // SYNCHRON im selben Klick-Handler zu entfernen, würde in manchen Browsern die native
+        // Navigation des gerade entfernten <a> mit abbrechen. Schließen deshalb erst einen Tick
+        // später (setTimeout 0), nachdem der Browser die Navigation bereits losgeschickt hat.
+        var linkEl = e.target.closest('a.typ-pop-item');
+        if (linkEl) { setTimeout(function () { closeTypPop(); el.focus({ preventScroll: true }); }, 0); return; }
         var item = e.target.closest('.typ-pop-item');
         if (!item) return;
         applyTypValue(el, item.dataset.value);
@@ -3990,6 +4625,10 @@
         '<div class="due-pop-fields">' +
         '<input type="date" class="due-pop-date" aria-label="Fälligkeitsdatum" value="' + iso + '" />' +
         '<input type="time" class="due-pop-time" aria-label="Fälligkeitsuhrzeit" value="' + (timePart || '') + '" />' +
+        '</div>' +
+        '<div class="bmenu-foot due-pop-foot">' +
+        '<button type="button" class="btn btn-primary" data-due-act="confirm">Bestätigen</button>' +
+        '<button type="button" class="bmenu-clear" data-due-act="cancel">Abbrechen</button>' +
         '</div>';
       dueCell.appendChild(pop);
       pop.querySelector('.due-pop-item').focus({ preventScroll: true });
@@ -4025,9 +4664,18 @@
 
       pop.addEventListener('click', function (e) {
         var item = e.target.closest('.due-pop-item');
-        if (!item) return;
+        if (item) { closeDuePop(); bumpDue(dueCell, +item.dataset.days); return; }
+        // Explizite Bestätigen/Abbrechen-Buttons zusätzlich zum bereits bestehenden impliziten
+        // Übernehmen (Enter, Klick außerhalb, Fokus verlässt das Feld-Paar, siehe focusout oben)
+        // — für Nutzer*innen, die lieber eine sichtbare Aktion anklicken, statt sich auf das
+        // Verlassen des Dropdowns zu verlassen. Abbrechen verwirft (wie Escape), OHNE die
+        // Felder vorher zu übernehmen.
+        var actBtn = e.target.closest('[data-due-act]');
+        if (!actBtn) return;
+        if (actBtn.dataset.dueAct === 'confirm') { applyFields(); return; }
+        duePopApply = null;
         closeDuePop();
-        bumpDue(dueCell, +item.dataset.days);
+        el.focus({ preventScroll: true });
       });
       pop.addEventListener('keydown', function (e) {
         // In den Feldern selbst keine Pfeiltasten-Navigation zwischen den Menüpunkten (Datum/
@@ -4049,9 +4697,44 @@
       });
     }
 
+    // NUR ein Platzhalter-Beispiel (wie mockLoanApplicationId beim Ausklapp-Panel) — dieser
+    // Prototyp kennt kein echtes Dokumentenverknüpfungs-Modell. Deterministisch aus dem
+    // Antragsteller-Namen abgeleitet, damit dieselbe Zeile bei jedem Aufruf dieselbe
+    // Beispiel-ID zeigt (siehe Toast in openLinkedDocument).
+    function mockDocumentId(row) {
+      var nameEl = row.querySelector('.todo-applicant-name');
+      var seed = (nameEl ? nameEl.textContent : row.dataset.created) || 'todo';
+      var hash = 0;
+      for (var i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+      return 'DOK-' + (10000 + (hash % 90000));
+    }
+    // Vom Kunden hochgeladene Dokumente: Klick auf das (Dokumenten-)Art-Icon öffnet das
+    // verknüpfte Dokument, statt (wie sonst) die Art zu ändern — dasselbe, sofort verständliche
+    // Muster wie ein Anhang-/Datei-Icon in E-Mail-Programmen. Nur ein Toast statt einer echten
+    // Navigation, da dieser Prototyp kein Dokumenten-Backend hat.
+    function openLinkedDocument(row) {
+      if (window.showToast) window.showToast('Öffnet Dokument ' + mockDocumentId(row) + ' (Platzhalter, kein echter Link)');
+    }
+
     // Klick-Delegation statt Einzel-Listener pro Zeile: erfasst automatisch auch neue, per
     // "+ ToDo" eingefügte Zeilen, ohne dass deren Erzeugung diesen Scope kennen muss.
     function openInlineField(el) {
+      // Geburtstags-ToDos und vom Kunden ausgelöste System-ToDos (z. B. "neue Dokumente
+      // hochgeladen") sind reine, automatisch generierte Erinnerungen, kein manuell gepflegter
+      // Termin — Titel/Berater/Fälligkeit ergeben dort inhaltlich nichts zu "ändern". tabindex/
+      // title wurden dafür bereits aus dem Markup dieser Felder entfernt (kein Fokus/Tooltip
+      // mehr). data-kunde-ausgeloest statt generell data-typ="dokument", da NICHT jedes
+      // Dokumente-ToDo automatisch generiert ist (siehe "Antrag prüfen …", das weiterhin normal
+      // bearbeitbar bleibt).
+      var row = el.closest('.todo-row');
+      if (row && row.dataset.kundeAusgeloest === 'true') {
+        // Ausnahme von der sonstigen Komplettsperre: das Art-Icon bleibt hier klickbar, öffnet
+        // aber das verknüpfte Dokument statt die Art-Auswahl (siehe openLinkedDocument oben) —
+        // ergibt nur bei Art "Dokumente" Sinn, andere Felder bleiben wie gehabt gesperrt.
+        if (el.dataset.field === 'typ' && row.dataset.typ === 'dokument') openLinkedDocument(row);
+        return;
+      }
+      if (row && row.dataset.geburtstag === 'true') return;
       if (el.dataset.field === 'faelligkeit') openDuePop(el);
       else if (el.dataset.field === 'berater') startBeraterEdit(el);
       else if (el.dataset.field === 'typ') openTypPop(el);
@@ -4757,12 +5440,15 @@
        ======================================================================= -->
   <script>
   (function () {
+    // Geburtstag/Dokumente bewusst NICHT im Filter (anders als im Art-Ändern-Dropdown
+    // TYP_EDIT_OPTIONS bestehender Zeilen) — beide sind automatisch generierte System-ToDos
+    // (nicht bearbeitbar, siehe openInlineField-Guard), nach denen in der Praxis nicht gezielt
+    // gefiltert wird; "Vom Kunden" (Checkbox weiter unten) deckt den kundenausgelösten Fall ab.
     var TYP_OPTIONS = [
       { value: 'anruf', label: 'Anruf', icon: 'call' },
       { value: 'email', label: 'Email', icon: 'mail' },
-      { value: 'link', label: 'Link', icon: 'link' },
-      { value: 'geburtstag', label: 'Geburtstag', icon: 'cake' },
-      { value: 'dokument', label: 'Dokumente', icon: 'description' },
+      { value: 'termin', label: 'Termin', icon: 'event' },
+      { value: 'benutzerdefiniert', label: 'Benutzerdefiniert', icon: 'edit_note' },
       { value: '', label: 'Ohne Art', icon: 'block' }
     ];
     var btnEl = document.getElementById('btnTypFilter');
@@ -4791,7 +5477,7 @@
         '<div class="bmenu-group-label">Ausgelöst von</div>' +
         '<label class="bmenu-check" data-kunde-ausgeloest-check>' +
           '<input type="checkbox" ' + (kundeAusgeloestFilter ? 'checked' : '') + ' /> ' +
-          '<span class="material-symbols-outlined">person</span><span>Vom Kunden ausgelöst</span>' +
+          '<span class="material-symbols-outlined">person</span><span>Kunde</span>' +
         '</label>' +
         '</div>' +
         '<div class="bmenu-foot"><button class="bmenu-clear" id="typClear">Alle löschen</button></div>';
@@ -5310,25 +5996,16 @@
   </script>
 
   <!-- =======================================================================
-       FINANZIERUNGSWUNSCH-VARIANTEN-UMSCHALTER — NUR für diesen Prototyp-Vergleich, kein
-       Produkt-Feature (siehe Kommentar bei #fwVariantSwitcher im Markup). Schaltet zwischen
-       Variante C (Ausklappen je Zeile, siehe .row-act[data-act="expand"]/buildExpandPanel) und
-       einer Kombi-Variante "both" (Ausklappen bleibt 1:1 wie gehabt, ZUSÄTZLICH bekommt jede
-       Zeile mit Finanzierungswunsch-Daten das Haus-Icon+Popover — ursprünglich Variante A,
-       siehe .row-act[data-act="finanzierungswunsch"]/buildFinancingWishPopover — daneben) um,
-       indem einfach body-Klassen gesetzt werden. Reine Icon-Popover-Variante (ohne Ausklappen)
-       ist als eigene Auswahl entfernt, die zugrundeliegende CSS-Klasse (fw-variant-icon)
-       bleibt aber bestehen — "both" aktiviert sie einfach zusätzlich zu fw-variant-expand,
-       statt eine eigene dritte Regel-Kopie zu brauchen.
+       FINANZIERUNGSWUNSCH-DARSTELLUNG — früher per Test-Schalter (#fwVariantSwitcher) zwischen
+       "Ausklappen" und einer Kombi-Variante "Ausklappen + Icon" umschaltbar, um beide im
+       Prototyp-Vergleich gegenüberzustellen. Der Schalter ist entfernt, "Ausklappen" (Zeile
+       ausklappen, siehe .row-act[data-act="expand"]/buildExpandPanel) ist jetzt die einzige,
+       fest verdrahtete Variante — body.fw-variant-expand bleibt dauerhaft gesetzt statt per
+       Radio umschaltbar zu sein.
        ======================================================================= -->
   <script>
   (function () {
     document.body.classList.add('fw-variant-expand');
-    document.getElementById('fwVariantSwitcher').addEventListener('change', function (e) {
-      var variant = e.target.value;
-      document.body.classList.toggle('fw-variant-icon', variant === 'both');
-      document.body.classList.toggle('fw-variant-expand', variant === 'expand' || variant === 'both');
-    });
   })();
   </script>
 
@@ -5485,6 +6162,28 @@
     document.getElementById('groupingSwitchInput').addEventListener('change', function (e) {
       document.body.classList.toggle('grouping-due', e.target.checked);
       if (window.applyQuickFilter) window.applyQuickFilter();
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       AUSKLAPP-PANEL-VARIANTEN-VERGLEICH (nur Prototyp-Vergleich, siehe
+       .expand-variant-group oben + body.expand-variant-old/-v21/-modern in <style>) — Eigener
+       Scope, rührt die anderen Scripts nicht an. Reiner CSS-Klassen-Toggle, buildExpandPanel/
+       -Toggle bleiben für alle 4 Varianten unverändert.
+       ======================================================================= -->
+  <script>
+  (function () {
+    document.querySelectorAll('input[name="expandPanelVariant"]').forEach(function (radio) {
+      radio.addEventListener('change', function (e) {
+        document.body.classList.toggle('expand-variant-old', e.target.value === 'old');
+        document.body.classList.toggle('expand-variant-v21', e.target.value === 'v21');
+        // "v4" ist v3 (expand-variant-modern) OHNE die grünen Karten — trägt deshalb BEIDE
+        // Klassen: expand-variant-modern liefert das komplette v3-Layout, expand-variant-v4
+        // überschreibt danach nur die Kartenflächen wieder auf "keine" (siehe <style>).
+        document.body.classList.toggle('expand-variant-modern', e.target.value === 'modern' || e.target.value === 'v4');
+        document.body.classList.toggle('expand-variant-v4', e.target.value === 'v4');
+      });
     });
   })();
   </script>
