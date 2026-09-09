@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipeline-View V1</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Design system (two folders deep → ../../design-system/) -->
+  <link rel="stylesheet" href="../../design-system/tokens.css" />
+  <link rel="stylesheet" href="../../design-system/styles.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body {
+      font-family: var(--font-family);
+      color: var(--color-neutral-dark-900);
+      background: var(--color-neutral-light-200);
+    }
+
+    /* ---------- APP SHELL ---------- */
+    .app { display: flex; height: 100vh; width: 100vw; }
+
+    .rail {
+      width: 104px; min-width: 104px;
+      background: var(--color-neutral-dark-900);
+      display: flex; flex-direction: column;
+    }
+    .rail-logo {
+      height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 16px;
+      background: var(--color-neutral-light-000);
+      flex-shrink: 0;
+    }
+    .rail-logo svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .rail-logo span { font-size: 15px; font-weight: 700; color: var(--color-neutral-dark-900); }
+
+    .rail-nav { display: flex; flex-direction: column; padding-top: var(--space-s); }
+    .rail-item {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 12px 4px; cursor: pointer;
+      color: #B0C4CB;
+      text-decoration: none;
+      transition: color var(--transition-base), background var(--transition-base);
+    }
+    .rail-item:hover { color: var(--color-neutral-light-000); background: rgba(255,255,255,.06); }
+    .rail-item.active { color: var(--color-neutral-light-000); background: rgba(255,255,255,.08); }
+    .rail-item.active::before {
+      content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
+      background: var(--color-primary-400); border-radius: 0 2px 2px 0;
+    }
+    .rail-item .material-symbols-outlined { font-size: 20px; }
+    .rail-label { font-size: 11px; letter-spacing: .1px; text-align: center; line-height: 1.2; }
+
+    /* ---------- MAIN ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    .topbar {
+      height: 56px; flex-shrink: 0;
+      background: var(--color-neutral-light-000);
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: var(--space-s); padding: 0 var(--space-l);
+    }
+    .top-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: var(--radius-s);
+      border: none; background: none; cursor: pointer;
+      color: var(--color-neutral-dark-400);
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+    .top-icon:hover { background: var(--color-neutral-light-200); color: var(--color-neutral-dark-800); }
+    .top-icon .material-symbols-outlined { font-size: 22px; }
+    .top-lang {
+      display: inline-flex; align-items: center; gap: 2px; cursor: pointer;
+      border: none; background: none; padding: var(--space-xs) var(--space-s);
+      border-radius: var(--radius-s); color: var(--color-neutral-dark-800);
+      font-family: var(--font-family); font-size: 14px; font-weight: 500;
+    }
+    .top-lang:hover { background: var(--color-neutral-light-200); }
+    .top-divider { width: 1px; height: 28px; background: var(--color-neutral-light-500); margin: 0 var(--space-xs); }
+    .top-user { display: inline-flex; align-items: center; gap: var(--space-s); cursor: pointer;
+      padding: var(--space-xs) var(--space-s); border-radius: var(--radius-s); }
+    .top-user:hover { background: var(--color-neutral-light-200); }
+    .top-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+      background: var(--color-primary-200); display: flex; align-items: center; justify-content: center;
+      color: var(--color-primary-700); font-size: 13px; font-weight: 700; }
+    .top-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .top-user-name { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-900); }
+    .top-user-role { font-size: 11px; color: var(--color-neutral-dark-300); }
+
+    /* ---------- HEADER ---------- */
+    .header {
+      background: var(--color-neutral-light-000);
+      border-bottom: 1px solid var(--color-neutral-light-500);
+      flex-shrink: 0;
+    }
+    .header-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 24px 20px; gap: var(--space-l); flex-wrap: wrap;
+    }
+    .header-left { display: flex; align-items: flex-start; gap: 20px; }
+    .page-title { font-size: 24px; font-weight: 400; margin: 0; line-height: 28px; color: var(--color-neutral-dark-900); padding-top: 4px; }
+
+    .view-switcher { display: inline-flex; height: 36px; }
+    .view-switcher button {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--color-neutral-light-500); background: var(--color-neutral-light-000);
+      cursor: pointer; padding: 4px 16px; font-family: var(--font-family); font-size: 14px;
+      color: var(--color-neutral-dark-600); letter-spacing: .25px;
+    }
+    .view-switcher button .material-symbols-outlined { font-size: 16px; }
+    .view-switcher button:first-child { border-radius: var(--radius-s) 0 0 var(--radius-s); border-right: none; }
+    .view-switcher button:last-child { border-radius: 0 var(--radius-s) var(--radius-s) 0; }
+    .view-switcher button.active { background: var(--color-neutral-light-400, #ECEFF1); border-color: var(--color-neutral-light-500); color: var(--color-neutral-dark-900); font-weight: 500; }
+
+    .search-block { display: flex; flex-direction: column; gap: 8px; width: 345px; }
+    .search-row { display: flex; align-items: center; gap: 16px; }
+    .search-input-wrap { position: relative; width: 250px; height: 36px; }
+    .search-input {
+      width: 100%; height: 100%; padding: 0 34px 0 8px;
+      border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: 14px; letter-spacing: .25px;
+      color: var(--color-neutral-dark-900); background: var(--color-neutral-light-000);
+    }
+    .search-input::placeholder { color: var(--color-neutral-dark-200); }
+    .search-input:focus { outline: none; border-color: var(--color-primary-400); box-shadow: var(--focus-ring); }
+    .search-input-wrap .material-symbols-outlined {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      font-size: 20px; color: var(--color-neutral-dark-300); pointer-events: none;
+    }
+    .checkline { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--color-neutral-dark-600); }
+    .checkline input { accent-color: var(--color-primary-500); width: 16px; height: 16px; }
+
+    .header-right { display: flex; align-items: center; gap: 12px; padding-top: 4px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px 8px 8px; border-radius: var(--radius-s);
+      font-family: var(--font-family); font-size: 14px; font-weight: 500;
+      cursor: pointer; border: 1px solid transparent; white-space: nowrap;
+      transition: background var(--transition-base), border-color var(--transition-base);
+    }
+    .btn .material-symbols-outlined { font-size: 20px; }
+    .btn-primary { background: var(--color-primary-500); color: #fff; border-color: var(--color-primary-500); padding: 8px 12px; }
+    .btn-primary:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); }
+    .btn-secondary { background: var(--color-neutral-light-000); color: var(--color-neutral-dark-800);
+      border-color: var(--color-neutral-dark-200); }
+    .btn-secondary:hover { background: var(--color-neutral-light-200); }
+
+    /* ---------- BOARD ---------- */
+    .content { flex: 1; min-height: 0; overflow: hidden; }
+    .board {
+      height: 100%; display: flex; gap: 28px;
+      overflow-x: auto; overflow-y: hidden;
+      padding: 24px 20px;
+    }
+    .pcol { flex: 0 0 288px; width: 288px; display: flex; flex-direction: column; min-height: 0; }
+    .pcol-head { flex-shrink: 0; margin-bottom: 20px; }
+    .pcol-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 500; letter-spacing: .1px; color: var(--color-neutral-dark-800);
+      line-height: 24px;
+    }
+    .pcol-title .material-symbols-outlined { font-size: 16px; color: var(--color-neutral-dark-200); }
+    .pcol-meta { margin-top: 6px; font-size: 12px; color: var(--color-neutral-dark-400); }
+    .pcol-body {
+      flex: 1; min-height: 40px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px;
+    }
+    .pcol-body.drag-over { background: var(--color-primary-100); outline: 2px dashed var(--color-primary-300); outline-offset: 4px; border-radius: var(--radius-s); }
+
+    /* ---------- CARD ---------- */
+    .pcard {
+      position: relative;
+      display: flex; align-items: stretch;
+      background: var(--color-neutral-light-000);
+      border-radius: var(--radius-s);
+      cursor: grab;
+      box-shadow: 0 1px 4px rgba(84,110,122,.15);
+      transition: box-shadow var(--transition-base), transform var(--transition-fast);
+    }
+    .pcard:hover { box-shadow: 0 2px 8px rgba(84,110,122,.28); }
+    .pcard:active { cursor: grabbing; }
+    .pcard.dragging { opacity: .45; }
+    .pcard-due { flex: 0 0 4px; width: 4px; border-radius: 8px 0 0 8px; background: transparent; }
+    .pcard-due.warning { background: var(--color-warning-high); }
+    .pcard-due.overdue { background: var(--color-error-500); }
+    .pcard-due.info { background: var(--color-notification); }
+    .pcard-body { flex: 1; min-width: 0; padding: 12px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .pcard-home { position: absolute; top: 12px; right: 12px; font-size: 16px; color: var(--color-neutral-dark-200); }
+    .pcard-tags { display: flex; flex-wrap: wrap; gap: 8px 8px; align-items: center; padding-right: 20px; }
+    .ptag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 500; letter-spacing: .25px; line-height: 16px;
+      padding: 0 8px; border-radius: var(--radius-s); white-space: nowrap; color: #fff;
+    }
+    .ptag.new     { background: var(--color-info); }
+    .ptag.claimed { background: var(--color-error-500); }
+    .pcard-name { font-size: 14px; font-weight: 500; color: var(--color-neutral-dark-800); line-height: 16px; }
+    .pcard-sub  { font-size: 12px; color: var(--color-neutral-dark-400); line-height: 16px; }
+    .todo-line { display: flex; align-items: center; gap: 8px; }
+    .todo-ind { display: flex; flex: 1; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; letter-spacing: .2px; line-height: 16px; min-width: 0; }
+    .todo-txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .todo-ind .material-symbols-outlined { font-size: 16px; }
+    .todo-ind.warning { color: var(--color-warning-high); }
+    .todo-ind.overdue { color: var(--color-error-500); }
+    .todo-ind.info    { color: var(--color-notification); }
+    .todo-more { font-size: 11px; font-weight: 500; letter-spacing: .25px; padding: 0 8px; border-radius: var(--radius-s); line-height: 16px; }
+    .todo-more.warning { background: var(--color-warning-high-light); color: var(--color-warning-high); }
+    .todo-more.overdue { background: var(--color-error-100); color: var(--color-error-500); }
+    .todo-ind.warning, .todo-ind.overdue { cursor: pointer; }
+    .pcard.sort-flash { animation: sortflash .5s ease; }
+
+    /* ---------- TODO POPOVER ---------- */
+    .todo-popover {
+      position: fixed; z-index: var(--z-overlay);
+      background: var(--color-neutral-light-000);
+      border-radius: var(--radius-s);
+      box-shadow: 0 2px 8px rgba(84,110,122,.3);
+      padding: 8px 12px; width: 320px;
+      max-height: min(420px, 70vh);
+      overflow-y: auto;      /* fallback for browsers without overlay scrollbars */
+      overflow-y: overlay;   /* Chrome/Edge: scrollbar floats over content, reserves no width */
+      opacity: 0; transform: translateY(4px); pointer-events: none;
+      transition: opacity .12s ease, transform .12s ease;
+    }
+    .todo-popover.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .todo-popover::-webkit-scrollbar { width: 6px; }
+    .todo-popover::-webkit-scrollbar-track { background: transparent; }
+    .todo-popover::-webkit-scrollbar-thumb { background: var(--color-neutral-light-500); border-radius: 4px; }
+    .todo-popover-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0 8px; margin-bottom: 4px;
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .todo-popover-header .name { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .todo-popover-header .open-label { font-size: 12px; color: var(--color-neutral-dark-600); white-space: nowrap; }
+    .todo-popover-row { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; }
+    .todo-popover-row .check {
+      flex-shrink: 0; width: 16px; height: 16px; border-radius: 3px;
+      display: inline-flex; align-items: center; justify-content: center; margin-top: 2px;
+    }
+    .todo-popover-row .check .material-symbols-outlined { font-size: 13px; color: #fff; font-variation-settings: 'FILL' 1; }
+    .todo-popover.warning .check { background: var(--color-warning-high); }
+    .todo-popover.overdue .check { background: var(--color-error-500); }
+    .popover-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .todo-popover-row .txt { font-size: 12px; line-height: 16px; color: var(--color-neutral-dark-600); overflow: hidden; }
+
+    /* Fälligkeit als eingefärbtes Datum/Uhrzeit statt eigener Badge-Pille */
+    .todo-due { display: flex; align-items: center; justify-content: space-between; }
+    .pcard-body .todo-due { margin-top: -5px; padding-left: 20px; } /* lines up under the text, in the icon's "column" */
+    .due-text { font-size: 11px; font-weight: 400; white-space: nowrap; }
+    .due-text--overdue { color: var(--color-error-500); }
+    .due-text--warning { color: var(--color-warning-high); }
+    .more-link { color: var(--color-primary-600); font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .more-link:hover { text-decoration: underline; }
+    .popover-open-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid var(--color-neutral-light-500); background: var(--color-neutral-light-200);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--color-neutral-dark-800); cursor: pointer; margin-left: auto;
+    }
+    .popover-open-btn:hover { background: var(--color-primary-100); color: var(--color-primary-600); }
+    .popover-open-btn .material-symbols-outlined { font-size: 18px; }
+    @keyframes sortflash { 0% { background: var(--color-primary-100); } 100% { background: var(--color-neutral-light-000); } }
+
+    /* toast for demo feedback */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--color-neutral-dark-900); color: #fff;
+      padding: 10px 18px; border-radius: var(--radius-full); font-size: 13px;
+      box-shadow: var(--shadow-l); opacity: 0; transition: opacity .18s ease, transform .18s ease;
+      z-index: var(--z-toast); display: inline-flex; align-items: center; gap: 8px;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast .material-symbols-outlined { font-size: 18px; color: var(--color-primary-300); }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- RAIL -->
+  <aside class="rail">
+    <div class="rail-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="7" fill="#009688"/>
+        <path d="M11 8h11v3.4h-7.2v3.3h6.4v3.4h-6.4V24H11V8Z" fill="#fff"/>
+      </svg>
+      <span>FinLink</span>
+    </div>
+    <nav class="rail-nav">
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">dashboard</span><span class="rail-label">My Day</span></a>
+      <a class="rail-item active" href="#"><span class="material-symbols-outlined">people</span><span class="rail-label">Anträge</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">person</span><span class="rail-label">Leads</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">hub</span><span class="rail-label">Quellen</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">mail</span><span class="rail-label">Email</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">bar_chart</span><span class="rail-label">Reporting</span></a>
+      <a class="rail-item" href="#"><span class="material-symbols-outlined">credit_card</span><span class="rail-label">Buchhaltung</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="top-icon"><span class="material-symbols-outlined">add_box</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">notifications</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">help_outline</span></button>
+      <button class="top-icon"><span class="material-symbols-outlined">fullscreen</span></button>
+      <button class="top-lang">DE <span class="material-symbols-outlined" style="font-size:18px">expand_more</span></button>
+      <div class="top-divider"></div>
+      <div class="top-user">
+        <div class="top-avatar">JJ</div>
+        <div class="top-user-info">
+          <span class="top-user-name">Jan Joisten</span>
+          <span class="top-user-role">Advisor</span>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-neutral-dark-400)">expand_more</span>
+      </div>
+    </header>
+
+    <div class="header">
+      <div class="header-row">
+        <div class="header-left">
+          <h1 class="page-title">Anträge</h1>
+
+          <div class="view-switcher">
+            <button id="seg-list"><span class="material-symbols-outlined">format_list_bulleted</span> List</button>
+            <button id="seg-pipe" class="active"><span class="material-symbols-outlined">view_week</span> Pipeline</button>
+          </div>
+
+          <div class="search-block">
+            <div class="search-row">
+              <div class="search-input-wrap">
+                <input class="search-input" placeholder="Suchen nach Namen, Telefo..." />
+                <span class="material-symbols-outlined">search</span>
+              </div>
+              <button class="btn btn-primary" style="padding:8px 12px">Suchen</button>
+            </div>
+            <label class="checkline">
+              <input type="checkbox" /> Filter bei Suche löschen
+            </label>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="btn btn-secondary" id="filterBtn"><span class="material-symbols-outlined">filter_list</span> Filter (<span id="filterCount">3</span>)</button>
+          <button class="btn btn-secondary"><span class="material-symbols-outlined">upload</span> Import</button>
+          <button class="btn btn-primary"><span class="material-symbols-outlined">person_add</span> Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><span class="material-symbols-outlined">swap_vert</span><span id="toast-text"></span></div>
+<div id="todoPopover" class="todo-popover"></div>
+
+<script>
+/* TODAY (prototype reference date) = 2026-09-09 */
+const TODAY = new Date(2026, 8, 9);
+
+/* absolute "DD.MM.YYYY – HH:MM" due text, same format as mein-tag's .due-text */
+function dueText(dayOffset, hh, mm) {
+  const d = new Date(TODAY);
+  d.setDate(d.getDate() + dayOffset);
+  const date = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+  return date + ' – ' + timeOnly(hh, mm);
+}
+function timeOnly(hh, mm) { return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0'); }
+
+/* it helper: one checklist entry — t = text, bucket = 'overdue' | 'today' | 'morgen' | null
+   (only used to swap the date for "Heute" when it falls today — color follows the parent
+   ToDo's kind, not the individual bucket, see renderDueTag), when = dueText(-2, 9, 0) */
+function it(t, bucket, when) { return { t, bucket: bucket || null, when: when || null }; }
+
+/* td helper: t = title, kind = 'warning' | 'overdue' | 'info', extra = "+N" count or null,
+   items = full checklist shown in the popover when the text is clicked (defaults to just [it(t)]) */
+function td(t, kind, extra, items) { return { t, kind, extra: extra || null, items: items || [it(t)] }; }
+
+/* tag helper: l = label, cls = pill class */
+function tag(l, cls) { return { l, cls }; }
+
+const COLUMNS = [
+  { id: 'c1', title: 'Anfrage erstellt',                 meta: '3 Anträge • 1.5M €' },
+  { id: 'c2', title: 'Selbstauskunft gestartet',         meta: '3 Anträge • 1.5M €' },
+  { id: 'c3', title: 'Finanzierungsvorschläge erstellt', meta: '3 Anträge • 1.5M €' },
+  { id: 'c4', title: 'Finanzierung angefragt',           meta: '3 Anträge • 1.5M €' },
+  { id: 'c5', title: 'Kreditprüfung eingereicht',        meta: '3 Anträge • 1.5M €' },
+  { id: 'c6', title: 'Kreditprüfung in Bearbeitung',     meta: '3 Anträge • 1.5M €' },
+];
+
+let PIPE = [
+  /* ---- c1: Anfrage erstellt ---- */
+  { col:'c1', name:'Melissa Mustermann', sub:'280.000 € – 90652 Bamberg',
+    tags:[], due:null },
+  { col:'c1', name:'Ada Stark', sub:'550.000 € – 12555 Berlin', home:true,
+    tags:[], due:null },
+  { col:'c1', name:'Wilbert Hilgerbrabdt', sub:'620.000 € – 80331 München', home:true,
+    tags:[tag('New','new')], due:'warning',
+    todos:[td('Documents uploaded','info')] },
+
+  /* ---- c2: Selbstauskunft gestartet ---- */
+  { col:'c2', name:'Max Mustermann', sub:'350.000 €', home:true,
+    tags:[tag('New','new')], due:'warning',
+    todos:[td('Kunde anrufen','warning',null,[
+      it('Kunde anrufen','today',timeOnly(14,0))
+    ])] },
+  { col:'c2', name:'Silvia Moreno', sub:'445.000 € – 80539 München', home:true,
+    tags:[], due:'overdue',
+    todos:[td('Termin vereinbaren','overdue','+2',[
+      it('Termin vereinbaren','overdue',dueText(-1,16,0)), it('Unterlagen anfordern','overdue',dueText(-2,9,0)), it('Rückruf bestätigen','today',timeOnly(9,0))
+    ])] },
+  { col:'c2', name:'Justus Lorenz', sub:'350.000 € - 12553 Berlin', home:true,
+    tags:[], due:'warning',
+    todos:[td('Termin vereinbaren','warning','+1',[
+      it('Termin vereinbaren','today',timeOnly(11,30)), it('Objektbesichtigung terminieren','today',timeOnly(17,0))
+    ])] },
+
+  /* ---- c3: Finanzierungsvorschläge erstellt ---- */
+  { col:'c3', name:'Luisa Müller', sub:'200.000 € – 12551 Berlin', home:true,
+    tags:[tag('Claimed','claimed')], due:'warning' },
+  { col:'c3', name:'Renée Dauscheck', sub:'520.000 € – 20144 Hamburg', home:true,
+    tags:[], due:'info',
+    todos:[td('Documents uploaded','info')] },
+  { col:'c3', name:'Sina Krüger', sub:'170.400 € – 39628 Bismark (Altmark)', home:true,
+    tags:[], due:'overdue',
+    todos:[td('WENN Bauwerkvertrag SCAN Haus wird nicht geklärt DANN Angebote nicht präzise. Telefonisch klären: Küche finanzieren JA/NEIN? Falls JA: ca. 20 TEUR budgetieren. Auch abfragen: Konkurrenzangebote von Hausbank/anderem Vermittler vorhanden? Ergebnis dokumentieren.','overdue','+4',[
+      it('WENN Bauwerkvertrag SCAN Haus wird nicht geklärt DANN Angebote nicht präzise. Telefonisch klären: Küche finanzieren JA/NEIN? Falls JA: ca. 20 TEUR budgetieren. Auch abfragen: Konkurrenzangebote von Hausbank/anderem Vermittler vorhanden? Ergebnis dokumentieren.', 'overdue', dueText(-4,10,0)),
+      it('Antrag und Kundenhinweis prüfen – Kunde hat Selbstauskunft vollständig ausgefüllt.', 'overdue', dueText(-3,9,0)),
+      it('Bonität und Schufa-Auskunft anfordern und mit den Angaben aus der Selbstauskunft abgleichen.', 'overdue', dueText(-1,10,0)),
+      it('Finanzierungsvorschlag mit mindestens zwei Bankpartnern erstellen und Konditionen vergleichen.', 'today', timeOnly(12,0)),
+      it('Rückmeldung an den Kunden inklusive Terminvorschlag für das Beratungsgespräch senden.', 'morgen', dueText(1,9,0))
+    ])] },
+
+  /* ---- c4: Finanzierung angefragt ---- */
+  { col:'c4', name:'Margrit Kindermann', sub:'475.000 € – 27432 Bremervörde', home:true,
+    tags:[], due:'warning',
+    todos:[td('Kundin zurückrufen','warning','+1',[
+      it('Kundin zurückrufen','today',timeOnly(15,30)), it('Rückfrage zur Selbstauskunft klären','morgen',dueText(1,10,0))
+    ])] },
+  { col:'c4', name:'Erhard Benthaus', sub:'375.000 € – 26125 Oldenburg', home:true,
+    tags:[], due:'overdue',
+    todos:[td('Dokumente prüfen','overdue','+2',[
+      it('Dokumente prüfen','overdue',dueText(-1,13,0)), it('Fehlende Unterlagen anfordern','overdue',dueText(-5,9,0)), it('Freigabe erteilen','today',timeOnly(16,0))
+    ])] },
+  { col:'c4', name:'Irmgard Schwarz', sub:'675.000 € – 60311 Frankfurt am Main', home:true,
+    tags:[], due:null },
+
+  /* ---- c5: Kreditprüfung eingereicht ---- */
+  { col:'c5', name:'Nikolai Kliemann', sub:'470.000 € – 20143 Hamburg', home:true,
+    tags:[], due:null },
+
+  /* ---- c6: Kreditprüfung in Bearbeitung ---- */
+  { col:'c6', name:'Nikolai Kliemann', sub:'470.000 € – 20143 Hamburg', home:true,
+    tags:[], due:null },
+];
+PIPE.forEach((c, i) => { c.id = 'p' + i; c._i = i; });
+
+const boardEl = document.getElementById('board');
+const TODO_ICON = { warning:'assignment_turned_in', overdue:'assignment_turned_in', info:'description' };
+
+function renderTags(card) {
+  return card.tags.map(t => `<span class="ptag ${t.cls}">${t.l}</span>`).join('');
+}
+
+/* kind = the parent ToDo's color ('warning' | 'overdue') — a red ToDo only ever shows red due
+   dates underneath it (and orange only orange), regardless of the individual item's own bucket;
+   only "Heute" as a word replaces the date when that particular item's bucket is 'today'. */
+function renderDueTag(item, kind, extra) {
+  if (!item || !item.bucket || !item.when) return '';
+  const text = item.bucket === 'today' ? `Heute – ${item.when}` : item.when;
+  const chip = extra ? `<span class="todo-more ${kind}">${extra}</span>` : '';
+  return `<div class="todo-due"><span class="due-text due-text--${kind}">${text}</span>${chip}</div>`;
+}
+
+/* word-boundary cutoff instead of CSS ellipsis — CSS text-overflow cuts mid-string, which for a
+   long todo left a stray space before the "…" (e.g. "SCAN Haus …"); this trims that space away. */
+const CARD_TODO_MAX_CHARS = 30;
+function truncateCardText(text) {
+  if (text.length <= CARD_TODO_MAX_CHARS) return text;
+  let cut = text.slice(0, CARD_TODO_MAX_CHARS);
+  const lastSpace = cut.lastIndexOf(' ');
+  if (lastSpace > 10) cut = cut.slice(0, lastSpace);
+  return cut.trimEnd() + '…';
+}
+
+function renderTodos(card) {
+  if (!card.todos || !card.todos.length) return '';
+  return card.todos.map(t => {
+    const clickable = t.kind === 'warning' || t.kind === 'overdue';
+    const itemsAttr = clickable ? ` data-items="${encodeURIComponent(JSON.stringify(t.items))}"` : '';
+    return `
+    <div class="todo-line">
+      <span class="todo-ind ${t.kind}"${clickable ? ` data-kind="${t.kind}"${itemsAttr}` : ''}><span class="material-symbols-outlined">${TODO_ICON[t.kind]}</span><span class="todo-txt">${truncateCardText(t.t)}</span></span>
+    </div>
+    ${clickable ? renderDueTag(t.items[0], t.kind, t.extra) : ''}
+  `;
+  }).join('');
+}
+
+function renderCard(c) {
+  return `<div class="pcard" draggable="true" data-id="${c.id}">
+    <div class="pcard-due ${c.due || ''}"></div>
+    <div class="pcard-body">
+      ${c.home ? '<span class="pcard-home material-symbols-outlined">home</span>' : ''}
+      <div class="pcard-tags">${renderTags(c)}</div>
+      <div class="pcard-name">${c.name}</div>
+      <div class="pcard-sub">${c.sub}</div>
+      ${renderTodos(c)}
+    </div>
+  </div>`;
+}
+
+function renderBoard() {
+  boardEl.innerHTML = COLUMNS.map(col => {
+    const cards = PIPE.filter(c => c.col === col.id);
+    return `<section class="pcol">
+      <div class="pcol-head">
+        <div class="pcol-title">${col.title} <span class="material-symbols-outlined">info</span></div>
+        <div class="pcol-meta">${col.meta}</div>
+      </div>
+      <div class="pcol-body" data-col="${col.id}">${cards.map(renderCard).join('')}</div>
+    </section>`;
+  }).join('');
+  attachDnD();
+}
+
+/* ---------------- DRAG & DROP ---------------- */
+let draggedId = null;
+
+function attachDnD() {
+  boardEl.querySelectorAll('.pcard').forEach(card => {
+    card.addEventListener('dragstart', () => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      boardEl.querySelectorAll('.pcol-body').forEach(b => b.classList.remove('drag-over'));
+    });
+  });
+  boardEl.querySelectorAll('.pcol-body').forEach(body => {
+    body.addEventListener('dragover', e => { e.preventDefault(); body.classList.add('drag-over'); });
+    body.addEventListener('dragleave', e => { if (!body.contains(e.relatedTarget)) body.classList.remove('drag-over'); });
+    body.addEventListener('drop', e => {
+      e.preventDefault();
+      body.classList.remove('drag-over');
+      if (!draggedId) return;
+      const targetCol = body.dataset.col;
+      const beforeId = cardBeforeWhichToInsert(body, e.clientY);
+      moveCard(draggedId, targetCol, beforeId);
+    });
+  });
+}
+
+function cardBeforeWhichToInsert(body, y) {
+  const cards = [...body.querySelectorAll('.pcard:not(.dragging)')];
+  for (const el of cards) {
+    const r = el.getBoundingClientRect();
+    if (y < r.top + r.height / 2) return el.dataset.id;
+  }
+  return null;
+}
+
+function moveCard(id, targetCol, beforeId) {
+  const idx = PIPE.findIndex(c => c.id === id);
+  if (idx === -1) return;
+  const [card] = PIPE.splice(idx, 1);
+  const fromCol = card.col;
+  card.col = targetCol;
+  if (beforeId) {
+    const bi = PIPE.findIndex(c => c.id === beforeId);
+    PIPE.splice(bi, 0, card);
+  } else {
+    let lastIdx = -1;
+    PIPE.forEach((c, i) => { if (c.col === targetCol) lastIdx = i; });
+    PIPE.splice(lastIdx + 1, 0, card);
+  }
+  renderBoard();
+  if (fromCol !== targetCol) {
+    const colName = COLUMNS.find(c => c.id === targetCol).title;
+    showToast(`${card.name} → „${colName}“ verschoben`);
+  }
+  const moved = boardEl.querySelector('[data-id="' + id + '"]');
+  if (moved) { moved.classList.add('sort-flash'); setTimeout(() => moved.classList.remove('sort-flash'), 500); }
+}
+
+/* ---------------- TOAST ---------------- */
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toast-text');
+let toastTimer;
+function showToast(msg) {
+  toastText.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* ---------------- TODO POPOVER ---------------- */
+const todoPopover = document.getElementById('todoPopover');
+
+function positionTodoPopover(target) {
+  const r = target.getBoundingClientRect();
+  const pw = todoPopover.offsetWidth || 264;
+  let left = r.left;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  let top = r.bottom + 6;
+  const ph = todoPopover.offsetHeight;
+  if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+  todoPopover.style.left = left + 'px';
+  todoPopover.style.top = top + 'px';
+}
+
+/* Deterministic char-count cutoff instead of measuring scrollHeight/clientHeight — that measurement
+   depends on the webfont having actually swapped in, which caused "… mehr" to silently not appear
+   on the very first popover open (fallback-font metrics made the text look like it still fit).
+   ~110 chars ≈ 3 lines in the popover's text column at this font-size/width; a plain length check
+   works identically no matter when/whether Roboto has loaded. */
+const TODO_POPOVER_MAX_CHARS = 110;
+
+/* renders `full`, collapsed to `shortText` + a "… mehr" link that expands it in place */
+function renderTruncatable(el, shortText, full) {
+  el.textContent = shortText + '… ';
+  const more = document.createElement('span');
+  more.className = 'more-link';
+  more.textContent = 'mehr';
+  more.addEventListener('click', e => {
+    e.stopPropagation();
+    el.textContent = full + ' ';
+    const less = document.createElement('span');
+    less.className = 'more-link';
+    less.textContent = 'weniger';
+    less.addEventListener('click', e2 => {
+      e2.stopPropagation();
+      renderTruncatable(el, shortText, full);
+    });
+    el.appendChild(less);
+  });
+  el.appendChild(more);
+}
+
+function fitAndRenderText(el, full) {
+  if (full.length <= TODO_POPOVER_MAX_CHARS) { el.textContent = full; return; }
+  let cut = full.slice(0, TODO_POPOVER_MAX_CHARS);
+  const lastSpace = cut.lastIndexOf(' ');
+  if (lastSpace > 20) cut = cut.slice(0, lastSpace);
+  renderTruncatable(el, cut.trimEnd(), full);
+}
+
+function openTodoPopover(target, kind, items, name) {
+  todoPopover.className = `todo-popover show ${kind}`;
+  todoPopover.innerHTML = `
+    <div class="todo-popover-header">
+      <span class="name">${name}</span>
+      <span class="open-label">Antrag öffnen</span>
+      <button class="popover-open-btn" type="button" title="Antrag öffnen"><span class="material-symbols-outlined">arrow_forward</span></button>
+    </div>
+    ${items.map(item => `
+    <div class="todo-popover-row">
+      <span class="check"><span class="material-symbols-outlined">check</span></span>
+      <div class="popover-item-body">
+        <span class="txt"></span>
+        ${renderDueTag(item, kind)}
+      </div>
+    </div>
+  `).join('')}`;
+
+  todoPopover.querySelectorAll('.todo-popover-row .txt').forEach((el, i) => fitAndRenderText(el, items[i].t));
+  positionTodoPopover(target);
+}
+function closeTodoPopover() {
+  todoPopover.classList.remove('show');
+}
+
+boardEl.addEventListener('click', e => {
+  const ind = e.target.closest('.todo-ind[data-items]');
+  if (!ind) { closeTodoPopover(); return; }
+  e.stopPropagation();
+  const items = JSON.parse(decodeURIComponent(ind.dataset.items));
+  const name = ind.closest('.pcard').querySelector('.pcard-name').textContent;
+  openTodoPopover(ind, ind.dataset.kind, items, name);
+});
+
+todoPopover.addEventListener('click', e => {
+  e.stopPropagation();
+  const openBtn = e.target.closest('.popover-open-btn');
+  if (openBtn) { closeTodoPopover(); showToast('Antrag geöffnet (Demo)'); }
+});
+document.addEventListener('click', () => closeTodoPopover());
+window.addEventListener('scroll', e => {
+  if (todoPopover.contains(e.target)) return; /* scrolling inside the popover itself must not close it */
+  closeTodoPopover();
+}, true);
+
+/* ---------------- VIEW SWITCH ---------------- */
+const segList = document.getElementById('seg-list');
+const segPipe = document.getElementById('seg-pipe');
+segList.addEventListener('click', () => {
+  segList.classList.add('active'); segPipe.classList.remove('active');
+  showToast('Listenansicht ist in diesem Prototyp nicht enthalten — siehe ToDo-Sortierung V1');
+  setTimeout(() => { segList.classList.remove('active'); segPipe.classList.add('active'); }, 1600);
+});
+
+/* initial paint */
+renderBoard();
+</script>
+</body>
+</html>
