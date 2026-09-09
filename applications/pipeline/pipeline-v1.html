@@ -233,6 +233,13 @@
     .todo-popover::-webkit-scrollbar { width: 6px; }
     .todo-popover::-webkit-scrollbar-track { background: transparent; }
     .todo-popover::-webkit-scrollbar-thumb { background: var(--color-neutral-light-500); border-radius: 4px; }
+    .todo-popover-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0 8px; margin-bottom: 4px;
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .todo-popover-header .name { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .todo-popover-header .open-label { font-size: 12px; color: var(--color-neutral-dark-600); white-space: nowrap; }
     .todo-popover-row { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; }
     .todo-popover-row .check {
       flex-shrink: 0; width: 16px; height: 16px; border-radius: 3px;
@@ -649,18 +656,23 @@ function fitAndRenderText(el, full) {
   renderTruncatable(el, cut.trimEnd(), full);
 }
 
-function openTodoPopover(target, kind, items) {
+function openTodoPopover(target, kind, items, name) {
   todoPopover.className = `todo-popover show ${kind}`;
-  todoPopover.innerHTML = items.map(item => `
+  todoPopover.innerHTML = `
+    <div class="todo-popover-header">
+      <span class="name">${name}</span>
+      <span class="open-label">Antrag öffnen</span>
+      <button class="popover-open-btn" type="button" title="Antrag öffnen"><span class="material-symbols-outlined">arrow_forward</span></button>
+    </div>
+    ${items.map(item => `
     <div class="todo-popover-row">
       <span class="check"><span class="material-symbols-outlined">check</span></span>
       <div class="popover-item-body">
         <span class="txt"></span>
         ${renderDueTag(item, kind)}
       </div>
-      <button class="popover-open-btn" type="button" title="Antrag öffnen"><span class="material-symbols-outlined">arrow_forward</span></button>
     </div>
-  `).join('');
+  `).join('')}`;
 
   todoPopover.querySelectorAll('.todo-popover-row .txt').forEach((el, i) => fitAndRenderText(el, items[i].t));
   positionTodoPopover(target);
@@ -674,7 +686,8 @@ boardEl.addEventListener('click', e => {
   if (!ind) { closeTodoPopover(); return; }
   e.stopPropagation();
   const items = JSON.parse(decodeURIComponent(ind.dataset.items));
-  openTodoPopover(ind, ind.dataset.kind, items);
+  const name = ind.closest('.pcard').querySelector('.pcard-name').textContent;
+  openTodoPopover(ind, ind.dataset.kind, items, name);
 });
 
 todoPopover.addEventListener('click', e => {
