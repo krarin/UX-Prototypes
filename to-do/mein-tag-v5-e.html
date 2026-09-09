@@ -45,6 +45,12 @@
       --color-warning-high-light: #FFF5E8;
       --color-notification: #3DC1D3;
       --color-brand-blue: #0857C3;
+      /* Nur für den Schnellfilter "Diese Woche" — bewusst außerhalb der Dringlichkeits-Skala
+         (Rot/Orange/Blau), da "Diese Woche" die anderen Fälligkeiten überspannt statt sich
+         zwischen sie einzuordnen. Das Cyan von --color-notification trägt jetzt die
+         Sondergruppe "Ausgelöst vom Kunden" (siehe data-tone="kunde"). */
+      --color-accent-purple: #E693F4;
+      --color-accent-purple-light: #FCF0FE;
 
       --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
@@ -59,7 +65,6 @@
 
       --shadow-topbar: 0 1px 4px rgba(84, 110, 122, 0.15);
       --shadow-card:   0 1px 2px rgba(84, 110, 122, 0.15);
-      --shadow-pagination: -2px 0 4px #E5E5E5;
 
       --focus-ring: 0 0 0 3px rgba(0, 150, 136, 0.30);
       --z-overlay: 100;
@@ -271,11 +276,6 @@
 
     /* ---------- ToDo-Gruppen ---------- */
     .todo-group.collapsed .todo-table-wrap { display: none; }
-    /* .todo-pagination liegt als Geschwister NACH .todo-table-wrap im Markup (siehe HTML), daher
-       eigene Regel nötig — sonst bliebe die "Einträge pro Seite …"-Zeile beim Einklappen einer
-       Gruppierung sichtbar, obwohl die Tabelle darüber ausgeblendet ist. */
-    .todo-group.collapsed .todo-pagination { display: none; }
-
     /* Eine einzige Spalten-Definition für Header-Labels UND Datenzeilen, damit "Antragsteller"
        garantiert über dem jeweiligen Antragsteller-Namen steht usw. — Figma positioniert die
        Labels über feste Pixel-Offsets, die je nach Textlänge der Gruppen-Überschrift leicht
@@ -323,8 +323,7 @@
        SCHNELLFILTER-Script/updateSubheadings) — bewusst NICHT .group-title-row wiederverwendet:
        das bringt den Einklapp-Pfeil (.group-headline ist ein <button>, an Kollabieren
        gekoppelt) und die doppelten Spalten-Labels (.group-labels) mit, beides hier unerwünscht.
-       Selber dezenter Look wie .expand-section-label (klein/grau), aber in normaler
-       Schreibweise statt Versalien (siehe .quick-subheading-label). */
+       Selber dezenter Look wie .expand-section-label (klein, zurückgenommen). */
     /* Chevron sitzt in der Checkbox-Spalte (20px, wie .todo-check), das Label 16px weiter
        rechts — zusammen 12(Zeilen-Padding)+20+16 = 48px, dieselbe Einrückung wie die
        "Todos"-Spaltenüberschrift (.todo-columns-header padding-left:12px + .col-todos
@@ -407,9 +406,8 @@
       border-right: 1px solid var(--color-neutral-light-400);
     }
 
-    /* ---------- "Alle": mehrere ToDo-Gruppen gleichzeitig sichtbar — jede zeigt ihre EIGENE
-       "Einträge pro Seite …"-Zeile mit ihrer eigenen Zeilenzahl (siehe recomputeGroupEmptiness
-       weiter unten), statt einer einzigen Gesamt-Pagination am Ende der Liste. ---------- */
+    /* ---------- "Alle": mehrere ToDo-Gruppen gleichzeitig sichtbar — jede Gruppe listet
+       dabei immer ALLE ihre ToDos, ohne Seitenaufteilung. ---------- */
 
     .todo-table-wrap { background: #fff; display: flex; }
     /* --tone-color zentral je Gruppe definiert (statt direkt auf .todo-table-accent), damit
@@ -417,9 +415,11 @@
        wiederverwenden kann (siehe .todo-expand-panel weiter unten) — CSS-Variablen vererben sich
        automatisch an alle Nachfahren der Gruppe. */
     /* Eigener Ton für "Ausgelöst vom Kunden" (data-tone="kunde") — quer zu den Fälligkeits-Tönen
-       darunter, daher bewusst die Primärfarbe statt einer Dringlichkeits-Farbe (Rot/Orange/Blau),
-       damit sie nicht wie eine weitere Fälligkeits-Kategorie missverstanden wird. */
-    .todo-group[data-tone="kunde"]   { --tone-color: var(--color-primary-500); }
+       darunter, daher bewusst das Cyan von --color-notification statt einer Dringlichkeits-Farbe
+       (Rot/Orange/Blau), damit sie nicht wie eine weitere Fälligkeits-Kategorie missverstanden
+       wird. Vorher die Primärfarbe — die steckt aber schon in Buttons, Links und dem aktiven
+       "Alle"-Tab und war dadurch als eigener Gruppen-Ton nicht unterscheidbar. */
+    .todo-group[data-tone="kunde"]   { --tone-color: var(--color-notification); }
     .todo-group[data-tone="today"]   { --tone-color: var(--color-warning-high); }
     .todo-group[data-tone="overdue"] { --tone-color: var(--color-error-500); }
     /* Farbe deckungsgleich mit dem Schnellfilter-Tab "Morgen fällig" (--color-brand-blue). */
@@ -859,8 +859,8 @@
        sich klarer als "Kategorie-Symbol" ein). Trennlinie darunter macht die Grenze zwischen
        Label und Inhalt klar, statt dass beide optisch zusammenrutschen. */
     .expand-section-label {
-      display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
-      text-transform: uppercase; color: var(--color-neutral-dark-600);
+      display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600;
+      color: var(--color-neutral-dark-800);
       margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--color-neutral-light-400);
     }
     .expand-section-label .material-symbols-outlined { font-size: 14px; color: var(--color-neutral-dark-400); }
@@ -1099,6 +1099,99 @@
     body.expand-variant-old .todo-expand-panel .kv-row + .kv-row { border-top: none; }
     body.expand-variant-old .todo-expand-panel .kv-label { font-size: 12px; color: var(--color-neutral-dark-600); }
     body.expand-variant-old .todo-expand-panel .kv-value { font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-900); }
+
+    /* ---------- Ausklappen v1 — NEU: Tabellenblatt-Ansicht (Markup: buildExpandSheetHtml).
+       Eine Zeile pro Angabe, Label links, Wert rechts, dünne Linien wie in einer
+       Tabellenkalkulation. Steht ABSICHTLICH nach dem kompletten "vorher"-Block oben (gleiche
+       Spezifität, späteres Vorkommen gewinnt), damit dessen Regeln unangetastet als Referenz
+       erhalten bleiben und hier nur das Nötige überschrieben wird: der angeklebte graue
+       Streifen (Bleed + doppelter Schatten) weicht einer weißen, randlosen Fläche, und vom
+       gebauten Panel-Inhalt bleibt nur .expand-sheet sichtbar — .expand-meta/.expand-columns
+       gehören zu den anderen Varianten (die v7-/v8-Tabellen sind ohnehin per Default aus,
+       siehe .expand-info-table/.v8-table). ---------- */
+    body.expand-variant-old .todo-expand-panel {
+      /* Bleed über das seitliche Zeilen-Padding hinaus (die Trennlinie oben läuft dadurch von
+         Kante zu Kante wie in einem Tabellenblatt), links aber wieder eingerückt bis unter den
+         ToDo-Titel (87px) — so gehört das Blatt sichtbar zur Zeile darüber statt frei unter ihr
+         zu schweben. Rechts endet es an derselben Kante wie die Zeilen-Spalten. */
+      margin: 0 -12px; padding: 0 12px 0 87px;
+      background: var(--color-neutral-light-000);
+      border: none; border-top: 1px solid var(--color-neutral-light-400);
+      box-shadow: none; min-height: 0;
+    }
+    body.expand-variant-old .todo-row.todo-row-expanded .todo-expand-panel { display: block; }
+    body.expand-variant-old .todo-expand-panel::before { display: none; }
+    /* Die getönte, abgerundete Karte samt Rahmen/Schatten ist die Hülle der anderen Varianten —
+       das Blatt braucht sie nicht, es sitzt direkt auf der weißen Panelfläche. */
+    body.expand-variant-old .todo-expand-panel-card {
+      display: block; margin: 0; padding: 0; background: none;
+      border: none; border-radius: 0; box-shadow: none;
+    }
+    body.expand-variant-old .expand-meta,
+    body.expand-variant-old .expand-columns { display: none; }
+
+    /* Die Tabelle selbst — nur unter v1 sichtbar, gebaut wird sie für alle Varianten (siehe
+       buildExpandSheetHtml). Kleine Schrift (12px) bei bewusst großzügiger Zeilenhöhe (10px
+       Innenabstand oben/unten ≈ 38px Zeile): dicht, aber ohne Zusammenkleben. */
+    .expand-sheet { display: none; }
+    body.expand-variant-old .expand-sheet {
+      display: table; width: 100%; border-collapse: collapse; table-layout: fixed;
+      font-size: 12px; line-height: 1.4;
+    }
+    /* Labelspalte: leiser als der Wert (kleiner, grau, nicht fett) + eine senkrechte Linie als
+       einzige Spaltentrennung — mehr Linien würden die Fläche vergittern. */
+    .expand-sheet .sheet-label {
+      width: 170px; padding: 10px 16px 10px 0; text-align: left; vertical-align: top;
+      font-size: 11px; font-weight: 400; color: var(--color-neutral-dark-400);
+      border-right: 1px solid var(--color-neutral-light-400);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+    }
+    .expand-sheet .sheet-cell {
+      padding: 10px 16px; vertical-align: top; color: var(--color-neutral-dark-900);
+      border-bottom: 1px solid var(--color-neutral-light-400);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* Letzte Zeile ohne Unterkante — die Panel-Kante schließt die Tabelle schon ab. */
+    .expand-sheet tr:last-child .sheet-label,
+    .expand-sheet tr:last-child .sheet-cell { border-bottom: none; }
+    .expand-sheet .sheet-cell--name { font-weight: 600; }
+    /* Senkrechte Trennlinien NUR in den Antragsteller-Zeilen (Name | E-Mail | Telefon |
+       Beschäftigung): .sheet-cell + .sheet-cell trifft genau die drei Zellen NACH dem Namen —
+       die Namenszelle folgt auf das <th>, dort trennt schon dessen border-right. Die
+       einzeiligen Angaben darunter spannen per colspan alle Wertspalten und bleiben dadurch
+       ungeteilt — Linien mitten durch "Anschlussfinanzierung" wären reines Gitter ohne Nutzen.
+       Gleicher heller Ton wie die Zeilenlinien, damit das Raster leise bleibt. */
+    .expand-sheet .sheet-row--applicant .sheet-cell + .sheet-cell {
+      border-left: 1px solid var(--color-neutral-light-400);
+    }
+    .expand-sheet .sheet-empty { color: var(--color-neutral-dark-400); }
+    /* Antragsnummer als Link: unterstrichen, in der Primärfarbe — die einzige anklickbare
+       Angabe im Blatt und damit der Weg in den Antrag. */
+    .expand-sheet .sheet-link { color: var(--color-primary-600); text-decoration: underline; font-weight: 600; }
+    .expand-sheet .sheet-link:hover { color: var(--color-primary-700, var(--color-primary-600)); }
+    /* E-Mail/Telefon sind per Klick kopierbar (siehe sheetCopyHtml + [data-copy]-Handler) —
+       im Blatt reiner Text, der Hinweis darauf kommt erst beim Hover. */
+    .expand-sheet .sheet-copy {
+      display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
+      cursor: pointer; border-radius: var(--radius-xs, 2px);
+    }
+    /* Leiser als der Wert: das Icon ordnet die Spalte zu, es soll sie nicht anführen. */
+    .expand-sheet .sheet-copy-icon {
+      font-size: 15px; line-height: 1; flex-shrink: 0; color: var(--color-neutral-dark-400);
+    }
+    .expand-sheet .sheet-copy-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Unterstreichen nur den Wert, nicht das Icon (eine unterstrichene Glyphe sieht kaputt aus). */
+    .expand-sheet .sheet-copy:hover { color: var(--color-primary-600); }
+    .expand-sheet .sheet-copy:hover .sheet-copy-text { text-decoration: underline; text-decoration-style: dotted; }
+    .expand-sheet .sheet-copy:hover .sheet-copy-icon { color: var(--color-primary-600); }
+    .expand-sheet .sheet-copy:focus-visible { outline: 2px solid var(--color-primary-500); outline-offset: 1px; }
+    /* Der "vorher"-Block oben macht aus dem Pill wieder einen umrandeten grauen Kasten — im
+       neuen Blatt gilt die weiche Pill-Optik des restlichen Panels (.todo-expand-panel
+       .employment-tag). */
+    body.expand-variant-old .expand-sheet .employment-tag {
+      background: var(--color-neutral-light-400); color: var(--color-neutral-dark-800); border: none;
+      border-radius: var(--radius-full); font-weight: 600; letter-spacing: 0.2px;
+    }
 
     /* ---------- Ausklapp-Panel "v2.1" (Variante von "v2", siehe #expandVariantSelect oben) —
        Icon deutlich größer und mittig, der Feldname (fw-field-label) steht hier klein DARUNTER
@@ -1660,7 +1753,7 @@
     }
     body.expand-variant-modern .expand-section-label {
       border-bottom: 1px solid var(--color-neutral-light-400); margin-bottom: 8px; padding-bottom: 8px;
-      font-weight: 600; letter-spacing: 0.6px; color: var(--color-neutral-dark-400);
+      font-weight: 600; color: var(--color-neutral-dark-800);
     }
     body.expand-variant-modern .expand-section-label .material-symbols-outlined { color: var(--color-primary-500); }
     /* Fakten-Raster statt Icon-Kacheln (siehe .fw-fields, Default) ODER Label/Wert-Zeile
@@ -1704,8 +1797,8 @@
        Karte einfach in die Breite sprengen bzw. über den Rand hinaus in die Nachbarkarte laufen. */
     body.expand-variant-modern .todo-expand-panel .kv-label {
       flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase;
-      color: var(--color-neutral-dark-400); white-space: normal;
+      font-size: 11px; font-weight: 600;
+      color: var(--color-neutral-dark-600); white-space: normal;
     }
     /* Icon in einem sanften Kreis-Chip statt reinem Glyph — wirkt als eigenständiges kleines
        "Icon-Tile" über dem Text, statt wie ein Aufzählungszeichen davor zu kleben (modernes
@@ -1790,23 +1883,6 @@
     body.expand-variant-v4 .todo-expand-panel .applicant-info-contact .material-symbols-outlined {
       background: var(--color-neutral-light-200);
     }
-
-    .todo-pagination {
-      background: #fff; border-top: 1px solid var(--color-neutral-light-400);
-      display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 10px 12px;
-    }
-    .pg-text { font-size: 12px; color: var(--color-neutral-dark-400); }
-    /* Figma exportierte auf dem "Zurück"-Button einen hellgrauen Kreis, auf "Weiter" keinen —
-       ein Inkonsistenz-Artefakt der Figma-Datei (Zufallsbefund beim Abgleich), keine bewusste
-       Design-Aussage. Beide Pfeile daher einheitlich als schlichte Chevrons ohne Kreis-Hintergrund. */
-    .pg-nav { display: flex; gap: 4px; }
-    .pg-nav button {
-      width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
-      color: var(--color-neutral-dark-400); display: flex; align-items: center; justify-content: center;
-    }
-    .pg-nav button[disabled] { opacity: 0.5; cursor: not-allowed; }
-    .pg-nav button:not([disabled]):hover { background: var(--color-neutral-light-200); }
-    .pg-nav .material-symbols-outlined { font-size: 16px; }
 
     /* ---------- Inline-Anlege-Zeile ("+ ToDo") — liegt über den Gruppen, nicht mehr in
        "Heute fällig" verschachtelt; Eingabefelder und Bestätigen/Abbrechen stehen dafür in
@@ -1975,6 +2051,20 @@
        Cursor wäre hier irreführend, da es kein Freitextfeld ist. */
     .inline-edit[data-field="berater"], .inline-edit[data-field="typ"] { cursor: pointer; }
     .inline-edit.editing { border-bottom-color: transparent; padding: 0; margin: 0; }
+    /* Titel-Eingabefeld auf Zeilenbreite statt auf Textbreite: .todo-text-group und die
+       .inline-edit-Hülle darin sind normale Flex-Items in Inhaltsbreite — beim Anzeigen richtig
+       (der Titel soll nicht die ganze Spalte einnehmen), beim Bearbeiten aber der Grund, warum
+       das Feld nur so breit wie der Resttext war. Nur im editing-Zustand dürfen beide wachsen,
+       bis 720px: darüber wird eine einzeilige Eingabe auf breiten Monitoren unangenehm zu lesen
+       (Blicksprung vom Zeilenende zurück). .todo-title-actions behält sein margin-left:auto und
+       bleibt dadurch am rechten Spaltenrand. */
+    .todo-title:has(.inline-edit[data-field="titel"].editing) .todo-text-group { flex: 1 1 auto; max-width: 720px; }
+    .todo-text-group .inline-edit[data-field="titel"].editing { flex: 1 1 auto; min-width: 0; }
+    /* Die 130px-Mindestbreite aus .inline-input stammt aus der Zeit, als das Feld nur auf
+       Textbreite aufging — jetzt, wo es die Spalte füllt, schiebt sie es in schmalen Spalten
+       (Titelspalte bei offenem Kalender auf kleinen Fenstern) über den Spaltenrand hinaus.
+       Nur fürs Titelfeld aufgehoben; add-row/Berater behalten ihre Mindestbreite. */
+    .todo-text-group .inline-edit[data-field="titel"].editing .inline-input { min-width: 0; }
     /* ToDos, die sich nicht bearbeiten lassen (Geburtstag — erkennbar an data-geburtstag, nicht
        mehr an data-typ, seit die Art bei Geburtstag "Email" zeigt statt eines eigenen Icons;
        plus vom Kunden ausgelöste ToDos) — siehe openInlineField-Guard im Script. .inline-edit
@@ -2042,6 +2132,72 @@
       padding: 10px 12px; font-size: 12px; color: var(--color-neutral-dark-900);
     }
     .berater-edit-option:hover, .berater-edit-option.highlighted { background: var(--color-neutral-light-200); outline: none; }
+
+    /* ---------- fl-select-panel — Figma "AI-Components-Finlink", node 156:309 (Zeilen =
+       fl-option, node 111:128). Wird beim Klick auf die Berater-Zelle geöffnet und listet
+       IMMER alle Berater auf (vorher: Textfeld, das mit dem aktuellen Namen vorbelegt war und
+       die Liste damit sofort auf diesen einen Treffer filterte — man sah also nie, wer sonst
+       zur Auswahl steht).
+       Das Panel hängt bewusst an <body> statt in der Zelle: im echten Component rendert es in
+       einem CDK-Overlay außerhalb des Controls, und .todo-table-card hat overflow:hidden, das
+       ein in der Zelle positioniertes Panel nach unten abschneiden würde (gleiche Lösung wie
+       bei #menuTypFilter, siehe positionMenu dort). ---------- */
+    .fl-select-panel {
+      position: absolute; z-index: var(--z-overlay, 100);
+      display: flex; flex-direction: column; box-sizing: border-box;
+      min-width: 200px; max-width: 320px; overflow: hidden;
+      background: #fff; border-radius: var(--radius-s);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+    /* Das Panel bekommt beim Öffnen programmatisch den Fokus (tabindex="-1"), damit die
+       Pfeiltasten auch ohne Suchfeld greifen — der Standard-Fokusring des Browsers sähe dabei
+       aber wie ein zweiter, dunkler Rahmen um die Karte aus. Die Auswahl selbst bleibt sichtbar
+       markiert (siehe .fl-option.active). */
+    .fl-select-panel:focus { outline: none; }
+    /* Suchfeld nur ab FL_SELECT_SEARCH_THRESHOLD Optionen (siehe openFlSelectPanel) — bei einer
+       kurzen Liste, die ohnehin komplett sichtbar ist, wäre es nur ein zusätzliches Klickziel. */
+    .fl-select-panel-search {
+      display: flex; align-items: center; padding: 8px 12px; flex-shrink: 0;
+      border-bottom: 1px solid var(--color-neutral-light-500);
+    }
+    .fl-select-panel-search input {
+      flex: 1 0 0; min-width: 0; border: none; outline: none; background: none; padding: 0;
+      font-family: inherit; font-size: 14px; line-height: 21px; color: var(--color-neutral-dark-900);
+    }
+    .fl-select-panel-search input::placeholder { color: var(--color-neutral-dark-800); }
+    /* max-height = 8 × 36px Zeilenhöhe + 4px Innenabstand: ab neun Optionen scrollt die Liste,
+       genau ab dort erscheint auch das Suchfeld darüber. */
+    .fl-select-panel-listbox { padding: 4px 0; overflow-y: auto; max-height: 292px; }
+    .fl-option {
+      display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box;
+      height: 36px; min-height: 36px; padding: 4px 12px; border: none; background: none;
+      cursor: pointer; text-align: left; font-family: inherit; font-size: 14px;
+      color: var(--color-neutral-dark-900);
+    }
+    .fl-option-label { flex: 1 0 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fl-option:hover { background: var(--color-neutral-light-200); }
+    /* .active ist der Tastatur-Cursor (aria-activedescendant), NICHT :active — so beschreibt es
+       die fl-option-Doku in Figma. .selected steht absichtlich danach: die aktuell gesetzte
+       Auswahl behält ihre Farbe auch dann, wenn der Cursor auf ihr steht. */
+    .fl-option.active { background: var(--color-neutral-light-400); outline: none; }
+    .fl-option.selected { background: var(--color-primary-100); }
+    .fl-option-check { font-size: 20px; color: var(--color-primary-500); flex-shrink: 0; }
+    /* "Keine Ergebnisse" (Figma-State "empty") — nur erreichbar, wenn oben gesucht wird. */
+    .fl-select-panel-state {
+      display: flex; align-items: center; height: 36px; padding: 0 12px;
+      font-size: 14px; line-height: 21px; color: var(--color-neutral-dark-800);
+    }
+    /* Der Trigger, den die Berater-Zelle im Bearbeiten-Zustand zeigt: optisch dasselbe Feld wie
+       .inline-input (gleiche Höhe, gleicher Primary-Rahmen), aber kein Textfeld — Freitext gibt
+       es hier nicht, ausgewählt wird ausschließlich im Panel darunter. */
+    .fl-select-trigger {
+      display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0; box-sizing: border-box;
+      height: 36px; padding: 0 4px 0 10px; background: #fff; cursor: pointer;
+      border: 1.5px solid var(--color-primary-500); border-radius: var(--radius-s);
+      font-family: inherit; font-size: 14px; color: var(--color-neutral-dark-900); text-align: left;
+    }
+    .fl-select-trigger-value { flex: 1 0 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fl-select-trigger .material-symbols-outlined { font-size: 18px; color: var(--color-neutral-dark-400); flex-shrink: 0; }
     /* Schnellaktions-Menü auf der Fälligkeit — dasselbe visuelle Muster wie die übrigen
        Dropdown-Menüs (.menu), aber innerhalb der eigenen Zelle verankert (statt eines
        einzelnen, wiederverwendeten Overlay-Elements), da es pro Zeile mit deren jeweiligem
@@ -2719,7 +2875,7 @@
        filtern gemeinsam (UND-Verknüpfung), sind aber inhaltlich zwei verschiedene Fragen
        (Art des ToDos vs. wer es ausgelöst hat), daher optisch getrennt statt in einer Liste. */
     .bmenu-divider { border-top: 1px solid var(--color-neutral-light-400); margin: 4px 6px; }
-    .bmenu-group-label { padding: 6px 8px 2px; font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-400); text-transform: uppercase; letter-spacing: 0.3px; }
+    .bmenu-group-label { padding: 6px 8px 2px; font-size: 11px; font-weight: 600; color: var(--color-neutral-dark-600); }
     .bmenu-foot { display: flex; align-items: center; gap: var(--space-m); padding: 10px 14px;
       border-top: 1px solid var(--color-neutral-light-400); }
     .bmenu-foot .btn { flex: 1; justify-content: center; }
@@ -2821,7 +2977,7 @@
     .cal-day { background: #fff; display: flex; flex-direction: column; min-width: 0; }
     .cal-day.weekend { background: var(--color-neutral-light-100); }
     .cal-day-head { position: sticky; top: 0; z-index: 1; text-align: center; padding: 6px 2px 4px; background: inherit; border-bottom: 1px solid var(--color-neutral-light-400); }
-    .cal-wd { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--color-neutral-dark-400); }
+    .cal-wd { font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-600); }
     .cal-dnum { font-size: 13px; font-weight: 500; color: var(--color-neutral-dark-600); line-height: 22px; }
     .cal-day.today .cal-dnum { background: var(--color-primary-500); color: #fff; width: 22px; height: 22px; border-radius: var(--radius-full); display: inline-block; }
     .cal-day.today .cal-wd { color: var(--color-primary-600); }
@@ -2829,7 +2985,7 @@
     .cal-event { border-left: 3px solid var(--evc, var(--color-primary-500)); background: var(--evbg, var(--color-primary-100)); border-radius: var(--radius-xs); padding: 3px 4px; overflow: hidden; }
 
     .cal-bdays { padding: 10px 3px 4px; border-top: 1px solid var(--color-neutral-light-200); margin: 12px 3px 0; }
-    .cal-bdays-head { font-size: 10px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--color-neutral-dark-400); padding: 4px 1px 3px; }
+    .cal-bdays-head { font-size: 11px; font-weight: 600; color: var(--color-neutral-dark-600); padding: 4px 1px 3px; }
     .cal-bday { display: flex; align-items: center; gap: 4px; padding: 2px 1px; font-size: 10px; color: var(--color-neutral-dark-800); overflow: hidden; }
     .cal-bday-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cal-bday .material-symbols-outlined { font-size: 13px; color: var(--color-primary-500); flex-shrink: 0; }
@@ -2920,7 +3076,7 @@
     .hist-diff { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
     .hist-val { font-size: 12px; padding: 5px 8px; border-radius: var(--radius-s); border: 1px solid var(--color-neutral-light-500);
       background: var(--color-neutral-light-100); color: var(--color-neutral-dark-800); word-break: break-word; }
-    .hist-val .vk { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--color-neutral-dark-400); margin-bottom: 1px; }
+    .hist-val .vk { display: block; font-size: 11px; font-weight: 500; color: var(--color-neutral-dark-600); margin-bottom: 1px; }
     .hist-val.old { color: var(--color-neutral-dark-400); }
     .hist-val.old .vv { text-decoration: line-through; }
     .hist-val.new { border-color: var(--color-primary-200); background: var(--color-primary-100); color: var(--color-neutral-dark-900); }
@@ -3073,7 +3229,7 @@
             <button data-quick="ueberfaellig" style="--qf:var(--color-error-500);--qf-tint:var(--color-error-100)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Überfällig</span></button>
             <button data-quick="heute" style="--qf:var(--color-warning-high);--qf-tint:var(--color-warning-high-light)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Heute</span></button>
             <button data-quick="morgen" style="--qf:var(--color-brand-blue);--qf-tint:#E8F0FC"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Morgen</span></button>
-            <button data-quick="woche" style="--qf:var(--color-notification);--qf-tint:#E5F8FA"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Diese Woche</span></button>
+            <button data-quick="woche" style="--qf:var(--color-accent-purple);--qf-tint:var(--color-accent-purple-light)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Diese Woche</span></button>
           </div>
 
           <!-- FÄLLIGKEITS-FILTER ALS DROPDOWN (nur sichtbar via body.due-dropdown, siehe
@@ -3332,7 +3488,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-tone="today" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="20095 Hamburg">
+              <div class="todo-row" data-tone="today" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="20095 Hamburg" data-antragsnummer="A-58104">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
@@ -3353,14 +3509,6 @@
               </div>
             </div>
           </div>
-          <div class="todo-pagination">
-            <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 1 von 1</span>
-            <div class="pg-nav">
-              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
-            </div>
-          </div>
         </section>
 
         <!-- ===== Gruppe: Heute fällig ===== -->
@@ -3378,7 +3526,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-typ="dokument" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="27.06.2026" data-typ="dokument" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="60486 Frankfurt am Main" data-antragsnummer="A-62973">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Antrag prüfen – Kunde hat ein Angebot angefragt</span></span>
@@ -3400,7 +3548,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email" data-geburtstag="true">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email" data-geburtstag="true" data-antragsnummer="A-59362">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="material-symbols-outlined todo-title-icon" title="Geburtstag">cake</span><span class="todo-text inline-edit" data-field="titel">Geburtstag: Stefan Lehmann</span></span>
@@ -3419,7 +3567,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater">Jan Joisten</span></div>
 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="anruf" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="10115 Berlin">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="anruf" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="10115 Berlin" data-antragsnummer="A-60287">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückruf: offene Fragen zur Finanzierung</span></span>
@@ -3438,7 +3586,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
 
               </div>
-              <div class="todo-row" data-berater="Sandra Wolf" data-created="24.06.2026" data-typ="email" data-finanzierungsgrund="Erstfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="80331 München">
+              <div class="todo-row" data-berater="Sandra Wolf" data-created="24.06.2026" data-typ="email" data-finanzierungsgrund="Erstfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="80331 München" data-antragsnummer="A-61045">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückmeldung per Mail an Kunde senden</span></span>
@@ -3457,7 +3605,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Sandra Wolf</span></div>
 
               </div>
-              <div class="todo-row" data-berater="Bernd Krüger" data-created="20.06.2026" data-finanzierungsgrund="Modernisierung" data-immobilientyp="Mehrfamilienhaus" data-immobiliennutzung="Vermietet" data-plz="50667 Köln">
+              <div class="todo-row" data-berater="Bernd Krüger" data-created="20.06.2026" data-finanzierungsgrund="Modernisierung" data-immobilientyp="Mehrfamilienhaus" data-immobiliennutzung="Vermietet" data-plz="50667 Köln" data-antragsnummer="A-61738">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Finanzierungsbestätigung erstellen</span></span>
@@ -3476,7 +3624,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="22.06.2026" data-finanzierungsgrund="Erstfinanzierung" data-immobilientyp="Doppelhaushälfte" data-immobiliennutzung="Selbst bewohnt" data-plz="40213 Düsseldorf">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="22.06.2026" data-finanzierungsgrund="Erstfinanzierung" data-immobilientyp="Doppelhaushälfte" data-immobiliennutzung="Selbst bewohnt" data-plz="40213 Düsseldorf" data-antragsnummer="A-62110">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Angebot finalisieren</span></span>
@@ -3554,14 +3702,6 @@
               </div>
             </div>
           </div>
-          <div class="todo-pagination">
-            <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 7 von 7</span>
-            <div class="pg-nav">
-              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
-            </div>
-          </div>
         </section>
 
         <!-- ===== Gruppe: Überfällig ===== -->
@@ -3579,7 +3719,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Bernd Krüger" data-created="24.06.2026">
+              <div class="todo-row" data-berater="Bernd Krüger" data-created="24.06.2026" data-antragsnummer="A-61738">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Gehaltsnachweise prüfen</span></span>
@@ -3598,7 +3738,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="23.06.2026" data-finanzierungsgrund="Modernisierung" data-immobilientyp="Mehrfamilienhaus" data-immobiliennutzung="Vermietet" data-plz="04109 Leipzig">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="23.06.2026" data-finanzierungsgrund="Modernisierung" data-immobilientyp="Mehrfamilienhaus" data-immobiliennutzung="Vermietet" data-plz="04109 Leipzig" data-antragsnummer="A-61045">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Dokumente von Kunde prüfen</span></span>
@@ -3617,7 +3757,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Sandra Wolf" data-created="18.06.2026" data-typ="anruf" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="70173 Stuttgart">
+              <div class="todo-row" data-berater="Sandra Wolf" data-created="18.06.2026" data-typ="anruf" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Einfamilienhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="70173 Stuttgart" data-antragsnummer="A-63481">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Telefonat: Rückfragen zur Finanzierung</span></span>
@@ -3639,7 +3779,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Sandra Wolf</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Markus Feld" data-created="17.06.2026" data-typ="link">
+              <div class="todo-row" data-berater="Markus Feld" data-created="17.06.2026" data-typ="link" data-antragsnummer="A-64029">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Neue Portal-Nachricht prüfen</span></span>
@@ -3658,7 +3798,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Markus Feld</span></div>
                 
               </div>
-              <div class="todo-row done" data-berater="Jan Joisten" data-created="19.06.2026" data-typ="email">
+              <div class="todo-row done" data-berater="Jan Joisten" data-created="19.06.2026" data-typ="email" data-antragsnummer="A-64716">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Widerrufsbelehrung verschickt</span></span>
@@ -3676,7 +3816,7 @@
                 <div class="todo-due" data-due="2026-08-23"><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">23.08.2026 – 10:00</span></div>
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
               </div>
-              <div class="todo-row done" data-berater="Bernd Krüger" data-created="18.06.2026">
+              <div class="todo-row done" data-berater="Bernd Krüger" data-created="18.06.2026" data-antragsnummer="A-61738">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Identitätsprüfung abgeschlossen</span></span>
@@ -3696,14 +3836,6 @@
               </div>
             </div>
           </div>
-          <div class="todo-pagination">
-            <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 6 von 6</span>
-            <div class="pg-nav">
-              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
-            </div>
-          </div>
         </section>
 
         <!-- ===== Gruppe: Morgen fällig ===== -->
@@ -3721,7 +3853,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Sandra Wolf" data-created="27.06.2026">
+              <div class="todo-row" data-berater="Sandra Wolf" data-created="27.06.2026" data-antragsnummer="A-65203">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Angebot Lassestraße finalisieren</span></span>
@@ -3740,7 +3872,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Sandra Wolf</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email" data-antragsnummer="A-65891">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Rückfrage zum Finanzierungswunsch klären</span></span>
@@ -3759,7 +3891,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
 
               </div>
-              <div class="todo-row" data-berater="Andrea Lindner" data-created="21.06.2026">
+              <div class="todo-row" data-berater="Andrea Lindner" data-created="21.06.2026" data-antragsnummer="A-66374">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Beratungstermin vorbereiten</span></span>
@@ -3780,14 +3912,6 @@
               </div>
             </div>
           </div>
-          <div class="todo-pagination">
-            <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 2 von 2</span>
-            <div class="pg-nav">
-              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
-            </div>
-          </div>
         </section>
 
         <!-- ===== Gruppe: Später fällig (alles ab übermorgen) ===== -->
@@ -3805,7 +3929,7 @@
           <div class="todo-table-wrap">
             <div class="todo-table-accent"></div>
             <div class="todo-table-body">
-              <div class="todo-row" data-berater="Jan Joisten" data-created="25.06.2026" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Reihenhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="30159 Hannover">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="25.06.2026" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Reihenhaus" data-immobiliennutzung="Selbst bewohnt" data-plz="30159 Hannover" data-antragsnummer="A-66374">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Konditionen final abstimmen</span></span>
@@ -3824,7 +3948,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="24.06.2026" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="90402 Nürnberg">
+              <div class="todo-row" data-berater="Jan Joisten" data-created="24.06.2026" data-finanzierungsgrund="Neubaufinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Selbst bewohnt" data-plz="90402 Nürnberg" data-antragsnummer="A-64029">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Vertragsunterlagen an Notar übermitteln</span></span>
@@ -3843,7 +3967,7 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
               </div>
-              <div class="todo-row" data-berater="Bernd Krüger" data-created="20.06.2026">
+              <div class="todo-row" data-berater="Bernd Krüger" data-created="20.06.2026" data-antragsnummer="A-61045">
                 <div class="todo-title">
                 <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
                 <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel" tabindex="0" title="Klicken, um den Titel zu ändern">Nachfassen Lead</span></span>
@@ -3862,14 +3986,6 @@
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Bernd Krüger</span></div>
                 
               </div>
-            </div>
-          </div>
-          <div class="todo-pagination">
-            <span class="pg-text">Einträge pro Seite 25</span>
-            <span class="pg-text">1 – 3 von 3</span>
-            <div class="pg-nav">
-              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
             </div>
           </div>
         </section>
@@ -4570,7 +4686,7 @@
     // Karte bleibt. stopPropagation verhindert, dass der Klick auf .todo-applicant-name
     // (Beschäftigungsverhältnis-Klick o.ä. an anderer Stelle) durchschlägt.
     document.addEventListener('click', function (e) {
-      var contactRow = e.target.closest('.applicant-info-contact[data-copy]');
+      var contactRow = e.target.closest('.applicant-info-contact[data-copy], .sheet-copy[data-copy]');
       if (!contactRow) return;
       e.stopPropagation();
       var value = contactRow.dataset.copy;
@@ -4587,7 +4703,7 @@
     // hier für die per role="button" versprochene Tastatur-Bedienbarkeit nachgebaut werden.
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      var contactRow = e.target.closest && e.target.closest('.applicant-info-contact[data-copy]');
+      var contactRow = e.target.closest && e.target.closest('.applicant-info-contact[data-copy], .sheet-copy[data-copy]');
       if (!contactRow) return;
       e.preventDefault();
       contactRow.click();
@@ -4790,6 +4906,74 @@
         bodyRows + '</tbody></table>';
     }
 
+    // Nur für "Ausklappen v1" (siehe #expandVariantSelect): das Panel als schlichte
+    // Tabellenblatt-Ansicht — eine Zeile pro Angabe, Label links, Wert(e) rechts, dünne
+    // Zeilenlinien wie in einer Tabellenkalkulation. Bewusst ein EIGENES <table>-Markup mit
+    // eigenen Klassen (.expand-sheet…) statt Wiederverwendung von .expand-info-table (v7) oder
+    // .v8-table (v8): die geteilten Klassen von v21/v5/v6 haben wiederholt zu
+    // Spezifitäts-Kollisionen geführt (siehe Kommentare bei den dortigen :has()-Resets), das
+    // soll sich hier nicht wiederholen. Wird — wie tableHtml/tableHtmlV8 — IMMER mitgebaut,
+    // sichtbar ist es nur unter body.expand-variant-old (siehe <style>).
+    // Zeilenfolge: Antragsnummer (Wert als Link), je Antragsteller*in eine Zeile
+    // (Name/E-Mail/Telefon/Beschäftigung in eigenen, über alle Zeilen ausgerichteten Spalten),
+    // danach die Finanzierungswunsch-Felder aus FINANCING_WISH_FIELDS.
+    function buildExpandSheetHtml(row) {
+      var rows = '';
+      if (row.dataset.antragsnummer) {
+        rows += sheetRowHtml('Antragsnummer',
+          '<a class="sheet-link" href="#" data-antrag="' + row.dataset.antragsnummer + '">' + row.dataset.antragsnummer + '</a>');
+      }
+      Array.prototype.slice.call(row.querySelectorAll('.todo-applicant-name'))
+        .filter(function (el) { return el.textContent.trim(); })
+        .forEach(function (el, i) {
+          // Leere Zellen bleiben als <td> stehen, damit die Spalten über alle
+          // Antragsteller*innen-Zeilen hinweg exakt untereinander liegen (Tabellenblatt-Optik).
+          rows += '<tr class="sheet-row--applicant"><th class="sheet-label" scope="row">Antragsteller ' + (i + 1) + '</th>' +
+            '<td class="sheet-cell sheet-cell--name">' + el.textContent + '</td>' +
+            '<td class="sheet-cell">' + sheetCopyHtml('mail', el.dataset.email, 'E-Mail-Adresse') + '</td>' +
+            '<td class="sheet-cell">' + sheetCopyHtml('call', el.dataset.telefon, 'Telefonnummer') + '</td>' +
+            '<td class="sheet-cell">' + (el.dataset.beschaeftigung
+              ? '<span class="employment-tag employment-tag--' + el.dataset.beschaeftigung + '">' + EMPLOYMENT_LABEL[el.dataset.beschaeftigung] + '</span>'
+              : '') + '</td></tr>';
+        });
+      FINANCING_WISH_FIELDS.forEach(function (f) {
+        if (row.dataset[f[0]]) rows += sheetRowHtml(f[1], row.dataset[f[0]]);
+      });
+      // ToDos ohne Antrag (z. B. ein reiner Rückruf) hätten sonst ein 1px hohes, stummes Panel —
+      // eine benannte Leerzeile sagt stattdessen, dass hier nichts fehlt, sondern nichts da ist.
+      if (!rows) rows = '<tr><th class="sheet-label" scope="row">Antrag</th>' +
+        '<td class="sheet-cell" colspan="4"><span class="sheet-empty">Keine Antragsdaten vorhanden</span></td></tr>';
+      return '<table class="expand-sheet"><colgroup><col style="width:170px"><col style="width:190px">' +
+        '<col style="width:245px"><col style="width:180px"><col></colgroup><tbody>' + rows + '</tbody></table>';
+    }
+    // Einzeilige Angabe: Wert spannt alle vier Wertspalten, damit er nicht künstlich in der
+    // schmalen Namensspalte umbricht.
+    function sheetRowHtml(label, valueHtml) {
+      return '<tr><th class="sheet-label" scope="row">' + label + '</th>' +
+        '<td class="sheet-cell" colspan="4">' + valueHtml + '</td></tr>';
+    }
+    // E-Mail/Telefon bleiben — wie überall sonst im Prototyp — per Klick kopierbar (siehe
+    // Klick-/keydown-Handler auf [data-copy] weiter oben). Das vorangestellte Icon (dieselben
+    // Symbole wie in contactChipHtml) macht die beiden Spalten ohne eigene Spaltenüberschrift
+    // unterscheidbar — ohne Chip-Hintergrund, im Blatt bleibt es Text in einer Spalte.
+    function sheetCopyHtml(icon, value, label) {
+      if (!value) return '';
+      return '<span class="sheet-copy" data-copy="' + value + '" data-copy-label="' + label +
+        '" title="' + label + ' kopieren" role="button" tabindex="0">' +
+        '<span class="material-symbols-outlined sheet-copy-icon">' + icon + '</span>' +
+        '<span class="sheet-copy-text">' + value + '</span></span>';
+    }
+
+    // Der Antragsnummer-Link im Blatt führt im Prototyp noch nirgendwohin (wie der bestehende
+    // "Antrag öffnen"-Pfeil): href="#" würde die Liste nach oben springen lassen, deshalb
+    // abgefangen — Rückmeldung wie bei allen anderen Aktionen über einen Toast.
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest && e.target.closest('.sheet-link[data-antrag]');
+      if (!link) return;
+      e.preventDefault();
+      if (window.showToast) window.showToast('Antrag ' + link.dataset.antrag + ' öffnen');
+    });
+
     function buildExpandPanel(row) {
       if (!row.querySelector('.todo-title-actions')) return;
       var existing = row.querySelector('.todo-expand-panel');
@@ -4851,8 +5035,9 @@
       // Ebenen braucht, damit der eingeklappte Zustand wirklich 0px hoch ist.
       var tableHtml = buildExpandTableHtml(row);
       var tableHtmlV8 = buildExpandTableV8Html(row);
+      var sheetHtml = buildExpandSheetHtml(row);
       panel.innerHTML = '<div class="todo-expand-panel-inner"><div class="todo-expand-panel-card">' + metaHtml +
-        '<div class="expand-columns">' + fwHtml + applicantHtml + '</div>' + tableHtml + tableHtmlV8 + '</div></div>';
+        '<div class="expand-columns">' + fwHtml + applicantHtml + '</div>' + tableHtml + tableHtmlV8 + sheetHtml + '</div></div>';
       row.appendChild(panel);
     }
     window.buildExpandPanel = buildExpandPanel;
@@ -4913,112 +5098,185 @@
       input.addEventListener('click', function (ev) { ev.stopPropagation(); });
     }
 
-    // ---------- Berater: Such-Input + eigenes Dropdown mit Vorschlägen statt nativem <select>
-    // (dessen Liste je nach Betriebssystem gerendert wird und dadurch aus dem sonstigen Design
-    // fällt) — gleiches Karten-/Options-Muster wie #titleSuggestions beim Anlegen-Formular.
-    // Auswahl per Klick ODER Enter auf der markierten Zeile übernimmt sofort. ----------
+    // ---------- fl-select-panel (Figma node 156:309) — generisches Auswahl-Panel: weiße Karte
+    // mit einer fl-option-Zeile pro Eintrag, Häkchen an der aktuellen Auswahl und einem
+    // Suchfeld oben, sobald mehr als FL_SELECT_SEARCH_THRESHOLD Optionen zur Wahl stehen.
+    // Bewusst kein natives <select> (dessen Liste rendert das Betriebssystem und fällt dadurch
+    // aus dem Design) und auch keine Autocomplete: der Wert wird ausgewählt, nicht getippt.
+    // Aufrufer bekommt nur { close } zurück; das Schließen bei Klick daneben / Escape / Auswahl
+    // meldet das Panel über onSelect/onCancel zurück. ----------
+    var FL_SELECT_SEARCH_THRESHOLD = 8;
+    function openFlSelectPanel(anchor, config) {
+      var all = config.options.slice();
+      var searchable = all.length > FL_SELECT_SEARCH_THRESHOLD;
+      var panel = document.createElement('div');
+      panel.className = 'fl-select-panel';
+      panel.tabIndex = -1;
+
+      var searchInput = null;
+      if (searchable) {
+        var searchWrap = document.createElement('div');
+        searchWrap.className = 'fl-select-panel-search';
+        searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.autocomplete = 'off';
+        searchInput.placeholder = config.searchPlaceholder || 'Suchen';
+        searchInput.setAttribute('aria-label', config.searchPlaceholder || 'Suchen');
+        searchWrap.appendChild(searchInput);
+        panel.appendChild(searchWrap);
+      }
+
+      var listbox = document.createElement('div');
+      listbox.className = 'fl-select-panel-listbox';
+      listbox.setAttribute('role', 'listbox');
+      if (config.ariaLabel) listbox.setAttribute('aria-label', config.ariaLabel);
+      panel.appendChild(listbox);
+      document.body.appendChild(panel);
+
+      // Breite folgt dem Trigger (so macht es auch das echte Component), die Berater-Spalte ist
+      // dafür aber zu schmal — .fl-select-panel bringt deshalb eine min-width mit. Sobald das
+      // Panel dadurch breiter als der Trigger wird, muss es notfalls nach links rutschen, sonst
+      // liefe es in der letzten Tabellenspalte rechts aus dem Fenster.
+      // Position document-relativ (absolute + scrollY), damit das Panel beim Scrollen am
+      // Trigger klebt statt sich wie position:fixed davon zu lösen.
+      function position() {
+        var rect = anchor.getBoundingClientRect();
+        panel.style.width = rect.width + 'px';
+        panel.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+        var left = Math.min(rect.left, Math.max(8, window.innerWidth - panel.offsetWidth - 8));
+        panel.style.left = (left + window.scrollX) + 'px';
+      }
+
+      function options() { return Array.prototype.slice.call(listbox.querySelectorAll('.fl-option')); }
+      function activeOption() { return listbox.querySelector('.fl-option.active'); }
+      function setActive(opt) {
+        var current = activeOption();
+        if (current) current.classList.remove('active');
+        if (opt) { opt.classList.add('active'); opt.scrollIntoView({ block: 'nearest' }); }
+      }
+      function render() {
+        var q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        var found = all.filter(function (o) { return !q || o.toLowerCase().indexOf(q) !== -1; });
+        if (!found.length) {
+          listbox.innerHTML = '<div class="fl-select-panel-state">Keine Ergebnisse</div>';
+          position();
+          return;
+        }
+        listbox.innerHTML = found.map(function (o) {
+          var selected = o === config.value;
+          return '<button type="button" role="option" aria-selected="' + selected + '"' +
+            ' class="fl-option' + (selected ? ' selected' : '') + '" data-value="' + o + '">' +
+            '<span class="fl-option-label">' + o + '</span>' +
+            (selected ? '<span class="material-symbols-outlined fl-option-check">check</span>' : '') +
+            '</button>';
+        }).join('');
+        // Cursor startet auf der aktuellen Auswahl, damit Enter ohne Pfeiltaste nichts ändert.
+        setActive(listbox.querySelector('.fl-option.selected') || options()[0]);
+        position();
+      }
+
+      var closed = false;
+      function close() {
+        if (closed) return;
+        closed = true;
+        document.removeEventListener('mousedown', onOutside, true);
+        panel.remove();
+      }
+      function select(val) { close(); if (config.onSelect) config.onSelect(val); }
+      function cancel() { close(); if (config.onCancel) config.onCancel(); }
+
+      // mousedown statt click: der Klick daneben soll das Panel schließen, bevor das getroffene
+      // Element selbst reagiert (ein Klick auf eine andere Berater-Zelle kann diese so direkt
+      // öffnen, statt am noch gesetzten activeInlineEl abzuprallen).
+      function onOutside(ev) {
+        if (panel.contains(ev.target) || anchor.contains(ev.target)) return;
+        cancel();
+      }
+      document.addEventListener('mousedown', onOutside, true);
+
+      listbox.addEventListener('click', function (ev) {
+        var opt = ev.target.closest('.fl-option');
+        if (!opt) return;
+        ev.stopPropagation();
+        select(opt.dataset.value);
+      });
+
+      function onKeydown(ev) {
+        ev.stopPropagation();
+        if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+          ev.preventDefault();
+          var opts = options();
+          if (!opts.length) return;
+          var i = opts.indexOf(activeOption());
+          setActive(opts[ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length]);
+        } else if (ev.key === 'Enter') {
+          ev.preventDefault();
+          var active = activeOption();
+          if (active) select(active.dataset.value);
+        } else if (ev.key === 'Escape' || ev.key === 'Tab') {
+          ev.preventDefault();
+          cancel();
+        }
+      }
+      panel.addEventListener('keydown', onKeydown);
+
+      render();
+      // Fokus liegt im Suchfeld, wenn es eines gibt — sonst auf dem Panel selbst, damit die
+      // Pfeiltasten auch in der kurzen Variante sofort funktionieren.
+      (searchInput || panel).focus({ preventScroll: true });
+      if (searchInput) searchInput.addEventListener('input', render);
+
+      return { close: close };
+    }
+    window.openFlSelectPanel = openFlSelectPanel;
+
+    // ---------- Berater: Klick auf die Zelle zeigt einen Trigger mit dem aktuellen Namen und
+    // darunter das fl-select-panel mit ALLEN Beratern (Häkchen am aktuellen). ----------
     var BERATER_ALL = ['Jan Joisten', 'Bernd Krüger', 'Sandra Wolf', 'Andrea Lindner', 'Markus Feld'];
     function startBeraterEdit(el) {
       if (activeInlineEl) return;
       var original = el.textContent;
       el.classList.add('editing');
       el.innerHTML = '';
-      var wrap = document.createElement('span');
-      wrap.className = 'berater-edit-wrap';
-      var input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'inline-input';
-      input.autocomplete = 'off';
-      input.value = original;
-      input.setAttribute('aria-label', 'Berater ändern');
-      var clearBtn = document.createElement('button');
-      clearBtn.type = 'button';
-      clearBtn.className = 'berater-edit-clear';
-      clearBtn.setAttribute('aria-label', 'Sucheingabe leeren');
-      clearBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
-      var list = document.createElement('div');
-      list.className = 'berater-edit-list';
-      list.hidden = true;
-      wrap.appendChild(input);
-      wrap.appendChild(clearBtn);
-      wrap.appendChild(list);
-      el.appendChild(wrap);
+      var trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'fl-select-trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'true');
+      trigger.setAttribute('aria-label', 'Berater ändern');
+      trigger.innerHTML = '<span class="fl-select-trigger-value"></span>' +
+        '<span class="material-symbols-outlined">arrow_drop_down</span>';
+      trigger.querySelector('.fl-select-trigger-value').textContent = original;
+      el.appendChild(trigger);
       activeInlineEl = el;
-      input.focus();
-      input.select();
-
-      function matchingBerater() {
-        var q = input.value.trim().toLowerCase();
-        return BERATER_ALL.filter(function (b) { return !q || b.toLowerCase().indexOf(q) !== -1; });
-      }
-      function highlightedOption() { return list.querySelector('.berater-edit-option.highlighted'); }
-      function setHighlight(opt) {
-        var current = highlightedOption();
-        if (current) current.classList.remove('highlighted');
-        if (opt) { opt.classList.add('highlighted'); opt.scrollIntoView({ block: 'nearest' }); }
-      }
-      function renderList() {
-        var names = matchingBerater();
-        if (!names.length) { list.hidden = true; list.innerHTML = ''; return; }
-        list.innerHTML = names.map(function (b) {
-          return '<button type="button" class="berater-edit-option' + (b === original ? ' current' : '') + '" data-value="' + b + '">' + b + '</button>';
-        }).join('');
-        list.hidden = false;
-        setHighlight(list.querySelector('.berater-edit-option.current') || list.querySelector('.berater-edit-option'));
-      }
-      // Verhindert, dass ein Klick in die Liste dem Input erst den Fokus entzieht (blur würde
-      // sonst noch vor dem "click" unten feuern und das Feld per finish(true) schon schließen).
-      list.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-      list.addEventListener('click', function (ev) {
-        var opt = ev.target.closest('.berater-edit-option');
-        if (!opt) return;
-        input.value = opt.dataset.value;
-        finish(true);
-      });
-      input.addEventListener('input', renderList);
-      // Gleicher mousedown-preventDefault-Trick wie bei der Liste: Klick auf "×" soll den Input
-      // nicht erst per blur committen, sondern nur die Eingabe leeren und den Fokus behalten.
-      clearBtn.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-      clearBtn.addEventListener('click', function () {
-        input.value = '';
-        input.focus();
-        renderList();
-      });
 
       var closed = false;
-      function finish(commit) {
+      function finish(val) {
         if (closed) return;
         closed = true;
         activeInlineEl = null;
-        var val = input.value.trim();
-        var valid = BERATER_ALL.indexOf(val) !== -1;
+        if (panel) panel.close();
         el.classList.remove('editing');
-        el.textContent = (commit && valid) ? val : original;
-        if (commit && valid && val !== original) {
-          el.closest('.todo-row').dataset.berater = val;
-          if (window.showToast) window.showToast('Berater geändert: ' + val);
+        el.textContent = (val && BERATER_ALL.indexOf(val) !== -1) ? val : original;
+        if (el.textContent !== original) {
+          el.closest('.todo-row').dataset.berater = el.textContent;
+          if (window.showToast) window.showToast('Berater geändert: ' + el.textContent);
         }
+        if (el.hasAttribute('tabindex')) el.focus({ preventScroll: true });
       }
-      input.addEventListener('keydown', function (ev) {
-        ev.stopPropagation();
-        if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
-          ev.preventDefault();
-          var opts = Array.prototype.slice.call(list.querySelectorAll('.berater-edit-option'));
-          if (!opts.length) return;
-          var i = opts.indexOf(highlightedOption());
-          var next = ev.key === 'ArrowDown' ? (i + 1) % opts.length : (i - 1 + opts.length) % opts.length;
-          setHighlight(opts[next]);
-        } else if (ev.key === 'Enter') {
-          ev.preventDefault();
-          var active = highlightedOption();
-          if (active) input.value = active.dataset.value;
-          finish(true);
-        } else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
-        else if (ev.key === 'Tab') { finish(true); }
+
+      var panel = openFlSelectPanel(trigger, {
+        options: BERATER_ALL,
+        value: original,
+        ariaLabel: 'Berater wählen',
+        searchPlaceholder: 'Berater suchen',
+        onSelect: finish,
+        onCancel: function () { finish(null); }
       });
-      input.addEventListener('blur', function () { finish(true); });
-      input.addEventListener('click', function (ev) { ev.stopPropagation(); });
-      renderList();
+
+      // Zweiter Klick auf den Trigger schließt wieder, ohne zu ändern — wie bei den übrigen
+      // Zell-Dropdowns hier (siehe openTypPop).
+      trigger.addEventListener('click', function (ev) { ev.stopPropagation(); finish(null); });
     }
 
     // ---------- Art: Dropdown mit Icon+Label statt Freitext (gleiches Werte-/Icon-Set wie der
@@ -5150,10 +5408,18 @@
     // "Klick außerhalb schließt"-Listener weiter unten offene Datum-/Uhrzeit-Änderungen VOR dem
     // Schließen noch übernehmen, statt sie kommentarlos zu verwerfen.
     var duePopApply = null;
+    // Muss re-entrant-sicher sein: der Fokus sitzt beim Schließen im Panel selbst (.due-pop-item
+    // bzw. Datum/Uhrzeit-Feld). Das Entfernen löst dort ein blur/focusout aus, dessen Handler
+    // erneut closeDuePop() aufruft — WÄHREND das erste remove() noch läuft. Beide Aufrufe fanden
+    // über querySelector dasselbe Element und riefen remove() darauf; der zweite lief ins
+    // "NotFoundError: The node to be removed is no longer a child of this node". Deshalb wird die
+    // Klasse ZUERST entfernt: ein re-entranter Aufruf findet dann nichts mehr und steigt aus.
     function closeDuePop() {
-      var existing = document.querySelector('.due-pop');
-      if (existing) existing.remove();
       duePopApply = null;
+      var existing = document.querySelector('.due-pop');
+      if (!existing) return;
+      existing.classList.remove('due-pop');
+      if (existing.parentNode) existing.parentNode.removeChild(existing);
     }
     function currentTimePart(dueCell) {
       var text = dueCell.querySelector('.due-text').textContent;
@@ -5691,20 +5957,6 @@
       var groups = document.querySelectorAll('.todo-group');
       groups.forEach(function (group) {
         group.classList.toggle('quick-empty', visibleRowCount(group) === 0);
-      });
-
-      // In JEDER Ansicht können mehrere Fälligkeits-Gruppen gleichzeitig sichtbar sein (alle in
-      // derselben .todo-table-card, siehe CSS) — z. B. unter "Heute" zusätzlich die überfälligen
-      // ToDos, unter "Woche" gleich vier Töne. Jede sichtbare Gruppe zeigt dabei ihre EIGENE
-      // "Einträge pro Seite …"-Zeile mit ihrer eigenen, tatsächlich sichtbaren Zeilenzahl —
-      // unabhängig vom Schnellfilter und von body.grouping-due (fest gesetzt, siehe <body>), das
-      // nur Zwischen-Überschriften ein-/ausblendet. Eine leere Gruppe blendet ihre Pagination
-      // automatisch mit aus (siehe .todo-group.quick-empty).
-      groups.forEach(function (g) {
-        var countEl = g.querySelector('.todo-pagination .pg-text:nth-of-type(2)');
-        if (!countEl) return;
-        var n = visibleRowCount(g);
-        countEl.textContent = n ? ('1 – ' + n + ' von ' + n) : '0 von 0';
       });
 
       // Berater-/Zeitraum-/Art-Filter rufen ausschließlich diese Funktion auf, wenn sich ihre
