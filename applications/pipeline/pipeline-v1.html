@@ -204,6 +204,8 @@
     .pcard-name { font-size: 14px; font-weight: 500; color: var(--color-neutral-dark-800); line-height: 16px; }
     .pcard-sub  { font-size: 12px; color: var(--color-neutral-dark-400); line-height: 16px; }
     .todo-line { display: flex; align-items: center; gap: 8px; }
+    .todo-item { display: flex; flex-direction: column; gap: 6px; }
+    .todo-item + .todo-item { margin-top: 4px; }
     .todo-ind { display: flex; flex: 1; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; letter-spacing: .2px; line-height: 16px; min-width: 0; }
     .todo-txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .todo-ind .material-symbols-outlined { font-size: 16px; }
@@ -222,7 +224,7 @@
       background: var(--color-neutral-light-000);
       border-radius: var(--radius-s);
       box-shadow: 0 2px 8px rgba(84,110,122,.3);
-      padding: 8px 12px; width: 320px;
+      padding: 8px 12px;
       max-height: min(420px, 70vh);
       overflow-y: auto;      /* fallback for browsers without overlay scrollbars */
       overflow-y: overlay;   /* Chrome/Edge: scrollbar floats over content, reserves no width */
@@ -254,10 +256,10 @@
     /* Fälligkeit als eingefärbtes Datum/Uhrzeit statt eigener Badge-Pille */
     .todo-due { display: flex; align-items: center; justify-content: space-between; }
     .pcard-body .todo-due { margin-top: -5px; padding-left: 20px; } /* lines up under the text, in the icon's "column" */
-    .due-text { font-size: 11px; font-weight: 400; white-space: nowrap; }
+    .due-text { font-size: 11px; font-weight: 500; white-space: nowrap; }
     .due-text--overdue { color: var(--color-error-500); }
     .due-text--warning { color: var(--color-warning-high); }
-    .more-link { color: var(--color-primary-600); font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .more-link { display: block; margin-top: 2px; color: var(--color-primary-600); font-weight: 500; cursor: pointer; white-space: nowrap; }
     .more-link:hover { text-decoration: underline; }
     .popover-open-btn {
       flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
@@ -392,7 +394,7 @@ function tag(l, cls) { return { l, cls }; }
 const COLUMNS = [
   { id: 'c1', title: 'Anfrage erstellt',                 meta: '3 Anträge • 1.5M €' },
   { id: 'c2', title: 'Selbstauskunft gestartet',         meta: '3 Anträge • 1.5M €' },
-  { id: 'c3', title: 'Finanzierungsvorschläge erstellt', meta: '3 Anträge • 1.5M €' },
+  { id: 'c3', title: 'Finanzierungsvorschläge erstellt', meta: '1 Antrag • 170.400 €' },
   { id: 'c4', title: 'Finanzierung angefragt',           meta: '3 Anträge • 1.5M €' },
   { id: 'c5', title: 'Kreditprüfung eingereicht',        meta: '3 Anträge • 1.5M €' },
   { id: 'c6', title: 'Kreditprüfung in Bearbeitung',     meta: '3 Anträge • 1.5M €' },
@@ -406,7 +408,7 @@ let PIPE = [
     tags:[], due:null },
   { col:'c1', name:'Wilbert Hilgerbrabdt', sub:'620.000 € – 80331 München', home:true,
     tags:[tag('New','new')], due:'warning',
-    todos:[td('Documents uploaded','info')] },
+    todos:[td('Dokumente hochgeladen','info')] },
 
   /* ---- c2: Selbstauskunft gestartet ---- */
   { col:'c2', name:'Max Mustermann', sub:'350.000 €', home:true,
@@ -426,20 +428,18 @@ let PIPE = [
     ])] },
 
   /* ---- c3: Finanzierungsvorschläge erstellt ---- */
-  { col:'c3', name:'Luisa Müller', sub:'200.000 € – 12551 Berlin', home:true,
-    tags:[tag('Claimed','claimed')], due:'warning' },
-  { col:'c3', name:'Renée Dauscheck', sub:'520.000 € – 20144 Hamburg', home:true,
-    tags:[], due:'info',
-    todos:[td('Documents uploaded','info')] },
   { col:'c3', name:'Sina Krüger', sub:'170.400 € – 39628 Bismark (Altmark)', home:true,
     tags:[], due:'overdue',
-    todos:[td('WENN Bauwerkvertrag SCAN Haus wird nicht geklärt DANN Angebote nicht präzise. Telefonisch klären: Küche finanzieren JA/NEIN? Falls JA: ca. 20 TEUR budgetieren. Auch abfragen: Konkurrenzangebote von Hausbank/anderem Vermittler vorhanden? Ergebnis dokumentieren.','overdue','+4',[
+    todos:[td('Dokumente hochgeladen','info'),
+      td('WENN Bauwerkvertrag SCAN Haus wird nicht geklärt DANN Angebote nicht präzise. Telefonisch klären: Küche finanzieren JA/NEIN? Falls JA: ca. 20 TEUR budgetieren. Auch abfragen: Konkurrenzangebote von Hausbank/anderem Vermittler vorhanden? Ergebnis dokumentieren.','overdue','+2',[
       it('WENN Bauwerkvertrag SCAN Haus wird nicht geklärt DANN Angebote nicht präzise. Telefonisch klären: Küche finanzieren JA/NEIN? Falls JA: ca. 20 TEUR budgetieren. Auch abfragen: Konkurrenzangebote von Hausbank/anderem Vermittler vorhanden? Ergebnis dokumentieren.', 'overdue', dueText(-4,10,0)),
       it('Antrag und Kundenhinweis prüfen – Kunde hat Selbstauskunft vollständig ausgefüllt.', 'overdue', dueText(-3,9,0)),
-      it('Bonität und Schufa-Auskunft anfordern und mit den Angaben aus der Selbstauskunft abgleichen.', 'overdue', dueText(-1,10,0)),
-      it('Finanzierungsvorschlag mit mindestens zwei Bankpartnern erstellen und Konditionen vergleichen.', 'today', timeOnly(12,0)),
-      it('Rückmeldung an den Kunden inklusive Terminvorschlag für das Beratungsgespräch senden.', 'morgen', dueText(1,9,0))
-    ])] },
+      it('Bonität und Schufa-Auskunft anfordern und mit den Angaben aus der Selbstauskunft abgleichen.', 'overdue', dueText(-1,10,0))
+    ]),
+      td('Objektbesichtigung terminieren','warning','+1',[
+        it('Objektbesichtigung terminieren','today',timeOnly(16,30)),
+        it('Nebenkostenabrechnung anfordern','today',timeOnly(17,0))
+      ])] },
 
   /* ---- c4: Finanzierung angefragt ---- */
   { col:'c4', name:'Margrit Kindermann', sub:'475.000 € – 27432 Bremervörde', home:true,
@@ -499,10 +499,12 @@ function renderTodos(card) {
     const clickable = t.kind === 'warning' || t.kind === 'overdue';
     const itemsAttr = clickable ? ` data-items="${encodeURIComponent(JSON.stringify(t.items))}"` : '';
     return `
-    <div class="todo-line">
-      <span class="todo-ind ${t.kind}"${clickable ? ` data-kind="${t.kind}"${itemsAttr}` : ''}><span class="material-symbols-outlined">${TODO_ICON[t.kind]}</span><span class="todo-txt">${truncateCardText(t.t)}</span></span>
+    <div class="todo-item">
+      <div class="todo-line">
+        <span class="todo-ind ${t.kind}"${clickable ? ` data-kind="${t.kind}"${itemsAttr}` : ''}><span class="material-symbols-outlined">${TODO_ICON[t.kind]}</span><span class="todo-txt">${truncateCardText(t.t)}</span></span>
+      </div>
+      ${clickable ? renderDueTag(t.items[0], t.kind, t.extra) : ''}
     </div>
-    ${clickable ? renderDueTag(t.items[0], t.kind, t.extra) : ''}
   `;
   }).join('');
 }
@@ -608,14 +610,11 @@ function showToast(msg) {
 /* ---------------- TODO POPOVER ---------------- */
 const todoPopover = document.getElementById('todoPopover');
 
-function positionTodoPopover(target) {
-  const r = target.getBoundingClientRect();
-  const pw = todoPopover.offsetWidth || 264;
-  let left = r.left;
-  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
-  let top = r.bottom + 6;
-  const ph = todoPopover.offsetHeight;
-  if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+function positionTodoPopover(card) {
+  const r = card.getBoundingClientRect();
+  todoPopover.style.width = r.width + 'px';
+  let left = Math.max(8, Math.min(r.left, window.innerWidth - r.width - 8));
+  const top = r.bottom + 4;
   todoPopover.style.left = left + 'px';
   todoPopover.style.top = top + 'px';
 }
@@ -656,12 +655,11 @@ function fitAndRenderText(el, full) {
   renderTruncatable(el, cut.trimEnd(), full);
 }
 
-function openTodoPopover(target, kind, items, name) {
+function openTodoPopover(target, kind, items) {
   todoPopover.className = `todo-popover show ${kind}`;
   todoPopover.innerHTML = `
     <div class="todo-popover-header">
-      <span class="name">${name}</span>
-      <span class="open-label">Antrag öffnen</span>
+      <span class="name">Antrag öffnen</span>
       <button class="popover-open-btn" type="button" title="Antrag öffnen"><span class="material-symbols-outlined">arrow_forward</span></button>
     </div>
     ${items.map(item => `
@@ -686,8 +684,7 @@ boardEl.addEventListener('click', e => {
   if (!ind) { closeTodoPopover(); return; }
   e.stopPropagation();
   const items = JSON.parse(decodeURIComponent(ind.dataset.items));
-  const name = ind.closest('.pcard').querySelector('.pcard-name').textContent;
-  openTodoPopover(ind, ind.dataset.kind, items, name);
+  openTodoPopover(ind.closest('.pcard'), ind.dataset.kind, items);
 });
 
 todoPopover.addEventListener('click', e => {
