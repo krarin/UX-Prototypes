@@ -131,10 +131,14 @@
     /* Radiobutton-Paar für den Ausklapp-Panel-Vergleich (siehe #expandVariant-Script weiter
        unten) — native Radios statt eigener Track/Knob-Optik wie bei .design-switch, weil hier
        zwei gleichwertige Varianten zur Auswahl stehen statt ein An/Aus. */
-    .expand-variant-group { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; color: var(--color-neutral-dark-600); }
-    .expand-variant-radio { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
-    .expand-variant-radio input { accent-color: var(--color-primary-500); margin: 0; cursor: pointer; }
-    .expand-variant-radio:has(input:checked) { color: var(--color-primary-600); font-weight: 500; }
+    /* Natives <select> statt Radiobuttons (Vorgänger-Optik) — bei mittlerweile 6 Varianten nahm
+       die Radiogroup zu viel Platz in der Topbar ein; ein Dropdown zeigt immer nur die aktuell
+       gewählte Variante. Bewusst nativ statt eigenem .menu-Dropdown (wie Berater/Zeitraum) — reiner
+       Prototyp-Vergleichs-Schalter, kein Produkt-Feature, dafür reicht die native Browser-Optik. */
+    .expand-variant-select {
+      font-size: 12px; color: var(--color-neutral-dark-600); border: 1px solid var(--color-neutral-light-500);
+      border-radius: var(--radius-xs, 2px); padding: 4px 6px; background: #fff; cursor: pointer;
+    }
     .top-icon {
       width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
       display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600);
@@ -225,7 +229,7 @@
     .btn-secondary:hover { background: var(--color-neutral-light-200); }
     /* Nur Berater/Zeitraum (nicht alle .btn-secondary) — Schrift regulär statt der von .btn
        geerbten 500er Zwischenstufe, die hier zu fett wirkte. */
-    #btnBerater, #btnRange { font-weight: 400; }
+    #btnBerater, #btnRange, #btnDueFilter { font-weight: 400; }
     .btn-primary {
       padding: 8px 16px 8px 8px; background: var(--color-primary-500); color: #fff;
     }
@@ -267,6 +271,10 @@
 
     /* ---------- ToDo-Gruppen ---------- */
     .todo-group.collapsed .todo-table-wrap { display: none; }
+    /* .todo-pagination liegt als Geschwister NACH .todo-table-wrap im Markup (siehe HTML), daher
+       eigene Regel nötig — sonst bliebe die "Einträge pro Seite …"-Zeile beim Einklappen einer
+       Gruppierung sichtbar, obwohl die Tabelle darüber ausgeblendet ist. */
+    .todo-group.collapsed .todo-pagination { display: none; }
 
     /* Eine einzige Spalten-Definition für Header-Labels UND Datenzeilen, damit "Antragsteller"
        garantiert über dem jeweiligen Antragsteller-Namen steht usw. — Figma positioniert die
@@ -298,12 +306,12 @@
     .col-berater, .todo-berater, .add-berater-slot { grid-column: 5; grid-row: 1; }
 
     /* Die alte Gruppen-Überschrift (Name/Zähler/Einklapp-Pfeil je Kategorie, großer 16px-Look)
-       bleibt komplett ausgeblendet — auch der "Gruppierung"-Test-Toggle (#groupingSwitchInput)
-       nutzt sie NICHT mehr. Der Toggle zeigt stattdessen bei "Alle" dieselben kleinen, dezenten
-       .quick-subheading-Überschriften wie bereits unter "Heute"/"Woche" (siehe SCHNELLFILTER-
-       Script/updateSubheadings) — damit sehen gruppierte Überschriften über alle Schnellfilter
-       hinweg optisch identisch aus, statt zwei verschiedene Überschriften-Stile im selben
-       Prototyp zu haben. Die Spalten-Labels selbst laufen weiterhin über die eine gemeinsame
+       bleibt komplett ausgeblendet — body.grouping-due (fest auf <body>, siehe dort) nutzt sie
+       NICHT mehr, sondern zeigt bei "Alle" dieselben kleinen, dezenten .quick-subheading-
+       Überschriften wie bereits unter "Heute"/"Woche" (siehe SCHNELLFILTER-Script/
+       updateSubheadings) — damit sehen gruppierte Überschriften über alle Schnellfilter hinweg
+       optisch identisch aus, statt zwei verschiedene Überschriften-Stile im selben Prototyp zu
+       haben. Die Spalten-Labels selbst laufen weiterhin über die eine gemeinsame
        .todo-columns-header weiter unten. */
     .group-title-row { display: none; }
     .group-headline { display: flex; align-items: center; gap: 8px; border: none; background: none; min-width: 0; }
@@ -325,10 +333,18 @@
        Trennlinie/dem Tabellenkopf darunter und wirkte wie Teil der Tabelle statt wie
        eigene Abschnitts-Überschrift. */
     .quick-subheading { display: flex; align-items: center; padding: 12px 12px 10px; }
+    /* width/height 28px statt 20px für eine größere Hover-/Klickfläche — margin:-4px gleicht die
+       zusätzlichen 8px in der Flex-Berechnung wieder aus, damit die Spalten-Einrückung (siehe
+       Kommentar oben, 12+20+16=48px) unverändert bleibt; die Fläche wächst nur optisch nach außen,
+       ohne Label/nachfolgende Inhalte zu verschieben. */
     .quick-subheading-toggle {
-      width: 20px; height: 20px; flex-shrink: 0; border: none; background: none; padding: 0;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-neutral-dark-600);
+      width: 28px; height: 28px; margin: -4px; flex-shrink: 0; border: none; background: none; padding: 0;
+      border-radius: var(--radius-s); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--color-neutral-dark-600);
     }
+    /* Derselbe dezente graue Hover-Ton wie bei den übrigen Icon-Buttons im Prototyp (z. B.
+       .row-act/.top-icon:hover). */
+    .quick-subheading-toggle:hover { background: var(--color-neutral-light-200); }
     /* Ausgeklappt zeigt der Pfeil nach unten (keyboard_arrow_down unrotiert) — eingeklappt
        nach rechts: rotate(-90deg) dreht den Ab-Pfeil auf "rechts", statt ein eigenes Icon zu
        laden (gängiger Kniff, keyboard_arrow_down + -90deg ≈ chevron_right). */
@@ -391,19 +407,19 @@
       border-right: 1px solid var(--color-neutral-light-400);
     }
 
-    /* ---------- "Alle": mehrere ToDo-Gruppen gleichzeitig sichtbar — Pagination der einzelnen
-       Gruppen bis auf die letzte sichtbare ausblenden, damit nur EINE Gesamt-Pagination am Ende
-       der (jetzt in einer gemeinsamen .todo-table-card liegenden) Liste steht (siehe
-       recomputeGroupEmptiness im Script weiter unten). Die farbigen Akzent-Leisten
-       (.todo-table-accent) bleiben dabei je Gruppe erhalten — sie laufen als durchgehend
-       gefärbte Abschnitte weiter und bleiben so die Erkennungshilfe. ---------- */
-    .todo-group.hide-pagination .todo-pagination { display: none; }
+    /* ---------- "Alle": mehrere ToDo-Gruppen gleichzeitig sichtbar — jede zeigt ihre EIGENE
+       "Einträge pro Seite …"-Zeile mit ihrer eigenen Zeilenzahl (siehe recomputeGroupEmptiness
+       weiter unten), statt einer einzigen Gesamt-Pagination am Ende der Liste. ---------- */
 
     .todo-table-wrap { background: #fff; display: flex; }
     /* --tone-color zentral je Gruppe definiert (statt direkt auf .todo-table-accent), damit
        Variante C (Ausklappen) dieselbe Farbe für ihren eigenen, eingerückten Indikator
        wiederverwenden kann (siehe .todo-expand-panel weiter unten) — CSS-Variablen vererben sich
        automatisch an alle Nachfahren der Gruppe. */
+    /* Eigener Ton für "Ausgelöst vom Kunden" (data-tone="kunde") — quer zu den Fälligkeits-Tönen
+       darunter, daher bewusst die Primärfarbe statt einer Dringlichkeits-Farbe (Rot/Orange/Blau),
+       damit sie nicht wie eine weitere Fälligkeits-Kategorie missverstanden wird. */
+    .todo-group[data-tone="kunde"]   { --tone-color: var(--color-primary-500); }
     .todo-group[data-tone="today"]   { --tone-color: var(--color-warning-high); }
     .todo-group[data-tone="overdue"] { --tone-color: var(--color-error-500); }
     /* Farbe deckungsgleich mit dem Schnellfilter-Tab "Morgen fällig" (--color-brand-blue). */
@@ -780,6 +796,13 @@
       background: rgba(0, 150, 136, 0.07); border: 1px solid var(--color-primary-200);
       border-radius: var(--radius-s); box-shadow: 0 4px 12px rgba(84, 110, 122, 0.2);
     }
+    /* v7 ("Tabelle", siehe #expandVariantSelect) übernimmt sonst unverändert die grüne Primary-
+       Tönung der Basis-Regel oben (trägt bewusst keine expand-variant-v21/-v5-Klasse, siehe
+       Kommentar bei den v7-Regeln weiter unten) — auf Wunsch stattdessen ein leichtes Grau statt
+       Grün, passend zur schlichten Tabellen-Optik. */
+    body.expand-variant-v7 .todo-expand-panel-card {
+      background: var(--color-neutral-light-200); border-color: var(--color-neutral-light-400);
+    }
     /* "Antrag öffnen" — NUR ein Platzhalter-Beispiel, es gibt in diesem Prototyp keine echte
        ToDo↔Antrag-Verknüpfung/Navigation. Trennlinie darunter macht die Zeile zum "Panel-
        Header", abgesetzt von den beiden Karten darunter. Icon-Größen kommen hier bewusst aus
@@ -867,7 +890,7 @@
     }
     /* buildExpandPanel baut IMMER beide Darstellungen der Finanzierungswunsch-Felder
        (.fw-kv-list = alte Label/Wert-Zeilen, .fw-fields = neue Icon-Kacheln) — welche sichtbar
-       ist, entscheidet rein CSS je nach Ausklapp-Panel-Variante (siehe .expand-variant-group),
+       ist, entscheidet rein CSS je nach Ausklapp-Panel-Variante (siehe #expandVariantSelect),
        damit "vorher"/"Modern" weiterhin ihre eigene Darstellung zeigen können, ohne dass
        buildExpandPanel dafür verzweigen müsste. Default: Icon-Kacheln, .fw-kv-list bleibt
        verborgen (sonst stünde hier alles doppelt in der Karte). */
@@ -1013,7 +1036,7 @@
     }
     .expand-no-data { font-size: 11px; color: var(--color-neutral-dark-400); }
 
-    /* ---------- Ausklapp-Panel "vorher" (Prototyp-Vergleich, siehe .expand-variant-group oben)
+    /* ---------- Ausklapp-Panel "vorher" (Prototyp-Vergleich, siehe #expandVariantSelect oben)
        — die Optik VOR der Modernisierung: angeklebter grauer Streifen (Bleed bis an die
        Kartenkante, doppelter harter Schatten), instant display:none/flex statt Grid-Animation,
        feste 90px-Namensbreite bei 2 Antragsteller*innen nebeneinander. .todo-expand-panel-inner
@@ -1077,10 +1100,12 @@
     body.expand-variant-old .todo-expand-panel .kv-label { font-size: 12px; color: var(--color-neutral-dark-600); }
     body.expand-variant-old .todo-expand-panel .kv-value { font-size: 12px; font-weight: 400; color: var(--color-neutral-dark-900); }
 
-    /* ---------- Ausklapp-Panel "v2.1" (Variante von "v2", siehe .expand-variant-group oben) —
+    /* ---------- Ausklapp-Panel "v2.1" (Variante von "v2", siehe #expandVariantSelect oben) —
        Icon deutlich größer und mittig, der Feldname (fw-field-label) steht hier klein DARUNTER
        statt wie in "v2" daneben, dann erst die gewählte Antwort. Das 2x2-Raster (.fw-fields,
-       siehe Default-Regel) bleibt unverändert. */
+       siehe Default-Regel) bleibt unverändert. "v5" ist aktuell eine 1:1-Kopie davon (trägt
+       dieselbe Klasse, siehe AUSKLAPP-PANEL-VARIANTEN-VERGLEICH-Script) — noch ohne eigene
+       Abweichungen, body.expand-variant-v5 steht als Haken dafür bereit. */
     body.expand-variant-v21 .fw-field-head .material-symbols-outlined {
       width: 36px; height: 36px; font-size: 19px;
     }
@@ -1151,7 +1176,403 @@
       background: rgba(0, 150, 136, 0.07); margin-top: -10px; padding-top: 10px;
     }
 
-    /* ---------- Ausklapp-Panel "Modern" (4. Vergleichsvariante, siehe .expand-variant-group
+    /* ---------- Ausklapp-Panel "v5" (Delta auf "v2.1", siehe #expandVariantSelect oben) — auf
+       Wunsch: direkt unter "Antrag öffnen" stehen zuerst die Antragsteller*innen, je Person NUR
+       eine Zeile (Name, E-Mail, Telefon nebeneinander statt gestapelt), erst danach der
+       Finanzierungswunsch. buildExpandPanel baut das Markup unverändert (Finanzierungswunsch
+       zuerst im DOM, siehe fwHtml/applicantHtml dort) — hier wird nur die VISUELLE Reihenfolge
+       über :has()+order gedreht, kein eigenes Markup nötig. ---------- */
+    /* Minimaler Abstand zwischen "Antrag öffnen" und der ersten Antragsteller-Zeile darunter —
+       .todo-expand-panel-card ist selbst ein flex-column mit gap:14px zwischen .expand-meta und
+       .expand-columns (Basis-Regel); hier auf einen knappen Wert reduziert, damit die
+       Antragsteller*innen wirklich DIREKT unter der Meta-Zeile wirken. */
+    /* v5 trägt dieselbe expand-variant-v21-Klasse (siehe Script) und erbt daher deren weißen
+       Hintergrund samt grüner border-top-Linie (Primary-200) — auf Wunsch stattdessen ein
+       helles Grau UND die Linie in Neutral statt Grün. */
+    body.expand-variant-v5 .todo-expand-panel-card {
+      gap: 4px; background: var(--color-neutral-light-100); border-top-color: var(--color-neutral-light-400);
+    }
+    body.expand-variant-v5 .expand-columns { flex-direction: column; gap: 12px; }
+    body.expand-variant-v5 .expand-section { max-width: none; width: 100%; flex: 0 0 auto; min-width: 0; }
+    /* Reset einer Basis-Regel, die bei genau 1 Antragsteller*in + vorhandenem Finanzierungswunsch
+       beide Karten per flex:1 1 0 gleich breit macht (siehe .expand-columns:has(.expand-section--
+       wide)… weiter oben) — in v5s gestapeltem Layout (flex-direction:column) würde dasselbe
+       flex-basis:0 stattdessen die vertikale Höhe verzerren, daher hier explizit mit höherer
+       Spezifität zurückgesetzt. */
+    body.expand-variant-v5 .expand-columns:has(.expand-section--wide):has(.expand-section:not(.expand-section--wide)) .expand-section {
+      flex: 0 0 auto; min-width: 0;
+    }
+    /* Reset einer weiteren v2.1-Basisregel (max-width:480px bei genau 2 Antragsteller*innen,
+       gedacht für die 2-Spalten-Nebeneinander-Anordnung dort) — im gestapelten v5-Layout soll die
+       Karte stattdessen die volle Breite nutzen. */
+    body.expand-variant-v5 .expand-columns:has(.expand-section--pair) .expand-section { max-width: none; }
+    /* Reset der ursprünglichen (nicht-variantenspezifischen) Basisregel für den 2-Personen-Fall:
+       flex:1 1 260px zwang BEIDE Karten dort auf eine feste Mindesthöhe von 260px (gedacht, damit
+       Finanzierungswunsch/Antragsteller-Karte NEBENEINANDER gleich hoch wirken) — im gestapelten
+       v5-Layout blieb dadurch bei kurzem Inhalt viel Leerraum stehen. flex:0 0 auto lässt beide
+       Karten stattdessen auf ihre tatsächliche Inhaltshöhe schrumpfen; padding:0 hält v5s
+       durchgehend kartenlose Optik (siehe .expand-section-Reset weiter oben) auch für diesen Fall. */
+    body.expand-variant-v5 .expand-columns:has(.expand-section--pair) .expand-section {
+      flex: 0 0 auto; min-width: 0; padding: 0;
+    }
+    body.expand-variant-v5 .expand-columns:has(.expand-section--pair) .expand-section:has(.fw-fields) {
+      display: block;
+    }
+    body.expand-variant-v5 .expand-columns:has(.expand-section--pair) .expand-section:has(.fw-fields) .fw-fields {
+      flex: none; align-content: normal;
+    }
+    /* Generelle Sicherheitsnetz-Regel: die Antragsteller-Karte bekommt IMMER dasselbe
+       Box-Modell (kein Padding/Margin, keine Mindest-/Höchstbreite), egal ob 1 (--wide), 2
+       (--pair) oder mehr Personen — verschiedene Basis-/v2.1-Regeln sind ursprünglich fürs
+       Nebeneinander-Layout gedacht und unterscheiden padding/min-/max-width teils je nach
+       Personenzahl (siehe die einzelnen Resets oben). Damit der Abstand zu "Antrag öffnen"
+       nicht von der Antragsteller-Anzahl abhängt, hier EIN gemeinsamer, hoch-spezifischer
+       Reset für alle Fälle. */
+    body.expand-variant-v5 .expand-section:has(.applicant-info-people) {
+      flex: 0 0 auto; min-width: 0; max-width: none; padding: 0; margin: 0;
+    }
+    /* v2.1s vertikale Trennlinie zwischen den beiden (nebeneinander stehenden) Karten passt nicht
+       mehr zum jetzt gestapelten Layout — stattdessen eine horizontale Linie ÜBER dem
+       Finanzierungswunsch, der hier immer als zweiter Block erscheint (siehe :has() unten). */
+    body.expand-variant-v5 .expand-section + .expand-section { border-left: none; padding-left: 0; }
+    body.expand-variant-v5 .expand-section:has(.applicant-info-people) { order: 1; }
+    /* .todo-expand-panel-card vor .expand-section:has(...) (statt nur .expand-section:has(...))
+       — sonst gewinnt bei 2 Antragsteller*innen die spezifischere Pair-Reset-Regel weiter oben
+       (body.expand-variant-v5 .expand-columns:has(.expand-section--pair) .expand-section, setzt
+       padding:0 auf BEIDE Sektionen) und annulliert das padding-top hier wieder auf 0 — obwohl
+       Quellreihenfolge normalerweise für spätere Regeln spricht, sticht bei UNGLEICHER
+       Spezifität immer die höhere. Ein zusätzlicher Vorfahre gleicht die Spezifität an, danach
+       entscheidet die (hier spätere) Quellreihenfolge zugunsten dieser Regel. */
+    body.expand-variant-v5 .todo-expand-panel-card .expand-section:has(.fw-kv-list) {
+      order: 2; border-top: 1px solid var(--color-neutral-light-400); padding-top: 10px;
+    }
+    /* Finanzierungswunsch optisch/layoutmäßig an die Antragsteller-Zeilen angepasst: keine
+       2x2-Kachel mit Plus-Trennlinien mehr (Basis-/v2.1-Regeln weiter oben, fürs Grid gedacht),
+       sondern schlichte Zeilen im selben Look — jetzt wieder 2 Felder pro Zeile (statt 1x pro
+       Zeile), nur eben als [Icon+Label] Wert-Zeile statt der alten großen Icon-Kachel. Die
+       Trennlinie sitzt deshalb nicht mehr auf JEDEM Feld (das würde bei 2 Spalten mitten in der
+       Zeile eine Linie zwischen den beiden Feldern erzeugen), sondern nur vor der 2. Zeile
+       (:nth-child(n+3)) — funktioniert unabhängig davon, ob 1–4 Felder vorhanden sind. */
+    /* Feste Spaltenbreite statt 1fr 1fr: die 2. Spalte (Immobilientyp/PLZ) soll exakt an
+       derselben X-Position anfangen wie die E-Mail-Spalte in der Antragsteller-Zeile darüber
+       (.applicant-info-block: 250px Name + 110px Tag + je 14px margin-left = 374px bis zum
+       E-Mail-Start). 350px Spalte 1 + 24px Gap ergibt denselben Wert (350 + 24 = 374). */
+    body.expand-variant-v5 .todo-expand-panel .fw-fields {
+      display: grid; grid-template-columns: 350px 1fr; gap: 10px 24px;
+    }
+    /* Bei 2 Antragsteller*innen (.expand-section--pair) überschreibt sonst eine ältere v2.1-Regel
+       (body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .fw-fields,
+       grid-template-columns: repeat(2, 1fr)) mit HÖHERER Spezifität die feste 350px-Spalte oben
+       wieder auf 2 gleich breite Spalten — v5 trägt dieselbe expand-variant-v21-Klasse (siehe
+       Script), daher greift diese Regel sonst obwohl sie nicht zu v5 gehört. Zusätzlicher
+       Vorfahre (.expand-columns:has(...) + .todo-expand-panel) gleicht die Spezifität an, damit
+       die 2. Spalte auch bei 2 Personen exakt an derselben X-Position wie das E-Mail-Icon
+       beginnt. */
+    body.expand-variant-v5 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields {
+      grid-template-columns: 350px 1fr;
+    }
+    body.expand-variant-v5 .todo-expand-panel .fw-fields::before,
+    body.expand-variant-v5 .todo-expand-panel .fw-fields::after { display: none; }
+    /* Bei 2 Antragsteller*innen (.expand-section--pair) blendet eine ältere v2.1-Regel
+       (body.expand-variant-v21 .expand-columns:has(.expand-section--pair) .fw-fields::before/
+       -after) die Plus-Trennlinien mit HÖHERER Spezifität wieder ein — v5 trägt dieselbe
+       expand-variant-v21-Klasse (siehe Script), daher stand mitten in "Immobilientyp"/"PLZ/Ort"
+       plötzlich eine senkrechte Linie. Gleicher Spezifitäts-Angleich wie beim grid-template-
+       columns-Fix oben nötig. */
+    body.expand-variant-v5 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields::before,
+    body.expand-variant-v5 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields::after {
+      display: none;
+    }
+    body.expand-variant-v5 .fw-field:nth-child(n+3) {
+      border-top: 1px solid var(--color-neutral-light-400); padding-top: 10px;
+    }
+    /* v6 = Kopie von v5 (siehe Klassen-Kombination im Script unten), nur mit EINER Spalte statt
+       zwei: Immobilientyp/PLZ sollen nicht mehr rechts von Finanzierungsgrund/Immobiliennutzung
+       stehen, sondern wie die übrigen Zeilen (z. B. Antragsteller*innen) schlicht darunter
+       aufgelistet sein. 1fr statt 350px 1fr genügt dafür, .fw-field selbst bleibt unverändert
+       (v5-Regel oben: Icon+Label links, Wert rechts in derselben Zeile). */
+    body.expand-variant-v6 .todo-expand-panel .fw-fields {
+      grid-template-columns: 1fr;
+    }
+    /* Auf Wunsch KEINE Trennlinien zwischen den Zeilen (anders als v5, wo sie den 2x2-Bezug der
+       Spalten sichtbar machten) — bei einer einzelnen Spalte reicht der Zeilenabstand (row-gap,
+       s.o. bei .fw-fields) allein, um die Felder als Liste erkennbar zu trennen. Überschreibt die
+       v5-Regel (border-top ab der 3. Zeile) für v6, statt sie zu löschen, da v5 selbst weiter
+       Trennlinien haben soll. */
+    body.expand-variant-v6 .fw-field:nth-child(n+2) {
+      border-top: none; padding-top: 0;
+    }
+    /* Icon der 2. Spalte (Immobilientyp/PLZ) auf dieselbe X-Position geschoben wie das E-Mail-
+       Icon in der Antragsteller-Zeile darüber (.applicant-info-block > .applicant-info-contact:
+       margin-left 14 + border 1 + padding-left 14 = 29px ab Spaltenstart) — kein eigener
+       Trennstrich mehr, nur die Ausrichtung der Icons soll übereinstimmen. */
+    body.expand-variant-v5 .fw-field:nth-child(even) .fw-field-head {
+      padding-left: 15px;
+    }
+    /* Der 15px-Icon-Versatz direkt darüber gehört zu v5s 2. Spalte (Immobilientyp/PLZ) — bei v6s
+       einzelner Spalte gibt es keine 2. Spalte mehr, alle Icons sollen bündig untereinanderstehen
+       wie bei den Antragsteller*innen-Zeilen. Muss NACH der v5-Regel stehen (gleiche Spezifität:
+       body.class .fw-field:nth-child(even) .fw-field-head), sonst gewinnt bei gleicher Spezifität
+       die spätere Regel im Stylesheet — unabhängig von der Personenzahl (--pair oder nicht), da
+       diese Regel keinen :has(.expand-section--pair)-Bezug hat und daher immer für v6 gilt. */
+    body.expand-variant-v6 .fw-field:nth-child(even) .fw-field-head {
+      padding-left: 0;
+    }
+    /* Bei 2 Antragsteller*innen (.expand-section--pair) trägt body zusätzlich sowohl
+       expand-variant-v21 ALS AUCH expand-variant-v5 (siehe Script unten, v6 baut auf beiden auf).
+       Zwei ältere Pair-Sonderregeln greifen deshalb hier ungewollt mit:
+       1) v21s eigene Regel (weiter oben, 4 Klassen) schaltet auf 2 gleich breite Spalten samt
+          Plus-Trennlinien zurück.
+       2) v5s EIGENER Fix dagegen (direkt oberhalb dieses Blocks, extra ".todo-expand-panel"-
+          Vorfahre → 5 Klassen) schlägt v21 zwar, erzwingt aber selbst wieder "350px 1fr" (v5s
+          2-Spalten-Optik) — und wegen der gemeinsamen expand-variant-v5-Klasse gilt DIESER Fix
+          ebenfalls für v6.
+       Damit v6 gewinnt, braucht es dieselbe erhöhte Spezifität (auch hier ".todo-expand-panel" als
+       zusätzlicher Vorfahre, macht 5 Klassen) UND muss nach beiden obigen Regeln stehen. */
+    body.expand-variant-v6 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields {
+      grid-template-columns: 1fr;
+    }
+    body.expand-variant-v6 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields::before,
+    body.expand-variant-v6 .todo-expand-panel .expand-columns:has(.expand-section--pair) .fw-fields::after {
+      display: none;
+    }
+    /* Icon LINKS vom Feldnamen statt darüber (v2.1 stapelt Icon/Label, siehe dortige Regel) —
+       .fw-field wird dafür selbst zur Zeile: [Icon+Label] gefolgt vom Wert, genau wie bei den
+       Antragsteller*innen [Icon+Name] gefolgt von Tag/E-Mail/Telefon. Icon in derselben runden,
+       kleinen Optik wie .applicant-info-icon (20px/primary-100) statt v2.1s großer 36px-Variante. */
+    body.expand-variant-v5 .fw-field { flex-direction: row; align-items: center; gap: 10px; }
+    /* Feste Breite (statt am Feldnamen bemessener flex-Breite) — sonst startet der Wert
+       ("Frankfurt" etc.) je nach Länge des Feldnamens darüber/darunter an unterschiedlicher
+       X-Position (z. B. "Immobilientyp" vs. "PLZ/Ort" in derselben Spalte). Mit fester Breite
+       stehen die Werte je Spalte immer exakt untereinander, egal wie lang der Feldname ist. */
+    body.expand-variant-v5 .fw-field-head {
+      flex: 0 0 160px; flex-direction: row; justify-content: flex-start; gap: 8px; overflow: hidden;
+    }
+    body.expand-variant-v5 .fw-field-label {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* Etwas größer als das Namens-Icon (24px statt 20px) — auf Wunsch deutlicher sichtbar, da
+       die Finanzierungswunsch-Zeilen sonst neben den Antragsteller-Zeilen etwas unauffällig
+       wirkten. */
+    body.expand-variant-v5 .fw-field-head .material-symbols-outlined {
+      width: 24px; height: 24px; font-size: 14px;
+    }
+    /* Der Kreis (20px) war beim Namens-Icon (.applicant-info-icon) schon genauso groß wie hier —
+       das "person"-Glyph füllt seinen Kreis bei gleicher font-size aber sichtbar weniger aus als
+       z. B. "payments"/"key" (glyphspezifisch, kein Box-Unterschied). Etwas größere font-size
+       gleicht das optisch an, damit beide Icon-Kreise gleich "voll" wirken. */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-icon { font-size: 14px; }
+    /* Etwas dunkler als die Basis-Farbe (--color-neutral-dark-400, sehr hell) — die Feldnamen
+       sollen als kleine Überschriften noch gut lesbar sein, nicht fast im Hintergrund verschwinden. */
+    body.expand-variant-v5 .fw-field-label { font-size: 11px; text-align: left; color: var(--color-neutral-dark-600); }
+    body.expand-variant-v5 .fw-field-value { font-size: 13px; text-align: left; }
+    /* Klarstellung, wer 1. und wer 2. Antragsteller*in ist — ausgeschriebenes Label direkt vor
+       dem Namen statt eines neuen Icons/Markups (buildExpandPanel bleibt unverändert), per
+       CSS-Counter. */
+    body.expand-variant-v5 .applicant-info-people { counter-reset: applicant-num; }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block { counter-increment: applicant-num; }
+    /* margin-right statt nur des einzelnen Leerzeichens im content-String — sonst wirkte der
+       Übergang vom (grauen) Label zum (grünen, fetten) Namen zu eng/verklebt. */
+    /* Gleiche Schrift wie die Finanzierungswunsch-Feldnamen (.fw-field-label: 11px/dark-600) —
+       für einheitliche "Label"-Optik über beide Kategorien hinweg. */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-name::before {
+      content: counter(applicant-num) '. Antragsteller/in'; color: var(--color-neutral-dark-600);
+      font-size: 11px; font-weight: 400; margin-right: 14px;
+    }
+    /* Name, E-Mail und Telefon in EINER Zeile UND spaltenweise ausgerichtet, damit ein längerer
+       Name bei der 2. Person nicht E-Mail/Telefon der Zeile darunter verschiebt: .applicant-info-
+       row (bisher ein eigener Block mit Name+Tag) wird per display:contents aufgelöst, damit
+       Name-Gruppe/Tag UND die beiden Kontakt-Chips (bislang eigenständige Geschwister, siehe
+       contactChipHtml) alle gemeinsam als Grid-Kinder von .applicant-info-block landen — FESTE
+       Spaltenbreiten (statt am Inhalt bemessener flex-Breiten) sorgen dafür, dass E-Mail/Telefon
+       bei jeder Person exakt an derselben X-Position beginnen. */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block {
+      display: grid; grid-template-columns: 250px 110px 190px 1fr; align-items: center;
+    }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-row { display: contents; }
+    /* Name ellipsiert statt die feste Spaltenbreite zu sprengen, falls er ausnahmsweise doch
+       länger als 170px ist. */
+    /* Dieselbe grüne Primary-Farbe wie der Antragsteller-Name im ToDo selbst (siehe
+       .todo-applicant-name in der Tabelle) — statt des dunklen Basis-Tons, damit der Name im
+       Ausklapp-Panel als dieselbe Person/derselbe Link wiedererkennbar bleibt. */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-name {
+      overflow: hidden; text-overflow: ellipsis; color: var(--color-primary-500);
+    }
+    /* Grid-Kinder strecken sich standardmäßig auf die volle Spaltenbreite (justify-items:stretch)
+       — beim Beschäftigungs-Tag (Pille mit Hintergrund) wirkte das wie ein unnötig in die Länge
+       gezogener grauer Balken. justify-self:start lässt die Pille auf ihre Textbreite schrumpfen,
+       linksbündig in der festen 130px-Spalte, statt sie zu füllen. */
+    body.expand-variant-v5 .todo-expand-panel .employment-tag,
+    body.expand-variant-v5 .todo-expand-panel .expand-no-data {
+      justify-self: start;
+    }
+    /* Abstand zwischen Name und Tag (einziges Element ohne Trennlinie, siehe unten) — die
+       Grid-Spalten selbst haben keinen eigenen Gap, E-Mail/Telefon bekommen ihren Abstand
+       stattdessen über margin-left+padding-left der Trennlinie (sonst doppelter Abstand). */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block > *:not(:first-child) {
+      margin-left: 14px;
+    }
+    /* Abstand zwischen Name und Beschäftigungs-Tag (2. Kind) auf Wunsch verkleinert (14px → 6px)
+       — E-Mail/Telefon (3./4. Kind, siehe eigene Trennlinien-Regel weiter unten) behalten weiterhin
+       14px, hier gezielt nur die Tag-Spalte reduziert. Gleiche Spezifität wie die Regel oben (beide
+       4 Klassen + body-Typ), muss deshalb danach stehen. Gilt jetzt direkt für v5 (und damit auch
+       für v6, das auf v5 aufbaut). */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block > *:nth-child(2) {
+      margin-left: 6px;
+    }
+    /* Zweite Person (falls vorhanden) bekommt eine eigene Zeile darunter, getrennt durch eine
+       dünne Linie statt der vertikalen Mittellinie aus v2.1 (die passte nur zur 2-Spalten-
+       Anordnung, hier stehen die Personen jetzt untereinander). */
+    /* padding-top gleicht das obere Padding der 1. Zeile an das der 2. Zeile an (die bekommt
+       durch .applicant-info-block + .applicant-info-block padding-top:12px, siehe unten) — sonst
+       säße die 1. Person direkt ohne Innenabstand ganz oben, während die 2. sichtbar mehr Luft
+       zur Trennlinie über sich hat. */
+    body.expand-variant-v5 .applicant-info-people { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+    body.expand-variant-v5 .applicant-info-people::before { display: none; }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block + .applicant-info-block {
+      border-top: 1px solid var(--color-neutral-light-400); padding-top: 12px;
+    }
+    /* Kein grüner Hover-Hintergrund mehr (Basis-Regel) — für die schlichte, textbasierte Zeile
+       hier stattdessen eine Unterstreichung bei Hover/Fokus, siehe .applicant-info-contact-text
+       weiter unten. margin/padding zurückgesetzt: die "Chip"-Optik der Basis-Regel (negative
+       margin, um das zusätzliche Innen-Padding auszugleichen) ergab nur beim gestapelten Layout
+       Sinn, hier sitzt der Kontakt ja bereits inline neben Name/Tag. */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact {
+      margin: 0; padding: 0; border-radius: 0;
+    }
+    /* Dünne, vertikale Trennlinie vor E-Mail und Telefon (nicht vor dem Beschäftigungs-Tag —
+       der bleibt als eigene Pille erkennbar) — macht aus der Aneinanderreihung eine klar lesbare
+       "Name | E-Mail | Telefon"-Zeile. Muss NACH der margin/padding-Reset-Regel oben stehen
+       (gleiche Spezifität, sonst gewinnt der Reset und die Linie hätte keinen Abstand). */
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-block > .applicant-info-contact {
+      margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--color-neutral-light-500);
+    }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact:hover,
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact:focus-visible {
+      background: none; color: var(--color-primary-600); outline: none;
+    }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact-text {
+      text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color .12s ease;
+    }
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact:hover .applicant-info-contact-text,
+    body.expand-variant-v5 .todo-expand-panel .applicant-info-contact:focus-visible .applicant-info-contact-text {
+      text-decoration-color: currentColor;
+    }
+
+    /* ---------- Ausklapp-Panel "v7 (Tabelle)" (siehe #expandVariantSelect oben) — auf
+       ausdrücklichen Wunsch "wirklich eine Tabelle" statt der sonstigen div-Karten: eigenes
+       <table>-Markup (buildExpandTableHtml, siehe Script weiter unten), IMMER zusätzlich zu
+       .expand-columns gebaut, aber standardmäßig unsichtbar (display:none) — genau wie bei
+       fw-kv-list/fw-fields entscheidet rein CSS je nach Variante, welche Darstellung sichtbar
+       ist. Bewusst OHNE die expand-variant-v21/-v5-Klassen (anders als v6) — die wiederholten
+       Spezifitäts-Kollisionen zwischen diesen Klassen (siehe :has()-Resets bei v5) sollen sich
+       hier nicht fortsetzen, "Tabelle" bekommt komplett eigene, unabhängige Regeln. */
+    .expand-info-table { display: none; }
+    body.expand-variant-v7 .expand-columns { display: none; }
+    body.expand-variant-v7 .expand-info-table {
+      display: table; width: 100%; border-collapse: collapse; table-layout: fixed;
+    }
+    body.expand-variant-v7 .expand-info-table .expand-table-cell {
+      border: 1px solid var(--color-neutral-light-500); padding: 10px 14px; width: 50%;
+      vertical-align: top; background: var(--color-neutral-light-200);
+    }
+    body.expand-variant-v7 .expand-table-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    body.expand-variant-v7 .expand-table-head .material-symbols-outlined {
+      font-size: 16px; color: var(--color-neutral-dark-400);
+    }
+    body.expand-variant-v7 .expand-table-head-label { font-size: 11px; color: var(--color-neutral-dark-600); }
+    body.expand-variant-v7 .expand-table-value { font-size: 13px; font-weight: 600; color: var(--color-neutral-dark-900); }
+    body.expand-variant-v7 .expand-table-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    body.expand-variant-v7 .expand-table-name { font-size: 14px; font-weight: 700; color: var(--color-primary-500); }
+    body.expand-variant-v7 .expand-table-contact { display: flex; flex-direction: column; gap: 2px; }
+    /* Hover/Fokus auf E-Mail/Telefon: Unterstreichung statt des grünen Hintergrunds aus der
+       Basis-Regel (.applicant-info-contact:hover) — passender zur schlichten Tabellen-Optik. */
+    body.expand-variant-v7 .expand-table-contact .applicant-info-contact:hover,
+    body.expand-variant-v7 .expand-table-contact .applicant-info-contact:focus-visible {
+      background: none; color: var(--color-primary-600); outline: none;
+    }
+    body.expand-variant-v7 .expand-table-contact .applicant-info-contact-text {
+      text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color .12s ease;
+    }
+    body.expand-variant-v7 .expand-table-contact .applicant-info-contact:hover .applicant-info-contact-text,
+    body.expand-variant-v7 .expand-table-contact .applicant-info-contact:focus-visible .applicant-info-contact-text {
+      text-decoration-color: currentColor;
+    }
+
+    /* ---------- Ausklapp-Panel "v8" (Kopie von "v5", siehe #expandVariantSelect oben) — auf
+       Wunsch jetzt Antragsteller*innen UND Finanzierungswunsch in EINER EINZIGEN echten
+       <table> (buildExpandTableV8Html), aber OHNE die Positionen der Elemente zu ändern:
+       gleiche Spaltenbreiten wie "v5" (Name 250px/Beschäftigung 110px/E-Mail 190px/Telefon Rest
+       je Antragsteller*in-Zeile). Die Finanzierungswunsch-Zeilen nutzen dieselben 4 Spalten per
+       colspan="2" (Feld 1 spannt Spalte 1+2 = 360px, Feld 2 spannt Spalte 3+4 = E-Mail+Telefon
+       zusammen), je 2 Felder pro Zeile wie in v5 — siehe ausführlichen Kommentar bei
+       buildExpandTableV8Html. v5s einzelne, manuell gesetzte Trennlinien (siehe
+       body.expand-variant-v5 .applicant-info-contact weiter oben) entfallen hier bewusst — die
+       Zellrahmen der Tabelle (.v8-table-cell) übernehmen diese Trennung jetzt von selbst.
+       .expand-columns (v5s div/Grid-Darstellung) wird dafür ausgeblendet, die neue Tabelle
+       eingeblendet — reiner CSS-Klassen-Toggle, buildExpandPanel selbst bleibt unverändert
+       (baut beide Darstellungen immer, sichtbar ist nur eine). ---------- */
+    .v8-table { display: none; }
+    body.expand-variant-v8 .expand-columns { display: none; }
+    /* Grüner Teal-Tint der aufgeklappten Zeile selbst (siehe body.expand-variant-v21
+       .todo-row.todo-row-expanded weiter oben, gilt auch für v8 wegen der geteilten
+       expand-variant-v21-Klasse) auf Wunsch entfernt — weißer Hintergrund statt Primary-Tint. */
+    body.expand-variant-v8 .todo-row.todo-row-expanded {
+      background: var(--color-neutral-light-000);
+    }
+    /* border-collapse:collapse statt des Browser-Default-Abstands zwischen Zellen — sonst hätte
+       jede Zelle einen doppelten Rahmen-Abstand zur nächsten, statt einer einzigen gemeinsamen
+       Linie. table-layout:fixed + width:100% erzwingen, dass die <colgroup>-Breiten aus
+       buildExpandTableV8Html WIRKLICH eingehalten werden (inkl. der colspan-Zellen bei
+       Finanzierungswunsch) — ohne fixed hätte der Browser die Spaltenbreiten stattdessen am
+       tatsächlichen Zeileninhalt bemessen, wodurch Finanzierungsgrund/Immobilientyp (Zeile 1)
+       und Immobiliennutzung/PLZ-Ort (Zeile 2) leicht unterschiedlich breite Spalten bekommen
+       hätten, statt sauber untereinander zu fluchten. */
+    body.expand-variant-v8 .v8-table {
+      display: table; border-collapse: collapse; table-layout: fixed; width: 100%; margin-top: 4px;
+    }
+    body.expand-variant-v8 .v8-table-cell {
+      border: 1px solid var(--color-neutral-light-400); padding: 6px 12px;
+      font-size: 13px; color: var(--color-neutral-dark-900); text-align: left; vertical-align: middle;
+    }
+    /* Überschriftszeile ("Antragsteller*in(nen)"/"Finanzierungswunsch") als eigene, randlose
+       Zeile über 4 Spalten hinweg (colspan="4", siehe buildExpandTableV8Html) — sichtbar als
+       Abschnittstrenner INNERHALB derselben Tabelle, statt eines eigenen Elements davor. Kein
+       eigener Innenabstand mehr (auf Wunsch): sonst entstand vor der "Finanzierungswunsch"-
+       Überschrift eine sichtbare Lücke zur letzten Antragsteller-Zeile darüber. */
+    body.expand-variant-v8 .v8-table-section-row td {
+      border: none; padding: 4px;
+    }
+    /* Name-Zelle (Icon+Name) UND Finanzierungswunsch-Zelle (Icon+Label, dann Wert) sollen ihren
+       Inhalt in einer Zeile ausrichten — display:flex sitzt dafür auf einem inneren Wrapper-Span
+       (.v8-cell-inline, siehe buildExpandTableV8Html), NIE direkt auf der <td> selbst: eine <td>
+       mit eigenem display:flex verliert ihre table-cell-Teilnahme komplett und reißt damit die
+       ganze Zeilen-/Spaltenstruktur der Tabelle ein (das war der Bug in der Vorversion). */
+    body.expand-variant-v8 .v8-cell-inline { display: flex; align-items: center; gap: 8px; }
+    /* v5s "N. Antragsteller/in"-Präfix (siehe body.expand-variant-v5 .applicant-info-name::before
+       weiter oben, per CSS-Counter "applicant-num") gilt wegen der geteilten
+       expand-variant-v5-Klasse auch hier für .applicant-info-name in der Tabelle — nur setzten
+       v5s eigene counter-reset/-increment-Regeln auf Klassen (.applicant-info-people/
+       .applicant-info-block), die es in der Tabellen-Struktur gar nicht gibt. Ohne einen
+       tatsächlich stattfindenden reset/increment blieb der Counter dadurch immer bei seinem
+       Startwert 0 stehen ("0. Antragsteller/in" bei JEDER Zeile). Reset/Increment hier auf die
+       tatsächlich vorhandenen Tabellen-Elemente umgehängt, denselben Counter-Namen weiter
+       genutzt, damit v5s ::before-Regel unverändert bleiben kann. */
+    body.expand-variant-v8 .v8-table { counter-reset: applicant-num; }
+    body.expand-variant-v8 .v8-table-cell--name { counter-increment: applicant-num; }
+    /* Feldname (Icon+Label) bekommt dieselbe feste Breite wie in v5 (.fw-field-head:
+       flex:0 0 160px weiter oben) — sonst beginnt der Wert je nach Feldname-Länge an
+       unterschiedlicher X-Position innerhalb der Zelle. */
+    body.expand-variant-v8 .v8-table-cell .fw-field-head { flex: 0 0 150px; overflow: hidden; }
+    body.expand-variant-v8 .v8-table-cell .fw-field-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Kein Hintergrund/Rahmen-Radius für die Kontakt-Chips (E-Mail/Telefon) innerhalb der
+       Tabellenzelle — die Zelle selbst übernimmt jetzt die Abgrenzung (siehe .v8-table-cell
+       oben), ein zusätzlicher Chip-Hintergrund wirkte wie eine Box in der Box. */
+    body.expand-variant-v8 .v8-table-cell .applicant-info-contact {
+      margin: -2px -4px; padding: 2px 4px; background: none; border-radius: 2px;
+    }
+
+    /* ---------- Ausklapp-Panel "Modern" (4. Vergleichsvariante, siehe #expandVariantSelect
        oben) — bewusst KOMPLETT ohne Karten/getönte Fläche INNERHALB des Panels, anders als
        "jetzt": Weißraum + Typografie übernehmen die Gliederung statt Rahmen/Schatten/Kachel-
        Hintergründen für Finanzierungswunsch/Antragsteller*innen. Finanzierungswunsch steht als
@@ -1344,7 +1765,7 @@
       background: var(--color-neutral-light-000); color: var(--color-primary-600); font-size: 12px;
     }
 
-    /* ---------- Ausklapp-Panel "v4" (5. Vergleichsvariante, siehe .expand-variant-group oben)
+    /* ---------- Ausklapp-Panel "v4" (5. Vergleichsvariante, siehe #expandVariantSelect oben)
        — dasselbe Layout wie "v3" (Icon-über-Label-über-Wert-Fakten, Elevation-Karte, Trennlinien
        unter den Sektionsüberschriften …), NUR mit WEISSEN statt grün getönten Karten je Feld/
        Person. Technisch: body trägt bei "v4" ZUSÄTZLICH die Klasse expand-variant-modern (siehe
@@ -2120,6 +2541,10 @@
        beiden Zielorte liegen in unterschiedlichen Flex-Containern, das lässt sich nicht per
        CSS-Reihenfolge lösen. margin-right hält die Filter-Chips daneben auf Abstand. */
     .todo-table-toolbar .todo-show-done-switch { margin-right: var(--space-s); }
+    /* "Fälligkeit als Dropdown" (nur Prototyp-Vergleich): Toggle steht dort NACH #chipRow im DOM
+       (siehe moveShowDoneSwitch) — margin-left:auto schiebt ihn an den rechten Rand von
+       .todo-table-toolbar, weiterhin direkt über der Todo-Liste statt in der Filterzeile. */
+    body.due-dropdown .todo-table-toolbar .todo-show-done-switch { margin-left: auto; margin-right: 0; }
     .table-add-todo { display: none; }
     body.design-tabs .table-add-todo {
       display: inline-flex; margin-left: auto; align-items: center; gap: var(--space-xs);
@@ -2135,16 +2560,15 @@
     body.design-tabs #btnAddTermin {
       height: 36px; box-sizing: border-box; padding: 6px 14px 6px 6px; font-size: 13px;
     }
-    /* NICHT ausgewählter Tab: EIN neutraler Zähler-Ton für alle (statt je Tab eine eigene
-       Farbe via --qf/--qf-tint) — die bunten Badges wirkten neben dem sonst sehr reduzierten
-       Tab-Look (nur Text + dünne Unterstreichung) wie ein Stilbruch. */
-    body.design-tabs #quickSeg .qf-count { background: var(--color-neutral-light-400); color: var(--color-neutral-dark-600); font-size: 13px; padding: 2px 8px; min-width: 22px; line-height: 18px; }
-    /* AUSGEWÄHLTER Tab: statt des Volltons (primary-500/#fff, das im Standard-Layout für
-       "aktiv" genutzt wird) hier bewusst derselbe Look wie ein NICHT ausgewählter Filter im
-       Standard-Layout (dort .qf-count Basisregel: background:--qf-tint, color:--qf — die je
-       Kategorie eigene, helle Tönung). So bleibt die Kategorie-Farbe (z. B. Rot bei
-       "Überfällig") beim Auswählen erkennbar, ohne so kräftig/laut wie ein Vollton zu wirken. */
-    body.design-tabs #quickSeg button.active .qf-count { background: var(--qf-tint); color: var(--qf); }
+    /* NICHT ausgewählter Tab: kein Pillen-Hintergrund mehr hinter der Zahl (war ein neutraler
+       Zähler-Ton für alle statt je Tab eine eigene Farbe) — nur noch reiner Text, passend zum
+       sonst sehr reduzierten Tab-Look (nur Text + dünne Unterstreichung), kein Badge mehr.
+       color:inherit statt einer eigenen (dunkleren) Grau-Variable — die Zahl übernimmt damit
+       exakt dieselbe Farbe wie das Label daneben (button-Farbe --color-neutral-dark-400). */
+    body.design-tabs #quickSeg .qf-count { background: none; color: inherit; font-size: 16px; padding: 2px 0; min-width: 0; line-height: 20px; }
+    /* AUSGEWÄHLTER Tab: ebenfalls ohne Hintergrund-Pille — die Kategorie-Farbe (z. B. Rot bei
+       "Überfällig") bleibt über die Textfarbe (--qf) erkennbar, ohne eigenen Badge-Hintergrund. */
+    body.design-tabs #quickSeg button.active .qf-count { background: none; color: var(--qf); }
     /* Eigene Zeile für Berater/Zeitraum/Sortieren/Suche/Kalender — display:contents
        oben (Standard-Layout) wird hier wieder zu einer echten Flex-Zeile, #btnCals
        margin-left:auto weiter unten wirkt dadurch jetzt auf DIESE Zeile statt auf die ganze
@@ -2244,8 +2668,8 @@
     .todo-pane-head .btn, #btnAddTermin { height: 36px; box-sizing: border-box; }
     /* Icons in Berater/Zeitraum auf dieselbe Größe wie im Such-Icon (18px statt der sonst
        üblichen 20px, siehe .btn .material-symbols-outlined) — passt zur kompakteren Zeile. */
-    #btnBerater .material-symbols-outlined, #btnRange .material-symbols-outlined { font-size: 18px; }
-    #btnBerater, #btnRange { border-color: var(--color-neutral-light-500); }
+    #btnBerater .material-symbols-outlined, #btnRange .material-symbols-outlined, #btnDueFilter .material-symbols-outlined { font-size: 18px; }
+    #btnBerater, #btnRange, #btnDueFilter { border-color: var(--color-neutral-light-500); }
     .menu {
       position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-overlay, 100);
       background: #fff; border: 1px solid var(--color-neutral-light-500); border-radius: var(--radius-s);
@@ -2329,6 +2753,16 @@
       font-size: 12px; font-weight: 500; text-decoration: underline;
     }
     .chip-reset:hover { color: var(--color-neutral-dark-900); }
+
+    /* ===== Fälligkeit als Dropdown (nur Prototyp-Vergleich, siehe body.due-dropdown) — schaltet
+       mit #quickSeg um: standardmäßig unsichtbar, #quickSeg sichtbar; bei aktivem Toggle
+       umgekehrt. Gleiches .menu/.bmenu-row-Pattern wie Berater/Zeitraum-Filter. ===== */
+    .due-filter-dropdown { display: none; position: relative; flex-shrink: 0; }
+    body.due-dropdown #quickSeg { display: none; }
+    body.due-dropdown .due-filter-dropdown { display: block; }
+    .due-filter-menu { min-width: 200px; padding: var(--space-xs); }
+    .due-filter-menu.open { display: flex; flex-direction: column; }
+    .due-filter-menu .bmenu-row { border-radius: var(--radius-xs, 2px); }
 
     /* ===== Zeitraum-Filter — dasselbe Dropdown-Pattern wie der Berater-Filter (.menu/.bmenu-foot). ===== */
     .range-filter { position: relative; flex-shrink: 0; }
@@ -2495,7 +2929,7 @@
     .hist-note { font-size: 11px; color: var(--color-neutral-dark-200); }
   </style>
 </head>
-<body>
+<body class="grouping-due expand-variant-v21 expand-variant-v5">
   <div class="app">
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidenav" aria-label="Hauptnavigation">
@@ -2547,50 +2981,39 @@
           <span class="design-switch-track"><span class="design-switch-knob"></span></span>
           <span class="design-switch-label">Neues Layout</span>
         </label>
-        <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: lässt bei "Alle" die
-             Fälligkeits-Gruppen (Überfällig/Heute/Morgen/Später) wieder mit sichtbarer
-             Überschrift erscheinen (reaktiviert body.grouping-due, siehe .group-title-row in
-             <style> — dieselbe, bereits vorhandene Regel, die früher den eigenständigen
-             "Gruppierung"-Filter angezeigt hat, bevor er durch die Sortier-Pfeile in der
-             Spaltenüberschrift ersetzt wurde). Nur bei "Alle" sichtbar wirksam (siehe
-             body.quick-filtered) — bei den übrigen Schnellfiltern zeigt ohnehin schon der
-             aktive Tab bzw. die Zwischenüberschrift (.quick-subheading) das Nötige. -->
-        <label class="design-switch" title="Fälligkeits-Gruppen bei &quot;Alle&quot; mit Überschrift zeigen (nur Prototyp-Vergleich)">
-          <input type="checkbox" id="groupingSwitchInput" />
+        <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: ersetzt die Schnellfilter-
+             Segmented-Buttons (#quickSeg, Alle/Überfällig/Heute/Morgen/Diese Woche) durch EINEN
+             Dropdown-Filter im selben Look wie Berater/Zeitraum (siehe .due-filter-dropdown in
+             <style>/Script weiter unten). Titel des Buttons zeigt die aktuell gewählte Fälligkeit
+             ("Heute fällig" als Default beim Einschalten statt "Alle"), die übrigen Optionen
+             stehen im Dropdown selbst statt als eigene Tabs. Nutzt intern weiterhin dieselbe
+             Schnellfilter-Engine (window.setQuickFilter) — nur die Darstellung ändert sich. -->
+        <label class="design-switch" title="Fälligkeits-Schnellfilter als Dropdown statt Tabs zeigen (nur Prototyp-Vergleich)">
+          <input type="checkbox" id="dueDropdownSwitchInput" />
           <span class="design-switch-track"><span class="design-switch-knob"></span></span>
-          <span class="design-switch-label">Gruppierung</span>
+          <span class="design-switch-label">Fälligkeit als Dropdown</span>
         </label>
         <!-- NUR FÜR DIESEN PROTOTYP-VERGLEICH — kein Produkt-Feature: schaltet die Optik des
              Ausklapp-Panels (siehe .todo-expand-panel/.todo-expand-panel-inner in <style>)
              zwischen der bisherigen ("v1"), der modernisierten Version ("v2"), einer Variante
              mit reinen Icon-Kacheln ohne Feldname bei Finanzierungswunsch ("v2.1", siehe
-             body.expand-variant-v21 in <style>) und einer komplett kartenlosen Variante ("v3",
-             siehe body.expand-variant-modern) um, ohne dass mehrere getrennte Prototyp-Dateien
-             gepflegt werden müssen. Radiobuttons statt Toggle-Switch, da es hier (anders als
-             "Neues Layout"/"Gruppierung" oben) mehrere gleichwertige Varianten sind, nicht ein
-             An/Aus. -->
-        <div class="expand-variant-group" role="radiogroup" aria-label="Ausklapp-Panel-Design (nur Prototyp-Vergleich)">
-          <label class="expand-variant-radio">
-            <input type="radio" name="expandPanelVariant" value="old" />
-            <span>Ausklappen v1</span>
-          </label>
-          <label class="expand-variant-radio">
-            <input type="radio" name="expandPanelVariant" value="new" checked />
-            <span>Ausklappen v2</span>
-          </label>
-          <label class="expand-variant-radio">
-            <input type="radio" name="expandPanelVariant" value="v21" />
-            <span>Ausklappen v2.1</span>
-          </label>
-          <label class="expand-variant-radio">
-            <input type="radio" name="expandPanelVariant" value="modern" />
-            <span>Ausklappen v3</span>
-          </label>
-          <label class="expand-variant-radio">
-            <input type="radio" name="expandPanelVariant" value="v4" />
-            <span>Ausklappen v4</span>
-          </label>
-        </div>
+             body.expand-variant-v21 in <style>), einer komplett kartenlosen Variante ("v3", siehe
+             body.expand-variant-modern), "v3" ohne grüne Karten ("v4") und "v5" (Kopie von "v2.1"
+             als Ausgangspunkt für eine weitere Variante, siehe body.expand-variant-v5) um, ohne
+             dass mehrere getrennte Prototyp-Dateien gepflegt werden müssen. Natives <select> statt
+             Radiobuttons (siehe .expand-variant-select in <style>) — bei 6 Varianten nahm die
+             Radiogroup zu viel Platz in der Topbar ein. -->
+        <select class="expand-variant-select" id="expandVariantSelect" aria-label="Ausklapp-Panel-Design (nur Prototyp-Vergleich)">
+          <option value="old">Ausklappen v1</option>
+          <option value="new">Ausklappen v2</option>
+          <option value="v21">Ausklappen v2.1</option>
+          <option value="modern">Ausklappen v3</option>
+          <option value="v4">Ausklappen v4</option>
+          <option value="v5" selected>Ausklappen v5</option>
+          <option value="v6">Ausklappen v6</option>
+          <option value="v7">Ausklappen v7 (Tabelle)</option>
+          <option value="v8">Ausklappen v8</option>
+        </select>
         <div class="spacer"></div>
         <button class="top-icon" title="Neuer Eintrag"><span class="material-icons">add_box</span></button>
         <button class="top-icon" title="Vollbild"><span class="material-icons">fullscreen</span></button>
@@ -2651,6 +3074,28 @@
             <button data-quick="heute" style="--qf:var(--color-warning-high);--qf-tint:var(--color-warning-high-light)"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Heute</span></button>
             <button data-quick="morgen" style="--qf:var(--color-brand-blue);--qf-tint:#E8F0FC"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Morgen</span></button>
             <button data-quick="woche" style="--qf:var(--color-notification);--qf-tint:#E5F8FA"><span class="qf-strip"></span><span class="qf-count">0</span><span class="qf-label">Diese Woche</span></button>
+          </div>
+
+          <!-- FÄLLIGKEITS-FILTER ALS DROPDOWN (nur sichtbar via body.due-dropdown, siehe
+               DUE-FILTER-DROPDOWN-Script weiter unten) — ersetzt #quickSeg optisch 1:1 durch
+               einen einzelnen Filter-Button im Berater/Zeitraum-Look. Der Button-Titel selbst
+               zeigt die aktuell aktive Fälligkeit ("Heute fällig" als Default), die übrigen
+               Optionen (inkl. "Alle") stehen im Dropdown. Treibt intern weiterhin dieselben
+               #quickSeg-Buttons per Klick an, damit Zähler/Sichtbarkeits-Logik (SCHNELLFILTER-
+               Script) unverändert an einer Stelle bleibt. -->
+          <div class="due-filter-dropdown" id="dueFilterDropdown">
+            <button class="btn btn-secondary" id="btnDueFilter">
+              <span class="material-symbols-outlined">event</span>
+              <span id="dueFilterLabel">Heute fällig</span>
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="menu due-filter-menu" id="menuDueFilter">
+              <button type="button" class="bmenu-row" data-quick="alle"><span>Alle</span><span class="material-symbols-outlined check">check</span></button>
+              <button type="button" class="bmenu-row" data-quick="ueberfaellig"><span>Überfällig</span><span class="material-symbols-outlined check">check</span></button>
+              <button type="button" class="bmenu-row active" data-quick="heute"><span>Heute fällig</span><span class="material-symbols-outlined check">check</span></button>
+              <button type="button" class="bmenu-row" data-quick="morgen"><span>Morgen fällig</span><span class="material-symbols-outlined check">check</span></button>
+              <button type="button" class="bmenu-row" data-quick="woche"><span>Diese Woche</span><span class="material-symbols-outlined check">check</span></button>
+            </div>
           </div>
 
           <!-- Umhüllt Berater/Zeitraum/Sortieren/Suche/Kalender als eine Einheit, die sich (nur
@@ -2864,13 +3309,67 @@
           </div>
         </div>
 
+        <!-- ===== Gruppe: Ausgelöst vom Kunden ===== NUR eine eigene Fälligkeits-Gruppe wie
+             Heute/Überfällig/Morgen/Später, sondern quer dazu: fasst ToDos zusammen, die der
+             Kunde selbst ausgelöst hat (data-kunde-ausgeloest, siehe auch die "Ausgelöst von"-
+             Facette im Art-Spalten-Filter), unabhängig von deren Fälligkeits-Ton. data-tone
+             bleibt auf der Zeile selbst explizit "today" (siehe SCHNELLFILTER-Script/toneOf) —
+             sonst würde die Zeile beim Schnellfilter "Heute"/"Woche" fälschlich verschwinden, nur
+             weil sie jetzt physisch in dieser Sonder-Gruppe statt in "Heute fällig" sitzt. Die
+             Gruppe steht immer ganz oben (Sonderfall in sortGroupSections, siehe dort) — vor
+             allen Fälligkeits-Gruppen, egal welche Sortier-Richtung "Fälligkeit" gerade hat. -->
+        <section class="todo-group" data-tone="kunde">
+          <div class="group-title-row">
+            <button class="group-headline">
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+              <span class="group-name">Ausgelöst vom Kunden</span>
+              <span class="group-count">(1)</span>
+            </button>
+            <div class="group-labels">
+              <span class="col-due">Fälligkeit</span>
+              <span class="col-applicant">Antragsteller*in</span>            </div>
+          </div>
+          <div class="todo-table-wrap">
+            <div class="todo-table-accent"></div>
+            <div class="todo-table-body">
+              <div class="todo-row" data-tone="today" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="20095 Hamburg">
+                <div class="todo-title">
+                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
+                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
+                <span class="todo-title-actions">
+                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
+                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
+                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
+                </span>
+                </div>
+                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um das Dokument zu öffnen"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
+                <div class="todo-applicant">
+                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
+                  <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="nadine.fischer@web.de" data-telefon="+49 176 5566778">Nadine Fischer</button>
+                </div>
+                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit">26.08.2026 – 07:45</span></div>
+                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater">Jan Joisten</span></div>
+
+              </div>
+            </div>
+          </div>
+          <div class="todo-pagination">
+            <span class="pg-text">Einträge pro Seite 25</span>
+            <span class="pg-text">1 – 1 von 1</span>
+            <div class="pg-nav">
+              <button disabled title="Vorherige Seite"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+              <button disabled title="Nächste Seite"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+            </div>
+          </div>
+        </section>
+
         <!-- ===== Gruppe: Heute fällig ===== -->
         <section class="todo-group" data-tone="today">
           <div class="group-title-row">
             <button class="group-headline">
               <span class="material-symbols-outlined">keyboard_arrow_up</span>
               <span class="group-name">Heute fällig</span>
-              <span class="group-count">(10)</span>
+              <span class="group-count">(9)</span>
             </button>
             <div class="group-labels">
               <span class="col-due">Fälligkeit</span>
@@ -2900,25 +3399,6 @@
                 <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit" tabindex="0" title="Klicken, um das Fälligkeitsdatum zu ändern">26.08.2026 – 10:30</span></div>
                 <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater" tabindex="0" title="Klicken, um den Berater zu ändern">Jan Joisten</span></div>
                 
-              </div>
-              <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="dokument" data-kunde-ausgeloest="true" data-finanzierungsgrund="Anschlussfinanzierung" data-immobilientyp="Eigentumswohnung" data-immobiliennutzung="Vermietet" data-plz="20095 Hamburg">
-                <div class="todo-title">
-                <button class="todo-check"><span class="material-symbols-outlined">done</span></button>
-                <span class="todo-text-group"><span class="todo-text inline-edit" data-field="titel">Kunde hat neue Dokumente hochgeladen</span><span class="todo-new-tag">Neu</span></span>
-                <span class="todo-title-actions">
-                  <button class="row-act" data-act="history" title="Verlauf" aria-label="Verlauf anzeigen"><span class="material-symbols-outlined">history</span></button>
-                  <button class="row-act" data-act="finanzierungswunsch" title="Finanzierungswunsch" aria-label="Finanzierungswunsch anzeigen"><span class="material-symbols-outlined">home</span></button>
-                  <button class="row-act" data-act="delete" title="Löschen" aria-label="Löschen"><span class="material-symbols-outlined">delete</span></button>
-                </span>
-                </div>
-                <div class="todo-typ"><span class="todo-typ-trigger inline-edit" data-field="typ" tabindex="0" title="Klicken, um das Dokument zu öffnen"><span class="todo-typ-icon" title="Dokumente"><span class="material-symbols-outlined">description</span></span></span></div>
-                <div class="todo-applicant">
-                  <button class="todo-info-btn"><span class="material-symbols-outlined">info</span></button>
-                  <button class="todo-applicant-name" data-beschaeftigung="angestellt" data-email="nadine.fischer@web.de" data-telefon="+49 176 5566778">Nadine Fischer</button>
-                </div>
-                <div class="todo-due" data-due="2026-08-26"><span class="due-tag due-tag--today">Heute</span><span class="due-text inline-edit" data-field="faelligkeit">26.08.2026 – 07:45</span></div>
-                <div class="todo-berater"><span class="berater-name inline-edit" data-field="berater">Jan Joisten</span></div>
-
               </div>
               <div class="todo-row" data-berater="Jan Joisten" data-created="26.06.2026" data-typ="email" data-geburtstag="true">
                 <div class="todo-title">
@@ -4216,6 +4696,100 @@
     // (.expand-section-label, siehe <style>) — ganz ohne Label wäre bei mehreren Namen (z. B.
     // "Andreas Weber / Nina Weber") nicht auf den ersten Blick klar, dass das die
     // Antragsteller*innen sind statt z. B. Sachbearbeiter*innen.
+    // Nur für "Ausklappen v7 (Tabelle)" (siehe #expandVariantSelect): echtes <table>-Markup
+    // statt der sonstigen div-Karten (.expand-columns) — auf ausdrücklichen Wunsch "wirklich
+    // eine Tabelle", nicht nur optisch angenäherte Grid-/Flex-Linien. Baut dieselben Daten wie
+    // fwHtml/applicantHtml in buildExpandPanel (Icon+Feldname oben, Wert/Name fett darunter,
+    // siehe .expand-info-table in <style>), nur als <tr>/<td>: 1. Zeile = Antragsteller*innen
+    // nebeneinander (bei nur 1 Person colspan="2"), danach je 2 Finanzierungswunsch-Felder pro
+    // Zeile (letzte Zeile bei ungerader Feldanzahl ebenfalls colspan="2"). Wird IMMER zusätzlich
+    // zu .expand-columns gebaut (wie schon fw-kv-list/fw-fields nebeneinander) — welche
+    // Darstellung sichtbar ist, entscheidet rein CSS (body.expand-variant-v7).
+    function buildExpandTableHtml(row) {
+      var applicantEls = Array.prototype.slice.call(row.querySelectorAll('.todo-applicant-name'));
+      var applicantCells = applicantEls.map(function (el, i) {
+        var tagHtml = el.dataset.beschaeftigung
+          ? '<span class="employment-tag employment-tag--' + el.dataset.beschaeftigung + '">' + EMPLOYMENT_LABEL[el.dataset.beschaeftigung] + '</span>'
+          : '<span class="expand-no-data">Keine Angabe</span>';
+        var contactHtml = contactChipHtml('mail', el.dataset.email, 'E-Mail-Adresse') + contactChipHtml('call', el.dataset.telefon, 'Telefonnummer');
+        return '<td class="expand-table-cell expand-table-cell--applicant"><div class="expand-table-head">' +
+          '<span class="material-symbols-outlined">person</span><span class="expand-table-head-label">Antragsteller ' + (i + 1) + '</span></div>' +
+          '<div class="expand-table-name-row"><span class="expand-table-name">' + el.textContent + '</span>' + tagHtml + '</div>' +
+          '<div class="expand-table-contact">' + contactHtml + '</div></td>';
+      });
+      if (applicantCells.length === 1) applicantCells[0] = applicantCells[0].replace('<td ', '<td colspan="2" ');
+      var applicantRow = applicantCells.length ? '<tr>' + applicantCells.join('') + '</tr>' : '';
+      var fwCells = FINANCING_WISH_FIELDS.filter(function (f) { return row.dataset[f[0]]; }).map(function (f) {
+        return '<td class="expand-table-cell"><div class="expand-table-head"><span class="material-symbols-outlined">' +
+          FINANCING_WISH_ICONS[f[0]] + '</span><span class="expand-table-head-label">' + f[1] + '</span></div>' +
+          '<div class="expand-table-value">' + row.dataset[f[0]] + '</div></td>';
+      });
+      var fwRows = '';
+      for (var i = 0; i < fwCells.length; i += 2) {
+        var pair = fwCells.slice(i, i + 2);
+        if (pair.length === 1) pair[0] = pair[0].replace('<td ', '<td colspan="2" ');
+        fwRows += '<tr>' + pair.join('') + '</tr>';
+      }
+      if (!applicantRow && !fwRows) return '';
+      return '<table class="expand-info-table"><tbody>' + applicantRow + fwRows + '</tbody></table>';
+    }
+
+    // Nur für "Ausklappen v8" (siehe #expandVariantSelect): Antragsteller*innen UND
+    // Finanzierungswunsch als EINE einzige echte <table>, aber mit denselben Spaltenpositionen
+    // wie "v5" (Name 250px/Beschäftigung 110px/E-Mail 190px/Telefon Rest je
+    // Antragsteller*in-Zeile). Die Finanzierungswunsch-Zeilen nutzen DIESELBEN 4 Spalten über
+    // colspan="2": Feld 1 (Finanzierungsgrund/Immobiliennutzung) spannt Spalte 1+2 (250+110 =
+    // 360px, exakt die Breite der "Name+Beschäftigung"-Gruppe darüber), Feld 2
+    // (Immobilientyp/PLZ-Ort) spannt Spalte 3+4 (E-Mail 190px + Telefon-Rest, dadurch automatisch
+    // "eine große Spalte in der Größe von E-Mail und Telefon zusammen") — je 2 Felder pro Zeile,
+    // wie in v5. Anders als buildExpandTableHtml (v7, eigenes Layout mit Antragsteller
+    // nebeneinander + Kacheln) wird hier NICHTS umsortiert, nur die bestehende v5-Optik 1:1
+    // nachgebaut. Die feinen Trennlinien, die v5 einzeln per CSS setzt (siehe
+    // body.expand-variant-v5 .applicant-info-contact in <style>), entfallen hier bewusst — die
+    // Zellrahmen der Tabelle (siehe .v8-table-cell in <style>) übernehmen diese Trennung jetzt
+    // von selbst. WICHTIG: display:flex sitzt NIE direkt auf einer <td> (siehe .v8-cell-inline
+    // in <style>) — eine <td> mit eigenem display:flex verliert ihre table-cell-Teilnahme
+    // komplett und reißt damit die ganze Zeilen-/Spaltenstruktur der Tabelle ein (das war der
+    // Bug in der Vorversion: Felder standen dadurch untereinander statt in Spalten). Wird IMMER
+    // zusätzlich zu .expand-columns gebaut (wie schon tableHtml für v7), sichtbar wird nur eine
+    // Darstellung je nach aktiver Variante (reiner CSS-Klassen-Toggle).
+    function buildExpandTableV8Html(row) {
+      var applicantEls = Array.prototype.slice.call(row.querySelectorAll('.todo-applicant-name'));
+      var applicantRows = applicantEls.map(function (el) {
+        var tagHtml = el.dataset.beschaeftigung
+          ? '<span class="employment-tag employment-tag--' + el.dataset.beschaeftigung + '">' + EMPLOYMENT_LABEL[el.dataset.beschaeftigung] + '</span>'
+          : '<span class="expand-no-data">Keine Angabe</span>';
+        var mailHtml = contactChipHtml('mail', el.dataset.email, 'E-Mail-Adresse') || '<span class="expand-no-data">–</span>';
+        var telHtml = contactChipHtml('call', el.dataset.telefon, 'Telefonnummer') || '<span class="expand-no-data">–</span>';
+        return '<tr>' +
+          '<td class="v8-table-cell v8-table-cell--name"><span class="v8-cell-inline"><span class="material-symbols-outlined applicant-info-icon">person</span><span class="applicant-info-name">' + el.textContent + '</span></span></td>' +
+          '<td class="v8-table-cell">' + tagHtml + '</td>' +
+          '<td class="v8-table-cell">' + mailHtml + '</td>' +
+          '<td class="v8-table-cell">' + telHtml + '</td>' +
+          '</tr>';
+      });
+      var applicantLabel = applicantRows.length > 1 ? 'Antragsteller*innen' : 'Antragsteller*in';
+      var applicantSectionRow = applicantRows.length
+        ? '<tr class="v8-table-section-row"><td colspan="4"><span class="expand-section-label"><span class="material-symbols-outlined">group</span>' + applicantLabel + '</span></td></tr>'
+        : '';
+      var fwFields = FINANCING_WISH_FIELDS.filter(function (f) { return row.dataset[f[0]]; }).map(function (f) {
+        return '<td class="v8-table-cell" colspan="2"><span class="v8-cell-inline"><span class="fw-field-head"><span class="material-symbols-outlined">' +
+          FINANCING_WISH_ICONS[f[0]] + '</span><span class="fw-field-label">' + f[1] + '</span></span>' +
+          '<span class="fw-field-value">' + row.dataset[f[0]] + '</span></span></td>';
+      });
+      var fwDataRows = '';
+      for (var i = 0; i < fwFields.length; i += 2) {
+        fwDataRows += '<tr>' + fwFields.slice(i, i + 2).join('') + '</tr>';
+      }
+      var fwSectionRow = fwDataRows
+        ? '<tr class="v8-table-section-row"><td colspan="4"><span class="expand-section-label"><span class="material-symbols-outlined">savings</span>Finanzierungswunsch</span></td></tr>'
+        : '';
+      var bodyRows = applicantSectionRow + applicantRows.join('') + fwSectionRow + fwDataRows;
+      if (!bodyRows) return '';
+      return '<table class="v8-table"><colgroup><col style="width:250px"><col style="width:110px"><col style="width:190px"><col></colgroup><tbody>' +
+        bodyRows + '</tbody></table>';
+    }
+
     function buildExpandPanel(row) {
       if (!row.querySelector('.todo-title-actions')) return;
       var existing = row.querySelector('.todo-expand-panel');
@@ -4275,8 +4849,10 @@
       // .todo-expand-panel-inner (reiner Schrumpf-Wrapper) + .todo-expand-panel-card (trägt die
       // Optik) — siehe ausführlichen Kommentar bei .todo-expand-panel in <style>, warum es beide
       // Ebenen braucht, damit der eingeklappte Zustand wirklich 0px hoch ist.
+      var tableHtml = buildExpandTableHtml(row);
+      var tableHtmlV8 = buildExpandTableV8Html(row);
       panel.innerHTML = '<div class="todo-expand-panel-inner"><div class="todo-expand-panel-card">' + metaHtml +
-        '<div class="expand-columns">' + fwHtml + applicantHtml + '</div></div></div>';
+        '<div class="expand-columns">' + fwHtml + applicantHtml + '</div>' + tableHtml + tableHtmlV8 + '</div></div>';
       row.appendChild(panel);
     }
     window.buildExpandPanel = buildExpandPanel;
@@ -5049,6 +5625,11 @@
 
     document.querySelectorAll('.todo-row').forEach(function (row) {
       if (isAddRow(row)) return;
+      // Zeilen in der "Ausgelöst vom Kunden"-Sondergruppe (data-tone="kunde") tragen ihren
+      // Fälligkeits-Ton schon EXPLIZIT im Markup (siehe dortiger Kommentar) — nicht überschreiben,
+      // sonst würden sie hier fälschlich den Ton "kunde" bekommen und bei "Heute"/"Woche" aus dem
+      // Schnellfilter-Topf fallen.
+      if (row.dataset.tone) return;
       var g = row.closest('.todo-group');
       if (g) row.dataset.tone = g.dataset.tone;
     });
@@ -5114,34 +5695,17 @@
 
       // In JEDER Ansicht können mehrere Fälligkeits-Gruppen gleichzeitig sichtbar sein (alle in
       // derselben .todo-table-card, siehe CSS) — z. B. unter "Heute" zusätzlich die überfälligen
-      // ToDos, unter "Woche" gleich vier Töne. Die Pagination gehört aber zur TABELLE, nicht zu
-      // einem Abschnitt darin: mehrere "Einträge pro Seite …"-Zeilen mitten in der Liste (eine
-      // unter jedem Abschnitt) lesen sich wie mehrere separate Tabellen. Deshalb bekommt immer
-      // nur die LETZTE sichtbare Gruppe eine Pagination — unabhängig vom Schnellfilter und vom
-      // "Gruppierung"-Toggle (body.grouping-due), der nur Zwischen-Überschriften ein-/ausblendet.
-      groups.forEach(function (g) { g.classList.remove('hide-pagination'); });
-      var visible = Array.prototype.filter.call(groups, function (g) { return !g.classList.contains('quick-empty'); });
-      visible.forEach(function (g, i) {
-        if (i < visible.length - 1) g.classList.add('hide-pagination');
-      });
-
-      // Die eine verbleibende Pagination zählt immer die TATSÄCHLICH sichtbaren Zeilen über alle
-      // sichtbaren Gruppen hinweg (nicht die statische Gesamtzahl der Gruppen) — sonst weicht
-      // z. B. bei "Erledigte" die angezeigte Zahl von den tatsächlich sichtbaren Zeilen ab, wenn
-      // eine Gruppe zusätzlich offene ToDos enthält. Die ausgeblendeten Paginations bekommen
-      // trotzdem ihren eigenen Wert gesetzt, damit nichts Veraltetes dasteht, falls eine Gruppe
-      // später wieder die letzte sichtbare wird.
+      // ToDos, unter "Woche" gleich vier Töne. Jede sichtbare Gruppe zeigt dabei ihre EIGENE
+      // "Einträge pro Seite …"-Zeile mit ihrer eigenen, tatsächlich sichtbaren Zeilenzahl —
+      // unabhängig vom Schnellfilter und von body.grouping-due (fest gesetzt, siehe <body>), das
+      // nur Zwischen-Überschriften ein-/ausblendet. Eine leere Gruppe blendet ihre Pagination
+      // automatisch mit aus (siehe .todo-group.quick-empty).
       groups.forEach(function (g) {
         var countEl = g.querySelector('.todo-pagination .pg-text:nth-of-type(2)');
         if (!countEl) return;
         var n = visibleRowCount(g);
         countEl.textContent = n ? ('1 – ' + n + ' von ' + n) : '0 von 0';
       });
-      if (visible.length > 1) {
-        var totalRows = visible.reduce(function (sum, g) { return sum + visibleRowCount(g); }, 0);
-        var lastCountEl = visible[visible.length - 1].querySelector('.todo-pagination .pg-text:nth-of-type(2)');
-        if (lastCountEl) lastCountEl.textContent = '1 – ' + totalRows + ' von ' + totalRows;
-      }
 
       // Berater-/Zeitraum-/Art-Filter rufen ausschließlich diese Funktion auf, wenn sich ihre
       // Auswahl ändert — da die Schnellfilter-Zähler diese Filter jetzt mitzählen (siehe
@@ -5152,24 +5716,47 @@
 
     // "Heute" und "Woche" bündeln mehrere Fälligkeits-Töne in EINER Ansicht (siehe
     // inQuickBucket) — ohne Hinweis wirkt es dort wie ein Bug, dass z. B. unter "Heute" auch
-    // überfällige Todos auftauchen. Bei "Heute" bekommt der namensgebende today-Ton bewusst
-    // KEINE eigene Überschrift (der aktive Tab sagt ja schon, worum es geht) — nur der
-    // zusätzlich mit hineingemischte overdue-Ton wird benannt. Bei "Woche" dagegen sind VIER
-    // Töne gemeinsam sichtbar (nicht nur zwei wie bei "Heute"), da wirkt "Heute" ohne
-    // Überschrift zwischen den anderen benannten Gruppen inkonsistent — deshalb dort zusätzlich
-    // "Heute" als eigene Überschrift, obwohl der Tab selbst nur "Woche" heißt.
-    // "Alle" hat hier bewusst KEINEN festen Eintrag: das ist der "Gruppierung"-Test-Toggle
-    // (#groupingSwitchInput, body.grouping-due) — nur wenn er aktiv ist, sollen bei "Alle"
-    // dieselben Töne benannt werden (siehe updateSubheadings), sonst bleibt "Alle" eine
-    // durchgehende Liste ohne Zwischen-Überschriften wie bisher.
+    // überfällige Todos auftauchen. Deshalb bekommt jeder enthaltene Ton (auch der namensgebende
+    // today-Ton bei "Heute") seine eigene Überschrift — der aktive Tab sagt zwar grob worum es
+    // geht, aber ohne "Heute"-Überschrift fehlte sonst die Gruppierung innerhalb der Liste.
+    // "Alle" hat hier bewusst KEINEN festen Eintrag: body.grouping-due (fest auf <body> gesetzt,
+    // Standardverhalten) sorgt in updateSubheadings dafür, dass bei "Alle" trotzdem dieselben
+    // Töne benannt werden.
     var SUBHEADING_LABEL = {
-      heute: { overdue: 'Überfällig' },
+      heute: { today: 'Heute', overdue: 'Überfällig' },
       woche: { overdue: 'Überfällig', today: 'Heute', morgen: 'Morgen', spaeter: 'Zukünftige' },
       alle: { today: 'Heute', overdue: 'Überfällig', morgen: 'Morgen', spaeter: 'Später' }
     };
 
+    // Gemeinsam von der "Ausgelöst vom Kunden"-Sondergruppe (immer sichtbar, siehe unten) und
+    // den Fälligkeits-Tönen (nur bei "Alle"/passendem Schnellfilter, siehe SUBHEADING_LABEL)
+    // genutzt — ein Klick auf den Pfeil klappt dieselbe .todo-group.collapsed-Klasse wie das
+    // (hier ohnehin unsichtbare) .group-headline.
+    function insertSubheading(group, label) {
+      var wrap = group.querySelector('.todo-table-wrap');
+      var heading = document.createElement('div');
+      heading.className = 'quick-subheading';
+      heading.innerHTML =
+        '<button type="button" class="quick-subheading-toggle" aria-label="Gruppe ein-/ausklappen">' +
+        '<span class="material-symbols-outlined">keyboard_arrow_down</span></button>' +
+        '<span class="quick-subheading-label">' + label + '</span>';
+      heading.querySelector('.quick-subheading-toggle').addEventListener('click', function () {
+        group.classList.toggle('collapsed');
+      });
+      wrap.parentNode.insertBefore(heading, wrap);
+    }
+
     function updateSubheadings() {
       document.querySelectorAll('.quick-subheading').forEach(function (el) { el.remove(); });
+      // "Ausgelöst vom Kunden" ist kein Fälligkeits-Ton, sondern eine eigene, immer oben stehende
+      // Sondergruppe (siehe data-tone="kunde" im Markup + Sonderfall in sortGroupSections) — ihre
+      // Überschrift zeigt sich deshalb IMMER, unabhängig von state.quick/body.grouping-due, außer
+      // die Gruppe ist gerade leer (z. B. weil der aktive Schnellfilter ihre einzige Zeile
+      // ausblendet).
+      var kundeGroup = document.querySelector('.todo-group[data-tone="kunde"]');
+      if (kundeGroup && !kundeGroup.classList.contains('quick-empty')) {
+        insertSubheading(kundeGroup, 'Ausgelöst vom Kunden');
+      }
       var isGrouped = document.body.classList.contains('grouping-due');
       if (state.quick === 'alle' && !isGrouped) return;
       var labels = SUBHEADING_LABEL[state.quick];
@@ -5177,20 +5764,7 @@
       Object.keys(labels).forEach(function (tone) {
         var group = document.querySelector('.todo-group[data-tone="' + tone + '"]');
         if (!group || group.classList.contains('quick-empty')) return;
-        var wrap = group.querySelector('.todo-table-wrap');
-        var heading = document.createElement('div');
-        heading.className = 'quick-subheading';
-        // Auf-/Zuklappen wiederverwendet dieselbe .todo-group.collapsed-Klasse/-Regel wie das
-        // (hier ohnehin unsichtbare) .group-headline — ein Klick blendet .todo-table-wrap der
-        // gesamten Ton-Gruppe aus/ein, der Pfeil dreht sich passend dazu (siehe <style>).
-        heading.innerHTML =
-          '<button type="button" class="quick-subheading-toggle" aria-label="Gruppe ein-/ausklappen">' +
-          '<span class="material-symbols-outlined">keyboard_arrow_down</span></button>' +
-          '<span class="quick-subheading-label">' + labels[tone] + '</span>';
-        heading.querySelector('.quick-subheading-toggle').addEventListener('click', function () {
-          group.classList.toggle('collapsed');
-        });
-        wrap.parentNode.insertBefore(heading, wrap);
+        insertSubheading(group, labels[tone]);
       });
     }
 
@@ -5794,8 +6368,21 @@
       if (!dueEntry) return;
       var card = document.querySelector('.todo-table-card');
       var groups = Array.prototype.slice.call(card.querySelectorAll(':scope > .todo-group'));
+      // Beim Schnellfilter "Heute" steht der today-Ton für den Tab selbst — der soll trotz
+      // chronologisch früherem Überfällig-Ton oben stehen, sonst wirkt die eigens dafür
+      // eingeblendete "Heute"-Zwischenüberschrift (siehe SUBHEADING_LABEL) verwirrend weiter
+      // unten in der Liste.
+      var quick = window.getQuickFilter ? window.getQuickFilter() : 'alle';
+      var rank = quick === 'heute' ? { today: 0, overdue: 1, morgen: 2, spaeter: 3 } : TONE_RANK;
       groups.sort(function (a, b) {
-        var av = TONE_RANK[a.dataset.tone], bv = TONE_RANK[b.dataset.tone];
+        // "Ausgelöst vom Kunden" (data-tone="kunde") ist kein Fälligkeits-Ton und steht IMMER
+        // ganz oben — unabhängig von der Sortier-Richtung. Ein reiner Rang-Wert (z. B. -1) würde
+        // das bei "absteigend" ins Gegenteil verkehren (dann stünde sie ganz unten), deshalb hier
+        // als Sonderfall VOR dem richtungsabhängigen Vergleich behandelt.
+        if (a.dataset.tone === 'kunde' || b.dataset.tone === 'kunde') {
+          return a.dataset.tone === 'kunde' ? -1 : 1;
+        }
+        var av = rank[a.dataset.tone], bv = rank[b.dataset.tone];
         return dueEntry.dir === 'asc' ? av - bv : bv - av;
       });
       groups.forEach(function (g) { card.appendChild(g); });
@@ -5819,7 +6406,11 @@
 
     function dissolveGroups() {
       if (dissolved) return;
-      var groups = Array.prototype.slice.call(document.querySelectorAll('.todo-table-card > .todo-group'));
+      // "Ausgelöst vom Kunden" (data-tone="kunde") bleibt vom Auflösen unberührt — sie ist keine
+      // Fälligkeits-Gruppe und soll auch bei aktiver Berater-/Antragsteller-Sortierung immer als
+      // eigene, oberste Sektion stehen bleiben statt in der gemeinsamen Sortier-Sektion aufzugehen.
+      var groups = Array.prototype.slice.call(document.querySelectorAll('.todo-table-card > .todo-group'))
+        .filter(function (g) { return g.dataset.tone !== 'kunde'; });
       if (groups.length < 2) return;
       var hostBody = groups[0].querySelector('.todo-table-body');
       groups.slice(1).forEach(function (g) {
@@ -5835,7 +6426,10 @@
     function restoreGroups() {
       if (!dissolved) return;
       Array.prototype.slice.call(document.querySelectorAll('.todo-table-card .todo-row')).forEach(function (row) {
-        if (row.id === 'addRow' || !row.dataset.tone) return;
+        // Zeilen der "Ausgelöst vom Kunden"-Sondergruppe wurden nie dissolved (siehe dort) und
+        // dürfen hier auch nicht per row.dataset.tone (das bewusst den Fälligkeits-Ton trägt,
+        // NICHT "kunde") in eine falsche Fälligkeits-Gruppe verschoben werden.
+        if (row.id === 'addRow' || !row.dataset.tone || row.dataset.kundeAusgeloest === 'true') return;
         var homeBody = document.querySelector('.todo-group[data-tone="' + row.dataset.tone + '"] .todo-table-body');
         if (homeBody && row.parentElement !== homeBody) homeBody.appendChild(row);
       });
@@ -5957,6 +6551,10 @@
       if (window.resetSortPriority) window.resetSortPriority();
       else if (window.setSortPriority) window.setSortPriority([]);
       if (window.setQuickFilter) window.setQuickFilter('alle');
+      // Hält den Button-Titel des "Fälligkeit als Dropdown"-Prototyp-Vergleichs (siehe dortiges
+      // Script) synchron — sonst zeigt er nach "Filter zurücksetzen" weiter die vorherige
+      // Fälligkeit, obwohl der Schnellfilter selbst schon auf "Alle" zurückgesetzt ist.
+      if (window.syncDueFilterDropdown) window.syncDueFilterDropdown();
     }
 
     chipRowEl.addEventListener('click', function (e) {
@@ -6030,11 +6628,18 @@
       if (document.body.classList.contains('design-tabs')) {
         var rangeFilter = document.querySelector('.range-filter');
         if (rangeFilter) rangeFilter.parentNode.insertBefore(sw, rangeFilter.nextSibling);
+      } else if (document.body.classList.contains('due-dropdown')) {
+        // "Fälligkeit als Dropdown" (nur Prototyp-Vergleich, siehe #dueDropdownSwitchInput):
+        // rechts direkt über der Todo-Liste, NACH #chipRow statt davor (siehe body.due-dropdown
+        // .todo-show-done-switch in <style>, margin-left:auto schiebt ihn an den rechten Rand).
+        var chipRowRight = document.getElementById('chipRow');
+        if (chipRowRight) chipRowRight.parentNode.appendChild(sw);
       } else {
         var chipRow = document.getElementById('chipRow');
         if (chipRow) chipRow.parentNode.insertBefore(sw, chipRow);
       }
     }
+    window.moveShowDoneSwitch = moveShowDoneSwitch;
     // Suche sitzt je Layout ebenfalls an unterschiedlicher Stelle (Standard: in
     // .todo-pane-filters neben Zeitraum/Kalender; Neues Layout: eine Zeile höher, in #quickSeg
     // rechts von "Diese Woche") — gleiches Verschiebe-Prinzip wie moveShowDoneSwitch oben.
@@ -6054,6 +6659,68 @@
       moveShowDoneSwitch();
       moveSearchWrap();
       positionDesignTabsFullline();
+    });
+  })();
+  </script>
+
+  <!-- =======================================================================
+       FÄLLIGKEIT-ALS-DROPDOWN (nur Prototyp-Vergleich, siehe #dueDropdownSwitchInput oben +
+       .due-filter-dropdown in <style>) — Eigener Scope, treibt ausschließlich die bestehenden
+       #quickSeg-Buttons per window.setQuickFilter an (SCHNELLFILTER-Script bleibt einzige Quelle
+       der Wahrheit für Sichtbarkeit/Zähler) und zeigt dafür nur EINEN Filter-Button mit der
+       aktuellen Auswahl als Titel statt aller Tabs nebeneinander. -->
+  <script>
+  (function () {
+    var QUICK_LABEL = { alle: 'Alle', ueberfaellig: 'Überfällig', heute: 'Heute fällig', morgen: 'Morgen fällig', woche: 'Diese Woche' };
+    var btnEl = document.getElementById('btnDueFilter');
+    var menuEl = document.getElementById('menuDueFilter');
+    var labelEl = document.getElementById('dueFilterLabel');
+    menuEl.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    function closeMenu() { menuEl.classList.remove('open'); }
+
+    // Zeigt die aktuell aktive Fälligkeit im Button-Titel und als Häkchen im Dropdown — reagiert
+    // auf JEDE Änderung des Schnellfilters (auch von außen, z. B. "Filter zurücksetzen"), nicht
+    // nur auf Klicks in diesem Dropdown selbst.
+    function syncFromQuickFilter() {
+      var quick = window.getQuickFilter ? window.getQuickFilter() : 'alle';
+      labelEl.textContent = QUICK_LABEL[quick] || QUICK_LABEL.alle;
+      menuEl.querySelectorAll('.bmenu-row').forEach(function (row) {
+        row.classList.toggle('active', row.dataset.quick === quick);
+      });
+    }
+    window.syncDueFilterDropdown = syncFromQuickFilter;
+
+    menuEl.querySelectorAll('.bmenu-row').forEach(function (row) {
+      row.addEventListener('click', function () {
+        if (window.setQuickFilter) window.setQuickFilter(row.dataset.quick);
+        syncFromQuickFilter();
+        closeMenu();
+      });
+    });
+
+    btnEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menuEl.classList.toggle('open');
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.due-filter-dropdown')) closeMenu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Beim Einschalten: Default auf "Heute fällig" statt des sonst aktiven "Alle" (siehe
+    // Anforderung); beim Ausschalten zurück auf "Alle", damit #quickSeg im vertrauten
+    // Ausgangszustand wieder auftaucht.
+    document.getElementById('dueDropdownSwitchInput').addEventListener('change', function (e) {
+      document.body.classList.toggle('due-dropdown', e.target.checked);
+      if (window.setQuickFilter) window.setQuickFilter(e.target.checked ? 'heute' : 'alle');
+      syncFromQuickFilter();
+      // "Erledigte anzeigen" wandert dabei rechts direkt über die Todo-Liste (siehe
+      // moveShowDoneSwitch/body.due-dropdown in <style>), analog zur Positionierung in
+      // mein-tag-v5-c.html.
+      if (window.moveShowDoneSwitch) window.moveShowDoneSwitch();
     });
   })();
   </script>
@@ -6150,40 +6817,48 @@
   </script>
 
   <!-- =======================================================================
-       GRUPPIERUNG-UMSCHALTER (neben "Finanzierung") — NUR für diesen Prototyp-Vergleich, kein
-       Produkt-Feature. Setzt body.grouping-due und lässt die SCHNELLFILTER-Engine (siehe
-       window.applyQuickFilter/updateSubheadings dort) danach neu entscheiden, ob bei "Alle"
-       dieselben .quick-subheading-Überschriften wie unter "Heute"/"Woche" gezeigt werden
-       sollen — reiner Trigger, die eigentliche Anzeige-Logik lebt bewusst nur an einer Stelle
-       (SCHNELLFILTER-Script), nicht hier dupliziert.
-       ======================================================================= -->
-  <script>
-  (function () {
-    document.getElementById('groupingSwitchInput').addEventListener('change', function (e) {
-      document.body.classList.toggle('grouping-due', e.target.checked);
-      if (window.applyQuickFilter) window.applyQuickFilter();
-    });
-  })();
-  </script>
-
-  <!-- =======================================================================
        AUSKLAPP-PANEL-VARIANTEN-VERGLEICH (nur Prototyp-Vergleich, siehe
-       .expand-variant-group oben + body.expand-variant-old/-v21/-modern in <style>) — Eigener
-       Scope, rührt die anderen Scripts nicht an. Reiner CSS-Klassen-Toggle, buildExpandPanel/
-       -Toggle bleiben für alle 4 Varianten unverändert.
+       #expandVariantSelect oben + body.expand-variant-old/-v21/-modern/-v4/-v5/-v6/-v7/-v8 in
+       <style>) — Eigener Scope, rührt die anderen Scripts nicht an. Reiner CSS-Klassen-Toggle,
+       buildExpandPanel/-Toggle bleiben für alle Varianten unverändert.
        ======================================================================= -->
   <script>
   (function () {
-    document.querySelectorAll('input[name="expandPanelVariant"]').forEach(function (radio) {
-      radio.addEventListener('change', function (e) {
-        document.body.classList.toggle('expand-variant-old', e.target.value === 'old');
-        document.body.classList.toggle('expand-variant-v21', e.target.value === 'v21');
-        // "v4" ist v3 (expand-variant-modern) OHNE die grünen Karten — trägt deshalb BEIDE
-        // Klassen: expand-variant-modern liefert das komplette v3-Layout, expand-variant-v4
-        // überschreibt danach nur die Kartenflächen wieder auf "keine" (siehe <style>).
-        document.body.classList.toggle('expand-variant-modern', e.target.value === 'modern' || e.target.value === 'v4');
-        document.body.classList.toggle('expand-variant-v4', e.target.value === 'v4');
-      });
+    document.getElementById('expandVariantSelect').addEventListener('change', function (e) {
+      document.body.classList.toggle('expand-variant-old', e.target.value === 'old');
+      // "v5" ist eine Kopie von "v2.1" (siehe Anforderung) und trägt deshalb BEIDE Klassen:
+      // expand-variant-v21 liefert das komplette v2.1-Layout, expand-variant-v5 ist der Haken für
+      // künftige, NUR v5 betreffende Abweichungen (noch keine — siehe <style>), analog zum
+      // v4/expand-variant-modern-Muster direkt darunter.
+      // "v8" trägt dieselben Basis-Klassen wie "v6" (siehe Kommentar bei expand-variant-v8
+      // weiter unten) — deshalb hier mit ergänzt statt einer eigenen, später stehenden
+      // Wiederholung dieser beiden toggle()-Aufrufe.
+      document.body.classList.toggle('expand-variant-v21', e.target.value === 'v21' || e.target.value === 'v5' || e.target.value === 'v6' || e.target.value === 'v8');
+      document.body.classList.toggle('expand-variant-v5', e.target.value === 'v5' || e.target.value === 'v6' || e.target.value === 'v8');
+      // "v6" ist wiederum eine Kopie von "v5" (auf Wunsch) und trägt deshalb ALLE DREI Klassen:
+      // expand-variant-v21 liefert weiterhin das Grund-Layout, expand-variant-v5 liefert dessen
+      // Icon-links-Zeilen-Optik, expand-variant-v6 überschreibt danach nur die Spaltenaufteilung
+      // von Finanzierungsgrund/Immobilientyp/Immobiliennutzung/PLZ (siehe .fw-fields in <style>).
+      document.body.classList.toggle('expand-variant-v6', e.target.value === 'v6');
+      // "v4" ist v3 (expand-variant-modern) OHNE die grünen Karten — trägt deshalb BEIDE
+      // Klassen: expand-variant-modern liefert das komplette v3-Layout, expand-variant-v4
+      // überschreibt danach nur die Kartenflächen wieder auf "keine" (siehe <style>).
+      document.body.classList.toggle('expand-variant-modern', e.target.value === 'modern' || e.target.value === 'v4');
+      document.body.classList.toggle('expand-variant-v4', e.target.value === 'v4');
+      // "v7" ist eine Kopie von "v5" (gleiche Icon/Label/Wert-Optik, siehe buildExpandTableHtml
+      // + .expand-info-table in <style>), aber KEIN Delta auf v5/v21 (bewusst eigenständige
+      // Klasse statt Klassen-Kombination) — v5/v21/v6 hatten wiederholt Spezifitäts-Kollisionen
+      // durch geteilte Klassen (siehe Kommentare bei den dortigen :has()-Resets), das soll sich
+      // hier nicht wiederholen. Nutzt ein eigenes <table>-Markup (buildExpandTableHtml), das
+      // zusätzlich zu .expand-columns gebaut, aber nur für v7 sichtbar wird.
+      document.body.classList.toggle('expand-variant-v7', e.target.value === 'v7');
+      // "v8" ist auf Wunsch eine Kopie von "v5" (gleiches Muster wie v6, siehe toggle()-Aufrufe
+      // für expand-variant-v21/-v5 weiter oben, die "v8" mit einschließen): trägt BEIDE
+      // Basis-Klassen (expand-variant-v21 fürs Grund-Layout, expand-variant-v5 für dessen
+      // Icon-links-Zeilen-Optik bei Finanzierungswunsch) PLUS die eigene expand-variant-v8-
+      // Klasse, die NUR die Antragsteller-Karte überschreibt (2 Personen nebeneinander statt
+      // untereinander, siehe <style>).
+      document.body.classList.toggle('expand-variant-v8', e.target.value === 'v8');
     });
   })();
   </script>
