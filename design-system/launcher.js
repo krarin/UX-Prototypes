@@ -152,6 +152,15 @@
     return '<div class="empty"><p class="empty-title">' + esc(title) + '</p>' +
       '<p class="empty-desc">' + desc + '</p></div>';
   }
+  // Die kuratierten Listen hängen am Team (teams[].handover / teams[].testing) — jeder
+  // Eintrag nennt aber die Prototyp-id, aus der die Kopie entstanden ist. Daraus lässt sich
+  // der Projekt-Anteil ableiten, statt die Auswahl ein zweites Mal am Projekt zu pflegen:
+  // eine eingefrorene Kopie erscheint so auf der Teamseite UND auf ihrer Projektseite.
+  function frozenOfProject(pr, key) {
+    var t = team(pr.team);
+    var ids = prototypesOf(pr.id).map(function (x) { return x.id; });
+    return ((t && t[key]) || []).filter(function (e) { return ids.indexOf(e.prototype) > -1; });
+  }
   // Eine eingefrorene Kopie pro Karte: welche Version, wann eingefroren, Link auf die Kopie.
   function frozenSection(title, entries, emptyText) {
     entries = (entries || []).slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
@@ -200,7 +209,15 @@
             var rest = list.filter(function (x) { return !x.line; });
             return rest.length ? groupHead('Weitere') + protoGrid(rest) : '';
           })()
-        : protoGrid(list));
+        : protoGrid(list)) +
+
+      // Dieselben kuratierten Sektionen wie auf der Teamseite, hier auf dieses Projekt
+      // eingegrenzt (siehe frozenOfProject) — damit man die eingefrorenen Stände einer
+      // Version dort findet, wo man die Version selbst anschaut.
+      frozenSection('For Development Handover', frozenOfProject(p, 'handover'),
+        'Noch nichts an die Entwicklung übergeben.') +
+      frozenSection('For Usability Testing', frozenOfProject(p, 'testing'),
+        'Noch nichts für einen Test eingefroren.');
   }
   // Optionale Anforderungsliste (z. B. Stakeholder-Feedback). Eingeklappt, damit
   // eine Karte mit vielen Punkten die Rasterzeile nicht hochzieht.

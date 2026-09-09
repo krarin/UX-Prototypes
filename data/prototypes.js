@@ -108,6 +108,8 @@ window.PROTOTYPES = {
      Übergabe und Usability-Test stehen NICHT hier, sondern als kuratierte
      Liste am Team (teams[].handover / teams[].testing). Dort landet eine
      eingefrorene Kopie — angelegt mit `node freeze.js`. Siehe NAMING-CONVENTION.md.
+     Die Projektseite zeigt daraus automatisch die Einträge, die auf ihre eigenen
+     Versionen zeigen (`prototype`) — der Eintrag wird nur einmal gepflegt.
      --------------------------------------------------------------- */
   prototypes: [
 
