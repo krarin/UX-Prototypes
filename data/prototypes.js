@@ -57,6 +57,8 @@ window.PROTOTYPES = {
       flow: "Der Berater plant, bestätigt, verschiebt oder sagt einen Kundentermin ab — direkt aus dem Antrag heraus." },
     { id: "antrags-uebersicht", team: "advisors", name: "Antrags Übersicht",
       flow: "Der Berater sieht innerhalb eines Antrags die zugehörigen To-do's auf einen Blick — inklusive Fälligkeit, Inline-Bearbeitung und Kontextmenü." },
+    { id: "pipeline-view", team: "advisors", name: "Anträge/Pipeline-View",
+      flow: "Der Berater sieht alle Anträge als Kanban-Board über die Bearbeitungsschritte hinweg, verschiebt Karten per Drag & Drop zwischen den Spalten und sortiert sie nach Fälligkeit." },
 
     { id: "application-form", team: "mavericks", name: "Application Form",
       flow: "Der Berater prüft die vom Kunden gelieferten Angaben gegen die ausgelesenen Systemwerte und bestätigt oder korrigiert jedes Feld." },
@@ -186,6 +188,11 @@ window.PROTOTYPES = {
     { id:"todo-sortierung-v1", project:"todo-sortierung", version:1, title:"ToDo-Sortierung V1",
       file:"to-do/todo-sorting-v1.html", status:"aktuell",
       changes:"Erste Fassung: Anträge-Liste mit sortierbaren Spalten, ToDo-Spalte nach Fälligkeit sortierbar, umschaltbar auf Pipeline-Ansicht mit Drag & Drop." },
+
+    /* ---- Advisors · Anträge/Pipeline-View ---- */
+    { id:"pipeline-v1", project:"pipeline-view", version:1, title:"Pipeline-View V1",
+      file:"applications/pipeline/pipeline-v1.html", status:"aktuell",
+      changes:"Erste Fassung: 1:1-Umsetzung des Figma-Boards „Applications List Board view“ (node 8162-42958) — Kanban-Board mit farbigem Fälligkeits-Balken (Warnung/Überfällig/Info), Status-/Bank-Tags (On hold, New, Claimed), Home-Icon für Bestandsimmobilie, ToDo-Zeilen mit farbcodierter Fälligkeit (Datum/Uhrzeit statt Label, Farbe folgt der Dringlichkeit des ToDo) und Klick-Popover mit vollständiger Checkliste inkl. „… mehr“ bei langen Texten; Kopf- und Filterzeile mit entfernbaren Filter-Chips und „Filter (n)“-Zähler; Karten per Drag & Drop zwischen Spalten verschiebbar." },
 
     /* ---- Advisors · Termin-Scheduling ---- */
     { id:"termin-scheduling-v1", project:"termin-scheduling", version:1, title:"Termin-Scheduling V1",
