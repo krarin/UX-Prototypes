@@ -118,6 +118,41 @@
   --grid-gutter:  16px;
 
   /* ------------------------------------------
+     LAYOUT — SEITENBREITEN UND RAENDER
+     Die Regel: dichte Datentabellen fluid, alles zum Lesen begrenzt.
+     Ausfuehrlich in DESIGN-SYSTEM.md, Abschnitt 1.4.
+     Werte aus doc-center/width-comparison-v1.html uebernommen.
+  ------------------------------------------ */
+  --page-gutter:     clamp(16px, 3vw, 48px);  /* Seitenrand, nie darunter        */
+  --measure-text:    700px;   /* Fliesstext, Detailinhalte                       */
+  --measure-form:    900px;   /* Formulare, 2-Spalten-Vergleiche                 */
+  --measure-content: 1100px;  /* Charts, Karten-Vergleiche                       */
+  --measure-wide:    1600px;  /* Arbeitsflaechen mit Seitenleiste                */
+  /* Dichte Datentabellen bekommen KEIN max-width — nur --page-gutter. */
+
+  /* ------------------------------------------
+     PROVISORISCH · VERGLEICHSFARBEN
+     Temporaere Tokens fuer den Angebotsvergleich-Prototyp.
+     NICHT als verabschiedeter Design-System-Stand behandeln.
+
+     Werte 1:1 aus loanlink-web
+     libs/client/common/design-tokens/src/tokens/_color-primitives.scss
+     uebernommen — blue-500, orange-800, teal-700. Sobald die Entwicklung
+     das Feature aufnimmt, werden daraus semantische --ds-color-compare-*
+     Tokens (Primitives sind dort per Stylelint privat).
+     Offener Punkt im Design-System: design-tokens/MIGRATION.md,
+     Abschnitt "Gaps needing a decision".
+
+     Identitaet, nicht Status: eine Farbe je verglichenem Angebot,
+     Chart-Linie und Kartenkopf tragen dieselbe. Nie fuer Bewertung
+     ("gut/schlecht") verwenden.
+     Stand: 2026-09-15
+  ------------------------------------------ */
+  --color-compare-1: #0857C3;   /* = --_ds-blue-500   · 6,64:1 auf Weiss */
+  --color-compare-2: #A3610C;   /* = --_ds-orange-800 · 4,92:1 auf Weiss */
+  --color-compare-3: #00796B;   /* = --_ds-teal-700   · 5,32:1 auf Weiss */
+
+  /* ------------------------------------------
      BORDER RADIUS
   ------------------------------------------ */
   --radius-xs:   2px;

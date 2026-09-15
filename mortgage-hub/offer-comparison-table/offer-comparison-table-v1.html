@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Angebotsvergleich V1 · Wireframe</title>
+<style>
+/* ==========================================================================
+   WIREFRAME · Angebotsvergleich (Option B)
+   Grauer Kasten-Prototyp. Verhalten hoch aufgelöst, Optik bewusst niedrig.
+   Keine Bibliotheken, kein Build, kein Storage. Chart = Inline-SVG.
+   ========================================================================== */
+
+:root{
+  --bg:#f4f4f1;
+  --panel:#ffffff;
+  --line:#d8d8d4;
+  --line-2:#bdbdb8;
+  --ink:#262624;
+  --ink-2:#6b6b66;
+  --ink-3:#94948e;
+  --fill:#f0f0ec;
+  --teal:#0a7f62;
+  --teal-weak:#e8f2ef;
+  --o1:#2f5fa8;
+  --o2:#b5822a;
+  --o3:#0a7f62;
+  --amber:#c98a12;
+  --green:#3f9b52;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font:13px/1.35 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+
+.wrap{max-width:1560px;margin:0 auto;padding:16px 20px 64px}
+
+/* --- Wireframe-Chrome ---------------------------------------------------- */
+.protobar{
+  display:flex;align-items:center;gap:12px;
+  border:1px solid var(--line);background:var(--panel);
+  padding:6px 10px;margin-bottom:14px;border-radius:2px;
+}
+.protobar .tag{
+  font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);
+  border:1px solid var(--line);padding:2px 6px;border-radius:2px;background:var(--fill);
+}
+.protobar .spacer{flex:1}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:2px}
+.panel + .panel{margin-top:14px}
+
+.eyebrow{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:700;
+}
+
+/* --- Buttons ------------------------------------------------------------- */
+.btn{
+  min-height:26px;padding:4px 10px;border:1px solid var(--line-2);background:var(--panel);
+  border-radius:2px;cursor:pointer;color:var(--ink);white-space:nowrap;
+}
+.btn:hover{background:var(--fill)}
+.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+.btn-primary:hover{background:#096b53}
+.btn[aria-disabled="true"],.btn:disabled{
+  background:var(--fill);border-color:var(--line);color:var(--ink-3);cursor:not-allowed;
+}
+.btn-ghost{border:none;background:none;padding:4px 6px;color:var(--teal);cursor:pointer}
+.btn-ghost:hover{text-decoration:underline}
+.btn-icon{
+  width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line-2);background:var(--panel);border-radius:2px;cursor:pointer;
+  color:var(--ink-2);font-size:12px;
+}
+.btn-icon:hover{background:var(--fill)}
+
+/* --- Toolbar ------------------------------------------------------------- */
+.toolbar{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-bottom:1px solid var(--line);
+}
+.search{
+  width:260px;height:28px;padding:0 8px;
+  border:1px solid var(--line-2);border-radius:2px;background:var(--panel);
+}
+.switch{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  min-height:26px;user-select:none;
+}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.switch .track{
+  width:34px;height:18px;border:1px solid var(--line-2);border-radius:9px;background:var(--fill);
+  position:relative;flex:none;transition:none;
+}
+.switch .track::after{
+  content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;
+  border-radius:50%;background:var(--ink-3);
+}
+.switch input:checked + .track{background:var(--teal-weak);border-color:var(--teal)}
+.switch input:checked + .track::after{left:18px;background:var(--teal)}
+.switch input:focus-visible + .track{outline:2px solid var(--teal);outline-offset:2px}
+.switch input:disabled + .track{opacity:.45}
+.switch.is-off .state{color:var(--ink-3)}
+.switch .state{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+
+/* --- Panel-Kopf ---------------------------------------------------------- */
+.panelhead{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);
+}
+.chip{
+  font-size:11px;color:var(--ink-2);border:1px solid var(--line);border-radius:10px;
+  padding:1px 8px;background:var(--fill);display:inline-flex;align-items:center;gap:5px;
+}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* --- Tabelle ------------------------------------------------------------- */
+table.offers{width:100%;border-collapse:collapse;table-layout:fixed}
+table.offers th{
+  text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:700;padding:7px 10px;
+  border-bottom:1px solid var(--line);background:var(--fill);
+}
+table.offers td{
+  white-space:nowrap;
+  padding:5px 10px;border-bottom:1px solid var(--line);vertical-align:middle;height:32px;
+}
+table.offers tr.offer:hover td{background:#fafaf8}
+.num{text-align:right}
+.sub{font-size:11px;color:var(--ink-2);margin-top:1px}
+.dot-m{width:9px;height:9px;border-radius:50%;display:inline-block}
+.dot-gruen{background:var(--green)}
+.dot-orange{background:var(--amber)}
+.mach{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2)}
+
+.bm{
+  width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line-2);background:var(--panel);border-radius:2px;cursor:pointer;
+  color:var(--ink-3);
+}
+.bm:hover{background:var(--fill)}
+.bm[aria-pressed="true"]{color:var(--teal);border-color:var(--teal);background:var(--teal-weak)}
+.bm svg{display:block}
+.bm-inline{color:var(--teal);vertical-align:-2px;margin-right:2px}
+
+tr.group td{background:var(--fill);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.grouphead{display:flex;align-items:center;gap:10px;min-height:34px}
+.grouphead .label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.grouphead .label.marked{color:var(--teal)}
+.grouphead .hint{font-size:11px;color:var(--ink-2)}
+.grouphead .spacer{flex:1}
+
+.empty-note{padding:14px 12px;color:var(--ink-2);font-style:italic}
+
+/* --- Screen 2 ------------------------------------------------------------ */
+.pagehead{display:flex;align-items:baseline;gap:16px;margin-bottom:14px}
+.pagehead h1{font-size:17px;margin:0;font-weight:700}
+
+.auswahl-head{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  border-bottom:1px solid var(--line);
+}
+.auswahl-list{max-height:220px;overflow-y:auto}
+.auswahl-list[hidden]{display:none}
+.pick{
+  display:flex;align-items:center;gap:10px;padding:5px 12px;min-height:32px;
+  border-bottom:1px solid var(--line);
+}
+.pick:last-child{border-bottom:none}
+.pick input[type=checkbox]{width:16px;height:16px;margin:0;flex:none;accent-color:var(--teal)}
+.pick .cbwrap{
+  width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;flex:none;
+}
+.pick .name{flex:1;min-width:0}
+.pick .rate{width:110px;text-align:right}
+.pick .reason{font-size:11px;color:var(--ink-3);width:250px;text-align:right}
+.pick.is-locked .name,.pick.is-locked .rate{color:var(--ink-3)}
+.pick.is-on{background:var(--teal-weak)}
+.pick-divider{
+  padding:5px 12px;background:var(--fill);border-bottom:1px solid var(--line);
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);font-weight:700;
+}
+
+.chartbox{padding:12px}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:18px;padding:8px 2px 0;font-size:11px;color:var(--ink-2)}
+.legend .item{display:inline-flex;align-items:center;gap:6px}
+.legend .swatch{width:22px;height:0;border-top:2px solid var(--ink-3)}
+.legend .swatch.dashed{border-top-style:dashed;border-color:var(--ink-2)}
+
+/* Vergleichsmatrix: Spurbreiten sind fix — Auswahl ändert das Layout nie. */
+.matrix{
+  display:grid;
+  grid-template-columns:200px repeat(3,minmax(0,1fr));
+  column-gap:10px;
+  padding:12px;
+  align-items:stretch;
+}
+.mcard{
+  border:2px solid var(--line-2);border-radius:2px;padding:8px 10px;
+  display:flex;align-items:flex-start;gap:8px;min-height:52px;
+}
+.mcard .t{flex:1;min-width:0}
+.mcard .bank{font-weight:700}
+.mcard .drop{
+  width:24px;height:24px;border:1px solid var(--line);background:var(--panel);
+  border-radius:2px;cursor:pointer;color:var(--ink-2);line-height:1;flex:none;
+}
+.mcard .drop:hover{background:var(--fill)}
+.mlabel{
+  padding:7px 0;color:var(--ink-2);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;min-height:32px;
+}
+.mcell{
+  padding:7px 10px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:6px;min-height:32px;
+}
+.mrow-strong .mlabel,.mrow-strong .mcell{font-weight:700}
+.mcell .best{
+  font-size:10px;color:var(--ink-2);
+}
+.mcell .v.is-best{border-bottom:1px solid var(--ink);padding-bottom:1px}
+.mcell .delta{font-size:11px;color:var(--ink-2);font-style:italic}
+.mcell.is-na{color:var(--ink-3)}
+.mhead-spacer{min-height:52px}
+.mplaceholder{
+  border:1px dashed var(--line-2);border-radius:2px;background:transparent;
+  color:var(--ink-2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:10px;
+}
+.mplaceholder:hover{background:var(--fill)}
+.optbox{
+  padding:8px 10px;border:1px solid var(--line);border-radius:2px;margin-top:2px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.optbox.is-na{background:var(--fill)}
+.opt{display:flex;align-items:center;gap:8px;min-height:26px;cursor:pointer}
+.opt.is-na{cursor:not-allowed;color:var(--ink-3)}
+.opt .amount{font-size:11px;color:var(--ink-2)}
+.opt.is-na .amount{color:var(--ink-3)}
+.matrix-empty{
+  margin:12px;padding:40px;border:1px dashed var(--line-2);border-radius:2px;
+  text-align:center;color:var(--ink-2);
+}
+
+/* --- Anmerkungen --------------------------------------------------------- */
+.anno{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:17px;height:17px;border-radius:50%;
+  border:1px solid var(--ink-3);background:var(--panel);
+  font-size:10px;font-weight:700;color:var(--ink-2);font-variant-numeric:normal;
+  vertical-align:middle;margin-left:6px;flex:none;cursor:help;
+}
+body.anno-off .anno{display:none}
+.notes{margin-top:22px;padding:12px 14px;border:1px solid var(--line);background:var(--panel);border-radius:2px}
+.notes ol{margin:8px 0 0;padding:0;list-style:none;columns:2;column-gap:32px}
+.notes li{margin:0 0 5px;font-size:12px;color:var(--ink-2);break-inside:avoid}
+.notes li b{color:var(--ink);font-weight:600;margin-right:4px}
+body.anno-off .notes{display:none}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Prototyp-Leiste (gehört nicht zum Produkt) -->
+  <div class="protobar">
+    <span class="tag">Wireframe</span>
+    <strong>Angebotsvergleich V1</strong>
+    <span style="color:var(--ink-2)">Option B · Merken = für den Vergleich vormerken</span>
+    <span class="spacer"></span>
+    <label class="switch" style="gap:6px">
+      <input type="checkbox" id="annoToggle" checked />
+      <span class="track"></span>
+      <span style="font-size:11px;color:var(--ink-2)">Anmerkungen</span>
+    </label>
+  </div>
+
+  <!-- ====================== SCREEN 1 · ANGEBOTSLISTE ====================== -->
+  <section id="screenListe">
+    <div class="panel">
+      <div class="panelhead">
+        <span class="eyebrow">Angebote</span>
+        <span style="color:var(--ink-2)">5/5</span>
+        <span class="chip"><span class="dot"></span>Europace</span>
+        <span class="chip"><span class="dot"></span>Forum</span>
+        <span class="chip"><span class="dot"></span>Qualitypool</span>
+        <span class="chip"><span class="dot"></span>Baufinex</span>
+        <span class="chip"><span class="dot"></span>Bilthouse</span>
+      </div>
+
+      <div class="toolbar">
+        <label class="sr" for="search">Kreditgeber suchen</label>
+        <input id="search" class="search" type="search" placeholder="Kreditgeber suchen…" />
+        <button class="btn" type="button">Filter</button>
+        <span class="anno" title="4 Suche und Machbarkeits-Schalter greifen nur in „Alle Angebote“. Die Merkliste bleibt immer vollständig sichtbar.">4</span>
+        <span class="spacer" style="flex:1"></span>
+        <label class="switch is-off" id="machbarSwitch">
+          <span>nur machbare Angebote anzeigen</span>
+          <input type="checkbox" id="onlyMachbar" />
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <table class="offers">
+        <colgroup>
+          <col style="width:124px" />
+          <col style="width:auto" />
+          <col style="width:150px" />
+          <col style="width:136px" />
+          <col style="width:140px" />
+          <col style="width:84px" />
+          <col style="width:132px" />
+          <col style="width:124px" />
+          <col style="width:252px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Machbarkeit</th>
+            <th>Kreditgeber</th>
+            <th class="num">Soll-/Effektiv-Zins</th>
+            <th class="num">Monatliche Rate</th>
+            <th class="num">Darlehensbetrag</th>
+            <th class="num">BLA</th>
+            <th>Bearbeitungszeit</th>
+            <th>Marktplatz</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 2 · ANGEBOTSVERGLEICH ==================== -->
+  <section id="screenVergleich" hidden>
+    <div class="pagehead">
+      <button class="btn-ghost" type="button" id="backBtn">← Zurück zur Liste</button>
+      <span class="anno" title="12 Zurück erhält die Merkliste und die Vergleichsauswahl unverändert.">12</span>
+      <h1>Angebotsvergleich</h1>
+    </div>
+
+    <!-- Auswahlliste -->
+    <div class="panel" id="auswahlPanel">
+      <div class="auswahl-head">
+        <button class="btn" type="button" id="auswahlToggle" aria-expanded="true" aria-controls="auswahlList">
+          <span id="auswahlLabel">Auswahl (3/3)</span> <span aria-hidden="true" id="auswahlCaret">▾</span>
+        </button>
+        <span class="anno" title="5 Angebote werden hier getauscht — ohne Rückweg in die Tabelle. Esc klappt die Liste zu.">5</span>
+        <span style="color:var(--ink-2)">Angebote tauschen · max. 3</span>
+        <span class="anno" title="6 Auswahlgrenze 3. Gesperrte Zeilen nennen den Grund, statt still tot zu sein.">6</span>
+        <span style="flex:1"></span>
+        <span style="color:var(--ink-3);font-size:11px" id="auswahlMeta"></span>
+      </div>
+      <div class="auswahl-list" id="auswahlList"></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="panel">
+      <div class="chartbox">
+        <div class="eyebrow">Gemeinsamer Restschuld-Verlauf
+          <span class="anno" title="7 Ein Chart für alle gewählten Angebote. Durchgezogen = Basis, gestrichelt = mit eingeschalteten Optionen. Die Achsen stehen fest.">7</span>
+        </div>
+        <div class="chart" id="chart"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <!-- Matrix -->
+    <div class="panel">
+      <div style="padding:12px 12px 0">
+        <span class="eyebrow">Vergleichsmatrix</span>
+        <span class="anno" title="9 Der beste Wert je Zeile ist mit ▲ und Haarlinie markiert — nicht über Farbe.">9</span>
+      </div>
+      <div id="matrixHost"></div>
+    </div>
+
+  </section>
+
+  <!-- Legende der Anmerkungen -->
+  <div class="notes" id="notes">
+    <span class="eyebrow">Anmerkungen zum Prototyp</span>
+    <ol>
+      <li><b>1</b> Das Merken-Symbol (Lesezeichen) sitzt rechts bei den übrigen Aktionen und setzt die Merkliste. Die Zeile wandert in die gemerkte Gruppe, der Zähler im Gruppenkopf zählt live mit.</li>
+      <li><b>2</b> Die Vergleichsaktion sitzt im Kopf der gemerkten Gruppe — kein zusätzliches Control in der Zeile.</li>
+      <li><b>3</b> 0 gemerkt → Gruppe gar nicht da. 1 → Aktion sichtbar, aber inaktiv. 2–3 → „Diese n vergleichen“. 4+ → „Vergleichen (max. 3)“, die ersten drei sind vorausgewählt.</li>
+      <li><b>4</b> Suche und Machbarkeits-Schalter greifen nur in „Alle Angebote“; die Merkliste bleibt vollständig. <b>Zu bestätigen.</b></li>
+      <li><b>5</b> Die Auswahlliste tauscht Angebote direkt auf der Vergleichsseite. Esc klappt sie zu.</li>
+      <li><b>6</b> Bei drei gewählten Angeboten werden die übrigen Zeilen gesperrt — mit sichtbarem Grund, nie als stumme Checkbox.</li>
+      <li><b>7</b> Ein gemeinsamer Chart. Achsen 0–480.000 € und 0–30 Jahre stehen fest, damit die Auswahl den Maßstab nie verschiebt.</li>
+      <li><b>8</b> Der Spaltenkopf trägt die Farbe der Linie im Chart. Das „×“ nimmt die Spalte aus dem Vergleich.</li>
+      <li><b>9</b> Bester Wert je Zeile mit ▲ und Haarlinie — übersteht Schwarz-Weiß-Druck und Farbsehschwäche.</li>
+      <li><b>10</b> Optionen rechnen Laufzeit, Gesamtaufwand und die gestrichelte Kurve neu.</li>
+      <li><b>11</b> Bei weniger als drei Angeboten steht eine gestrichelte Platzhalterspalte; ein Klick öffnet die Auswahlliste.</li>
+      <li><b>12</b> „Zurück zur Liste“ erhält Merkliste und Auswahl.</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+/* ==========================================================================
+   DATEN
+   Darlehensbetrag ist für alle Angebote 480.000 €.
+   Die drei Angebote aus der Skizze tragen ihre Zahlen fest; für alle anderen
+   werden Laufzeit und Gesamtaufwand aus der Simulation abgeleitet.
+   ========================================================================== */
+const P = 480000;
+
+/* tsw: null | "kostenlos" | "gebuehr"   ·   sonder: null | Betrag €/Jahr */
+const OFFERS = [
+  {id:"bhw",  bank:"BHW Bausparkasse", produkt:"Wohnbausparen Kombi", mach:"orange",
+   soll:3.63, eff:3.71, rate:2420, bla:92.8, tage:10, markt:"Forum",
+   sonder:23875, tsw:"kostenlos", baseLaufzeit:25.1, baseGesamt:727906, merkt:true},
+  {id:"dkb",  bank:"Deutsche Kreditbank", produkt:"DKB Volltilger", mach:"gruen",
+   soll:3.71, eff:3.79, rate:2650, bla:88.4, tage:5, markt:"Europace",
+   sonder:9550, tsw:"gebuehr", baseLaufzeit:22.0, baseGesamt:699114, merkt:true},
+  {id:"ing",  bank:"ING", produkt:"Baufinanzierung", mach:"gruen",
+   soll:3.66, eff:3.74, rate:2880, bla:87.2, tage:3, markt:"Europace",
+   sonder:null, tsw:null, baseLaufzeit:19.3, baseGesamt:666327, merkt:true},
+
+  {id:"allianz",  bank:"Allianz", produkt:"BauFinanz", mach:"orange",
+   soll:3.88, eff:3.95, rate:2455, bla:91.2, tage:8,  markt:"Qualitypool", sonder:14400, tsw:"kostenlos"},
+  {id:"wuest",    bank:"Wüstenrot", produkt:"Wohndarlehen", mach:"orange",
+   soll:3.92, eff:4.01, rate:2601, bla:93.4, tage:12, markt:"Forum", sonder:24000, tsw:"gebuehr"},
+  {id:"lbs1",     bank:"LBS NordWest", produkt:"Zinsgarant", mach:"orange",
+   soll:4.12, eff:4.24, rate:2498, bla:92.8, tage:10, markt:"Forum", sonder:null, tsw:null},
+  {id:"lbs2",     bank:"LBS NordWest", produkt:"VK FlexPlus", mach:"orange",
+   soll:4.05, eff:4.17, rate:2540, bla:92.8, tage:10, markt:"Forum", sonder:9600, tsw:"kostenlos"},
+  {id:"vbgest",   bank:"Volksbank eG – Die Gestalterbank", produkt:"inkl. KfW-Darlehen 124", mach:"orange",
+   soll:3.74, eff:3.83, rate:2612, bla:92.6, tage:5,  markt:"Europace", sonder:24000, tsw:"gebuehr"},
+  {id:"gladbach", bank:"Gladbacher Bank AG", produkt:"inkl. KfW-Darlehen 124", mach:"gruen",
+   soll:3.69, eff:3.78, rate:2705, bla:87.2, tage:2,  markt:"Europace", sonder:19200, tsw:"kostenlos"},
+  {id:"spardaw",  bank:"Sparda-Bank West", produkt:"Baufi Klassik", mach:"gruen",
+   soll:3.58, eff:3.66, rate:2760, bla:85.9, tage:4,  markt:"Baufinex", sonder:4800, tsw:null},
+  {id:"coba",     bank:"Commerzbank", produkt:"Wohnbaukredit", mach:"gruen",
+   soll:3.81, eff:3.90, rate:2590, bla:89.7, tage:7,  markt:"Europace", sonder:9600, tsw:"gebuehr"},
+  {id:"dsl",      bank:"DSL Bank", produkt:"Privatkredit Bau", mach:"orange",
+   soll:3.95, eff:4.06, rate:2470, bla:94.1, tage:9,  markt:"Qualitypool", sonder:null, tsw:"kostenlos"},
+  {id:"santander",bank:"Santander", produkt:"Immobilienfinanzierung", mach:"orange",
+   soll:4.18, eff:4.29, rate:2530, bla:93.0, tage:11, markt:"Bilthouse", sonder:12000, tsw:null},
+  {id:"mhb",      bank:"Münchener Hypothekenbank", produkt:"MHB Basis", mach:"gruen",
+   soll:3.55, eff:3.63, rate:2845, bla:84.3, tage:6,  markt:"Europace", sonder:24000, tsw:"kostenlos"},
+  {id:"debeka",   bank:"Debeka", produkt:"Bauspar-Sofort", mach:"orange",
+   soll:4.02, eff:4.14, rate:2415, bla:95.2, tage:14, markt:"Forum", sonder:4800, tsw:"gebuehr"},
+  {id:"spkkb",    bank:"Sparkasse KölnBonn", produkt:"S-Baufinanzierung", mach:"gruen",
+   soll:3.72, eff:3.81, rate:2688, bla:88.9, tage:5,  markt:"Baufinex", sonder:9600, tsw:"kostenlos"},
+  {id:"psd",      bank:"PSD Bank Rhein-Ruhr", produkt:"PSD BauGeld", mach:"gruen",
+   soll:3.61, eff:3.69, rate:2795, bla:86.4, tage:3,  markt:"Qualitypool", sonder:14400, tsw:null},
+  {id:"degussa",  bank:"Degussa Bank", produkt:"Wohnkredit", mach:"orange",
+   soll:3.99, eff:4.09, rate:2505, bla:92.1, tage:8,  markt:"Bilthouse", sonder:null, tsw:"gebuehr"},
+  {id:"hvb",      bank:"HypoVereinsbank", produkt:"HVB Wohnbau", mach:"gruen",
+   soll:3.84, eff:3.93, rate:2620, bla:90.5, tage:6,  markt:"Europace", sonder:9600, tsw:"kostenlos"},
+  {id:"db",       bank:"Deutsche Bank", produkt:"Baufinanzierung Plus", mach:"orange",
+   soll:3.90, eff:4.00, rate:2560, bla:91.8, tage:9,  markt:"Europace", sonder:12000, tsw:"gebuehr"},
+  {id:"schwaeb",  bank:"Schwäbisch Hall", produkt:"Kombi-Darlehen", mach:"orange",
+   soll:4.08, eff:4.20, rate:2450, bla:94.6, tage:13, markt:"Forum", sonder:19200, tsw:null},
+  {id:"ergo",     bank:"ERGO", produkt:"Baufinanz Direkt", mach:"gruen",
+   soll:3.67, eff:3.75, rate:2830, bla:85.1, tage:4,  markt:"Bilthouse", sonder:null, tsw:"kostenlos"},
+  {id:"targo",    bank:"Targobank", produkt:"Immo Direkt", mach:"orange",
+   soll:4.25, eff:4.37, rate:2480, bla:93.7, tage:10, markt:"Qualitypool", sonder:4800, tsw:null},
+  {id:"vbkb",     bank:"Volksbank Köln Bonn", produkt:"VR Wohnbau", mach:"gruen",
+   soll:3.63, eff:3.72, rate:2740, bla:87.8, tage:5,  markt:"Baufinex", sonder:14400, tsw:"gebuehr"},
+  {id:"spardah",  bank:"Sparda-Bank Hessen", produkt:"Bauen & Wohnen", mach:"orange",
+   soll:3.78, eff:3.87, rate:2648, bla:90.2, tage:7,  markt:"Forum", sonder:9600, tsw:"kostenlos"}
+];
+
+/* ==========================================================================
+   FORMATE (de-DE)
+   ========================================================================== */
+const fEur0  = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:0,maximumFractionDigits:0});
+const fEur2  = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+const fNum2  = new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fNum1  = new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+const fNum0  = new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
+const pct    = v => fNum2.format(v) + ' %';
+const jahre  = v => fNum1.format(v) + ' Jahre';
+
+/* ==========================================================================
+   RECHENKERN — monatliche Simulation, grob aber in sich stimmig
+   ========================================================================== */
+const TSW_FAKTOR = 1.18;   /* Tilgungssatzwechsel ab Jahr 5 → Rate +18 % */
+
+function simulate(o, sonderOn, tswOn){
+  const i = o.soll/100/12;
+  const extra = (sonderOn && o.sonder) ? o.sonder : 0;
+  const f = (tswOn && o.tsw) ? TSW_FAKTOR : 1;
+  let bal = P, paid = 0, m = 0;
+  const series = [[0,P]];
+  while(bal > 0.5 && m < 480){
+    m++;
+    const zins = bal * i;
+    const pay  = Math.min(o.rate * (m > 60 ? f : 1), bal + zins);
+    bal = bal + zins - pay;
+    paid += pay;
+    if(extra && m % 12 === 0 && bal > 0.5){
+      const e = Math.min(extra, bal);
+      bal -= e; paid += e;
+    }
+    if(m % 3 === 0 || bal <= 0.5) series.push([m/12, Math.max(0,bal)]);
+  }
+  return {months:m, paid:paid, series:series};
+}
+
+/* Basis einmalig rechnen und auf die vorgegebenen Zahlen kalibrieren. */
+OFFERS.forEach(o=>{
+  const b = simulate(o,false,false);
+  o._base = b;
+  if(o.baseLaufzeit == null){ o.baseLaufzeit = b.months/12; o.baseGesamt = b.paid; }
+  o._kT = (o.baseLaufzeit*12) / b.months;   /* Zeit-Kalibrierung */
+  o._kG = o.baseGesamt / b.paid;            /* Aufwand-Kalibrierung */
+});
+
+function calc(o){
+  const op = state.opts[o.id] || {sonder:false,tsw:false};
+  const on = (op.sonder && o.sonder) || (op.tsw && o.tsw);
+  const s  = on ? simulate(o, op.sonder, op.tsw) : o._base;
+  return {
+    on: !!on,
+    laufzeit: (s.months/12) * o._kT,
+    gesamt:   s.paid * o._kG,
+    series:   s.series.map(p => [p[0]*o._kT, p[1]]),
+    baseSeries: o._base.series.map(p => [p[0]*o._kT, p[1]]),
+    rateAb5:  (op.tsw && o.tsw) ? o.rate * TSW_FAKTOR : null
+  };
+}
+
+/* ==========================================================================
+   ZUSTAND
+   ========================================================================== */
+const state = {
+  screen: 'liste',
+  bookmarks: new Set(OFFERS.filter(o=>o.merkt).map(o=>o.id)),
+  selected: [],
+  search: '',
+  onlyMachbar: false,
+  auswahlOpen: true,
+  opts: {}
+};
+OFFERS.forEach(o => state.opts[o.id] = {sonder:false, tsw:false});
+
+const ACCENTS = ['var(--o1)','var(--o2)','var(--o3)'];
+const ACCENT_HEX = ['#2f5fa8','#b5822a','#0a7f62'];
+
+const byId = id => OFFERS.find(o => o.id === id);
+const el = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const tswText = o => o.tsw === 'kostenlos' ? 'möglich · kostenlos'
+                  : o.tsw === 'gebuehr'   ? 'möglich · 0,25 % Gebühr'
+                  : 'nicht möglich';
+const tswScore = o => o.tsw === 'kostenlos' ? 2 : o.tsw === 'gebuehr' ? 1 : 0;
+const sonderText = o => o.sonder ? fEur0.format(o.sonder) + '/Jahr' : 'nicht möglich';
+
+/* ==========================================================================
+   SCREEN 1 · ANGEBOTSLISTE
+   ========================================================================== */
+/* Lesezeichen-Glyph: gefüllt = gemerkt, Kontur = nicht gemerkt. */
+function bookmarkSvg(on, cls){
+  return '<svg class="'+(cls||'')+'" width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" '
+    + 'focusable="false"><path d="M1.6 1.2h8.8v11.6L6 9.5l-4.4 3.3z" fill="'+(on?'currentColor':'none')+'" '
+    + 'stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+}
+
+function passesFilter(o){
+  if(state.onlyMachbar && o.mach !== 'gruen') return false;
+  const q = state.search.trim().toLowerCase();
+  if(!q) return true;
+  return (o.bank + ' ' + o.produkt).toLowerCase().includes(q);
+}
+
+function rowHtml(o, anno){
+  const b = state.bookmarks.has(o.id);
+  return '<tr class="offer" data-id="'+o.id+'">'
+    + '<td><span class="mach"><span class="dot-m dot-'+o.mach+'"></span>'
+      + (o.mach === 'gruen' ? 'machbar' : 'mit Auflagen') + '</span></td>'
+    + '<td style="white-space:normal"><div>'+esc(o.bank)+'</div><div class="sub">'+esc(o.produkt)+'</div></td>'
+    + '<td class="num">'+pct(o.soll)+' / '+pct(o.eff)+'</td>'
+    + '<td class="num">'+fEur2.format(o.rate)+'</td>'
+    + '<td class="num">'+fEur2.format(P)+'</td>'
+    + '<td class="num">'+fNum2.format(o.bla)+' %</td>'
+    + '<td>'+o.tage+' Tage</td>'
+    + '<td>'+esc(o.markt)+'</td>'
+    + '<td><span style="display:flex;gap:4px;align-items:center;justify-content:flex-end">'
+      + '<button class="bm" type="button" data-star="'+o.id+'" aria-pressed="'+b+'" '
+        + 'aria-label="'+(b?'Merken aufheben':'Merken')+' – '+esc(o.bank)+'" '
+        + 'title="'+(b?'Merken aufheben':'Merken')+'">'+bookmarkSvg(b)+'</button>'
+      + (anno ? '<span class="anno" title="1 Das Merken-Symbol setzt die Merkliste. Die Zeile wandert in die gemerkte Gruppe, der Zähler zählt live mit.">1</span>' : '')
+      + '<button class="btn-icon" type="button" title="In neuem Tab öffnen">↗</button>'
+      + '<button class="btn-icon" type="button" title="Details ansehen">◉</button>'
+      + '<button class="btn" type="button" style="background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600">Angebot erstellen</button>'
+      + '</span></td>'
+    + '</tr>';
+}
+
+function renderListe(){
+  const marked = OFFERS.filter(o => state.bookmarks.has(o.id));
+  const rest   = OFFERS.filter(o => !state.bookmarks.has(o.id) && passesFilter(o));
+  const n = marked.length;
+  let html = '';
+
+  /* --- Gruppe 1: gemerkte Angebote (bei 0 gar nicht gerendert) --- */
+  if(n > 0){
+    let label, disabled, hint;
+    if(n === 1){      label = 'Vergleichen';               disabled = true;  hint = 'mind. 2 Angebote merken'; }
+    else if(n <= 3){  label = 'Diese ' + n + ' vergleichen'; disabled = false; hint = 'max. 3 vergleichbar'; }
+    else {            label = 'Vergleichen (max. 3)';        disabled = false; hint = 'max. 3 vergleichbar · die ersten 3 sind vorausgewählt'; }
+
+    html += '<tr class="group"><td colspan="9"><div class="grouphead">'
+      + '<span class="label marked">' + bookmarkSvg(true,'bm-inline') + ' Gemerkte Angebote · ' + n + '</span>'
+      + '<span class="hint">' + hint + '</span>'
+      + '<span class="anno" title="3 0 gemerkt → keine Gruppe. 1 → Aktion inaktiv. 2–3 → „Diese n vergleichen“. 4+ → „Vergleichen (max. 3)“ mit den ersten drei vorausgewählt.">3</span>'
+      + '<span class="spacer"></span>'
+      + '<span class="anno" title="2 Die Vergleichsaktion sitzt im Gruppenkopf — kein zusätzliches Control je Zeile.">2</span>'
+      + '<button class="btn btn-primary" type="button" id="compareBtn"'
+        + (disabled ? ' aria-disabled="true"' : '') + '>' + label + '</button>'
+      + '</div></td></tr>';
+    marked.forEach((o,i) => html += rowHtml(o, i === 0));
+  }
+
+  /* --- Gruppe 2: alle übrigen Angebote --- */
+  html += '<tr class="group"><td colspan="9"><div class="grouphead">'
+    + '<span class="label">Alle Angebote · ' + rest.length + ' Treffer</span>'
+    + (rest.length !== OFFERS.length - n
+        ? '<span class="hint">gefiltert aus ' + (OFFERS.length - n) + '</span>' : '')
+    + '</div></td></tr>';
+
+  if(rest.length === 0){
+    html += '<tr><td colspan="9" class="empty-note">Kein Angebot passt zu Suche und Filter.</td></tr>';
+  } else {
+    rest.forEach((o,i) => html += rowHtml(o, n === 0 && i === 0));
+  }
+
+  el('tbody').innerHTML = html;
+
+  const btn = el('compareBtn');
+  if(btn) btn.addEventListener('click', () => {
+    if(btn.getAttribute('aria-disabled') === 'true') return;
+    goVergleich(OFFERS.filter(o => state.bookmarks.has(o.id)).slice(0,3).map(o => o.id));
+  });
+
+  el('tbody').querySelectorAll('[data-star]').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-star');
+      if(state.bookmarks.has(id)) state.bookmarks.delete(id); else state.bookmarks.add(id);
+      renderListe();
+    });
+  });
+}
+
+/* ==========================================================================
+   SCREEN 2 · AUSWAHLLISTE
+   ========================================================================== */
+function renderAuswahl(){
+  const full = state.selected.length >= 3;
+  const marked = OFFERS.filter(o => state.bookmarks.has(o.id));
+  const rest   = OFFERS.filter(o => !state.bookmarks.has(o.id));
+  let html = '';
+
+  const pick = o => {
+    const on = state.selected.includes(o.id);
+    const locked = !on && full;
+    return '<div class="pick' + (on ? ' is-on' : '') + (locked ? ' is-locked' : '') + '">'
+      + '<span class="cbwrap"><input type="checkbox" id="pk-'+o.id+'" data-pick="'+o.id+'"'
+        + (on ? ' checked' : '') + (locked ? ' disabled' : '')
+        + ' aria-describedby="'+(locked ? 'pk-reason-'+o.id : '')+'" /></span>'
+      + '<label class="name" for="pk-'+o.id+'">'
+        + '<div>'+esc(o.bank)+'</div><div class="sub">'+esc(o.produkt)+'</div></label>'
+      + '<span class="rate">'+fEur0.format(o.rate)+'</span>'
+      + '<span class="reason" id="pk-reason-'+o.id+'">'
+        + (locked ? 'max. 3 · Auswahl aufheben, um zu tauschen' : '') + '</span>'
+      + '</div>';
+  };
+
+  if(marked.length){
+    html += '<div class="pick-divider">' + bookmarkSvg(true,'bm-inline') + ' Gemerkt · ' + marked.length + '</div>';
+    marked.forEach(o => html += pick(o));
+  }
+  html += '<div class="pick-divider">Alle Angebote · ' + rest.length + '</div>';
+  rest.forEach(o => html += pick(o));
+
+  el('auswahlList').innerHTML = html;
+  el('auswahlList').hidden = !state.auswahlOpen;
+  el('auswahlLabel').textContent = 'Auswahl (' + state.selected.length + '/3)';
+  el('auswahlCaret').textContent = state.auswahlOpen ? '▾' : '▸';
+  el('auswahlToggle').setAttribute('aria-expanded', String(state.auswahlOpen));
+  el('auswahlMeta').textContent = full
+    ? 'Auswahl voll — zum Tauschen zuerst ein Angebot abwählen'
+    : 'noch ' + (3 - state.selected.length) + ' Angebot(e) wählbar';
+
+  el('auswahlList').querySelectorAll('[data-pick]').forEach(cb => {
+    cb.addEventListener('change', () => toggleSelect(cb.getAttribute('data-pick')));
+    cb.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){ e.preventDefault(); toggleSelect(cb.getAttribute('data-pick')); }
+    });
+  });
+}
+
+function toggleSelect(id){
+  const i = state.selected.indexOf(id);
+  if(i > -1) state.selected.splice(i,1);
+  else if(state.selected.length < 3) state.selected.push(id);
+  renderVergleich();
+}
+
+/* ==========================================================================
+   SCREEN 2 · CHART (Inline-SVG, feste Achsen)
+   ========================================================================== */
+const CH = {w:1160, h:300, l:66, r:16, t:16, b:52, yMax:480000, xMax:30};
+const cx = x => CH.l + (x / CH.xMax) * (CH.w - CH.l - CH.r);
+const cy = y => (CH.h - CH.b) - (y / CH.yMax) * (CH.h - CH.b - CH.t);
+
+function renderChart(){
+  let s = '<svg viewBox="0 0 '+CH.w+' '+CH.h+'" role="img" '
+        + 'aria-label="Restschuld-Verlauf der gewählten Angebote über 30 Jahre">';
+
+  /* Gitter + y-Achse */
+  for(let v = 0; v <= CH.yMax; v += 120000){
+    s += '<line x1="'+CH.l+'" y1="'+cy(v)+'" x2="'+(CH.w-CH.r)+'" y2="'+cy(v)+'" '
+       + 'stroke="'+(v===0?'#bdbdb8':'#e6e6e2')+'" stroke-width="1" '
+       + (v===0?'':'stroke-dasharray="2 3" ')+'/>'
+       + '<text x="'+(CH.l-10)+'" y="'+(cy(v)+4)+'" text-anchor="end" font-size="11" fill="#6b6b66">'
+       + (v === 0 ? '0' : fNum0.format(v/1000)+'k') + '</text>';
+  }
+  /* x-Achse */
+  for(let j = 0; j <= CH.xMax; j += 10){
+    s += '<line x1="'+cx(j)+'" y1="'+CH.t+'" x2="'+cx(j)+'" y2="'+(CH.h-CH.b)+'" '
+       + 'stroke="#e6e6e2" stroke-width="1" stroke-dasharray="2 3"/>'
+       + '<text x="'+cx(j)+'" y="'+(CH.h-CH.b+18)+'" text-anchor="middle" font-size="11" fill="#6b6b66">'+j+'J</text>';
+  }
+
+  if(state.selected.length === 0){
+    s += '<text x="'+((CH.l+CH.w-CH.r)/2)+'" y="'+((CH.t+CH.h-CH.b)/2)+'" text-anchor="middle" '
+       + 'font-size="13" fill="#94948e">Kein Angebot gewählt</text>';
+  }
+
+  state.selected.forEach((id, idx) => {
+    const o = byId(id), c = calc(o), col = ACCENT_HEX[idx];
+    const path = pts => 'M ' + pts.map(p => cx(Math.min(p[0],CH.xMax))+' '+cy(p[1])).join(' L ');
+    s += '<path d="'+path(c.baseSeries)+'" fill="none" stroke="'+col+'" stroke-width="2"/>';
+    if(c.on){
+      s += '<path d="'+path(c.series)+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-dasharray="6 4"/>';
+    }
+  });
+
+  s += '</svg>';
+  el('chart').innerHTML = s;
+
+  let lg = '';
+  state.selected.forEach((id, idx) => {
+    const o = byId(id);
+    lg += '<span class="item"><span class="swatch" style="border-color:'+ACCENT_HEX[idx]+'"></span>'
+        + esc(o.bank) + '</span>';
+  });
+  lg += '<span class="item"><span class="swatch dashed"></span>mit Sondertilgung / Tilgungssatzwechsel</span>';
+  el('legend').innerHTML = lg;
+}
+
+/* ==========================================================================
+   SCREEN 2 · VERGLEICHSMATRIX
+   ========================================================================== */
+const ROWS = [
+  {key:'soll',     label:'Sollzins',            best:'min'},
+  {key:'eff',      label:'Effektivzins',        best:'min'},
+  {key:'laufzeit', label:'Laufzeit',            best:'min'},
+  {key:'rate',     label:'Monatliche Rate',     best:'min', strong:true},
+  {key:'gesamt',   label:'Gesamtaufwand',       best:'min', strong:true},
+  {key:'tsw',      label:'Tilgungssatzwechsel', best:'max'},
+  {key:'sonder',   label:'Sondertilgung',       best:'max'}
+];
+
+function renderMatrix(){
+  const host = el('matrixHost');
+
+  if(state.selected.length < 2){
+    host.innerHTML = '<div class="matrix-empty"><div style="font-weight:600;color:var(--ink)">'
+      + 'Wähle mindestens 2 Angebote zum Vergleich</div>'
+      + '<div style="margin-top:6px">Aktuell gewählt: ' + state.selected.length + ' von 3.'
+      + ' Die Auswahlliste oben tauscht Angebote ein und aus.</div>'
+      + '<div style="margin-top:10px"><button class="btn" type="button" data-open-auswahl>Auswahlliste öffnen</button></div>'
+      + '</div>';
+    host.querySelectorAll('[data-open-auswahl]').forEach(b => b.addEventListener('click', openAuswahl));
+    return;
+  }
+
+  const offers = state.selected.map(byId);
+  const calcs  = offers.map(calc);
+  const TOTAL_ROWS = 1 + ROWS.length + 1;   /* Kopf + Attribute + Optionen */
+
+  const raw = {
+    soll:     offers.map(o => o.soll),
+    eff:      offers.map(o => o.eff),
+    laufzeit: calcs.map(c => c.laufzeit),
+    rate:     offers.map(o => o.rate),
+    gesamt:   calcs.map(c => c.gesamt),
+    tsw:      offers.map(tswScore),
+    sonder:   offers.map(o => o.sonder || 0)
+  };
+  const disp = {
+    soll:     offers.map(o => pct(o.soll)),
+    eff:      offers.map(o => pct(o.eff)),
+    laufzeit: calcs.map(c => jahre(c.laufzeit)),
+    rate:     offers.map(o => fEur0.format(o.rate)),
+    gesamt:   calcs.map(c => fEur0.format(Math.round(c.gesamt))),
+    tsw:      offers.map(tswText),
+    sonder:   offers.map(sonderText)
+  };
+
+  let html = '<div class="matrix">';
+
+  /* Zeile 1 — Spaltenköpfe */
+  html += '<div class="mhead-spacer" style="grid-column:1;grid-row:1"></div>';
+  offers.forEach((o,i) => {
+    html += '<div class="mcard" style="grid-column:'+(i+2)+';grid-row:1;border-color:'+ACCENT_HEX[i]+'">'
+      + '<div class="t"><div class="bank" style="color:'+ACCENT_HEX[i]+'">'+esc(o.bank)+'</div>'
+      + '<div class="sub">'+esc(o.produkt)+'</div></div>'
+      + (i === 0 ? '<span class="anno" title="8 Der Spaltenkopf trägt die Farbe der Linie im Chart. Das × nimmt die Spalte aus dem Vergleich.">8</span>' : '')
+      + '<button class="drop" type="button" data-drop="'+o.id+'" '
+      + 'aria-label="'+esc(o.bank)+' aus dem Vergleich nehmen" title="Aus dem Vergleich nehmen">×</button>'
+      + '</div>';
+  });
+
+  /* Platzhalterspalte */
+  if(offers.length < 3){
+    html += '<button class="mplaceholder" type="button" data-open-auswahl '
+      + 'style="grid-column:'+(offers.length+2)+';grid-row:1 / span '+TOTAL_ROWS+'">'
+      + '<span>+ Angebot hinzufügen<br><span style="font-size:11px">öffnet die Auswahlliste</span>'
+      + '<span class="anno" title="11 Bei weniger als drei Angeboten steht hier eine Platzhalterspalte; ein Klick öffnet die Auswahlliste.">11</span></span>'
+      + '</button>';
+  }
+
+  /* Attributzeilen */
+  ROWS.forEach((r, ri) => {
+    const row = ri + 2;
+    const vals = raw[r.key];
+    const bestVal = r.best === 'min' ? Math.min.apply(null, vals) : Math.max.apply(null, vals);
+    const markable = !(r.key === 'tsw' && bestVal === 0) && !(r.key === 'sonder' && bestVal === 0);
+    const cls = r.strong ? ' mrow-strong' : '';
+
+    html += '<div class="mlabel'+cls+'" style="grid-column:1;grid-row:'+row+'">'+r.label
+      + '</div>';
+
+    offers.forEach((o,i) => {
+      const isBest = markable && Math.abs(vals[i] - bestVal) < 1e-9;
+      const na = (r.key === 'tsw' && !o.tsw) || (r.key === 'sonder' && !o.sonder);
+      let extra = '';
+      if(r.key === 'rate' && calcs[i].rateAb5){
+        extra = '<span class="delta">ab Jahr 5: ' + fEur0.format(Math.round(calcs[i].rateAb5)) + '</span>';
+      }
+      if((r.key === 'laufzeit' || r.key === 'gesamt') && calcs[i].on){
+        extra = '<span class="delta">mit Optionen</span>';
+      }
+      html += '<div class="mcell'+cls+(na?' is-na':'')+'" style="grid-column:'+(i+2)+';grid-row:'+row+'">'
+        + '<span class="v'+(isBest?' is-best':'')+'">'+disp[r.key][i]+'</span>'
+        + (isBest ? '<span class="best" title="bester Wert in dieser Zeile">▲</span>' : '')
+        + extra + '</div>';
+    });
+  });
+
+  /* Optionenzeile */
+  const optRow = ROWS.length + 2;
+  html += '<div class="mlabel" style="grid-column:1;grid-row:'+optRow+';align-items:flex-start;padding-top:16px">'
+    + '<span class="eyebrow">Optionen je Angebot</span>'
+    + '<span class="anno" title="10 Optionen rechnen Laufzeit, Gesamtaufwand und die gestrichelte Kurve neu.">10</span></div>';
+
+  offers.forEach((o,i) => {
+    const op = state.opts[o.id];
+    const naAll = !o.sonder && !o.tsw;
+    html += '<div style="grid-column:'+(i+2)+';grid-row:'+optRow+'"><div class="optbox'+(naAll?' is-na':'')+'">'
+      + optHtml(o, 'sonder', 'Sondertilgung',
+          (o.sonder ? '+' + fEur0.format(o.sonder) + '/Jahr' : '+' + fEur0.format(0) + '/Jahr'),
+          !!o.sonder, op.sonder)
+      + optHtml(o, 'tsw', 'Tilgungssatzwechsel ab Jahr 5',
+          (o.tsw === 'gebuehr' ? '0,25 % Gebühr' : o.tsw === 'kostenlos' ? 'kostenlos' : ''),
+          !!o.tsw, op.tsw)
+      + '</div></div>';
+  });
+
+  html += '</div>';
+  host.innerHTML = html;
+
+  host.querySelectorAll('[data-drop]').forEach(b => b.addEventListener('click', () => {
+    toggleSelect(b.getAttribute('data-drop'));
+  }));
+  host.querySelectorAll('[data-open-auswahl]').forEach(b => b.addEventListener('click', openAuswahl));
+  host.querySelectorAll('[data-opt]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const id = cb.getAttribute('data-opt'), k = cb.getAttribute('data-optkey');
+      state.opts[id][k] = cb.checked;
+      renderVergleich();
+    });
+  });
+}
+
+function optHtml(o, key, label, amount, allowed, on){
+  const uid = 'opt-' + o.id + '-' + key;
+  return '<label class="opt'+(allowed?'':' is-na')+'" for="'+uid+'"'
+    + (allowed ? '' : ' title="Dieses Produkt erlaubt die Option nicht"')+'>'
+    + '<span class="switch" style="pointer-events:none">'
+      + '<input type="checkbox" id="'+uid+'" data-opt="'+o.id+'" data-optkey="'+key+'"'
+      + (on?' checked':'') + (allowed?'':' disabled') + ' style="pointer-events:auto" />'
+      + '<span class="track"></span></span>'
+    + '<span>'+label+' <span class="amount">'+amount+'</span>'
+    + (allowed ? '' : ' <span class="amount">· nicht möglich</span>') + '</span>'
+    + '</label>';
+}
+
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
+function goVergleich(ids){
+  state.selected = ids.slice(0,3);
+  state.screen = 'vergleich';
+  state.auswahlOpen = true;
+  el('screenListe').hidden = true;
+  el('screenVergleich').hidden = false;
+  renderVergleich();
+  window.scrollTo(0,0);
+  el('backBtn').focus();
+}
+
+function goListe(){
+  state.screen = 'liste';
+  el('screenVergleich').hidden = true;
+  el('screenListe').hidden = false;
+  renderListe();
+  window.scrollTo(0,0);
+}
+
+function openAuswahl(){
+  state.auswahlOpen = true;
+  renderAuswahl();
+  el('auswahlPanel').scrollIntoView({block:'start'});
+  const first = el('auswahlList').querySelector('input:not(:disabled)');
+  if(first) first.focus();
+}
+
+function renderVergleich(){
+  renderAuswahl();
+  renderChart();
+  renderMatrix();
+}
+
+/* ==========================================================================
+   EVENTS
+   ========================================================================== */
+el('search').addEventListener('input', e => { state.search = e.target.value; renderListe(); });
+
+el('onlyMachbar').addEventListener('change', e => {
+  state.onlyMachbar = e.target.checked;
+  el('machbarSwitch').classList.toggle('is-off', !e.target.checked);
+  renderListe();
+});
+
+el('backBtn').addEventListener('click', goListe);
+
+el('auswahlToggle').addEventListener('click', () => {
+  state.auswahlOpen = !state.auswahlOpen;
+  renderAuswahl();
+});
+
+el('annoToggle').addEventListener('change', e => {
+  document.body.classList.toggle('anno-off', !e.target.checked);
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && state.screen === 'vergleich' && state.auswahlOpen){
+    state.auswahlOpen = false;
+    renderAuswahl();
+    el('auswahlToggle').focus();
+  }
+});
+
+renderListe();
+</script>
+</body>
+</html>

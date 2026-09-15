@@ -137,6 +137,34 @@ Body:       .body-regular  .body-regular-highlighted  .body-small  .body-small-h
 Microcopy:  .microcopy
 ```
 
+### Capitalization
+
+**Rule: never set text in ALL CAPS anywhere in the app. No `text-transform: uppercase`,
+no manually typed caps.**
+
+This covers everything: page and section headings, section labels and eyebrows, table
+column headers, group dividers and list separators, buttons, badges, tabs, form labels,
+placeholders, input text and helper text. Write it the way you would say it —
+`Auswahl (3/3)`, not `AUSWAHL (3/3)`; `Alle Angebote`, not `ALLE ANGEBOTE`.
+
+Why: caps destroy word shapes and slow reading, some screen readers spell them out letter
+by letter, and German compound nouns get long and shouty fast.
+
+Build hierarchy with size, weight and colour instead:
+```css
+/* Do */
+.section-label { font-size: 10px; font-weight: 700; color: var(--color-neutral-dark-300); }
+
+/* Don't */
+.section-label { font-size: 10px; font-weight: 700;
+                 text-transform: uppercase; letter-spacing: .1em; }
+```
+The `letter-spacing` goes away with the caps. That `.06–.1em` tracking only exists to make
+uppercase legible — on lowercase text it just looks loose.
+
+Exception: acronyms and brand names that are genuinely capitalised — `ING`, `DKB`, `BLA`,
+`PDF`, `IBAN`. Those are capitals in the *content*, never a CSS transform on a container.
+
 ---
 
 ## Component class reference
@@ -201,6 +229,36 @@ Microcopy:  .microcopy
 </nav>
 ```
 
+### List rows — icon and checkbox alignment
+
+**Rule: in a list, a leading icon, checkbox or avatar aligns to the top line of the row's
+text — never to the vertical centre of a multi-line block.**
+
+```html
+<div class="list-row">
+  <span class="row-icon material-symbols-outlined">check_box</span>
+  <div class="row-text">
+    <div>Primary line</div>
+    <div class="row-sub">Secondary line</div>
+  </div>
+</div>
+```
+```css
+.list-row  { display: flex; align-items: flex-start; gap: var(--space-s); }
+.row-icon  { flex: none; height: 18px; display: inline-flex; align-items: center; }
+             /* height = the line-height of line 1, NOT the row height */
+```
+
+The icon box must match the **first line's line-height**, not the row height. A fixed
+square box taller than line 1 silently re-centres the icon and undoes the rule.
+
+Why: with two-line rows, `align-items: center` floats the control into the gap between the
+lines, so it reads as belonging to neither. Anchoring it to line 1 ties it to the row's
+primary label and keeps a clean left edge down the list.
+
+**Lists only.** Single-line contexts keep `align-items: center` — buttons, chips, tabs,
+table cells, the info bar, and the `.sidebar-item` pattern above.
+
 ---
 
 ## Naming conventions
@@ -262,6 +320,7 @@ When building any web UI, component, page, or application:
 - Generic "AI slop" aesthetics
 - Cookie-cutter component patterns
 - Reusing the same fonts across different designs
+- ALL CAPS text anywhere in the UI (see **Capitalization** above)
 
 ## Design Fidelity
 When given a Figma screenshot, replicate it pixel-for-pixel. 

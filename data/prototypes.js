@@ -20,7 +20,20 @@ window.PROTOTYPES = {
   teams: [
     { id: "advisors",          name: "Advisors",
       desc: "Arbeitsfläche des Beraters — Tagesplanung, To-do's und Termine.",
-      handover: [], testing: [] },
+      handover: [
+        { prototype:"mein-tag-v5e",
+          title:"Mein Tag V5-E",
+          file:"to-do/mein-tag-v5-e-handover-2026-09-09.html",
+          date:"2026-09-09",
+          note:"Übergabestand für die Entwicklung: ohne die reinen Prototyp-Vergleichs-Schalter (\"Neues Layout\", \"Fälligkeit als Dropdown\", Ausklapp-Panel-Auswahl) — das Ausklapp-Panel ist fest auf \"Ausklappen v1\"." }
+      ],
+      testing: [
+        { prototype:"mein-tag-v5e",
+          title:"Mein Tag V5-E",
+          file:"to-do/mein-tag-v5-e-usability-2026-09-15.html",
+          date:"2026-09-15",
+          note:"Teststand: exakte Kopie des Übergabestands vom 2026-09-09." }
+      ] },
     { id: "mavericks",         name: "Mavericks",
       desc: "Antragsstrecke und Datenvalidierung — Application Form, wichtige Felder, Bankvarianten.",
       handover: [], testing: [] },
@@ -90,6 +103,9 @@ window.PROTOTYPES = {
     { id: "offer-submission", team: "mortgage-hub", name: "Offer Submission",
       flow: "Der Berater sucht Angebote, vergleicht Konditionen und reicht die Finanzierung beim Kreditgeber ein." },
 
+    { id: "offer-comparison-table", team: "mortgage-hub", name: "Offer Comparison Table",
+      flow: "Der Berater merkt sich aus der Angebotsliste die aussichtsreichen Treffer vor und stellt bis zu drei davon auf einer eigenen Seite nebeneinander — Restschuld-Verlauf, Vergleichsmatrix und Sondertilgung/Tilgungssatzwechsel, gemeinsam mit dem Kunden am Schirm." },
+
     { id: "mass-import", team: "lender-integration", name: "Massenimport",
       flow: "Der Berater holt seinen Altbestand von einer Plattform in FinLink: er startet den Massenimport aus den Anträgen, wählt Quelle und Zeitraum, sieht was übernommen wurde — und findet jeden Lauf später unter Mein Unternehmen → Plattformen im Massenimport-Verlauf wieder." },
 
@@ -148,6 +164,10 @@ window.PROTOTYPES = {
     { id:"mein-tag-v5e", project:"mein-tag", version:5, variant:"E", title:"Mein Tag V5-E",
       file:"to-do/mein-tag-v5-e.html", status:"archiv",
       changes:"Gegenüber V5-D: Schnellfilter als einzelne Karten-Buttons statt zusammenhängender Segmented-Leiste — 4px Abstand, farbiges Rechteck links in der Kategoriefarbe (immer sichtbar, statt Unterstreichung nur im ausgewählten Zustand), Anzahl als Heading/Md ohne Zähler-Pille und in Primärtextfarbe wenn ausgewählt bzw. Sekundärtextfarbe im Standard. Ausgewählter Filter trägt den Rahmen in der Kategoriefarbe statt einer grauen Füllung; Buttonhöhe 36px unverändert. Der reine Vergleichs-Umschalter „Neues Layout“ behält bewusst die bisherige Tab-Optik." },
+
+    { id:"mein-tag-v8", project:"mein-tag", version:8, title:"Mein Tag V8",
+      file:"to-do/mein-tag-v8.html", status:"archiv",
+      changes:"Inhaltlich identisch mit V5-E — geändert hat sich ausschließlich die Token-Ebene. V5-E war eine harte Abspaltung von design-system/tokens.css (der Block war handkopiert und abgedriftet: --color-neutral-dark-400 trug #78909C statt #607D8B, --color-neutral-light-400 war mit 49 Verwendungen der meistbenutzte Token und existierte nirgends sonst). V8 konsumiert stattdessen die Finlink-Core-Tokens aus der Figma-Library „AI Design System Foundations“ (Collections Finlink Core Primitives · Semantics · Field · Typography Tokens). 581 Farb- und Maßreferenzen wurden property-abhängig neu gebunden — dieselbe Ausgangsfarbe wird je nach background/text/border/icon zu einem anderen Token —, 192 Typografie- und 350 Spacing-Deklarationen auf die Skala gesetzt, und die JS-Konstante TERMIN_TYP ist jetzt vollständig token-getrieben. Sichtbare Folgen der reinen Token-Bindung: Zeilentext 13px → 12px und Mikro-Labels 11px → 12px (die Skala kennt weder 13 noch 11), Hierarchie trägt daher Gewicht und Farbe statt Größe; Spacing 6/10/14px auf 4/8/12px gerundet, Zeilenrhythmus damit 1–2px enger; Feldhöhe 36px → 32px über --ds-field-height; Fließtext #37474F → #263238; Kalender-Termin „Privat“ wird heller und rosaner, weil --ds-color-accent-purple das einzige öffentliche Purple im Semantik-Layer ist. Orange („Heute“) und Cyan („Ausgelöst vom Kunden“) laufen bewusst über den Legacy-Namensraum feedback.*, weil die kanonische Grammatik dafür keine Entsprechung hat. Lücken und Abweichungen stehen NICHT im Design, sondern im Token-Panel (Datenbank-Icon in der Topbar): 14 Einträge, darunter drei Blocker — es gibt im gesamten Finlink-Set keinerlei Schatten-Tokens (N-1), background hat keine inverse-Stufe und damit ist die dunkle App-Schiene nicht bindbar (N-2), und Radius/Border-Width/Sizing haben keine öffentliche Semantik (G-03). Die bekannten Kontrastfehler A1/A7/A8 bleiben bewusst unbehoben, weil token-pur die Werte erhält. Status „archiv“, weil V7 die offenen Stakeholder-Anforderungen trägt und aktuell bleibt — V8 ist die technische Token-Linie auf Basis von V5-E." },
 
     { id:"mein-tag-v7", project:"mein-tag", version:7, title:"Mein Tag V7",
       file:"to-do/mein-tag-v7.html", status:"aktuell",
@@ -383,6 +403,15 @@ window.PROTOTYPES = {
     { id:"offer-submission-v4", project:"offer-submission", version:4, title:"Angebotssuche V4",
       file:"mortgage-hub/offer-submission/offer-submission-v4.html", status:"aktuell",
       changes:"Weiterentwicklung von V3. Beschreibung ergänzen." },
+
+    /* ---- Mortgage Hub · Offer Comparison Table ---- */
+    { id:"offer-comparison-table-v1", project:"offer-comparison-table", version:1, title:"Angebotsvergleich V1",
+      file:"mortgage-hub/offer-comparison-table/offer-comparison-table-v1.html", status:"abgeloest",
+      changes:"Erste Fassung, bewusst als Graukasten-Wireframe fuer den Usability-Test — Verhalten hoch aufgeloest, Optik niedrig. Zwei Schirme in einer Datei. Schirm 1 ist die bekannte Angebotstabelle, aber der Tabellenkoerper hat jetzt zwei Gruppen: die gemerkten Angebote oben mit eigener Kopfzeile, die Vergleichsaktion sitzt in dieser Kopfzeile. Merken heisst damit „fuer den Vergleich vormerken“ — kein zweites Control je Zeile. Die Aktion haengt an der Anzahl: 0 gemerkt keine Gruppe, 1 sichtbar aber inaktiv mit Hinweis „mind. 2 Angebote merken“, 2–3 „Diese n vergleichen“, ab 4 „Vergleichen (max. 3)“ mit den ersten drei vorausgewaehlt. Schirm 2 ist die Vergleichsseite: Auswahlliste aller 25 Angebote zum Tauschen ohne Rueckweg in die Tabelle (Grenze 3, gesperrte Zeilen nennen den Grund), ein gemeinsamer Restschuld-Chart als Inline-SVG mit festen Achsen, und die Vergleichsmatrix mit Angeboten als Spalten. Optionen je Angebot (Sondertilgung, Tilgungssatzwechsel ab Jahr 5) rechnen Laufzeit, Gesamtaufwand und eine gestrichelte Kurve neu. Bester Wert je Zeile mit Dreieck und Haarlinie statt Farbe. Nummerierte Anmerkungen und Legende sind zuschaltbar, damit der Prototyp ohne Erzaehlung durch ein Stakeholder-Review laeuft." },
+
+    { id:"offer-comparison-table-v2", project:"offer-comparison-table", version:2, title:"Angebotsvergleich V2",
+      file:"mortgage-hub/offer-comparison-table/offer-comparison-table-v2.html", status:"aktuell",
+      changes:"Gegenueber V1: die Vergleichsmatrix ist in drei eigenstaendige Karten zerlegt. In V1 standen die Angebote als Spalten einer durchgehenden Tabelle — drei Angebote lasen sich als ein Block Zahlen statt als drei Dinge, zwischen denen man waehlt. Jede Karte hat jetzt einen eigenen Kopf mit farbigem Rahmen (nur der Bankname; der Produktname ist eine Zeile in der Karte), die Optionen sitzen als eigene Karte darin, und jede Karte endet auf ihrem eigenen \"Angebot erstellen\". Die Abschnittsueberschriften KONDITIONEN und FLEXIBILITAET sind weg — die Kartengrenze leistet die Gruppierung. Alle Betraege fett. — NEUE KENNZAHLEN: Darlehenssumme, Kosten und Gesamtaufwand stehen als drei Zeilen untereinander, damit die Rechnung auf der Karte aufgeht (Kosten wird aus dem gerundeten Gesamtaufwand abgeleitet, nie separat gerundet, sonst stimmt die Spalte auf dem Schirm nicht). Dazu Zinsbindung je Angebot (10/15/20 Jahre, beim Volltilger 22) und Restschuld am Ende der Zinsbindung. Die Restschuld wird am exakten Monatssaldo abgelesen, nicht an den 3-Monats-Stuetzstellen der Kurve — ueber eine Sondertilgung interpoliert verfehlt man bis zu 16.000 Euro. Der Ablesemonat wird durch den Kalibrierungsfaktor geteilt, nicht multipliziert; nur so treffen Nullpunkt, Laufzeit-Zahl und Chart-Kurve zusammen (beim DKB Volltilger liefert jede andere Konvention eine fuenfstellige Restschuld auf einem Produkt, dessen Verkaufsargument genau deren Abwesenheit ist). Der Tilgungssatzwechsel mit Gebuehr kostet jetzt auch wirklich etwas — in V1 war er centgleich mit der kostenlosen Variante, waehrend die Zeile daneben \"0,25 % Gebuehr\" behauptete. — BREITE: erste Umsetzung der Gutter-Regel (DESIGN-SYSTEM.md 1.4). Die dichte Angebotstabelle laeuft weiter fluid, der Vergleich steht auf 1100px zentriert; vorher zog sich beides auf 1920px ueber die volle Breite. — FARBE: die drei Angebotsfarben kommen aus --color-compare-* statt aus fest verdrahteten Hex-Werten; die Werte sind 1:1 aus loanlink-web uebernommen und als provisorisch markiert. Sie sind fast gleich hell (1,08:1 zwischen zweien) und fallen in Graustufen zusammen, deshalb traegt jede Chart-Linie ihren Namen direkt auf der Kurve statt nur in der Legende. Bestwert-Markierung unterbleibt bei der Darlehenssumme (ueberall gleich) und bei der Restschuld, solange sich die Zinsbindungen unterscheiden — 273.149 Euro nach 10 Jahren und 135.346 Euro nach 20 Jahren sind keine vergleichbaren Groessen. Eine Fussnote nennt die Annahme, die die Zinsbindung sichtbar macht: Laufzeit und Gesamtaufwand unterstellen einen unveraenderten Sollzins nach deren Ablauf." },
 
     /* ---- Lender Integration · Massenimport ---- */
     { id:"mass-import-v1", project:"mass-import", version:1, title:"Massenimport V1",
