@@ -179,7 +179,7 @@
 
       /* feedback — Legacy-Grammatik. Wird hier bewusst fuer Orange und Cyan
          benutzt, weil die kanonische Grammatik dafuer keine Entsprechung hat
-         (Luecke N-7). Siehe Token-Panel, Abschnitt "Abweichungen". */
+         (Luecke N-7). Siehe Token-Panel, Reiter "Deviations". */
       --ds-color-feedback-warning: #FF9F1A;
       --ds-color-feedback-warning-subtle: #FFF5E8;
       --ds-color-feedback-notification: #3DC1D3;
@@ -275,11 +275,30 @@
        data-ds-unbound und steht im Token-Panel unter "Luecken".
        ===================================================================== */
     :root {
-      /* N-1 — es gibt im gesamten Finlink-Set keinerlei Schatten-Tokens. */
+      /* N-1 — KORREKTUR: eine Elevation-Leiter existiert, sie ist in Figma aber
+         als Effect Style hinterlegt (nicht als Variable) und wird darum vom
+         Token-Generator nicht exportiert. Gemessene Werte (16.09.2026):
+
+           boxShadow/xs    0 1px 3px rgba(0,0,0,.12),  0 1px 2px rgba(0,0,0,.08)
+           boxShadow/sm    0 3px 6px rgba(0,0,0,.12),  0 2px 4px rgba(0,0,0,.08)
+           boxShadow/base  0 6px 12px rgba(0,0,0,.12), 0 3px 6px rgba(0,0,0,.08)
+           boxShadow/lg    0 12px 24px rgba(0,0,0,.12),0 6px 12px rgba(0,0,0,.08)
+           boxShadow/xl    0 20px 40px rgba(0,0,0,.12),0 10px 20px rgba(0,0,0,.08)
+
+         UI-Kit, semantisch (und die Quelle, aus der die Werte unten ursprünglich
+         kopiert wurden — daher der Blaugrau-Ton rgba(84,110,122,…)):
+
+           Shadow base           0 1px 4px rgba(84,110,122,.15)   <- identisch mit --proto-shadow-topbar
+           Dropdown shadow       0 2px 8px rgba(84,110,122,.3)
+           Fixed column shadow  -2px 0 8px rgba(84,110,122,.12)
+           Notification shadow   0 2px 16px rgba(84,110,122,.35)
+           Shadow dialog         0 4px 24px rgba(55,71,79,.5)
+           Side panel shadow    -2px 0 8px #E5E5E5
+
+         Solange nichts davon als CSS-Variable exportiert ist, bleiben die Werte
+         unten ungebunden. */
       --proto-shadow-topbar: 0 1px 4px rgba(84, 110, 122, 0.15);
       --proto-shadow-card:   0 1px 2px rgba(84, 110, 122, 0.15);
-      --proto-shadow-menu:   0 4px 16px rgba(84, 110, 122, 0.28);
-      --proto-shadow-modal:  0 8px 32px rgba(55, 71, 79, 0.18);
       --proto-shadow-card-color:  rgba(55, 71, 79, 0.1);
       --proto-shadow-menu-color:  rgba(84, 110, 122, 0.28);
       --proto-shadow-modal-color: rgba(55, 71, 79, 0.18);
@@ -299,13 +318,13 @@
       /* N-4 — es gibt kein einziges Purple-`background`-Token. */
       --proto-purple-tint: #FCF0FE;
 
-      /* Kein `background`-Token traegt einen mittleren Grauwert — die
-         Tonspur "Spaeter faellig" hat keine Entsprechung. */
-      --proto-tone-later: #78909C;
-
       /* Fokus: der Contract verlangt 2px Ring (§8.4). Die Farbe kommt aus
          dem Token, die Rezeptur selbst ist ungebunden (G-03). */
       --proto-focus-ring: 0 0 0 2px var(--ds-color-focus-ring);
+
+      /* Kein `background`-Token traegt einen mittleren Grauwert — die
+         Tonspur "Spaeter faellig" hat keine Entsprechung. */
+      --proto-tone-later: #78909C;
 
       /* N-6 — `sizing` ist ausschliesslich privat, es gibt keine oeffentliche
          Semantik fuer Icon-Groessen. Werte auf die Primitive-Leiter
@@ -703,14 +722,20 @@
     /* Figma: "Content" (Zeilen-Container) hat pt-12 und gap-10 ZWISCHEN den Row-Komponenten;
        jede Row selbst hat gap-12 zwischen ihrem Inhalt und ihrer eigenen Trennlinie — auch die
        letzte Row. Row-Höhe wird nicht per Padding fest­gelegt, sondern ergibt sich aus dem
-       höchsten Kind (32px Info-Icon-Button), über items-center zentriert. */
-    .todo-table-body { flex: 1; min-width: 0; padding-top: var(--ds-spacing-3); display: flex; flex-direction: column; gap: var(--ds-spacing-2); }
+       höchsten Kind (32px Info-Icon-Button), über items-center zentriert.
+       ABWEICHUNG ab V8: das vertikale Padding der Zeile ist symmetrisch (je 4px oben und
+       unten) statt nur unten (0/8px). Die Spalten strecken sich über die Content-Box der
+       Zeile; lag das ganze Padding unten, sass ihr zentrierter Inhalt 4px ÜBER der optischen
+       Mitte des Zeilenbands (gemessen: -4px, in jeder Zeile). Am auffälligsten in der Spalte
+       "Fälligkeit", weil Tag und Datum dort als zweizeiliger Stapel stehen. Die Gesamthöhe
+       bleibt unverändert (8px vertikales Padding wie vorher), nur die Verteilung ändert sich. */
+    .todo-table-body { flex: 1; min-width: 0; padding-top: var(--ds-spacing-2); display: flex; flex-direction: column; gap: var(--ds-spacing-1); }
 
     /* align-items:stretch (statt center) — jede Spalte behält ihre eigene interne
        Zentrierung (display:flex/align-items:center), aber die Spalten-Box selbst füllt jetzt
        die volle Zeilenhöhe, damit border-right als durchgehende Trennlinie läuft statt als
        kurzer, nur auf Content-Höhe zentrierter Strich. */
-    .todo-row { display: grid; grid-template-columns: var(--cols); column-gap: var(--ds-spacing-4); align-items: stretch; padding: 0 var(--ds-spacing-3) var(--ds-spacing-3); border-bottom: 1px solid var(--ds-color-border-neutral-subtle-default); }
+    .todo-row { display: grid; grid-template-columns: var(--cols); column-gap: var(--ds-spacing-4); align-items: stretch; padding: var(--ds-spacing-1) var(--ds-spacing-3); border-bottom: 1px solid var(--ds-color-border-neutral-subtle-default); }
     .todo-row.done .todo-text { color: var(--ds-color-text-neutral-subtlest-default); text-decoration: line-through; }
 
     /* Checkbox + Text + Verlauf-Button + Löschen-Button bilden zusammen EIN Grid-Item
@@ -2198,7 +2223,7 @@
        auf den überall sonst genutzten Berater-Inline-Edit-Look (1.5px, Primary), anders als die
        sonst durchgehend blaue .inline-input-Basisregel. */
     .add-row input, .add-row select {
-      width: 100%; height: 36px; border: 1px solid var(--ds-color-border-neutral-bold-default); border-radius: var(--ds-radius-control); padding: 0 var(--ds-spacing-2);
+      width: 100%; height: var(--ds-field-height); border: 1px solid var(--ds-color-border-neutral-bold-default); border-radius: var(--ds-radius-control); padding: 0 var(--ds-spacing-2);
       font-size: var(--ds-typography-body-md-default-fontsize); background: var(--ds-color-background-neutral-subtlest-default); color: var(--ds-color-text-neutral-bold-default);
     }
     .add-row input:focus, .add-row select:focus { outline: none; border: 1.5px solid var(--ds-color-border-brand-bold-default); }
@@ -2267,15 +2292,26 @@
        vertikal aber oben (align-items:flex-start) — auf gleicher Höhe wie Titel-Input,
        Fälligkeitsdatum, Antragsteller und Berater, statt (wie zuvor mit align-items:center)
        mittig in der vollen, durch die zusätzliche Uhrzeit-Zeile höheren Zeilenhöhe zu stehen.
-       Eigenes, knapperes Padding + Gap (statt var(--ds-spacing-2)/8px wie bei den übrigen Feldern):
-       zwei 32px-Kreise passen bei --col-w-typ (72px) nur mit reduziertem Abstand nebeneinander,
-       sonst würde entweder der rechte Kreis die Trennlinie berühren oder die Spaltenbreite
-       (die auch von der Spalten-Überschrift und den .todo-typ-Zellen bestehender Zeilen genutzt
-       wird) müsste dafür verbreitert werden. */
+       Knapperes Gap (4px statt var(--ds-spacing-2)/8px wie bei den übrigen Feldern): zwei
+       32px-Kreise passen bei --col-w-typ (72px) nur mit reduziertem Abstand nebeneinander,
+       sonst müsste die Spaltenbreite (die auch von der Spalten-Überschrift und den
+       .todo-typ-Zellen bestehender Zeilen genutzt wird) dafür verbreitert werden. */
+    /* Optische Zentrierung wie bei .todo-typ in bestehenden Zeilen (ausführliche Begründung
+       dort): der 16px column-gap VOR der Art-Spalte gehört optisch in den Zwischenraum
+       zwischen der Trennlinie links (.add-title-group) und der eigenen Trennlinie rechts, hat
+       auf der rechten Seite aber keine Entsprechung. Rein auf die 72px-Spalte zentriert saß
+       das Raster dadurch sichtbar zu weit rechts (gemessen bei 1920px: 17,5px Luft links,
+       2,5px rechts, Mittelpunkt 876,5 statt der optischen Mitte 869 — der rechte Kreis klebte
+       fast an der Trennlinie). .todo-typ korrigiert das mit padding-right in Gap-Höhe; hier
+       geht das nicht, das 2×2-Raster ist mit 68px schon fast so breit wie die Spalte selbst.
+       Stattdessen die Zelle per negativem margin-left über den Gap hinweg bis an die linke
+       Trennlinie ziehen und im so entstandenen vollen Sichtfeld zentrieren — ergibt exakt
+       denselben Mittelpunkt (868,5) wie das Einzel-Icon der Zeilen darunter. Das padding
+       entfällt dabei, der Freiraum kommt jetzt aus dem übernommenen Gap. */
     /* grid statt flex: 2 Icons pro Zeile, damit die 4 Optionen (Email/Anruf/Termin/
        Benutzerdefiniert) als 2×2-Raster untereinander stehen statt in einer Reihe nebeneinander
        zu wachsen — passt so weiterhin in die schmale "Art"-Spalte. */
-    .add-typ { display: grid; grid-template-columns: repeat(2, 32px); justify-content: center; gap: var(--ds-spacing-1); padding: 0 var(--ds-spacing-0-5); }
+    .add-typ { display: grid; grid-template-columns: repeat(2, 32px); justify-content: center; gap: var(--ds-spacing-1); margin-left: calc(-1 * var(--ds-spacing-4)); padding: 0; }
     .add-typ-option {
       position: relative;
       width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--ds-color-border-neutral-bold-default);
@@ -2367,7 +2403,7 @@
        10px/font-size:14px) — statt der vorherigen kompakteren Maße, die extra fürs schmale
        Inline-Edit in der Tabellenzelle gedacht waren. */
     .inline-input {
-      width: 100%; min-width: 130px; height: 36px; font-family: inherit; font-size: var(--ds-typography-body-md-default-fontsize);
+      width: 100%; min-width: 130px; height: var(--ds-field-height); font-family: inherit; font-size: var(--ds-typography-body-md-default-fontsize);
       color: var(--ds-color-text-neutral-bold-default); padding: 0 var(--ds-spacing-2); background: var(--ds-color-background-neutral-subtlest-default); box-sizing: border-box;
       border: 1.5px solid var(--ds-color-border-brand-bold-default); border-radius: var(--ds-radius-control); box-shadow: none;
     }
@@ -2464,7 +2500,7 @@
        es hier nicht, ausgewählt wird ausschließlich im Panel darunter. */
     .fl-select-trigger {
       display: flex; align-items: center; gap: var(--ds-spacing-1); width: 100%; min-width: 0; box-sizing: border-box;
-      height: 36px; padding: 0 var(--ds-spacing-1) 0 var(--ds-spacing-2); background: var(--ds-color-background-neutral-subtlest-default); cursor: pointer;
+      height: var(--ds-field-height); padding: 0 var(--ds-spacing-1) 0 var(--ds-spacing-2); background: var(--ds-color-background-neutral-subtlest-default); cursor: pointer;
       border: 1.5px solid var(--ds-color-border-brand-bold-default); border-radius: var(--ds-radius-control);
       font-family: inherit; font-size: var(--ds-typography-body-md-default-fontsize); color: var(--ds-color-text-neutral-bold-default); text-align: left;
     }
@@ -3154,9 +3190,12 @@
     .bmenu-clear { border: none; background: none; cursor: pointer; color: var(--ds-color-text-neutral-subtlest-default);
       font-size: var(--ds-typography-body-sm-default-fontsize); white-space: nowrap; }
     .bmenu-clear:hover { color: var(--ds-color-text-neutral-bold-default); text-decoration: underline; }
-    /* ===== Aktive-Filter-Chips — Grundmuster aus mein-tag-v4.html: eine Sammel-Pille pro
-       Filter-Kategorie mit den Namen der Auswahl (z. B. "Berater: Bernd Krüger, Sandra
-       Wolf"), nicht eine Pille pro einzelnem Namen. Anders als in V4 blendet sich die Zeile
+    /* ===== Aktive-Filter-Chips — Grundmuster aus mein-tag-v4.html, dort eine Sammel-Pille pro
+       Filter-Kategorie mit einer Komma-Liste der Auswahl ("Bernd Krüger, Sandra Wolf"). Hier
+       stattdessen eine Pille pro einzelnem Berater, jede mit eigenem "x" (siehe renderChips):
+       bei vier ausgewählten Namen ist sonst nur "alle vier weg" möglich, und der Chip wächst
+       über die halbe Zeile. Der Zeitraum-Filter bleibt eine einzelne Pille — er hat nur einen
+       Wert. Anders als in V4 blendet sich die Zeile
        NICHT über :empty komplett aus — min-height reserviert von Anfang an denselben Platz,
        damit die ToDo-Liste beim Auswählen/Zurücksetzen eines Filters nicht nach unten springt. */
     .chip-row { display: flex; align-items: center; gap: var(--ds-spacing-2); flex-wrap: wrap; min-height: 26px; margin-bottom: var(--ds-spacing-2); }
@@ -3407,7 +3446,9 @@
 
   </style>
 </head>
-<body class="grouping-due expand-variant-v21 expand-variant-v5">
+<!-- expand-variant-old = "Ausklappen v1" ist der Startzustand (siehe #expandVariantSelect).
+     Der Umschalter bleibt fuer den Varianten-Vergleich erhalten, oeffnet aber immer auf v1. -->
+<body class="grouping-due expand-variant-old">
   <div class="app">
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidenav" aria-label="Hauptnavigation" data-ds-unbound="background: `background` hat keine `inverse`-Stufe (N-2) — #37474F, #4B5961 und der Hover sind nicht bindbar">
@@ -3482,18 +3523,18 @@
              Radiobuttons (siehe .expand-variant-select in <style>) — bei 6 Varianten nahm die
              Radiogroup zu viel Platz in der Topbar ein. -->
         <select class="expand-variant-select" id="expandVariantSelect" aria-label="Ausklapp-Panel-Design (nur Prototyp-Vergleich)">
-          <option value="old">Ausklappen v1</option>
+          <option value="old" selected>Ausklappen v1</option>
           <option value="new">Ausklappen v2</option>
           <option value="v21">Ausklappen v2.1</option>
           <option value="modern">Ausklappen v3</option>
           <option value="v4">Ausklappen v4</option>
-          <option value="v5" selected>Ausklappen v5</option>
+          <option value="v5">Ausklappen v5</option>
           <option value="v6">Ausklappen v6</option>
           <option value="v7">Ausklappen v7 (Tabelle)</option>
           <option value="v8">Ausklappen v8</option>
         </select>
         <div class="spacer"></div>
-        <button class="top-icon tokens-toggle" id="tokensToggle" title="Token-Panel: Lücken, Abweichungen und Token-Report"><span class="material-symbols-outlined">database</span></button>
+        <button class="top-icon tokens-toggle" id="tokensToggle" title="Token panel: gaps, deviations and token report"><span class="material-symbols-outlined">database</span></button>
         <div class="top-divider"></div>
         <button class="top-icon" title="Neuer Eintrag"><span class="material-icons">add_box</span></button>
         <button class="top-icon" title="Vollbild"><span class="material-icons">fullscreen</span></button>
@@ -6549,6 +6590,17 @@
       updateBeraterButton();
       applyBeraterFilter();
     };
+    // Entfernt EINEN Namen aus der Auswahl — die Chip-Zeile zeigt pro ausgewaehltem Berater
+    // eine eigene Pille mit eigenem "x" (siehe renderChips), das braucht einen Einzel-Abwahl-
+    // Weg neben dem kompletten clearBeraterFilter. Das Dropdown selbst wird nicht angefasst:
+    // buildBeraterMenu baut die Checkboxen bei jedem Oeffnen aus beraterFilter neu auf, die
+    // Haken sind danach also automatisch korrekt.
+    window.removeBeraterFromFilter = function (name) {
+      if (!beraterFilter.has(name)) return;
+      beraterFilter.delete(name);
+      updateBeraterButton();
+      applyBeraterFilter();
+    };
     function applyBeraterFilter() {
       document.querySelectorAll('.todo-row').forEach(function (row) {
         if (row.id === 'addRow') return;
@@ -7093,6 +7145,14 @@
 
     function fmtChipDate(iso) { var p = iso.split('-'); return p[2] + '.' + p[1] + '.'; }
 
+    // Beratername landet sowohl im Text als auch in data-name/aria-label — beides per
+    // innerHTML gesetzt, also muss escaped werden (gleicher Helfer wie im Berater-Script).
+    function escChip(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
     // Absichtlich OHNE den Schnellfilter (Heute/Morgen/…) — eine reine Fälligkeits-Auswahl ist
     // kein "Filter" im Sinne dieses Reset-Buttons (der aktive Tab selbst zeigt ja schon, was
     // gewählt ist), sondern nur Sortierung/Art-Filter/Berater/Zeitraum lösen ihn aus.
@@ -7111,7 +7171,13 @@
       var chips = [];
       var beraterFilter = window.getBeraterFilter ? window.getBeraterFilter() : null;
       if (beraterFilter && beraterFilter.size) {
-        chips.push('<span class="fchip">' + [...beraterFilter].join(', ') + ' <button data-clear="berater"><span class="material-symbols-outlined">close</span></button></span>');
+        // Eine eigene Pille PRO Name (nicht eine Sammel-Pille mit Komma-Liste): bei mehreren
+        // Berater*innen laesst sich so einzeln abwaehlen, ohne den ganzen Filter zu verlieren
+        // und im Dropdown neu zusammenzuklicken. Der Name steht in data-name, damit der
+        // Klick-Handler weiss, welcher entfernt werden soll.
+        [...beraterFilter].forEach(function (name) {
+          chips.push('<span class="fchip">' + escChip(name) + ' <button data-clear="berater" data-name="' + escChip(name) + '" aria-label="Filter ' + escChip(name) + ' entfernen"><span class="material-symbols-outlined">close</span></button></span>');
+        });
       }
       var range = window.getRangeFilter ? window.getRangeFilter() : null;
       if (range) {
@@ -7141,7 +7207,11 @@
       var clearBtn = e.target.closest('button[data-clear]');
       var resetBtn = e.target.closest('#chipReset');
       if (clearBtn) {
-        if (clearBtn.dataset.clear === 'berater' && window.clearBeraterFilter) window.clearBeraterFilter();
+        if (clearBtn.dataset.clear === 'berater') {
+          // Mit data-name nur diesen einen Berater, ohne (Alt-/Fallback-Fall) die ganze Auswahl.
+          if (clearBtn.dataset.name && window.removeBeraterFromFilter) window.removeBeraterFromFilter(clearBtn.dataset.name);
+          else if (window.clearBeraterFilter) window.clearBeraterFilter();
+        }
         if (clearBtn.dataset.clear === 'range' && window.clearRangeFilter) window.clearRangeFilter();
         renderChips();
       } else if (resetBtn) {
@@ -7444,7 +7514,9 @@
   </script>
 
   <!-- =====================================================================
-       TOKEN-PANEL — Luecken, Abweichungen, Token-Report.
+       TOKEN-PANEL — Reiter "Gaps", "Deviations", "Token report".
+       Inhalt bewusst auf Englisch (Uebergabe-Artefakt fuer Entwicklung und
+       Design-System-Team); die Prototyp-Oberflaeche bleibt deutsch.
        Bewusst NICHT im Design: Schalter in der Topbar, Inhalt in einem
        Drawer. Zugeklappt ist der Prototyp exakt der Schirm, den ein
        Berater spaeter sieht.
@@ -7455,21 +7527,21 @@
       <span class="material-symbols-outlined" aria-hidden="true">database</span>
       <h3>Finlink Core Tokens</h3>
       <div class="spacer"></div>
-      <button class="top-icon" id="tokensCopy" title="Als Markdown kopieren"><span class="material-symbols-outlined">content_copy</span></button>
-      <button class="top-icon" id="tokensClose" title="Schließen (Esc)"><span class="material-symbols-outlined">close</span></button>
+      <button class="top-icon" id="tokensCopy" title="Copy as Markdown"><span class="material-symbols-outlined">content_copy</span></button>
+      <button class="top-icon" id="tokensClose" title="Close (Esc)"><span class="material-symbols-outlined">close</span></button>
     </div>
     <div class="tokens-sub">
       Theme <strong>light only</strong> (G-01) · Density <strong>compact</strong> (G-02) ·
-      Quelle: Figma-Library „AI Design System Foundations“ · Stand 15.09.2026
+      Source: Figma library “AI Design System Foundations” · As of 2026-09-16
     </div>
     <div class="tokens-tabs" id="tokensTabs">
-      <button data-tab="gaps" class="active">Lücken</button>
-      <button data-tab="dev">Abweichungen</button>
-      <button data-tab="report">Token-Report</button>
+      <button data-tab="gaps" class="active">Gaps</button>
+      <button data-tab="dev">Deviations</button>
+      <button data-tab="report">Token report</button>
     </div>
     <div class="tokens-body" id="tokensBody"></div>
     <div class="tokens-foot">
-      <label><input type="checkbox" id="tokensAudit"> Audit-Overlay (markiert ungebundene und provisorische Stellen)</label>
+      <label><input type="checkbox" id="tokensAudit"> Audit overlay (outlines unbound and provisional sites)</label>
     </div>
   </aside>
 
@@ -7479,68 +7551,71 @@
      nie auseinanderlaufen. */
   (function () {
     var GAPS = [
-      ['N-1','blocker','Es gibt im gesamten Finlink-Set <strong>keinerlei Schatten-Tokens</strong>.','Karten, Popover, Dropdowns, Topbar, Drawer — 35 Stellen','<code>--ds-shadow-raised|overlay|modal</code>','Neue Elevation-Ebene, es existiert kein Primitive'],
-      ['N-2','blocker','<code>background</code> hat keine <code>inverse</code>-Stufe. text/border/icon haben eine, background nicht.','Die gesamte dunkle App-Schiene: Fläche, aktives Element, Hover, Label','<code>--ds-color-background-neutral-inverse-default|-hovered</code>','<code>_ds-color-neutral-900 / -950</code>'],
-      ['G-03','blocker','Keine öffentliche Semantik für <code>borderRadius</code>, <code>borderWidth</code>, <code>sizing</code> — die Primitives sind privat.','Jeder Radius (66×), jede Rahmenstärke, jede Icon-Größe','<code>--ds-radius-control|container|pill</code>','<code>_ds-borderRadius-base / -lg / -full</code>'],
-      ['N-6','open','Keine Semantik für Icon-Größen.','55 Icon-Regeln, auf 12/16/20/24/40 gerundet','<code>--ds-icon-size-sm|md|lg</code>','<code>_ds-sizing-4 / -5 / -6</code>'],
-      ['N-3','open','Kein dichter Typo-Schritt: die Skala beginnt bei 12px, 13px und 11px gibt es nicht.','Zeilentext (29×) und Mikro-Labels (23×) der Tabelle','<code>typography.body.xs</code> (11/16)','Power-User-Tabellen: My Day, Anträge, Pipeline'],
-      ['N-4','open','Kein einziges Purple-<code>background</code>-Token in irgendeiner Prominenz.','Kalender-Termin „Privat“, Fläche','<code>--ds-color-background-accent-purple-subtlest</code>','<code>_ds-color-purple-100</code>'],
-      ['N-5','open','<code>#546E7A</code> kommt in der Finlink-Neutral-Leiter an keiner Stufe vor.','27 Textstellen (gedämpfte Beschriftungen)','—','auf <code>text-neutral-subtle-default</code> gerundet'],
-      ['N-7','open','Die kanonische Grammatik kennt weder ein <code>notification</code>-Intent noch ein oranges <code>warning</code>.','Tonspur „Ausgelöst vom Kunden“, Fälligkeit „Heute“','<code>color.*.notification.*</code>, orange <code>warning</code>','vorerst über den Legacy-Layer gelöst'],
-      ['G-01','open','96 der 155 semantischen Farbtoken haben in Dark denselben Wert wie in Light.','Der Prototyp ist deshalb <strong>light only</strong>','—','Dark-Werte für die Property-Grammatik'],
-      ['G-02','open','Die Density-Collection hat nur den Compact-Mode exportiert.','<code>data-density="compact"</code> ist Pflicht, sonst lösen alle Feldmaße zu nichts auf','—','Default-Mode exportieren'],
-      ['G-04','open','Namenskollision: <code>space/--ds-spacing-4</code> heißt in Figma 4px, im Repo ist <code>--ds-spacing-4</code> = 16px.','Jede Spacing-Entscheidung — ein abgeschriebener Name ist ein 4×-Fehler','—','Repo-Namen sind hier kanonisch'],
-      ['G-07','open','Keine <code>bold</code>-Leiter hat eine <code>disabled</code>-Stufe.','Deaktivierte Primär-/Danger-Flächen','<code>background.*.bold.disabled</code>','<code>_ds-color-neutral-100</code>'],
-      ['A1','blocker','Weiß auf <code>background-brand-bold-default</code> = <strong>3,67:1</strong> (nötig 4,5:1).','Primärbutton-Label','Rebind auf <code>teal-700</code> <code>#00796B</code> → 5,32:1','<strong>nicht behoben</strong> — Token-pur erhält den Wert'],
-      ['A7/A8','blocker','<code>text-brand-bold-default</code> und <code>text.link</code> auf Weiß = <strong>4,42 / 3,67:1</strong>.','Links und Ghost-Button-Labels','Rebind auf <code>teal-700/800</code>','<strong>nicht behoben</strong>']
+      ['N-1','open','<strong>Corrected \u2014 an elevation ramp does exist.</strong> The foundations ship <code>boxShadow/none|xs|sm|base|lg|xl</code> and UI-Kit adds six semantic ones (Shadow base, Shadow dialog, Dropdown shadow, Side panel shadow, Fixed column shadow, Notification shadow). They are Figma <em>effect styles</em>, not Variables \u2014 and the token generator exports Variables only, so none of them reach <code>finlink-tokens.css</code> or the contract.','35 shadow sites. Bindable in Figma today, not bindable in CSS \u2014 so the prototype still carries <code>--proto-shadow-*</code>','<code>--ds-shadow-xs|sm|base|lg|xl</code>','Existing <code>boxShadow/*</code> effect styles \u2014 export effect styles too, or re-author them as Variables'],
+      ['N-2','blocker','<code>background</code> has no <code>inverse</code> step. text/border/icon each have one, background does not.','The whole dark app rail: surface, active item, hover, label','<code>--ds-color-background-neutral-inverse-default|-hovered</code>','<code>_ds-color-neutral-900 / -950</code>'],
+      ['G-03','blocker','No public semantics for <code>borderRadius</code>, <code>borderWidth</code> or <code>sizing</code> — the primitives are private.','Every radius (66×), every border width, every icon size','<code>--ds-radius-control|container|pill</code>','<code>_ds-borderRadius-base / -lg / -full</code>'],
+      ['N-6','open','No semantics for icon sizes.','55 icon rules, rounded to 12/16/20/24/40','<code>--ds-icon-size-sm|md|lg</code>','<code>_ds-sizing-4 / -5 / -6</code>'],
+      ['N-3','open','No dense type step: the scale starts at 12px — there is no 13px and no 11px.','Table row text (29×) and micro labels (23×)','<code>typography.body.xs</code> (11/16)','Power-user tables: My Day, Anträge, Pipeline'],
+      ['N-4','open','Not a single purple <code>background</code> token at any prominence.','Calendar event „Privat“, fill','<code>--ds-color-background-accent-purple-subtlest</code>','<code>_ds-color-purple-100</code>'],
+      ['N-8','open','No semantics for control heights. <code>--ds-field-height</code> covers only input, select and autocomplete — buttons have no token.','Fields now 32px, filter-bar buttons still 36px','<code>--ds-control-height-sm|md|lg</code>','<code>_ds-sizing-6 / -8 / -10</code>'],
+      ['N-5','open','<code>#546E7A</code> does not appear at any step of the Finlink neutral ramp.','27 text sites (muted labels)','—','snapped to <code>text-neutral-subtle-default</code>'],
+      ['N-7','open','The canonical grammar has neither a <code>notification</code> intent nor an orange <code>warning</code>.','Group tone bar „Ausgelöst vom Kunden“, due state „Heute“','<code>color.*.notification.*</code>, orange <code>warning</code>','solved via the legacy layer for now'],
+      ['G-01','open','96 of the 155 semantic colour tokens carry the same value in dark as in light.','The prototype is therefore <strong>light only</strong>','—','Dark values for the property-first grammar'],
+      ['G-02','open','The density collection exported only its compact mode.','<code>data-density="compact"</code> is mandatory — without it every field measurement resolves to nothing','—','Export the default mode'],
+      ['G-04','open','Name collision: <code>space/--ds-spacing-4</code> means 4px in Figma, while <code>--ds-spacing-4</code> in the repo is 16px.','Every spacing decision — a transcribed name is a 4× error','—','Repo names are canonical here'],
+      ['G-07','open','No <code>bold</code> ladder has a <code>disabled</code> step.','Disabled primary and danger surfaces','<code>background.*.bold.disabled</code>','<code>_ds-color-neutral-100</code>'],
+      ['A1','blocker','White on <code>background-brand-bold-default</code> = <strong>3.67:1</strong> (4.5:1 required).','Primary button label','Rebind to <code>teal-700</code> <code>#00796B</code> → 5.32:1','<strong>not fixed</strong> — token-pure preserves the value'],
+      ['A7/A8','blocker','<code>text-brand-bold-default</code> and <code>text.link</code> on white = <strong>4.42 / 3.67:1</strong>.','Links and ghost-button labels','Rebind to <code>teal-700/800</code>','<strong>not fixed</strong>']
     ];
     var DEVS = [
-      ['Orange „Heute“','<code>#FF9F1A</code> → <code>--ds-color-feedback-warning</code>','Legacy-Namensraum (Regel 9). Das kanonische <code>warning</code> ist <code>#F5CD79</code>, ein blasses Gelb, das die Dringlichkeit von „Heute“ nicht tragen kann.','Farbe bleibt exakt wie in V5-E'],
-      ['Cyan „Ausgelöst vom Kunden“','<code>#3DC1D3</code> → <code>--ds-color-feedback-notification</code>','Legacy-Namensraum. Die kanonische Grammatik hat kein <code>notification</code>-Intent (N-7).','Farbe bleibt exakt'],
-      ['Purple „Privat“','<code>#B457C9</code> → <code>--ds-color-accent-purple</code> <code>#E693F4</code>','Das ist das einzige öffentliche Purple im Semantik-Layer.','<strong>sichtbar heller und rosaner</strong>; identisch mit dem Filter „Diese Woche“'],
-      ['Gedämpfter Text','<code>#546E7A</code> → <code>#4B5961</code>','Wert existiert in der Leiter nicht (N-5). Nächste Stufe ist <code>text-neutral-subtle-default</code>.','minimal dunkler; fällt mit <code>dark-800</code> zusammen'],
-      ['Fließtext','<code>#37474F</code> → <code>#263238</code>','Es gibt kein Text-Token auf <code>#37474F</code>; <code>text-neutral-bold-default</code> ist die Stufe dafür.','dunkler — Kontrast steigt auf 12,6:1'],
-      ['Seitenfläche','<code>#FAFBFC</code> → <code>#F9FAFC</code>','<code>background-page</code>.','nicht wahrnehmbar'],
-      ['Info-Tint','<code>#E8F0FC</code> → <code>#EBF0FB</code>','<code>background-info-subtlest-default</code>.','nicht wahrnehmbar'],
-      ['Teal-Waschung','<code>rgba(0,150,136,.06/.07)</code> → <code>background-brand-subtlest-default</code>','Eine 6–7%-Teal-Fläche auf Weiß <em>ist</em> brand/subtlest.','nicht wahrnehmbar'],
-      ['Typo-Skala','13px → 12px, 11px → 12px, 10px → 12px','Die Skala kennt weder 13 noch 11 (N-3). Abwärts gerundet, um die Dichte zu halten.','<strong>Hierarchie trägt jetzt Gewicht + Farbe statt Größe.</strong> Fälligkeits-Tags werden 2px größer.'],
-      ['Schriftgewicht','700 → 600','Die Finlink-Typo-Skala endet bei 600 SemiBold.','fette Stellen minimal leichter'],
-      ['Spacing','6→4, 10→8, 14→12, 3/5→4 …','Die Skala ist 0·2·4·8·12·16·20·24·32·40·48·64. Nächster Wert, Gleichstand abwärts.','Zeilenrhythmus 1–2px enger'],
-      ['Feldhöhe','36px → 32px','<code>--ds-field-height</code> unter <code>data-density="compact"</code>.','Inputs und Selects 4px flacher'],
-      ['Fokusring','3px Teal-Schein 30% → 2px Vollton','Contract §8.4 verlangt 2px. Die Farbe kommt aus <code>--ds-color-focus-ring</code>, die Rezeptur bleibt ungebunden (G-03).','deutlicher sichtbar'],
-      ['Typo-Bindung','Stil-Variablen je Selektor statt Composite-Klasse','Der Contract bevorzugt <code>.ds-body-*</code> am Element. ~200 bestehende Selektoren nachträglich mit Klassen zu versehen wäre ein Neubau, keine Migration. Größe, Zeilenhöhe und Laufweite kommen trotzdem immer aus <em>einem</em> Stil.','keine']
+      ['Orange \u201eHeute\u201c','<code>#FF9F1A</code> \u2192 <code>--ds-color-feedback-warning</code>','Exact-value binding, so nothing moves. It is listed here because <code>feedback.*</code> is the <em>outgoing</em> namespace: contract rule 9 says legacy tokens are readable, not writable in new work. The canonical <code>warning</code> is <code>#F5CD79</code>, a pale yellow that cannot carry the urgency of \u201eHeute\u201c.','<strong>None</strong> \u2014 identical to V5-E','Re-point once a canonical orange <code>warning</code> intent exists (N-7)'],
+      ['Cyan \u201eAusgel\u00f6st vom Kunden\u201c','<code>#3DC1D3</code> \u2192 <code>--ds-color-feedback-notification</code>','Same shape as the row above: exact value, legacy namespace. The canonical grammar has no <code>notification</code> intent at all.','<strong>None</strong> \u2014 identical to V5-E','Re-point once a <code>notification</code> intent exists (N-7)'],
+      ['Purple \u201ePrivat\u201c','<code>#B457C9</code> \u2192 <code>--ds-color-accent-purple</code> <code>#E693F4</code>','This is the only public purple in the semantic layer.','<strong>Visibly lighter and pinker</strong>; now identical to the \u201eDiese Woche\u201c filter','Its tint stays unbound until a purple <code>background</code> token exists (N-4)'],
+      ['Muted text','<code>#546E7A</code> \u2192 <code>#4B5961</code>','The value does not exist on the ramp (N-5). Nearest step is <code>text-neutral-subtle-default</code>.','Marginally darker; now collapses with <code>dark-800</code>','\u2014'],
+      ['Body text','<code>#37474F</code> \u2192 <code>#263238</code>','There is no text token at <code>#37474F</code>; <code>text-neutral-bold-default</code> is the step for it.','Darker \u2014 contrast rises to 12.6:1','\u2014'],
+      ['Page surface','<code>#FAFBFC</code> \u2192 <code>#F9FAFC</code>','<code>background-page</code>.','Imperceptible','\u2014'],
+      ['Info tint','<code>#E8F0FC</code> \u2192 <code>#EBF0FB</code>','<code>background-info-subtlest-default</code>.','Imperceptible','\u2014'],
+      ['Teal wash','<code>rgba(0,150,136,.06/.07)</code> \u2192 <code>background-brand-subtlest-default</code>','A 6\u20137% teal fill on white <em>is</em> brand/subtlest.','Imperceptible','\u2014'],
+      ['Row height','Row padding 12px \u2192 8px, row gap 8px \u2192 4px, vertical padding now symmetric at 4px each','All target values are real scale steps (<code>--ds-spacing-2</code> / <code>--ds-spacing-1</code>). The padding used to sit entirely at the bottom (0/8px), which left each column\u2019s centred content 4px above the optical centre of the row \u2014 most visible on the stacked due tag and date.','Rows flatter, content now exactly centred (measured 0px instead of \u22124px). Total height unchanged by the redistribution.','\u2014'],
+      ['Type scale','13px \u2192 12px, 11px \u2192 12px, 10px \u2192 12px','The scale has neither 13 nor 11 (N-3). Rounded down to keep the density.','<strong>Hierarchy now carries on weight and colour instead of size.</strong> Due tags grow by 2px.','Revisit if a dense <code>body.xs</code> step is authored (N-3)'],
+      ['Font weight','700 \u2192 600','The Finlink type scale tops out at 600 SemiBold.','Bold text marginally lighter','\u2014'],
+      ['Spacing','6\u21924, 10\u21928, 14\u219212, 3/5\u21924 \u2026','The scale is 0\u00b72\u00b74\u00b78\u00b712\u00b716\u00b720\u00b724\u00b732\u00b740\u00b748\u00b764. Nearest value, ties resolved downward.','Row rhythm 1\u20132px tighter','\u2014'],
+      ['Field height','36px \u2192 32px','<code>--ds-field-height</code> under <code>data-density="compact"</code> \u2014 covers input, select and autocomplete only.','Inputs and selects 4px shorter','Buttons stay 36px and unbound until a control-height token exists (N-8)'],
+      ['Focus ring','3px teal glow at 30% \u2192 2px solid','Contract \u00a78.4 requires 2px. The colour comes from <code>--ds-color-focus-ring</code>.','More clearly visible','The 2px recipe itself stays unbound (G-03)'],
+      ['Type binding','Style variables per selector instead of the composite class','The contract prefers <code>.ds-body-*</code> on the element. Retrofitting classes onto ~200 existing selectors would be a rebuild, not a migration. Size, line height and tracking still always come from <em>one</em> style.','<strong>None</strong>','Move to composite classes if these selectors are rewritten anyway']
     ];
     var REPORT = [
-      ['Primärbutton','default','background','--ds-color-background-brand-bold-default','#009688'],
-      ['Primärbutton','hovered','background','--ds-color-background-brand-bold-hovered','#00877A'],
-      ['Primärbutton','default','label','--ds-color-text-neutral-inverse-default','#FFFFFF'],
-      ['Sekundärbutton','default','background','--ds-color-background-neutral-subtlest-default','#FFFFFF'],
-      ['Sekundärbutton','default','border','--ds-color-border-neutral-subtle-pressed','#B0BEC5'],
-      ['Sekundärbutton','default','label','--ds-color-text-neutral-subtle-default','#4B5961'],
-      ['Input / Select','default','border','--ds-color-border-neutral-bold-default','#CFD8DC'],
-      ['Input / Select','focused','ring','--ds-color-focus-ring','#009688'],
-      ['Input / Select','default','height','--ds-field-height','32px'],
-      ['Tabellenzeile','default','background','--ds-color-background-neutral-subtlest-default','#FFFFFF'],
-      ['Tabellenzeile','hovered','background','--ds-color-background-neutral-subtle-default','#F5F7F8'],
-      ['Tabellenzeile','default','trennlinie','--ds-color-border-neutral-subtle-default','#ECEFF1'],
-      ['Titeltext','default','text','--ds-color-text-neutral-bold-default','#263238'],
-      ['Meta-/Labeltext','default','text','--ds-color-text-neutral-subtlest-default','#78909C'],
-      ['Antragsteller-Link','default','text','--ds-color-text-brand-subtle-default','#009688'],
-      ['Fälligkeits-Tag „Überfällig“','default','background','--ds-color-background-danger-subtlest-default','#FFEEEE'],
-      ['Fälligkeits-Tag „Überfällig“','default','text','--ds-color-text-danger-subtle-default','#FF5656'],
-      ['Fälligkeits-Tag „Heute“','default','background','--ds-color-feedback-warning-subtle','#FFF5E8 ⚠ legacy'],
-      ['Fälligkeits-Tag „Morgen“','default','background','--ds-color-background-info-subtlest-default','#EBF0FB'],
-      ['Tonspur „Überfällig“','default','background','--ds-color-background-danger-bold-default','#FF5656'],
-      ['Tonspur „Später“','default','background','— UNBOUND','#78909C'],
-      ['App-Schiene','default','background','— UNBOUND (N-2)','#37474F'],
-      ['App-Schiene','active','background','— UNBOUND (N-2)','#4B5961'],
-      ['Kalender „Vor Ort“','default','strich / fläche','--ds-color-border-brand-bold-default / background-brand-subtlest-default','#009688 / #E6F5F3'],
-      ['Kalender „Online“','default','strich / fläche','--ds-color-border-info-bold-default / background-info-subtlest-default','#0857C3 / #EBF0FB'],
-      ['Kalender „Privat“','default','strich / fläche','--ds-color-accent-purple / — UNBOUND (N-4)','#E693F4 / #FCF0FE'],
-      ['Alle Radien','—','border-radius','— PROVISORISCH (G-03)','2 / 4 / 8 / 9999px'],
-      ['Alle Schatten','—','box-shadow','— UNBOUND (N-1)','4 Rezepturen'],
-      ['Zeilentext','—','typography','.ds-body-sm-* (12/16)','war 13px'],
-      ['Basistext','—','typography','.ds-body-md-* (14/20)','unverändert']
+      ['Primary button','default','background','--ds-color-background-brand-bold-default','#009688'],
+      ['Primary button','hovered','background','--ds-color-background-brand-bold-hovered','#00877A'],
+      ['Primary button','default','label','--ds-color-text-neutral-inverse-default','#FFFFFF'],
+      ['Secondary button','default','background','--ds-color-background-neutral-subtlest-default','#FFFFFF'],
+      ['Secondary button','default','border','--ds-color-border-neutral-subtle-pressed','#B0BEC5'],
+      ['Secondary button','default','label','--ds-color-text-neutral-subtle-default','#4B5961'],
+      ['Input / select','default','border','--ds-color-border-neutral-bold-default','#CFD8DC'],
+      ['Input / select','focused','ring','--ds-color-focus-ring','#009688'],
+      ['Input / select','default','height','--ds-field-height','32px'],
+      ['Button','default','height','— UNBOUND (N-8)','36px'],
+      ['Table row','default','background','--ds-color-background-neutral-subtlest-default','#FFFFFF'],
+      ['Table row','hovered','background','--ds-color-background-neutral-subtle-default','#F5F7F8'],
+      ['Table row','default','divider','--ds-color-border-neutral-subtle-default','#ECEFF1'],
+      ['Title text','default','text','--ds-color-text-neutral-bold-default','#263238'],
+      ['Meta / label text','default','text','--ds-color-text-neutral-subtlest-default','#78909C'],
+      ['Applicant link','default','text','--ds-color-text-brand-subtle-default','#009688'],
+      ['Due tag „Überfällig“','default','background','--ds-color-background-danger-subtlest-default','#FFEEEE'],
+      ['Due tag „Überfällig“','default','text','--ds-color-text-danger-subtle-default','#FF5656'],
+      ['Due tag „Heute“','default','background','--ds-color-feedback-warning-subtle','#FFF5E8 ⚠ legacy'],
+      ['Due tag „Morgen“','default','background','--ds-color-background-info-subtlest-default','#EBF0FB'],
+      ['Group tone bar „Überfällig“','default','background','--ds-color-background-danger-bold-default','#FF5656'],
+      ['Group tone bar „Später“','default','background','— UNBOUND','#78909C'],
+      ['App rail','default','background','— UNBOUND (N-2)','#37474F'],
+      ['App rail','active','background','— UNBOUND (N-2)','#4B5961'],
+      ['Calendar „Vor Ort“','default','stroke / fill','--ds-color-border-brand-bold-default / background-brand-subtlest-default','#009688 / #E6F5F3'],
+      ['Calendar „Online“','default','stroke / fill','--ds-color-border-info-bold-default / background-info-subtlest-default','#0857C3 / #EBF0FB'],
+      ['Calendar „Privat“','default','stroke / fill','--ds-color-accent-purple / — UNBOUND (N-4)','#E693F4 / #FCF0FE'],
+      ['All radii','—','border-radius','— PROVISIONAL (G-03)','2 / 4 / 8 / 9999px'],
+      ['All shadows','—','box-shadow','— UNBOUND (N-1)','4 recipes'],
+      ['Row text','—','typography','.ds-body-sm-* (12/16)','was 13px'],
+      ['Base text','—','typography','.ds-body-md-* (14/20)','unchanged']
     ];
 
     var panel=document.getElementById('tokensPanel'), scrim=document.getElementById('tokensScrim'),
@@ -7555,19 +7630,21 @@
     function render(){
       body.className='tokens-body tab-'+tab;
       if(tab==='gaps'){
-        body.innerHTML='<p>Jede Stelle, an der das Token-System eine Entscheidung nicht ausdrücken kann. '+
-          'Lücken sind erwartbar — das System steht mitten in der Umstellung. Wichtig ist nur, dass sie sichtbar bleiben, '+
-          'statt durch ein optisch passendes Ersatz-Token zu verschwinden.</p>'+
-          tbl(['ID','Was fehlt','Wo es weh tut','Vorgeschlagenes Token','Vorgeschlagene Bindung'],GAPS,
+        body.innerHTML='<p>Every place where the token system cannot express a decision. '+
+          'Gaps are expected — the system is mid-realignment. What matters is that they stay visible '+
+          'rather than disappearing behind a visually close substitute token.</p>'+
+          tbl(['ID','What is missing','Where it bites','Proposed token','Proposed binding'],GAPS,
             function(r){return ['<span class="gap-id '+r[1]+'">'+r[0]+'</span>',r[2],r[3],r[4],r[5]];});
       } else if(tab==='dev'){
-        body.innerHTML='<p>Stellen, an denen bewusst vom Contract abgewichen oder ein Wert auf die nächste Stufe '+
-          'gerundet wurde — mit Begründung und sichtbarer Folge.</p>'+
-          tbl(['Was','Bindung','Warum','Sichtbare Folge'],DEVS,function(r){return [r[0],r[1],r[2],r[3]];});
+        body.innerHTML='<p>Places where the contract was deliberately departed from, or a value was snapped to the '+
+          'nearest step. <strong>Visible change</strong> is what you see differ from V5-E — often nothing. '+
+          '<strong>Follow-up</strong> is what still has to happen later, which is the real cost of the rows that look identical.</p>'+
+          tbl(['What','Binding','Why','Visible change','Follow-up'],DEVS,
+            function(r){return [r[0],r[1],r[2],r[3],r[4]];});
       } else {
-        body.innerHTML='<p>Was heute implementierbar ist. Eine Zeile je Element × State × Property, '+
-          'mit exakten Token-Namen.</p>'+
-          tbl(['Element','State','Property','Token','Löst auf zu'],REPORT,function(r){return [r[0],r[1],r[2],'<code>'+r[3]+'</code>',r[4]];});
+        body.innerHTML='<p>What is implementable today. One row per element × state × property, '+
+          'with exact token names.</p>'+
+          tbl(['Element','State','Property','Token','Resolves to'],REPORT,function(r){return [r[0],r[1],r[2],'<code>'+r[3]+'</code>',r[4]];});
       }
     }
     function open(v){
@@ -7595,15 +7672,15 @@
     document.getElementById('tokensCopy').addEventListener('click',function(){
       function strip(h){ var d=document.createElement('div'); d.innerHTML=h; return (d.textContent||'').trim(); }
       var md='## Token Usage Report — Mein Tag V8\n'+
-        'Theme: light only (G-01) · Density: compact (G-02) · Stand: 2026-09-15\n\n'+
-        '### Gebunden\n| Element | State | Property | Token | Löst auf zu |\n|---|---|---|---|---|\n'+
+        'Theme: light only (G-01) · Density: compact (G-02) · As of: 2026-09-16\n\n'+
+        '### Bound\n| Element | State | Property | Token | Resolves to |\n|---|---|---|---|---|\n'+
         REPORT.map(function(r){return '| '+r[0]+' | '+r[1]+' | '+r[2]+' | `'+r[3]+'` | '+r[4]+' |';}).join('\n')+
-        '\n\n### Ungebunden — Lücken, die eine Umsetzung blockieren\n| ID | Was fehlt | Wo | Vorschlag | Bindung |\n|---|---|---|---|---|\n'+
+        '\n\n### Unbound — gaps blocking implementation\n| ID | What is missing | Where | Proposal | Binding |\n|---|---|---|---|---|\n'+
         GAPS.map(function(r){return '| '+r[0]+' | '+strip(r[2])+' | '+strip(r[3])+' | '+strip(r[4])+' | '+strip(r[5])+' |';}).join('\n')+
-        '\n\n### Abweichungen\n| Was | Bindung | Warum | Sichtbare Folge |\n|---|---|---|---|\n'+
-        DEVS.map(function(r){return '| '+r[0]+' | '+strip(r[1])+' | '+strip(r[2])+' | '+strip(r[3])+' |';}).join('\n')+'\n';
+        '\n\n### Deviations\n| What | Binding | Why | Visible change | Follow-up |\n|---|---|---|---|---|\n'+
+        DEVS.map(function(r){return '| '+r[0]+' | '+strip(r[1])+' | '+strip(r[2])+' | '+strip(r[3])+' | '+strip(r[4])+' |';}).join('\n')+'\n';
       navigator.clipboard.writeText(md).then(function(){
-        if(window.showToast) showToast('Token-Report als Markdown kopiert');
+        if(window.showToast) showToast('Token report copied as Markdown');
       });
     });
     try{ if(localStorage.getItem('v8-tokens-open')==='1') open(true); }catch(e){}
