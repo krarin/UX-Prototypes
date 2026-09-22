@@ -7,3 +7,7 @@
 # macOS system files
 .DS_Store
 **/.DS_Store
+
+# Playwright MCP debug artifacts (screenshots, console logs, page snapshots)
+.playwright-mcp/
+**/.playwright-mcp/

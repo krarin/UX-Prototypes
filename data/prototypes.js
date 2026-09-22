@@ -146,7 +146,7 @@ window.PROTOTYPES = {
       file:"to-do/mein-tag-v4.html", status:"abgeloest",
       links: [
         { label:"Web Prototyp öffnen", file:"to-do/mein-tag-v4.html" },
-        { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v4.html" }
+        { label:"Mobile Prototyp öffnen", file:"to-do/mein-tag-mobile-v1.html" }
       ],
       changes:"Gegenüber V3: Schnellfilter-Tabs mit Gruppierung im Filter „Alle“, Kalender-Splitscreen mit Rand-Handle zum Ein-/Ausklappen statt Header-Button, Geburtstage im Kalender statt in der Liste. Läuft ohne das Design-System-Stylesheet, ist also eigenständig teilbar. Zusätzlich eigene Mobile-Fassung mit anderer Informationsarchitektur (Segmented Control To-dos/Kalender statt Split-View)." },
     { id:"mein-tag-v5a", project:"mein-tag", version:5, variant:"A", title:"Mein Tag V5-A",
