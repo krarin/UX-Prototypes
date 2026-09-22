@@ -1,0 +1,231 @@
+/**
+ * Design tokens — generated from Figma token export (Finlink Core Primitives, Light, Dark,
+ * Default/Compact density, and typography modes). Do not hand-edit hex/px values here —
+ * update the Figma tokens and regenerate instead. See design-tokens.md for descriptions
+ * and usage guidance for each token.
+ */
+
+:root {
+  /* Color — Light (default theme) */
+  --ds-color-accent-purple: #E693F4;
+  --ds-color-action-danger: #FF5656;
+  --ds-color-action-danger-active: #CC4545;
+  --ds-color-action-danger-hover: #E64D4D;
+  --ds-color-action-primary: #009688;
+  --ds-color-action-primary-active: #00796B;
+  --ds-color-action-primary-hover: #00877A;
+  --ds-color-action-primary-muted: #CCEAE7;
+  --ds-color-action-primary-subtle: #E6F5F3;
+  --ds-color-action-secondary: #F5F7F8;
+  --ds-color-action-secondary-active: #CFD8DC;
+  --ds-color-action-secondary-hover: #ECEFF1;
+  --ds-color-background-active: #ECEFF1;
+  --ds-color-background-disabled: #ECEFF1;
+  --ds-color-background-hover: #F5F7F8;
+  --ds-color-background-overlay: #000000;
+  --ds-color-background-page: #F9FAFC;
+  --ds-color-background-raised: #FFFFFF;
+  --ds-color-background-selected: #E6F5F3;
+  --ds-color-background-surface: #FFFFFF;
+  --ds-color-border-default: #CFD8DC;
+  --ds-color-border-disabled: #ECEFF1;
+  --ds-color-border-error: #FF5656;
+  --ds-color-border-focus: #009688;
+  --ds-color-border-hover: #B0BEC5;
+  --ds-color-feedback-error: #FF5656;
+  --ds-color-feedback-error-strong: #B33B3B;
+  --ds-color-feedback-error-subtle: #FFEEEE;
+  --ds-color-feedback-info: #4B7BEC;
+  --ds-color-feedback-info-strong: #0857C3;
+  --ds-color-feedback-info-subtle: #EBF0FB;
+  --ds-color-feedback-notification: #3DC1D3;
+  --ds-color-feedback-notification-strong: #1F6F7A;
+  --ds-color-feedback-notification-subtle: #ECF9FB;
+  --ds-color-feedback-success: #20BF6B;
+  --ds-color-feedback-success-strong: #137341;
+  --ds-color-feedback-success-subtle: #E9FCF2;
+  --ds-color-feedback-warning: #FF9F1A;
+  --ds-color-feedback-warning-low: #F5CD79;
+  --ds-color-feedback-warning-low-strong: #755D2C;
+  --ds-color-feedback-warning-low-subtle: #FDF5E4;
+  --ds-color-feedback-warning-strong: #7A4809;
+  --ds-color-feedback-warning-subtle: #FFF5E8;
+  --ds-color-focus-ring: #009688;
+  --ds-color-on-accent-purple: #FFFFFF;
+  --ds-color-on-danger: #FFFFFF;
+  --ds-color-on-disabled: #607D8B;
+  --ds-color-on-error: #FFFFFF;
+  --ds-color-on-info: #FFFFFF;
+  --ds-color-on-notification: #FFFFFF;
+  --ds-color-on-primary: #FFFFFF;
+  --ds-color-on-secondary: #263238;
+  --ds-color-on-success: #FFFFFF;
+  --ds-color-on-warning: #FFFFFF;
+  --ds-color-text-disabled: #B0BEC5;
+  --ds-color-text-link: #009688;
+  --ds-color-text-link-disabled: #B0BEC5;
+  --ds-color-text-link-hover: #00877A;
+  --ds-color-text-link-visited: #00796B;
+  --ds-color-text-placeholder: #607D8B;
+  --ds-color-text-primary: #263238;
+  --ds-color-text-secondary: #4B5961;
+
+  /* Typography */
+  --ds-font-family-sans: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-family-mono: "Courier New", Courier, monospace;
+  --ds-font-letterspacing-display: 1.25px;
+  --ds-font-letterspacing-display-wide: 1.5px;
+  --ds-font-letterspacing-normal: 0px;
+  --ds-font-letterspacing-normal-tight: -0.25px;
+  --ds-font-letterspacing-snug: -0.5px;
+  --ds-font-letterspacing-tight: -1px;
+  --ds-font-letterspacing-tighter: -1.5px;
+  --ds-font-letterspacing-wide: 0.25px;
+  --ds-font-letterspacing-wider: 0.5px;
+  --ds-font-letterspacing-widest: 1px;
+  --ds-font-lineheight-2xl: 36px;
+  --ds-font-lineheight-3xl: 48px;
+  --ds-font-lineheight-base: 22px;
+  --ds-font-lineheight-lg: 28px;
+  --ds-font-lineheight-sm: 20px;
+  --ds-font-lineheight-xl: 32px;
+  --ds-font-size-2xl: 26px;
+  --ds-font-size-3xl: 30px;
+  --ds-font-size-4xl: 40px;
+  --ds-font-size-5xl: 64px;
+  --ds-font-size-6xl: 96px;
+  --ds-font-size-base: 16px;
+  --ds-font-size-lg: 18px;
+  --ds-font-size-sm: 14px;
+  --ds-font-size-xl: 20px;
+  --ds-font-size-xs: 12px;
+  --ds-font-textdecoration-none: none;
+  --ds-font-textdecoration-underline: underline;
+  --ds-font-weight-bold: 700;
+  --ds-font-weight-light: 300;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-semibold: 600;
+
+  /* Spacing */
+  --ds-spacing-0: 0px;
+  --ds-spacing-0-5: 2px;
+  --ds-spacing-1: 4px;
+  --ds-spacing-2: 8px;
+  --ds-spacing-3: 12px;
+  --ds-spacing-4: 16px;
+  --ds-spacing-5: 20px;
+  --ds-spacing-6: 24px;
+  --ds-spacing-8: 32px;
+  --ds-spacing-10: 40px;
+  --ds-spacing-12: 48px;
+  --ds-spacing-16: 64px;
+  --ds-spacing-20: 80px;
+  --ds-spacing-24: 96px;
+
+  /* Sizing scale (icon/avatar/control) */
+  --ds-sizing-2: 8px;
+  --ds-sizing-3: 12px;
+  --ds-sizing-4: 16px;
+  --ds-sizing-5: 20px;
+  --ds-sizing-6: 24px;
+  --ds-sizing-8: 32px;
+  --ds-sizing-10: 40px;
+  --ds-sizing-12: 48px;
+  --ds-sizing-16: 64px;
+
+  /* Border radius */
+  --ds-borderRadius-none: 0px;
+  --ds-borderRadius-sm: 2px;
+  --ds-borderRadius-base: 4px;
+  --ds-borderRadius-lg: 8px;
+  --ds-borderRadius-xl: 12px;
+  --ds-borderRadius-full: 9999px;
+
+  /* Border width */
+  --ds-borderWidth-0: 0px;
+  --ds-borderWidth-1: 1px;
+  --ds-borderWidth-2: 2px;
+  --ds-borderWidth-4: 4px;
+
+  /* Opacity */
+  --ds-opacity-0: 0;
+  --ds-opacity-25: 0.25;
+  --ds-opacity-50: 0.5;
+  --ds-opacity-75: 0.75;
+  --ds-opacity-100: 1;
+
+  /* Density: Default field sizing (input, select, autocomplete) */
+  --ds-field-font-size: 16px;
+  --ds-field-gap-inline: 16px;
+  --ds-field-gap-label: 4px;
+  --ds-field-gap-stack: 20px;
+  --ds-field-height: 36px;
+}
+
+[data-theme="dark"] {
+  /* Only tokens whose value actually differs from Light */
+  --ds-color-accent-purple: #E9A1F5;
+  --ds-color-action-danger: #FF7D7D;
+  --ds-color-action-danger-active: #FFCACA;
+  --ds-color-action-danger-hover: #FFA3A3;
+  --ds-color-action-primary: #33ABA0;
+  --ds-color-action-primary-active: #CCEAE7;
+  --ds-color-action-primary-hover: #99D5CF;
+  --ds-color-action-primary-muted: #004D43;
+  --ds-color-action-primary-subtle: #00332D;
+  --ds-color-action-secondary: #B0BEC5;
+  --ds-color-action-secondary-active: #ECEFF1;
+  --ds-color-action-secondary-hover: #CFD8DC;
+  --ds-color-background-active: #607D8B;
+  --ds-color-background-disabled: #37474F;
+  --ds-color-background-hover: #4B5961;
+  --ds-color-background-page: #161719;
+  --ds-color-background-raised: #37474F;
+  --ds-color-background-selected: #00332D;
+  --ds-color-background-surface: #263238;
+  --ds-color-border-default: #4B5961;
+  --ds-color-border-disabled: #37474F;
+  --ds-color-border-focus: #33ABA0;
+  --ds-color-border-hover: #607D8B;
+  --ds-color-feedback-error-strong: #FF7D7D;
+  --ds-color-feedback-error-subtle: #661F1F;
+  --ds-color-feedback-info-strong: #9BAEE4;
+  --ds-color-feedback-info-subtle: #033476;
+  --ds-color-feedback-notification: #58CCD9;
+  --ds-color-feedback-notification-strong: #58CCD9;
+  --ds-color-feedback-notification-subtle: #113C43;
+  --ds-color-feedback-success: #42D283;
+  --ds-color-feedback-success-strong: #42D283;
+  --ds-color-feedback-success-subtle: #0B3F25;
+  --ds-color-feedback-warning: #FFB040;
+  --ds-color-feedback-warning-low: #F6D184;
+  --ds-color-feedback-warning-low-strong: #F6D184;
+  --ds-color-feedback-warning-low-subtle: #43351A;
+  --ds-color-feedback-warning-strong: #FFB040;
+  --ds-color-feedback-warning-subtle: #512F06;
+  --ds-color-focus-ring: #33ABA0;
+  --ds-color-on-accent-purple: #161719;
+  --ds-color-on-danger: #161719;
+  --ds-color-on-disabled: #B0BEC5;
+  --ds-color-on-error: #161719;
+  --ds-color-on-info: #161719;
+  --ds-color-on-notification: #161719;
+  --ds-color-on-primary: #161719;
+  --ds-color-on-secondary: #161719;
+  --ds-color-on-success: #161719;
+  --ds-color-on-warning: #161719;
+  --ds-color-text-disabled: #78909C;
+  --ds-color-text-link: #9BAEE4;
+  --ds-color-text-link-disabled: #78909C;
+  --ds-color-text-link-hover: #E6EEFB;
+  --ds-color-text-link-visited: #EDAEF6;
+  --ds-color-text-placeholder: #78909C;
+  --ds-color-text-primary: #F9FAFC;
+  --ds-color-text-secondary: #B0BEC5;
+}
+
+[data-density="compact"] {
+  --ds-field-gap-stack: 12px;
+  --ds-field-height: 32px;
+}

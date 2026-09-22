@@ -1,5 +1,19 @@
 # FinLink Prototypes — Arbeitsregeln
 
+@AGENTS.md
+
+## Claude Code specifics
+
+- When building a new UI mockup, screen, or design from scratch (not just implementing
+  an already-fully-specified component), consider using the frontend-design guidance
+  available in this environment for layout/visual-design decisions — the styleguide
+  covers component rules and tokens, not general composition or page layout.
+- When asked to "check the styleguide against the code" again in the future, treat it
+  as a full re-audit request, not a one-off: read every `## ` section in
+  `docs/styleguide.md`, find the matching implementation in the repo, and report
+  ✅ / ⚠️ / ❌ / ❓ per point — the same method used to produce `styleguide-audit.md`.
+  Don't change `docs/styleguide.md` or the code during that pass; report first.
+
 Kurz und verbindlich. Die ausführlichen Fassungen stehen in den verlinkten Dateien.
 
 ## Design
